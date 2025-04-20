@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your IP Address</title>
+  <title>Your IP Info</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: #eef2f7;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7fa;
+      font-family: "Segoe UI", sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -18,57 +18,91 @@
 
     .ip-card {
       background: #ffffff;
-      padding: 20px 30px;
+      padding: 25px 35px;
       border-radius: 20px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
       text-align: center;
-      max-width: 90%;
-      width: 350px;
-      transition: 0.3s ease;
-    }
-
-    .ip-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+      max-width: 420px;
+      width: 100%;
     }
 
     .ip-icon {
-      font-size: 40px;
+      font-size: 45px;
       color: #4a90e2;
       margin-bottom: 10px;
     }
 
-    .ip-label {
-      font-size: 16px;
-      color: #777;
-      margin-bottom: 5px;
-    }
-
-    .ip-address {
-      font-size: 24px;
-      font-weight: bold;
+    .ip-header {
+      font-size: 20px;
+      margin-bottom: 20px;
       color: #333;
     }
-  </style>
-  <script>
-    async function fetchIP() {
-      try {
-        const res = await fetch('https://api.ipify.org?format=json');
-        const data = await res.json();
-        document.querySelector('.ip-address').textContent = data.ip;
-      } catch (err) {
-        document.querySelector('.ip-address').textContent = "Không lấy được IP";
-      }
+
+    .info-row {
+      margin: 8px 0;
+      font-size: 15px;
+      color: #444;
     }
 
-    window.onload = fetchIP;
-  </script>
+    .info-label {
+      font-weight: 600;
+      color: #666;
+    }
+
+    .info-value {
+      color: #000;
+    }
+  </style>
 </head>
 <body>
   <div class="ip-card">
-    <div class="ip-icon">🌐</div>
-    <div class="ip-label">Your Public IP Address:</div>
-    <div class="ip-address">Loading...</div>
+    <div class="ip-icon">🌍</div>
+    <div class="ip-header">Thông Tin Kết Nối</div>
+
+    <div class="info-row"><span class="info-label">IP:</span> <span class="info-value" id="ip">Đang tải...</span></div>
+    <div class="info-row"><span class="info-label">Quốc gia:</span> <span class="info-value" id="country"></span></div>
+    <div class="info-row"><span class="info-label">Thành phố:</span> <span class="info-value" id="city"></span></div>
+    <div class="info-row"><span class="info-label">ISP:</span> <span class="info-value" id="isp"></span></div>
+    <div class="info-row"><span class="info-label">Trình duyệt:</span> <span class="info-value" id="browser"></span></div>
+    <div class="info-row"><span class="info-label">Hệ điều hành:</span> <span class="info-value" id="os"></span></div>
   </div>
+
+  <script>
+    // Lấy IP và thông tin vị trí
+    fetch("https://ipapi.co/json/")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("ip").textContent = data.ip;
+        document.getElementById("country").textContent = data.country_name;
+        document.getElementById("city").textContent = data.city;
+        document.getElementById("isp").textContent = data.org;
+      })
+      .catch(() => {
+        document.getElementById("ip").textContent = "Không thể lấy IP";
+      });
+
+    // Phân tích trình duyệt và hệ điều hành
+    function getBrowserOS() {
+      const ua = navigator.userAgent;
+      let browser = "Không xác định";
+      let os = "Không xác định";
+
+      if (/chrome|crios/i.test(ua)) browser = "Chrome";
+      else if (/firefox|fxios/i.test(ua)) browser = "Firefox";
+      else if (/safari/i.test(ua)) browser = "Safari";
+      else if (/edg/i.test(ua)) browser = "Edge";
+
+      if (/windows/i.test(ua)) os = "Windows";
+      else if (/mac/i.test(ua)) os = "macOS";
+      else if (/linux/i.test(ua)) os = "Linux";
+      else if (/android/i.test(ua)) os = "Android";
+      else if (/iphone|ipad/i.test(ua)) os = "iOS";
+
+      document.getElementById("browser").textContent = browser;
+      document.getElementById("os").textContent = os;
+    }
+
+    getBrowserOS();
+  </script>
 </body>
 </html>
