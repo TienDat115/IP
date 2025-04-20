@@ -1,87 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Your IP Info</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thông Tin Kết Nối</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: #f4f7fa;
+      background: #f5f7fa;
       font-family: "Segoe UI", sans-serif;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
+      margin: 0;
     }
-
-    .ip-card {
-      background: #ffffff;
+    .card {
+      background: #fff;
       padding: 25px 35px;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      text-align: center;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       max-width: 420px;
       width: 100%;
+      text-align: center;
     }
-
-    .ip-icon {
+    .icon {
       font-size: 45px;
       color: #4a90e2;
       margin-bottom: 10px;
     }
-
-    .ip-header {
-      font-size: 20px;
-      margin-bottom: 20px;
+    h2 {
+      margin: 10px 0 20px;
       color: #333;
     }
-
-    .info-row {
-      margin: 8px 0;
+    .info {
+      margin: 10px 0;
       font-size: 15px;
-      color: #444;
+      color: #333;
     }
-
-    .info-label {
+    .label {
       font-weight: 600;
       color: #666;
     }
-
-    .info-value {
+    .value {
       color: #000;
     }
   </style>
 </head>
 <body>
-  <div class="ip-card">
-    <div class="ip-icon">🌍</div>
-    <div class="ip-header">Thông Tin Kết Nối</div>
-
-    <div class="info-row"><span class="info-label">IP:</span> <span class="info-value" id="ip">Đang tải...</span></div>
-    <div class="info-row"><span class="info-label">Quốc gia:</span> <span class="info-value" id="country"></span></div>
-    <div class="info-row"><span class="info-label">Thành phố:</span> <span class="info-value" id="city"></span></div>
-    <div class="info-row"><span class="info-label">ISP:</span> <span class="info-value" id="isp"></span></div>
-    <div class="info-row"><span class="info-label">Trình duyệt:</span> <span class="info-value" id="browser"></span></div>
-    <div class="info-row"><span class="info-label">Hệ điều hành:</span> <span class="info-value" id="os"></span></div>
+  <div class="card">
+    <div class="icon">🌐</div>
+    <h2>Thông Tin Kết Nối</h2>
+    <div class="info"><span class="label">IP:</span> <span class="value" id="ip">Đang tải...</span></div>
+    <div class="info"><span class="label">Quốc gia:</span> <span class="value" id="country"></span></div>
+    <div class="info"><span class="label">Thành phố:</span> <span class="value" id="city"></span></div>
+    <div class="info"><span class="label">ISP:</span> <span class="value" id="isp"></span></div>
+    <div class="info"><span class="label">Trình duyệt:</span> <span class="value" id="browser"></span></div>
+    <div class="info"><span class="label">Hệ điều hành:</span> <span class="value" id="os"></span></div>
   </div>
 
   <script>
-    // Lấy IP và thông tin vị trí
-    fetch("https://ipapi.co/json/")
+    fetch("https://ipwho.is/")
       .then(res => res.json())
       .then(data => {
-        document.getElementById("ip").textContent = data.ip;
-        document.getElementById("country").textContent = data.country_name;
-        document.getElementById("city").textContent = data.city;
-        document.getElementById("isp").textContent = data.org;
+        document.getElementById("ip").textContent = data.ip || "Không rõ";
+        document.getElementById("country").textContent = data.country || "Không rõ";
+        document.getElementById("city").textContent = data.city || "Không rõ";
+        document.getElementById("isp").textContent = data.connection?.isp || "Không rõ";
       })
       .catch(() => {
         document.getElementById("ip").textContent = "Không thể lấy IP";
       });
 
-    // Phân tích trình duyệt và hệ điều hành
     function getBrowserOS() {
       const ua = navigator.userAgent;
       let browser = "Không xác định";
