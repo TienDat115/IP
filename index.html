@@ -44,6 +44,12 @@
 			.value {
 				color: #000;
 			}
+			.copy-notice {
+				margin-top: 10px;
+				font-size: 13px;
+				color: #28a745;
+				display: none;
+			}
 		</style>
 	</head>
 	<body>
@@ -54,6 +60,7 @@
 				<span class="label">IP:</span>
 				<span class="value" id="ip" style="cursor: pointer" title="Bấm để sao chép IP">Đang tải...</span>
 			</div>
+			<div id="copyStatus" class="copy-notice">✅ Đã sao chép IP!</div>
 			<div class="info"><span class="label">Quốc gia:</span> <span class="value" id="country"></span></div>
 			<div class="info"><span class="label">Thành phố:</span> <span class="value" id="city"></span></div>
 			<div class="info"><span class="label">ISP:</span> <span class="value" id="isp"></span></div>
@@ -62,6 +69,7 @@
 		</div>
 
 		<script>
+			// Lấy thông tin IP và địa lý
 			fetch("https://ipwho.is/")
 				.then((res) => res.json())
 				.then((data) => {
@@ -74,6 +82,7 @@
 					document.getElementById("ip").textContent = "Không thể lấy IP";
 				});
 
+			// Lấy trình duyệt và hệ điều hành
 			function getBrowserOS() {
 				const ua = navigator.userAgent;
 				let browser = "Không xác định";
@@ -95,20 +104,25 @@
 			}
 
 			getBrowserOS();
+
+			// Sao chép IP bằng input tạm (hỗ trợ iframe)
 			document.getElementById("ip").addEventListener("click", function () {
 				const ipText = this.textContent;
 				if (!ipText || ipText === "Đang tải..." || ipText === "Không thể lấy IP") return;
 
-				// Tạo input tạm để sao chép
 				const tempInput = document.createElement("input");
 				tempInput.value = ipText;
 				document.body.appendChild(tempInput);
 				tempInput.select();
-				tempInput.setSelectionRange(0, 99999); // Cho mobile
+				tempInput.setSelectionRange(0, 99999);
 				document.execCommand("copy");
 				document.body.removeChild(tempInput);
 
-				alert("Đã sao chép IP: " + ipText);
+				const copyStatus = document.getElementById("copyStatus");
+				copyStatus.style.display = "block";
+				setTimeout(() => {
+					copyStatus.style.display = "none";
+				}, 1500);
 			});
 		</script>
 	</body>
