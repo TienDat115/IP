@@ -97,16 +97,18 @@
 			getBrowserOS();
 			document.getElementById("ip").addEventListener("click", function () {
 				const ipText = this.textContent;
-				if (ipText && ipText !== "Đang tải..." && ipText !== "Không thể lấy IP") {
-					navigator.clipboard
-						.writeText(ipText)
-						.then(() => {
-							alert("Đã sao chép IP: " + ipText);
-						})
-						.catch(() => {
-							alert("Không thể sao chép IP.");
-						});
-				}
+				if (!ipText || ipText === "Đang tải..." || ipText === "Không thể lấy IP") return;
+
+				// Tạo input tạm để sao chép
+				const tempInput = document.createElement("input");
+				tempInput.value = ipText;
+				document.body.appendChild(tempInput);
+				tempInput.select();
+				tempInput.setSelectionRange(0, 99999); // Cho mobile
+				document.execCommand("copy");
+				document.body.removeChild(tempInput);
+
+				alert("Đã sao chép IP: " + ipText);
 			});
 		</script>
 	</body>
