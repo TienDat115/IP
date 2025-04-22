@@ -109,9 +109,9 @@
 
 				if (/windows/i.test(ua)) os = "Windows";
 				else if (/mac/i.test(ua)) os = "macOS";
-				else if (/linux/i.test(ua)) os = "Linux";
 				else if (/android/i.test(ua)) os = "Android";
 				else if (/iphone|ipad/i.test(ua)) os = "iOS";
+				else if (/linux/i.test(ua)) os = "Linux";
 
 				document.getElementById("browser").textContent = browser;
 				document.getElementById("os").textContent = os;
