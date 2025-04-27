@@ -13,6 +13,7 @@
 				align-items: center;
 				height: 100vh;
 				margin: 0;
+				padding: 15px; /* Thêm padding cho màn hình nhỏ */
 			}
 			.card {
 				background: #fff;
@@ -63,6 +64,22 @@
 			#ip:hover {
 				background: #f8d7da;
 				cursor: pointer;
+			}
+
+			/* Media Queries */
+			@media (max-width: 480px) {
+				.card {
+					padding: 20px 15px; /* Giảm padding cho màn hình nhỏ */
+				}
+				.icon {
+					font-size: 35px; /* Giảm kích thước biểu tượng */
+				}
+				h2 {
+					font-size: 20px; /* Giảm kích thước tiêu đề */
+				}
+				.info {
+					font-size: 14px; /* Giảm kích thước thông tin */
+				}
 			}
 		</style>
 	</head>
