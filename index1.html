@@ -2,46 +2,53 @@
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
-		<title>Music Player</title>
+		<title>Lofi Music</title>
 		<style>
 			body {
-				font-family: Arial, sans-serif;
+				background: #333;
+				color: #fff;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 				text-align: center;
+				margin: 0;
 				padding: 20px;
 			}
-			video {
-				width: 80%;
-				max-width: 600px;
-				margin-top: 20px;
+			h1 {
+				font-size: 20px;
+				margin-bottom: 15px;
 			}
 			button {
-				margin: 10px;
-				padding: 10px 20px;
-				font-size: 16px;
+				margin: 5px;
+				padding: 8px 16px;
+				font-size: 14px;
+				background-color: #f0f0f0;
+				color: #333;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background 0.3s;
+			}
+			button:hover {
+				background-color: #ddd;
+			}
+			#player {
+				width: 100%;
+				max-width: 500px;
+				margin-top: 15px;
+				border-radius: 10px;
+				background: #000;
 			}
 		</style>
 	</head>
 	<body>
-		<h1>Trình phát nhạc</h1>
+		<h1>🎧 Lofi Music</h1>
 		<div>
 			<button onclick="playNext()">Tiếp theo</button>
 			<button onclick="toggleRandom()">Chế độ: <span id="mode">Tuần tự</span></button>
 		</div>
-
-		<video id="player" controls autoplay></video>
+		<video id="player" controls autoplay playsinline></video>
 
 		<script>
-			// Danh sách file mp4 trong folder music/
-			const musicList = [
-				"music/1.mp4",
-				"music/2.mp4",
-				"music/3.mp4",
-				"music/4.mp4",
-				"music/5.mp4",
-				"music/6.mp4",
-				"music/7.mp4",
-				// thêm file ở đây
-			];
+			const musicList = ["music/1.mp4", "music/2.mp4", "music/3.mp4", "music/4.mp4", "music/5.mp4", "music/6.mp4", "music/7.mp4", "music/8.mp3", "music/9.mp4", "music/10.mp3", "music/11.mp3", "music/12.mp3"];
 
 			let currentIndex = 0;
 			let isRandom = false;
@@ -68,10 +75,9 @@
 				modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 			}
 
-			// Auto play next when ended
 			player.addEventListener("ended", playNext);
 
-			// Bắt đầu phát bài đầu tiên
+			// Auto start
 			play(currentIndex);
 		</script>
 	</body>
