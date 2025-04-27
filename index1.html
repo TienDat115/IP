@@ -1,97 +1,78 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Thông Tin Kết Nối</title>
-  <style>
-    body {
-      background: #f5f7fa;
-      font-family: "Segoe UI", sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .card {
-      background: #fff;
-      padding: 25px 35px;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-    }
-    .icon {
-      font-size: 45px;
-      color: #4a90e2;
-      margin-bottom: 10px;
-    }
-    h2 {
-      margin: 10px 0 20px;
-      color: #333;
-    }
-    .info {
-      margin: 10px 0;
-      font-size: 15px;
-      color: #333;
-    }
-    .label {
-      font-weight: 600;
-      color: #666;
-    }
-    .value {
-      color: #000;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="icon">🌐</div>
-    <h2>Thông Tin Kết Nối</h2>
-    <div class="info"><span class="label">IP:</span> <span class="value" id="ip">Đang tải...</span></div>
-    <div class="info"><span class="label">Quốc gia:</span> <span class="value" id="country"></span></div>
-    <div class="info"><span class="label">Thành phố:</span> <span class="value" id="city"></span></div>
-    <div class="info"><span class="label">ISP:</span> <span class="value" id="isp"></span></div>
-    <div class="info"><span class="label">Trình duyệt:</span> <span class="value" id="browser"></span></div>
-    <div class="info"><span class="label">Hệ điều hành:</span> <span class="value" id="os"></span></div>
-  </div>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Music Player</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				text-align: center;
+				padding: 20px;
+			}
+			video {
+				width: 80%;
+				max-width: 600px;
+				margin-top: 20px;
+			}
+			button {
+				margin: 10px;
+				padding: 10px 20px;
+				font-size: 16px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Trình phát nhạc</h1>
+		<div>
+			<button onclick="playNext()">Tiếp theo</button>
+			<button onclick="toggleRandom()">Chế độ: <span id="mode">Tuần tự</span></button>
+		</div>
 
-  <script>
-    fetch("https://ipwho.is/")
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("ip").textContent = data.ip || "Không rõ";
-        document.getElementById("country").textContent = data.country || "Không rõ";
-        document.getElementById("city").textContent = data.city || "Không rõ";
-        document.getElementById("isp").textContent = data.connection?.isp || "Không rõ";
-      })
-      .catch(() => {
-        document.getElementById("ip").textContent = "Không thể lấy IP";
-      });
+		<video id="player" controls autoplay></video>
 
-    function getBrowserOS() {
-      const ua = navigator.userAgent;
-      let browser = "Không xác định";
-      let os = "Không xác định";
+		<script>
+			// Danh sách file mp4 trong folder music/
+			const musicList = [
+				"music/1.mp4",
+				"music/2.mp4",
+				"music/3.mp4",
+				"music/4.mp4",
+				"music/5.mp4",
+				"music/6.mp4",
+				"music/7.mp4",
+				// thêm file ở đây
+			];
 
-      if (/chrome|crios/i.test(ua)) browser = "Chrome";
-      else if (/firefox|fxios/i.test(ua)) browser = "Firefox";
-      else if (/safari/i.test(ua)) browser = "Safari";
-      else if (/edg/i.test(ua)) browser = "Edge";
+			let currentIndex = 0;
+			let isRandom = false;
 
-      if (/windows/i.test(ua)) os = "Windows";
-      else if (/mac/i.test(ua)) os = "macOS";
-      else if (/linux/i.test(ua)) os = "Linux";
-      else if (/android/i.test(ua)) os = "Android";
-      else if (/iphone|ipad/i.test(ua)) os = "iOS";
+			const player = document.getElementById("player");
+			const modeSpan = document.getElementById("mode");
 
-      document.getElementById("browser").textContent = browser;
-      document.getElementById("os").textContent = os;
-    }
+			function play(index) {
+				player.src = musicList[index];
+				player.play();
+			}
 
-    getBrowserOS();
-  </script>
-</body>
+			function playNext() {
+				if (isRandom) {
+					currentIndex = Math.floor(Math.random() * musicList.length);
+				} else {
+					currentIndex = (currentIndex + 1) % musicList.length;
+				}
+				play(currentIndex);
+			}
+
+			function toggleRandom() {
+				isRandom = !isRandom;
+				modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
+			}
+
+			// Auto play next when ended
+			player.addEventListener("ended", playNext);
+
+			// Bắt đầu phát bài đầu tiên
+			play(currentIndex);
+		</script>
+	</body>
 </html>
