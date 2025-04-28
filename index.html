@@ -4,101 +4,77 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Thông Tin Kết Nối</title>
-		<style>
-			body {
-				background: #f5f7fa;
-				font-family: "Segoe UI", sans-serif;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 100vh;
-				margin: 0;
-				padding: 15px; /* Thêm padding cho màn hình nhỏ */
-			}
-			.card {
-				background: #fff;
-				padding: 25px 35px;
-				border-radius: 15px;
-				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-				max-width: 420px;
-				width: 100%;
-				text-align: center;
-			}
-			.icon {
-				font-size: 45px;
-				color: #4a90e2;
-				margin-bottom: 10px;
-			}
-			h2 {
-				margin: 10px 0 20px;
-				color: #333;
-			}
-			.info {
-				margin: 10px 0;
-				font-size: 15px;
-				color: #333;
-			}
-			.label {
-				font-weight: 600;
-				color: #666;
-			}
-			.value {
-				color: #000;
-			}
-			.copy-notice {
-				margin-top: 10px;
-				font-size: 13px;
-				color: #28a745;
-				display: none;
-			}
-			#ip {
-				font-size: 18px;
-				font-weight: bold;
-				color: #e74c3c; /* Màu đỏ nổi bật */
-				background: #fceae9;
-				padding: 4px 8px;
-				border-radius: 6px;
-				display: inline-block;
-				transition: background 0.3s, color 0.3s;
-			}
-			#ip:hover {
-				background: #f8d7da;
-				cursor: pointer;
-			}
-
-			/* Media Queries */
-			@media (max-width: 480px) {
-				.card {
-					padding: 20px 15px; /* Giảm padding cho màn hình nhỏ */
-				}
-				.icon {
-					font-size: 35px; /* Giảm kích thước biểu tượng */
-				}
-				h2 {
-					font-size: 20px; /* Giảm kích thước tiêu đề */
-				}
-				.info {
-					font-size: 14px; /* Giảm kích thước thông tin */
-				}
-			}
-		</style>
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+		<!-- Google Material Icons CDN cho icon -->
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 	</head>
-	<body>
-		<div class="card">
-			<div class="icon">🌐</div>
-			<h2>Thông Tin Kết Nối</h2>
-			<div class="info">
-				<span class="label">IP:</span>
-				<span class="value" id="ip" style="cursor: pointer" title="Bấm để sao chép IP">Đang tải...</span>
+	<body class="min-h-screen flex items-center justify-center p-2 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
+		<div class="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-blue-700/30 rounded-3xl shadow-2xl max-w-md w-full p-4 sm:p-7 text-center relative overflow-hidden">
+			<div class="absolute -top-8 -left-8 w-24 h-24 sm:w-36 sm:h-36 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none"></div>
+			<div class="absolute -bottom-10 -right-10 w-28 h-28 sm:w-40 sm:h-40 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none"></div>
+			<div class="flex justify-center mb-2 sm:mb-3">
+				<svg class="w-12 h-12 sm:w-16 sm:h-16 text-blue-400 animate-pulse drop-shadow-lg" fill="none" stroke="url(#gradient)" stroke-width="2" viewBox="0 0 48 48">
+					<defs>
+						<linearGradient id="gradient" x1="0" y1="0" x2="1" y2="1">
+							<stop offset="0%" stop-color="#60a5fa" />
+							<stop offset="50%" stop-color="#38bdf8" />
+							<stop offset="100%" stop-color="#a78bfa" />
+						</linearGradient>
+					</defs>
+					<circle cx="24" cy="24" r="20" stroke="url(#gradient)" fill="none" />
+					<ellipse cx="24" cy="24" rx="10" ry="20" stroke="url(#gradient)" fill="none" />
+					<ellipse cx="24" cy="24" rx="20" ry="10" stroke="url(#gradient)" fill="none" />
+					<line x1="4" y1="24" x2="44" y2="24" stroke="url(#gradient)" />
+					<line x1="24" y1="4" x2="24" y2="44" stroke="url(#gradient)" />
+				</svg>
 			</div>
-			<div id="copyStatus" class="copy-notice">✅ Đã sao chép IP!</div>
-			<div class="info"><span class="label">Quốc gia:</span> <span class="value" id="country"></span></div>
-			<div class="info"><span class="label">Thành phố:</span> <span class="value" id="city"></span></div>
-			<div class="info"><span class="label">ISP:</span> <span class="value" id="isp"></span></div>
-			<div class="info"><span class="label">Trình duyệt:</span> <span class="value" id="browser"></span></div>
-			<div class="info"><span class="label">Hệ điều hành:</span> <span class="value" id="os"></span></div>
+			<h2 class="text-2xl sm:text-4xl font-extrabold mb-4 sm:mb-7 bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Thông Tin Kết Nối</h2>
+			<div class="mb-3 flex items-center justify-between gap-2 group w-11/12 mx-auto">
+				<div class="flex items-center gap-2 min-w-0">
+					<span class="material-icons text-blue-400 text-base sm:text-xl">public</span>
+					<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">IP:</span>
+				</div>
+				<span id="ip" class="text-red-400 bg-red-900/40 px-2 py-1 rounded font-bold text-base sm:text-lg cursor-pointer transition hover:bg-red-700/60 hover:text-white shadow-lg ring-2 ring-red-400/30 group-hover:scale-105 ml-2" title="Bấm để sao chép IP">Đang tải...</span>
+			</div>
+			<div id="copyStatus" class="text-green-400 text-xs sm:text-sm mb-2 font-semibold text-right w-11/12 mx-auto" style="display: none">✅ Đã sao chép IP!</div>
+			<div class="space-y-1 sm:space-y-2">
+				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+					<div class="flex items-center gap-2 min-w-0">
+						<span class="material-icons text-yellow-300 text-sm sm:text-lg">flag</span>
+						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Quốc gia:</span>
+					</div>
+					<span id="country" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
+				</div>
+				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+					<div class="flex items-center gap-2 min-w-0">
+						<span class="material-icons text-pink-300 text-sm sm:text-lg">location_city</span>
+						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Thành phố:</span>
+					</div>
+					<span id="city" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
+				</div>
+				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+					<div class="flex items-center gap-2 min-w-0">
+						<span class="material-icons text-green-300 text-sm sm:text-lg">dns</span>
+						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">ISP:</span>
+					</div>
+					<span id="isp" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
+				</div>
+				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+					<div class="flex items-center gap-2 min-w-0">
+						<span class="material-icons text-cyan-300 text-sm sm:text-lg">language</span>
+						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Trình duyệt:</span>
+					</div>
+					<span id="browser" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
+				</div>
+				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+					<div class="flex items-center gap-2 min-w-0">
+						<span class="material-icons text-purple-300 text-sm sm:text-lg">devices</span>
+						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Hệ điều hành:</span>
+					</div>
+					<span id="os" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
+				</div>
+			</div>
 		</div>
-
 		<script>
 			// Lấy thông tin IP và địa lý
 			fetch("https://ipwho.is/")

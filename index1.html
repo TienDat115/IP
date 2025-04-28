@@ -7,36 +7,56 @@
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 	</head>
 	<body class="bg-gray-800 text-white font-sans text-center p-5">
-		<h1 class="text-2xl mb-5">🎧 Lofi Music</h1>
+		<h1 class="text-2xl mb-5">🎧 Trình Nghe Nhạc</h1>
 		<div class="mb-5">
 			<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Tiếp theo</button>
 			<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Chế độ: <span id="mode">Ngẫu nhiên</span></button>
 		</div>
 		<video id="player" class="w-full max-w-lg mx-auto rounded-lg bg-black" controls playsinline></video>
 		<p id="currentSong" class="mt-4 text-xl bg-gray-700 p-2 rounded-lg shadow-lg">Đang phát:</p>
-		<!-- Thêm phần tử để hiển thị tên bài hát -->
-
+		<!-- Danh sách bài hát -->
+		<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
 		<script>
 			const musicList = ["music/1.mp4", "music/2.mp4", "music/3.mp4", "music/4.mp4", "music/5.mp4", "music/6.mp4", "music/7.mp4", "music/8.mp3", "music/9.mp4", "music/10.mp3", "music/11.mp3", "music/12.mp3"];
-
 			const songNames = ["Bài 1", "Bài 2", "Bài 3", "Bài 4", "Bài 5", "Bài 6", "Bài 7", "Bài 8", "Bài 9", "Bài 10", "Bài 11", "Bài 12"];
 
 			let currentIndex = 0;
-			let isRandom = true; // Đặt chế độ ngẫu nhiên mặc định
+			let isRandom = true;
 
 			const player = document.getElementById("player");
 			const modeSpan = document.getElementById("mode");
 			const currentSongDisplay = document.getElementById("currentSong");
+			const playlist = document.getElementById("playlist");
+
+			function renderPlaylist() {
+				playlist.innerHTML = "";
+				songNames.forEach((name, idx) => {
+					const li = document.createElement("li");
+					li.textContent = name;
+					li.className = "cursor-pointer px-4 py-2 hover:bg-gray-600 transition" + (idx === currentIndex ? " bg-gray-500 font-bold" : "");
+					li.onclick = () => {
+						currentIndex = idx;
+						play(currentIndex);
+						renderPlaylist();
+					};
+					playlist.appendChild(li);
+				});
+			}
 
 			function play(index) {
 				player.src = musicList[index];
 				player.play();
-				currentSongDisplay.textContent = `Đang phát: ${songNames[index]}`; // Cập nhật tên bài hát đang phát
+				currentSongDisplay.textContent = `Đang phát: ${songNames[index]}`;
+				renderPlaylist();
 			}
 
 			function playNext() {
 				if (isRandom) {
-					currentIndex = Math.floor(Math.random() * musicList.length);
+					let nextIndex;
+					do {
+						nextIndex = Math.floor(Math.random() * musicList.length);
+					} while (musicList.length > 1 && nextIndex === currentIndex);
+					currentIndex = nextIndex;
 				} else {
 					currentIndex = (currentIndex + 1) % musicList.length;
 				}
@@ -50,9 +70,10 @@
 
 			player.addEventListener("ended", playNext);
 
-			// Auto start
-			play(currentIndex);
-			modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự"; // Cập nhật nội dung của modeSpan khi trang được tải
+			// KHÔNG tự động phát nhạc khi vào trang
+			// play(currentIndex);
+			modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
+			renderPlaylist(); // Đảm bảo danh sách hiển thị đúng ngay từ đầu
 		</script>
 	</body>
 </html>
