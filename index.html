@@ -5,14 +5,35 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Thông Tin Kết Nối</title>
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-		<!-- Google Material Icons CDN cho icon -->
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+		<style>
+			body {
+				font-family: "Inter", sans-serif;
+			}
+			@keyframes pulseBlur {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 0.6;
+				}
+				50% {
+					transform: scale(1.05);
+					opacity: 0.75;
+				}
+			}
+			.blur-animate {
+				animation: pulseBlur 6s ease-in-out infinite;
+			}
+		</style>
 	</head>
-	<body class="min-h-screen flex items-center justify-center p-2 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
-		<div class="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-blue-700/30 rounded-3xl shadow-2xl max-w-md w-full p-4 sm:p-7 text-center relative overflow-hidden">
-			<div class="absolute -top-8 -left-8 w-24 h-24 sm:w-36 sm:h-36 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none"></div>
-			<div class="absolute -bottom-10 -right-10 w-28 h-28 sm:w-40 sm:h-40 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none"></div>
-			<div class="flex justify-center mb-2 sm:mb-3">
+
+	<body class="min-h-screen flex items-center justify-center p-5 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
+		<div class="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-blue-700/30 rounded-3xl shadow-2xl max-w-md w-full p-5 sm:p-8 text-center relative overflow-hidden">
+			<div class="absolute -top-8 -left-8 w-24 h-24 sm:w-36 sm:h-36 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none blur-animate"></div>
+			<div class="absolute -bottom-10 -right-10 w-28 h-28 sm:w-40 sm:h-40 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none blur-animate"></div>
+
+			<div class="flex justify-center mb-3 sm:mb-5">
 				<svg class="w-12 h-12 sm:w-16 sm:h-16 text-blue-400 animate-pulse drop-shadow-lg" fill="none" stroke="url(#gradient)" stroke-width="2" viewBox="0 0 48 48">
 					<defs>
 						<linearGradient id="gradient" x1="0" y1="0" x2="1" y2="1">
@@ -28,53 +49,64 @@
 					<line x1="24" y1="4" x2="24" y2="44" stroke="url(#gradient)" />
 				</svg>
 			</div>
+
 			<h2 class="text-2xl sm:text-3xl font-extrabold mb-4 sm:mb-7 bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Thông Tin Kết Nối</h2>
-			<div class="mb-3 flex items-center justify-between gap-2 group w-11/12 mx-auto">
-				<div class="flex items-center gap-2 min-w-0">
-					<span class="material-icons text-blue-400 text-base sm:text-xl">public</span>
-					<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">IP:</span>
-				</div>
-				<span id="ip" class="text-red-400 bg-red-900/40 px-2 py-1 rounded font-bold text-base sm:text-lg cursor-pointer transition hover:bg-red-700/60 hover:text-white shadow-lg ring-2 ring-red-400/30 group-hover:scale-105 ml-2" title="Bấm để sao chép IP">Đang tải...</span>
-			</div>
-			<div id="copyStatus" class="text-green-400 text-xs sm:text-sm mb-2 font-semibold text-right w-11/12 mx-auto" style="display: none">✅ Đã sao chép IP!</div>
-			<div class="space-y-1 sm:space-y-2">
+
+			<div class="space-y-2 sm:space-y-3">
 				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
 					<div class="flex items-center gap-2 min-w-0">
-						<span class="material-icons text-yellow-300 text-sm sm:text-lg">flag</span>
-						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Quốc gia:</span>
+						<span class="material-icons text-blue-400 text-base sm:text-xl">public</span>
+						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">IP:</span>
 					</div>
-					<span id="country" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
+					<span id="ip" class="text-red-400 bg-red-900/40 px-2 py-1 rounded font-bold text-base sm:text-lg cursor-pointer transition-transform duration-300 hover:bg-red-700/60 hover:text-white shadow-lg ring-2 ring-red-400/30 group-hover:scale-105 ml-2" title="Bấm để sao chép IP"> Đang tải... </span>
 				</div>
-				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-					<div class="flex items-center gap-2 min-w-0">
-						<span class="material-icons text-pink-300 text-sm sm:text-lg">location_city</span>
-						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Thành phố:</span>
+
+				<div id="copyStatus" class="text-green-400 text-xs sm:text-sm mb-2 font-semibold text-right w-11/12 mx-auto hidden">✅ Đã sao chép IP!</div>
+
+				<div class="flex flex-col space-y-2">
+					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+						<div class="flex items-center gap-2 min-w-0">
+							<span class="material-icons text-yellow-300 text-sm sm:text-lg">flag</span>
+							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Quốc gia:</span>
+						</div>
+						<span id="country" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
 					</div>
-					<span id="city" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
-				</div>
-				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-					<div class="flex items-center gap-2 min-w-0">
-						<span class="material-icons text-green-300 text-sm sm:text-lg">dns</span>
-						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">ISP:</span>
+
+					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+						<div class="flex items-center gap-2 min-w-0">
+							<span class="material-icons text-pink-300 text-sm sm:text-lg">location_city</span>
+							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Thành phố:</span>
+						</div>
+						<span id="city" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
 					</div>
-					<span id="isp" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
-				</div>
-				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-					<div class="flex items-center gap-2 min-w-0">
-						<span class="material-icons text-cyan-300 text-sm sm:text-lg">language</span>
-						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Trình duyệt:</span>
+
+					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+						<div class="flex items-center gap-2 min-w-0">
+							<span class="material-icons text-green-300 text-sm sm:text-lg">dns</span>
+							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">ISP:</span>
+						</div>
+						<span id="isp" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
 					</div>
-					<span id="browser" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
-				</div>
-				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-					<div class="flex items-center gap-2 min-w-0">
-						<span class="material-icons text-purple-300 text-sm sm:text-lg">devices</span>
-						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Hệ điều hành:</span>
+
+					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+						<div class="flex items-center gap-2 min-w-0">
+							<span class="material-icons text-cyan-300 text-sm sm:text-lg">language</span>
+							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Trình duyệt:</span>
+						</div>
+						<span id="browser" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
 					</div>
-					<span id="os" class="text-gray-200 font-medium text-sm sm:text-base ml-2"></span>
+
+					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+						<div class="flex items-center gap-2 min-w-0">
+							<span class="material-icons text-purple-300 text-sm sm:text-lg">devices</span>
+							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Hệ điều hành:</span>
+						</div>
+						<span id="os" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+					</div>
 				</div>
 			</div>
 		</div>
+
 		<script>
 			// Lấy thông tin IP và địa lý
 			fetch("https://ipwho.is/")
@@ -109,10 +141,9 @@
 				document.getElementById("browser").textContent = browser;
 				document.getElementById("os").textContent = os;
 			}
-
 			getBrowserOS();
 
-			// Sao chép IP bằng input tạm (hỗ trợ iframe)
+			// Sao chép IP và hiệu ứng click
 			document.getElementById("ip").addEventListener("click", function () {
 				const ipText = this.textContent;
 				if (!ipText || ipText === "Đang tải..." || ipText === "Không thể lấy IP") return;
@@ -124,6 +155,10 @@
 				tempInput.setSelectionRange(0, 99999);
 				document.execCommand("copy");
 				document.body.removeChild(tempInput);
+
+				// Hiệu ứng
+				this.classList.add("scale-110");
+				setTimeout(() => this.classList.remove("scale-110"), 300);
 
 				const copyStatus = document.getElementById("copyStatus");
 				copyStatus.style.display = "block";

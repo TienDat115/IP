@@ -3,27 +3,97 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>Lofi Music</title>
-		<!-- Thêm liên kết đến Tailwind CSS -->
+		<!-- Thêm Tailwind CSS -->
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 	</head>
 	<body class="bg-gray-800 text-white font-sans text-center p-5">
-		<h1 class="text-2xl mb-5">🎧 Trình Nghe Nhạc</h1>
+		<h1 class="text-3xl font-bold mb-6 flex items-center justify-center space-x-3 text-gray-100">
+			<span>🎧</span>
+			<span>Trình Nghe Nhạc</span>
+		</h1>
+
 		<div class="mb-5">
 			<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Tiếp theo</button>
 			<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Chế độ: <span id="mode">Ngẫu nhiên</span></button>
 		</div>
-		<video id="player" class="w-full max-w-lg mx-auto rounded-lg bg-black" controls playsinline></video>
-		<p id="currentSong" class="mt-4 text-xl bg-gray-700 p-2 rounded-lg shadow-lg">Đang phát:</p>
+
+		<!-- Player: Container chứ không dùng video cố định -->
+		<div id="playerContainer" class="w-full max-w-lg mx-auto rounded-lg bg-black overflow-hidden"></div>
+
+		<div id="currentSong" class="mt-4 flex items-center justify-center space-x-3 text-lg bg-gray-700 p-3 rounded-xl shadow-lg max-w-md mx-auto"></div>
+
 		<!-- Danh sách bài hát -->
 		<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
+
 		<script>
-			const musicList = ["music/1.mp4", "music/2.mp4", "music/3.mp4", "music/4.mp4", "music/5.mp4", "music/6.mp4", "music/7.mp4", "music/8.mp3", "music/9.mp4", "music/10.mp3", "music/11.mp3", "music/12.mp3", "music/13.mp3", "music/14.mp3", "music/15.mp3", "music/16.mp3", "music/17.mp3", "music/18.mp3", "music/19.mp3"];
-			const songNames = ["Tháp Rơi Tự Do", "Ghép Hình Tình Yêu", "Góp Vui", "Kiss Kiss Shy Shy", "Như", "Bất Công", "CocoCoCo", "Magnetic", "Sơn Hải", "Nhập Hoài", "Không Nỡ - Đấu La Đại Lục", "Có - Không Có", "Đối Diện", "Tham Cầu - Thần Ẩn", "Ring Ring Ring", "TA - Bàn Hổ", "Như Ca - Liệt Hỏa Như Ca", "Cái Đuôi Nhỏ", "Lưu Chuyển Doanh Hồi"];
+			const musicList = [
+				"music/1.mp4",
+				"music/2.mp4",
+				"music/3.mp4",
+				"music/4.mp4",
+				"music/5.mp4",
+				"music/6.mp4",
+				"music/7.mp4",
+				"music/8.mp3",
+				"music/9.mp4",
+				"music/10.mp3",
+				"music/11.mp3",
+				"music/12.mp3",
+				"music/13.mp3",
+				"music/14.mp3",
+				"music/15.mp3",
+				"music/16.mp3",
+				"music/17.mp3",
+				"music/18.mp3",
+				"music/19.mp3",
+				"music/20.mp3",
+				"music/21.mp3",
+				"music/22.mp3",
+				// Thêm link YouTube ví dụ:
+				"https://www.youtube.com/embed/lqFGzPM8wkg",
+				"https://www.youtube.com/embed/6GC8JF2FOgA",
+				"https://www.youtube.com/embed/iBtN73AC-GM",
+				"https://www.youtube.com/embed/ANer4zU5pn4",
+				"https://www.youtube.com/embed/5z7SjomoARQ",
+				"https://www.youtube.com/embed/D1PvIWdJ8xo",
+			];
+
+			const songNames = [
+				"Tháp Rơi Tự Do",
+				"Ghép Hình Tình Yêu",
+				"Góp Vui",
+				"Kiss Kiss Shy Shy",
+				"Như",
+				"Bất Công",
+				"CocoCoCo",
+				"Magnetic",
+				"Sơn Hải",
+				"Nhập Hoài",
+				"Không Nỡ - Đấu La Đại Lục",
+				"Có - Không Có",
+				"Đối Diện",
+				"Tham Cầu - Thần Ẩn",
+				"Ring Ring Ring",
+				"TA - Bàn Hổ",
+				"Như Ca - Liệt Hỏa Như Ca",
+				"Cái Đuôi Nhỏ",
+				"Lưu Chuyển Doanh Hồi",
+				"Đông Miên",
+				"Polaroid Love",
+				"For ya – Tưởng Tiểu Ni",
+				// Tên bài cho YouTube link
+				"Học bài và nghe nhạc cùng tớ nhé",
+				"Say YES",
+				"Chờ Đến Tháng 13",
+				"Mình Cùng Nhau Đóng Băng",
+				"Trang Giấy Cuối Cùng",
+				"Blueming - IU",
+			];
 
 			let currentIndex = 0;
 			let isRandom = true;
 
-			const player = document.getElementById("player");
+			const playerContainer = document.getElementById("playerContainer");
 			const modeSpan = document.getElementById("mode");
 			const currentSongDisplay = document.getElementById("currentSong");
 			const playlist = document.getElementById("playlist");
@@ -32,7 +102,19 @@
 				playlist.innerHTML = "";
 				songNames.forEach((name, idx) => {
 					const li = document.createElement("li");
-					li.textContent = name;
+					const isYouTube = musicList[idx].includes("youtube.com") || musicList[idx].includes("youtu.be");
+					const url = musicList[idx];
+					let icon = "🎵"; // Mặc định
+
+					if (url.includes("youtube.com") || url.includes("youtu.be")) {
+						icon = "▶️"; // YouTube
+					} else if (url.endsWith(".mp3")) {
+						icon = "🎶"; // Audio mp3
+					} else if (url.endsWith(".mp4")) {
+						icon = "🎬"; // Video mp4
+					}
+
+					li.textContent = `${icon} ${name}`;
 					li.className = "cursor-pointer px-4 py-2 hover:bg-gray-600 transition" + (idx === currentIndex ? " bg-gray-500 font-bold" : "");
 					li.onclick = () => {
 						currentIndex = idx;
@@ -44,9 +126,44 @@
 			}
 
 			function play(index) {
-				player.src = musicList[index];
-				player.play();
-				currentSongDisplay.textContent = `Đang phát: ${songNames[index]}`;
+				const url = musicList[index];
+				playerContainer.innerHTML = ""; // Xóa nội dung player cũ
+
+				if (url.includes("youtube.com") || url.includes("youtu.be")) {
+					// Link YouTube
+					const iframe = document.createElement("iframe");
+					iframe.src = url + "?autoplay=1"; // Auto-play YouTube
+					iframe.width = "100%";
+					iframe.height = "315";
+					iframe.frameBorder = "0";
+					iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+					iframe.allowFullscreen = true;
+					playerContainer.appendChild(iframe);
+				} else {
+					// File mp3/mp4
+					const video = document.createElement("video");
+					video.src = url;
+					video.controls = true;
+					video.playsInline = true;
+					video.autoplay = true;
+					video.className = "w-full";
+					video.addEventListener("ended", playNext);
+					playerContainer.appendChild(video);
+				}
+
+				// Xác định icon theo loại file
+				let icon = "🎵";
+				if (url.includes("youtube.com") || url.includes("youtu.be")) {
+					icon = "▶️";
+				} else if (url.endsWith(".mp3")) {
+					icon = "🎶";
+				} else if (url.endsWith(".mp4")) {
+					icon = "🎬";
+				}
+
+				// Cập nhật nội dung "Đang phát"
+				currentSongDisplay.innerHTML = `<span class="text-2xl">${icon}</span> <span>${songNames[index]}</span>`;
+
 				renderPlaylist();
 			}
 
@@ -68,12 +185,9 @@
 				modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 			}
 
-			player.addEventListener("ended", playNext);
-
-			// KHÔNG tự động phát nhạc khi vào trang
-			// play(currentIndex);
+			// Khởi động trang
 			modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
-			renderPlaylist(); // Đảm bảo danh sách hiển thị đúng ngay từ đầu
+			renderPlaylist();
 		</script>
 	</body>
 </html>
