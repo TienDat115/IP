@@ -24,6 +24,7 @@
 
 		<!-- Danh sách bài hát -->
 		<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
+		<div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
 
 		<script>
 			const musicList = [
@@ -96,6 +97,8 @@
 
 			let currentIndex = 0;
 			let isRandom = true;
+			let currentPage = 1;
+			const pageSize = 10;
 
 			const playerContainer = document.getElementById("playerContainer");
 			const modeSpan = document.getElementById("mode");
@@ -104,20 +107,22 @@
 
 			function renderPlaylist() {
 				playlist.innerHTML = "";
-				songNames.forEach((name, idx) => {
-					const li = document.createElement("li");
-					const isYouTube = musicList[idx].includes("youtube.com") || musicList[idx].includes("youtu.be");
-					const url = musicList[idx];
-					let icon = "🎵"; // Mặc định
+				const start = (currentPage - 1) * pageSize;
+				const end = Math.min(start + pageSize, songNames.length);
 
+				for (let idx = start; idx < end; idx++) {
+					const name = songNames[idx];
+					const url = musicList[idx];
+					let icon = "🎵";
 					if (url.includes("youtube.com") || url.includes("youtu.be")) {
-						icon = "▶️"; // YouTube
+						icon = "▶️";
 					} else if (url.endsWith(".mp3")) {
-						icon = "🎶"; // Audio mp3
+						icon = "🎶";
 					} else if (url.endsWith(".mp4")) {
-						icon = "🎬"; // Video mp4
+						icon = "🎬";
 					}
 
+					const li = document.createElement("li");
 					li.textContent = `${icon} ${name}`;
 					li.className = "cursor-pointer px-4 py-2 hover:bg-gray-600 transition" + (idx === currentIndex ? " bg-gray-500 font-bold" : "");
 					li.onclick = () => {
@@ -126,17 +131,66 @@
 						renderPlaylist();
 					};
 					playlist.appendChild(li);
-				});
+				}
+
+				renderPagination();
+			}
+
+			function renderPagination() {
+				const pagination = document.getElementById("pagination");
+				pagination.innerHTML = "";
+				const totalPages = Math.ceil(songNames.length / pageSize);
+
+				// Nút Prev
+				const prevBtn = document.createElement("button");
+				prevBtn.textContent = "«";
+				prevBtn.disabled = currentPage === 1;
+				prevBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 disabled:opacity-50";
+				prevBtn.onclick = () => {
+					if (currentPage > 1) {
+						currentPage--;
+						renderPlaylist();
+					}
+				};
+				pagination.appendChild(prevBtn);
+
+				// Hiển thị số trang
+				for (let i = 1; i <= totalPages; i++) {
+					const pageBtn = document.createElement("button");
+					pageBtn.textContent = i;
+					pageBtn.className = "px-2 py-1 rounded " + (i === currentPage ? "bg-blue-500 text-white" : "bg-gray-600 hover:bg-gray-500");
+					pageBtn.onclick = () => {
+						currentPage = i;
+						renderPlaylist();
+					};
+					pagination.appendChild(pageBtn);
+				}
+
+				// Nút Next
+				const nextBtn = document.createElement("button");
+				nextBtn.textContent = "»";
+				nextBtn.disabled = currentPage === totalPages;
+				nextBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 disabled:opacity-50";
+				nextBtn.onclick = () => {
+					if (currentPage < totalPages) {
+						currentPage++;
+						renderPlaylist();
+					}
+				};
+				pagination.appendChild(nextBtn);
 			}
 
 			function play(index) {
 				const url = musicList[index];
+				// Tự động chuyển trang chứa bài hát đang phát
+				currentPage = Math.floor(index / pageSize) + 1;
+
 				playerContainer.innerHTML = ""; // Xóa nội dung player cũ
 
 				if (url.includes("youtube.com") || url.includes("youtu.be")) {
 					// Link YouTube
 					const iframe = document.createElement("iframe");
-					iframe.src = url + "?autoplay=1"; // Auto-play YouTube
+					iframe.src = url + "?autoplay=1";
 					iframe.width = "100%";
 					iframe.height = "315";
 					iframe.frameBorder = "0";
@@ -197,6 +251,7 @@
 			// Khởi động trang
 			modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 			renderPlaylist();
+			play(currentIndex);
 		</script>
 	</body>
 </html>
