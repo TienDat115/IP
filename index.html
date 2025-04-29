@@ -33,21 +33,10 @@
 			<div class="absolute -top-8 -left-8 w-24 h-24 sm:w-36 sm:h-36 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none blur-animate"></div>
 			<div class="absolute -bottom-10 -right-10 w-28 h-28 sm:w-40 sm:h-40 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none blur-animate"></div>
 
-			<div class="flex justify-center mb-3 sm:mb-5">
-				<svg class="w-12 h-12 sm:w-16 sm:h-16 text-blue-400 animate-pulse drop-shadow-lg" fill="none" stroke="url(#gradient)" stroke-width="2" viewbox="0 0 48 48">
-					<defs>
-						<lineargradient id="gradient" x1="0" y1="0" x2="1" y2="1">
-							<stop offset="0%" stop-color="#60a5fa" />
-							<stop offset="50%" stop-color="#38bdf8" />
-							<stop offset="100%" stop-color="#a78bfa" />
-						</lineargradient>
-					</defs>
-					<circle cx="24" cy="24" r="20" stroke="url(#gradient)" fill="none" />
-					<ellipse cx="24" cy="24" rx="10" ry="20" stroke="url(#gradient)" fill="none" />
-					<ellipse cx="24" cy="24" rx="20" ry="10" stroke="url(#gradient)" fill="none" />
-					<line x1="4" y1="24" x2="44" y2="24" stroke="url(#gradient)" />
-					<line x1="24" y1="4" x2="24" y2="44" stroke="url(#gradient)" />
-				</svg>
+			<!-- Khối đồng hồ -->
+			<div id="clockBox" class="flex flex-col items-center justify-center mb-4 sm:mb-7">
+				<span id="clockTime" class="font-mono text-2xl sm:text-3xl font-bold text-blue-300 drop-shadow-lg"></span>
+				<span id="clockDate" class="text-base sm:text-lg text-gray-300 mt-1"></span>
 			</div>
 
 			<h2 class="text-xl sm:text-2xl font-extrabold mb-4 sm:mb-7 bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Network Information</h2>
@@ -108,6 +97,19 @@
 		</div>
 
 		<script>
+			// ĐỒNG HỒ & NGÀY
+			function updateClock() {
+				const now = new Date();
+				const time = now.toLocaleTimeString("vi-VN", { hour12: false });
+				const days = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
+				const dayName = days[now.getDay()];
+				const dateStr = `${dayName}, ${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
+				document.getElementById("clockTime").textContent = time;
+				document.getElementById("clockDate").textContent = dateStr;
+			}
+			updateClock();
+			setInterval(updateClock, 1000);
+
 			// Lấy thông tin IP và địa lý
 			fetch("https://ipwho.is/")
 				.then((res) => res.json())
