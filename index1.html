@@ -173,9 +173,13 @@
 			function playNext() {
 				if (isRandom) {
 					let nextIndex;
+					const nonYoutubeIndexes = musicList.map((item, idx) => (!item.includes("youtube.com") && !item.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
+
 					do {
-						nextIndex = Math.floor(Math.random() * musicList.length);
-					} while (musicList.length > 1 && nextIndex === currentIndex);
+						const randomPos = Math.floor(Math.random() * nonYoutubeIndexes.length);
+						nextIndex = nonYoutubeIndexes[randomPos];
+					} while (nonYoutubeIndexes.length > 1 && nextIndex === currentIndex);
+
 					currentIndex = nextIndex;
 				} else {
 					currentIndex = (currentIndex + 1) % musicList.length;
