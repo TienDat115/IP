@@ -22,9 +22,14 @@
 
 		<div id="currentSong" class="mt-4 flex items-center justify-center space-x-3 text-lg bg-gray-700 p-3 rounded-xl shadow-lg max-w-md mx-auto"></div>
 
-		<!-- Danh sách bài hát -->
-		<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
-		<div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
+		<!-- Nút ẩn/hiện playlist -->
+		<button id="togglePlaylistBtn" class="mt-4 mb-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition">Ẩn playlist</button>
+
+		<!-- Bọc playlist và phân trang -->
+		<div id="playlistWrapper">
+			<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
+			<div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
+		</div>
 
 		<script>
 			const musicList = [
@@ -247,6 +252,21 @@
 				isRandom = !isRandom;
 				modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 			}
+
+			// Ẩn/hiện playlist
+			const playlistWrapper = document.getElementById("playlistWrapper");
+			const togglePlaylistBtn = document.getElementById("togglePlaylistBtn");
+			let isPlaylistVisible = false; // Mặc định ẩn
+
+			// Ẩn playlist khi mở trang
+			playlistWrapper.style.display = "none";
+			togglePlaylistBtn.textContent = "Hiện playlist";
+
+			togglePlaylistBtn.onclick = function () {
+				isPlaylistVisible = !isPlaylistVisible;
+				playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
+				togglePlaylistBtn.textContent = isPlaylistVisible ? "Ẩn playlist" : "Hiện playlist";
+			};
 
 			// Khởi động trang
 			modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
