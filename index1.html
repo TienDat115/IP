@@ -12,8 +12,9 @@
 			<span>Trình Nghe Nhạc</span>
 		</h1>
 
-		<div class="mb-5">
+		<div class="mb-5 flex flex-row justify-center items-center space-x-2">
 			<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Tiếp theo</button>
+			<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Lặp lại: <span id="repeatStatus">Tắt</span></button>
 			<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Chế độ: <span id="mode">Ngẫu nhiên</span></button>
 		</div>
 
@@ -211,7 +212,13 @@
 					video.autoplay = true;
 					video.className = "w-full";
 					video.volume = 0.5;
-					video.addEventListener("ended", playNext);
+					video.addEventListener("ended", function () {
+						if (isRepeat) {
+							play(currentIndex); // Phát lại bài hiện tại
+						} else {
+							playNext();
+						}
+					});
 					playerContainer.appendChild(video);
 				}
 
@@ -230,7 +237,12 @@
 
 				renderPlaylist();
 			}
+			let isRepeat = false;
 
+			function toggleRepeat() {
+				isRepeat = !isRepeat;
+				document.getElementById("repeatStatus").textContent = isRepeat ? "Bật" : "Tắt";
+			}
 			function playNext() {
 				if (isRandom) {
 					let nextIndex;
