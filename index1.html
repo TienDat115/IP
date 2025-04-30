@@ -5,6 +5,19 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Lofi Music</title>
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<style>
+			/* Tùy chỉnh màu nền của SweetAlert */
+			.swal2-popup {
+				background-color: #1f2937 !important;
+				color: #f3f4f6;
+			}
+			.swal2-title,
+			.swal2-content,
+			.swal2-confirm {
+				color: #f3f4f6 !important;
+			}
+		</style>
 	</head>
 	<body class="bg-gray-800 text-white font-sans text-center p-5">
 		<h1 class="text-3xl font-bold mb-6 flex items-center justify-center space-x-3 text-gray-100">
@@ -48,8 +61,83 @@
 		</div>
 
 		<script>
-			const musicList = ["music/1.mp3", "music/2.mp3", "music/3.mp3", "music/4.mp3", "music/5.mp3", "music/6.mp3", "music/7.mp3", "music/8.mp3", "music/9.mp3", "music/10.mp3", "music/11.mp3", "music/12.mp3", "music/13.mp3", "music/14.mp3", "music/15.mp3", "music/16.mp3", "music/17.mp3", "music/18.mp3", "music/19.mp3", "music/20.mp3", "music/21.mp3", "music/22.mp3", "music/24.mp3", "music/25.mp3", "music/26.mp3", "music/27.mp3", "music/28.mp3", "music/29.mp3", "music/30.mp3", "music/31.mp3", "music/32.mp3", "music/33.mp3", "https://www.youtube.com/embed/lqFGzPM8wkg", "https://www.youtube.com/embed/xi1cWsfJTTs", "https://www.youtube.com/embed/uXkYCdL_HpY"];
-			const songNames = ["Tháp Rơi Tự Do", "Ghép Hình Tình Yêu", "Góp Vui", "Kiss Kiss Shy Shy", "Như", "Bất Công", "CocoCoCo", "Magnetic", "Sơn Hải", "Nhập Hoài", "Không Nỡ - Đấu La Đại Lục", "Có - Không Có", "Đối Diện", "Tham Cầu - Thần Ẩn", "Ring Ring Ring", "TA - Bàn Hổ", "Như Ca - Liệt Hỏa Như Ca", "Cái Đuôi Nhỏ", "Lưu Chuyển Doanh Hồi - Ngộ Long", "Đông Miên", "Polaroid Love", "For ya – Tưởng Tiểu Ni", "Say YES", "Chờ Đến Tháng 13", "Mình Cùng Nhau Đóng Băng", "Trang Giấy Cuối Cùng", "Blueming - IU", "Yêu Như Thế - Thần Ẩn", "Bích Thương Chiến Ca - Dữ Phượng Hành", "Phong - Thiếu Niên Ca Hành", "Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh", "Chưa Chắc - Ngô Cẩn Ngôn", "Học bài và nghe nhạc cùng tớ nhé", "Dữ Phượng Hành OST", "Playlist Nhạc Hè"];
+			const musicList = [
+				"music/1.mp3",
+				"music/2.mp3",
+				"music/3.mp3",
+				"music/4.mp3",
+				"music/5.mp3",
+				"music/6.mp3",
+				"music/7.mp3",
+				"music/8.mp3",
+				"music/9.mp3",
+				"music/10.mp3",
+				"music/11.mp3",
+				"music/12.mp3",
+				"music/13.mp3",
+				"music/14.mp3",
+				"music/15.mp3",
+				"music/16.mp3",
+				"music/17.mp3",
+				"music/18.mp3",
+				"music/19.mp3",
+				"music/20.mp3",
+				"music/21.mp3",
+				"music/22.mp3",
+				"music/24.mp3",
+				"music/25.mp3",
+				"music/26.mp3",
+				"music/27.mp3",
+				"music/28.mp3",
+				"music/29.mp3",
+				"music/30.mp3",
+				"music/31.mp3",
+				"music/32.mp3",
+				"music/33.mp3",
+				// Thêm link YouTube ví dụ:
+				"https://www.youtube.com/embed/lqFGzPM8wkg",
+				"https://www.youtube.com/embed/xi1cWsfJTTs",
+				"https://www.youtube.com/embed/uXkYCdL_HpY",
+			];
+
+			const songNames = [
+				"Tháp Rơi Tự Do",
+				"Ghép Hình Tình Yêu",
+				"Góp Vui",
+				"Kiss Kiss Shy Shy",
+				"Như",
+				"Bất Công",
+				"CocoCoCo",
+				"Magnetic",
+				"Sơn Hải",
+				"Nhập Hoài",
+				"Không Nỡ - Đấu La Đại Lục",
+				"Có - Không Có",
+				"Đối Diện",
+				"Tham Cầu - Thần Ẩn",
+				"Ring Ring Ring",
+				"TA - Bàn Hổ",
+				"Như Ca - Liệt Hỏa Như Ca",
+				"Cái Đuôi Nhỏ",
+				"Lưu Chuyển Doanh Hồi - Ngộ Long",
+				"Đông Miên",
+				"Polaroid Love",
+				"For ya – Tưởng Tiểu Ni",
+				"Say YES",
+				"Chờ Đến Tháng 13",
+				"Mình Cùng Nhau Đóng Băng",
+				"Trang Giấy Cuối Cùng",
+				"Blueming - IU",
+				"Yêu Như Thế - Thần Ẩn",
+				"Bích Thương Chiến Ca - Dữ Phượng Hành",
+				"Phong - Thiếu Niên Ca Hành",
+				"Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh",
+				"Chưa Chắc - Ngô Cẩn Ngôn",
+				// Tên bài cho YouTube link
+				"Học bài và nghe nhạc cùng tớ nhé",
+				"Dữ Phượng Hành OST",
+				"Playlist Nhạc Hè",
+			];
 
 			let currentIndex = 0;
 			let isRandom = true;
@@ -251,13 +339,22 @@
 						const li = document.createElement("li");
 						li.className = "flex items-center justify-between px-4 py-2 hover:bg-gray-600 transition";
 						li.innerHTML = `<span>${name}</span>
-                        <button onclick="play(${index})" class="text-xl hover:text-blue-500 transition">▶️</button>`;
+							<button onclick="play(${index})" class="text-xl hover:text-blue-500 transition">▶️</button>`;
 						favoritesList.appendChild(li);
 					}
 				});
 			}
 
 			function toggleFavoriteRandom() {
+				if (favorites.length === 0) {
+					Swal.fire({
+						icon: "warning",
+						title: "Danh sách trống",
+						text: "Vui lòng thêm bài hát vào danh sách yêu thích trước!",
+						confirmButtonText: "Đóng",
+					});
+					return;
+				}
 				isFavoriteRandom = !isFavoriteRandom;
 				document.getElementById("favoriteRandomStatus").textContent = isFavoriteRandom ? "Bật" : "Tắt";
 			}
