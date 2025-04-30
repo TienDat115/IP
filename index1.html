@@ -14,9 +14,9 @@
 
 		<!-- Nút điều khiển -->
 		<div class="mb-5 flex flex-row justify-center items-center space-x-2">
-			<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Tiếp theo</button>
-			<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Lặp lại: <span id="repeatStatus">Tắt</span></button>
-			<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Chế độ: <span id="mode">Ngẫu nhiên</span></button>
+			<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Tiếp</button>
+			<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">🔄<span id="repeatStatus">Tắt</span></button>
+			<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">🎲<span id="mode">Ngẫu nhiên</span></button>
 		</div>
 
 		<!-- Player Container -->
@@ -28,8 +28,8 @@
 		<!-- Nút điều khiển playlist và yêu thích -->
 		<div class="flex justify-center space-x-2 mb-4">
 			<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition">Ẩn playlist</button>
-			<button onclick="toggleFavorites()" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded transition"><span class="text-xl">❤️</span> Danh sách yêu thích</button>
-			<button id="favoriteRandomBtn" onclick="toggleFavoriteRandom()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"><span class="text-xl">🎵</span> Phát ngẫu nhiên yêu thích: <span id="favoriteRandomStatus">Tắt</span></button>
+			<button onclick="toggleFavorites()" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded transition"><span class="text-xl">❤️</span></button>
+			<button id="favoriteRandomBtn" onclick="toggleFavoriteRandom()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"><span class="text-xl">🎲</span><span id="favoriteRandomStatus">Tắt</span></button>
 		</div>
 
 		<!-- Playlist Wrapper -->
@@ -265,11 +265,11 @@
 			// Ẩn/hiện playlist
 			let isPlaylistVisible = false; // Mặc định ẩn
 			playlistWrapper.style.display = "none";
-			togglePlaylistBtn.textContent = "Hiện playlist";
+			togglePlaylistBtn.textContent = "Hiện";
 			togglePlaylistBtn.onclick = function () {
 				isPlaylistVisible = !isPlaylistVisible;
 				playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
-				togglePlaylistBtn.textContent = isPlaylistVisible ? "Ẩn playlist" : "Hiện playlist";
+				togglePlaylistBtn.textContent = isPlaylistVisible ? "Ẩn" : "Hiện";
 			};
 
 			// Khởi động trang
