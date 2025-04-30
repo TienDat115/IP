@@ -26,6 +26,10 @@
 		<!-- Nút ẩn/hiện playlist -->
 		<button id="togglePlaylistBtn" class="mt-4 mb-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition">Ẩn playlist</button>
 
+		<button onclick="saveForOffline(currentIndex)" id="saveOfflineBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
+			<span id="saveStatus">Lưu để nghe offline</span>
+		</button>
+
 		<!-- Bọc playlist và phân trang -->
 		<div id="playlistWrapper">
 			<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
@@ -33,6 +37,183 @@
 		</div>
 
 		<script>
+			// Khởi tạo IndexedDB
+			let db;
+			const request = indexedDB.open("MusicDB", 1);
+
+			request.onerror = (event) => {
+				console.error("Lỗi khi mở database:", event.target.error);
+			};
+
+			request.onupgradeneeded = (event) => {
+				db = event.target.result;
+				if (!db.objectStoreNames.contains("offlineMusic")) {
+					const store = db.createObjectStore("offlineMusic", { keyPath: "id" });
+					store.createIndex("name", "name", { unique: false });
+					store.createIndex("url", "url", { unique: true });
+				}
+			};
+
+			request.onsuccess = (event) => {
+				db = event.target.result;
+				checkOfflineStatus();
+			};
+
+			// Kiểm tra trạng thái offline của bài hát
+			function checkOfflineStatus() {
+				const tx = db.transaction(["offlineMusic"], "readonly");
+				const store = tx.objectStore("offlineMusic");
+				const request = store.getAll();
+
+				request.onsuccess = (event) => {
+					const offlineSongs = event.target.result;
+					const currentSong = musicList[currentIndex];
+
+					// Cập nhật nút lưu
+					const isSaved = offlineSongs.some((song) => song.url === currentSong);
+					document.getElementById("saveStatus").textContent = isSaved ? "Đã lưu" : "Lưu để nghe offline";
+				};
+			}
+
+			// Lưu bài hát để nghe offline
+			async function saveForOffline(index) {
+				const url = musicList[index];
+				const name = songNames[index];
+
+				// Kiểm tra xem bài hát đã được lưu chưa
+				const tx = db.transaction(["offlineMusic"], "readonly");
+				const store = tx.objectStore("offlineMusic");
+				const request = store.get(url);
+
+				request.onsuccess = async (event) => {
+					if (event.target.result) {
+						alert("Bài hát đã được lưu!");
+						return;
+					}
+
+					// Tải file và lưu vào IndexedDB
+					try {
+						const response = await fetch(url);
+						const blob = await response.blob();
+						const file = new File([blob], name + "." + url.split(".").pop());
+
+						const saveTx = db.transaction(["offlineMusic"], "readwrite");
+						const saveStore = saveTx.objectStore("offlineMusic");
+
+						const saveRequest = saveStore.add({
+							id: Date.now(),
+							name: name,
+							url: url,
+							blob: file,
+						});
+
+						saveRequest.onsuccess = () => {
+							alert("Đã lưu thành công!");
+							checkOfflineStatus();
+						};
+
+						saveRequest.onerror = () => {
+							console.error("Lỗi khi lưu bài hát:", saveRequest.error);
+							alert("Lỗi khi lưu bài hát!");
+						};
+					} catch (error) {
+						console.error("Lỗi khi tải file:", error);
+						alert("Không thể tải file!");
+					}
+				};
+			}
+
+			// Phát bài hát offline
+			function playOffline(url) {
+				const tx = db.transaction(["offlineMusic"], "readonly");
+				const store = tx.objectStore("offlineMusic");
+				const request = store.get(url);
+
+				request.onsuccess = (event) => {
+					const song = event.target.result;
+					if (song) {
+						// Tạo URL từ blob
+						const blobUrl = URL.createObjectURL(song.blob);
+
+						// Tạo và phát video/audio
+						const video = document.createElement("video");
+						video.src = blobUrl;
+						video.controls = true;
+						video.playsInline = true;
+						video.autoplay = true;
+						video.className = "w-full";
+						video.volume = 0.5;
+
+						playerContainer.innerHTML = "";
+						playerContainer.appendChild(video);
+
+						// Xóa URL khi không cần thiết
+						video.addEventListener("ended", () => URL.revokeObjectURL(blobUrl));
+					} else {
+						alert("Không tìm thấy bài hát trong bộ nhớ offline!");
+						// Thử phát từ nguồn trực tuyến
+						play(currentIndex);
+					}
+				};
+			}
+
+			// Kiểm tra và cập nhật playlist
+			function updatePlaylistWithOfflineStatus() {
+				const tx = db.transaction(["offlineMusic"], "readonly");
+				const store = tx.objectStore("offlineMusic");
+				const request = store.getAll();
+
+				request.onsuccess = (event) => {
+					const offlineSongs = event.target.result;
+					const playlistItems = document.querySelectorAll("#playlist li");
+
+					playlistItems.forEach((item) => {
+						const index = Array.from(playlistItems).indexOf(item);
+						const url = musicList[index];
+						const isOffline = offlineSongs.some((song) => song.url === url);
+
+						if (isOffline) {
+							item.classList.add("bg-green-600", "text-white");
+						} else {
+							item.classList.remove("bg-green-600", "text-white");
+						}
+					});
+				};
+			}
+
+			// Kiểm tra kết nối và cập nhật giao diện
+			function checkConnectionStatus() {
+				if (!navigator.onLine) {
+					document.body.classList.add("offline-mode");
+					document.getElementById("saveOfflineBtn").disabled = true;
+				} else {
+					document.body.classList.remove("offline-mode");
+					document.getElementById("saveOfflineBtn").disabled = false;
+				}
+			}
+
+			// Kiểm tra kết nối khi tải trang
+			window.addEventListener("load", checkConnectionStatus);
+			// Kiểm tra khi thay đổi trạng thái kết nối
+			window.addEventListener("online", checkConnectionStatus);
+			window.addEventListener("offline", checkConnectionStatus);
+
+			// Thêm style cho chế độ offline
+			document.head.insertAdjacentHTML(
+				"beforeend",
+				`
+        <style>
+            .offline-mode {
+                --tw-bg-opacity: 1;
+                background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+            }
+            .offline-mode .bg-gray-800 {
+                --tw-bg-opacity: 0.9;
+                background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+            }
+        </style>
+    `
+			);
 			const musicList = [
 				"music/1.mp3",
 				"music/2.mp3",
@@ -62,9 +243,14 @@
 				"music/27.mp3",
 				"music/28.mp3",
 				"music/29.mp3",
+				"music/30.mp3",
+				"music/31.mp3",
+				"music/32.mp3",
+				"music/33.mp3",
 				// Thêm link YouTube ví dụ:
 				"https://www.youtube.com/embed/lqFGzPM8wkg",
 				"https://www.youtube.com/embed/xi1cWsfJTTs",
+				"https://www.youtube.com/embed/uXkYCdL_HpY",
 			];
 
 			const songNames = [
@@ -86,7 +272,7 @@
 				"TA - Bàn Hổ",
 				"Như Ca - Liệt Hỏa Như Ca",
 				"Cái Đuôi Nhỏ",
-				"Lưu Chuyển Doanh Hồi",
+				"Lưu Chuyển Doanh Hồi - Ngộ Long",
 				"Đông Miên",
 				"Polaroid Love",
 				"For ya – Tưởng Tiểu Ni",
@@ -96,9 +282,14 @@
 				"Trang Giấy Cuối Cùng",
 				"Blueming - IU",
 				"Yêu Như Thế - Thần Ẩn",
+				"Bích Thương Chiến Ca - Dữ Phượng Hành",
+				"Phong - Thiếu Niên Ca Hành",
+				"Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh",
+				"Chưa Chắc - Ngô Cẩn Ngôn",
 				// Tên bài cho YouTube link
 				"Học bài và nghe nhạc cùng tớ nhé",
 				"Dữ Phượng Hành OST",
+				"Playlist Nhạc Hè",
 			];
 
 			let currentIndex = 0;
