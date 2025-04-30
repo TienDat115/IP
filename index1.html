@@ -2,8 +2,8 @@
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Lofi Music</title>
-		<!-- Thêm Tailwind CSS -->
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 	</head>
 	<body class="bg-gray-800 text-white font-sans text-center p-5">
@@ -12,295 +12,58 @@
 			<span>Trình Nghe Nhạc</span>
 		</h1>
 
+		<!-- Nút điều khiển -->
 		<div class="mb-5 flex flex-row justify-center items-center space-x-2">
 			<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Tiếp theo</button>
 			<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Lặp lại: <span id="repeatStatus">Tắt</span></button>
 			<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Chế độ: <span id="mode">Ngẫu nhiên</span></button>
 		</div>
 
-		<!-- Player: Container chứ không dùng video cố định -->
+		<!-- Player Container -->
 		<div id="playerContainer" class="w-full max-w-lg mx-auto rounded-lg bg-black overflow-hidden"></div>
 
-		<div id="currentSong" class="mt-4 flex items-center justify-center space-x-3 text-lg bg-gray-700 p-3 rounded-xl shadow-lg max-w-md mx-auto"></div>
+		<!-- Hiển thị bài hát hiện tại -->
+		<div id="currentSong" class="mt-4 mb-5 flex items-center justify-center space-x-3 text-lg bg-gray-700 p-3 rounded-xl shadow-lg max-w-md mx-auto"></div>
 
-		<!-- Nút ẩn/hiện playlist -->
-		<button id="togglePlaylistBtn" class="mt-4 mb-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition">Ẩn playlist</button>
+		<!-- Nút điều khiển playlist và yêu thích -->
+		<div class="flex justify-center space-x-2 mb-4">
+			<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition">Ẩn playlist</button>
+			<button onclick="toggleFavorites()" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded transition"><span class="text-xl">❤️</span> Danh sách yêu thích</button>
+			<button id="favoriteRandomBtn" onclick="toggleFavoriteRandom()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"><span class="text-xl">🎵</span> Phát ngẫu nhiên yêu thích: <span id="favoriteRandomStatus">Tắt</span></button>
+		</div>
 
-		<button onclick="saveForOffline(currentIndex)" id="saveOfflineBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
-			<span id="saveStatus">Lưu để nghe offline</span>
-		</button>
-
-		<!-- Bọc playlist và phân trang -->
+		<!-- Playlist Wrapper -->
 		<div id="playlistWrapper">
 			<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
 			<div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
 		</div>
 
+		<!-- Modal danh sách yêu thích -->
+		<div id="favoritesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+			<div class="bg-gray-800 p-6 rounded-lg max-w-md w-full relative">
+				<button onclick="closeFavorites()" class="absolute top-2 right-2 text-gray-300 hover:text-white">✕</button>
+				<h2 class="text-2xl mb-4">Danh sách yêu thích</h2>
+				<ul id="favoritesList" class="divide-y divide-gray-600"></ul>
+			</div>
+		</div>
+
 		<script>
-			// Khởi tạo IndexedDB
-			let db;
-			const request = indexedDB.open("MusicDB", 1);
-
-			request.onerror = (event) => {
-				console.error("Lỗi khi mở database:", event.target.error);
-			};
-
-			request.onupgradeneeded = (event) => {
-				db = event.target.result;
-				if (!db.objectStoreNames.contains("offlineMusic")) {
-					const store = db.createObjectStore("offlineMusic", { keyPath: "id" });
-					store.createIndex("name", "name", { unique: false });
-					store.createIndex("url", "url", { unique: true });
-				}
-			};
-
-			request.onsuccess = (event) => {
-				db = event.target.result;
-				checkOfflineStatus();
-			};
-
-			// Kiểm tra trạng thái offline của bài hát
-			function checkOfflineStatus() {
-				const tx = db.transaction(["offlineMusic"], "readonly");
-				const store = tx.objectStore("offlineMusic");
-				const request = store.getAll();
-
-				request.onsuccess = (event) => {
-					const offlineSongs = event.target.result;
-					const currentSong = musicList[currentIndex];
-
-					// Cập nhật nút lưu
-					const isSaved = offlineSongs.some((song) => song.url === currentSong);
-					document.getElementById("saveStatus").textContent = isSaved ? "Đã lưu" : "Lưu để nghe offline";
-				};
-			}
-
-			// Lưu bài hát để nghe offline
-			async function saveForOffline(index) {
-				const url = musicList[index];
-				const name = songNames[index];
-
-				// Kiểm tra xem bài hát đã được lưu chưa
-				const tx = db.transaction(["offlineMusic"], "readonly");
-				const store = tx.objectStore("offlineMusic");
-				const request = store.get(url);
-
-				request.onsuccess = async (event) => {
-					if (event.target.result) {
-						alert("Bài hát đã được lưu!");
-						return;
-					}
-
-					// Tải file và lưu vào IndexedDB
-					try {
-						const response = await fetch(url);
-						const blob = await response.blob();
-						const file = new File([blob], name + "." + url.split(".").pop());
-
-						const saveTx = db.transaction(["offlineMusic"], "readwrite");
-						const saveStore = saveTx.objectStore("offlineMusic");
-
-						const saveRequest = saveStore.add({
-							id: Date.now(),
-							name: name,
-							url: url,
-							blob: file,
-						});
-
-						saveRequest.onsuccess = () => {
-							alert("Đã lưu thành công!");
-							checkOfflineStatus();
-						};
-
-						saveRequest.onerror = () => {
-							console.error("Lỗi khi lưu bài hát:", saveRequest.error);
-							alert("Lỗi khi lưu bài hát!");
-						};
-					} catch (error) {
-						console.error("Lỗi khi tải file:", error);
-						alert("Không thể tải file!");
-					}
-				};
-			}
-
-			// Phát bài hát offline
-			function playOffline(url) {
-				const tx = db.transaction(["offlineMusic"], "readonly");
-				const store = tx.objectStore("offlineMusic");
-				const request = store.get(url);
-
-				request.onsuccess = (event) => {
-					const song = event.target.result;
-					if (song) {
-						// Tạo URL từ blob
-						const blobUrl = URL.createObjectURL(song.blob);
-
-						// Tạo và phát video/audio
-						const video = document.createElement("video");
-						video.src = blobUrl;
-						video.controls = true;
-						video.playsInline = true;
-						video.autoplay = true;
-						video.className = "w-full";
-						video.volume = 0.5;
-
-						playerContainer.innerHTML = "";
-						playerContainer.appendChild(video);
-
-						// Xóa URL khi không cần thiết
-						video.addEventListener("ended", () => URL.revokeObjectURL(blobUrl));
-					} else {
-						alert("Không tìm thấy bài hát trong bộ nhớ offline!");
-						// Thử phát từ nguồn trực tuyến
-						play(currentIndex);
-					}
-				};
-			}
-
-			// Kiểm tra và cập nhật playlist
-			function updatePlaylistWithOfflineStatus() {
-				const tx = db.transaction(["offlineMusic"], "readonly");
-				const store = tx.objectStore("offlineMusic");
-				const request = store.getAll();
-
-				request.onsuccess = (event) => {
-					const offlineSongs = event.target.result;
-					const playlistItems = document.querySelectorAll("#playlist li");
-
-					playlistItems.forEach((item) => {
-						const index = Array.from(playlistItems).indexOf(item);
-						const url = musicList[index];
-						const isOffline = offlineSongs.some((song) => song.url === url);
-
-						if (isOffline) {
-							item.classList.add("bg-green-600", "text-white");
-						} else {
-							item.classList.remove("bg-green-600", "text-white");
-						}
-					});
-				};
-			}
-
-			// Kiểm tra kết nối và cập nhật giao diện
-			function checkConnectionStatus() {
-				if (!navigator.onLine) {
-					document.body.classList.add("offline-mode");
-					document.getElementById("saveOfflineBtn").disabled = true;
-				} else {
-					document.body.classList.remove("offline-mode");
-					document.getElementById("saveOfflineBtn").disabled = false;
-				}
-			}
-
-			// Kiểm tra kết nối khi tải trang
-			window.addEventListener("load", checkConnectionStatus);
-			// Kiểm tra khi thay đổi trạng thái kết nối
-			window.addEventListener("online", checkConnectionStatus);
-			window.addEventListener("offline", checkConnectionStatus);
-
-			// Thêm style cho chế độ offline
-			document.head.insertAdjacentHTML(
-				"beforeend",
-				`
-        <style>
-            .offline-mode {
-                --tw-bg-opacity: 1;
-                background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
-            }
-            .offline-mode .bg-gray-800 {
-                --tw-bg-opacity: 0.9;
-                background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
-            }
-        </style>
-    `
-			);
-			const musicList = [
-				"music/1.mp3",
-				"music/2.mp3",
-				"music/3.mp3",
-				"music/4.mp3",
-				"music/5.mp3",
-				"music/6.mp3",
-				"music/7.mp3",
-				"music/8.mp3",
-				"music/9.mp3",
-				"music/10.mp3",
-				"music/11.mp3",
-				"music/12.mp3",
-				"music/13.mp3",
-				"music/14.mp3",
-				"music/15.mp3",
-				"music/16.mp3",
-				"music/17.mp3",
-				"music/18.mp3",
-				"music/19.mp3",
-				"music/20.mp3",
-				"music/21.mp3",
-				"music/22.mp3",
-				"music/24.mp3",
-				"music/25.mp3",
-				"music/26.mp3",
-				"music/27.mp3",
-				"music/28.mp3",
-				"music/29.mp3",
-				"music/30.mp3",
-				"music/31.mp3",
-				"music/32.mp3",
-				"music/33.mp3",
-				// Thêm link YouTube ví dụ:
-				"https://www.youtube.com/embed/lqFGzPM8wkg",
-				"https://www.youtube.com/embed/xi1cWsfJTTs",
-				"https://www.youtube.com/embed/uXkYCdL_HpY",
-			];
-
-			const songNames = [
-				"Tháp Rơi Tự Do",
-				"Ghép Hình Tình Yêu",
-				"Góp Vui",
-				"Kiss Kiss Shy Shy",
-				"Như",
-				"Bất Công",
-				"CocoCoCo",
-				"Magnetic",
-				"Sơn Hải",
-				"Nhập Hoài",
-				"Không Nỡ - Đấu La Đại Lục",
-				"Có - Không Có",
-				"Đối Diện",
-				"Tham Cầu - Thần Ẩn",
-				"Ring Ring Ring",
-				"TA - Bàn Hổ",
-				"Như Ca - Liệt Hỏa Như Ca",
-				"Cái Đuôi Nhỏ",
-				"Lưu Chuyển Doanh Hồi - Ngộ Long",
-				"Đông Miên",
-				"Polaroid Love",
-				"For ya – Tưởng Tiểu Ni",
-				"Say YES",
-				"Chờ Đến Tháng 13",
-				"Mình Cùng Nhau Đóng Băng",
-				"Trang Giấy Cuối Cùng",
-				"Blueming - IU",
-				"Yêu Như Thế - Thần Ẩn",
-				"Bích Thương Chiến Ca - Dữ Phượng Hành",
-				"Phong - Thiếu Niên Ca Hành",
-				"Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh",
-				"Chưa Chắc - Ngô Cẩn Ngôn",
-				// Tên bài cho YouTube link
-				"Học bài và nghe nhạc cùng tớ nhé",
-				"Dữ Phượng Hành OST",
-				"Playlist Nhạc Hè",
-			];
+			const musicList = ["music/1.mp3", "music/2.mp3", "music/3.mp3", "music/4.mp3", "music/5.mp3", "music/6.mp3", "music/7.mp3", "music/8.mp3", "music/9.mp3", "music/10.mp3", "music/11.mp3", "music/12.mp3", "music/13.mp3", "music/14.mp3", "music/15.mp3", "music/16.mp3", "music/17.mp3", "music/18.mp3", "music/19.mp3", "music/20.mp3", "music/21.mp3", "music/22.mp3", "music/24.mp3", "music/25.mp3", "music/26.mp3", "music/27.mp3", "music/28.mp3", "music/29.mp3", "music/30.mp3", "music/31.mp3", "music/32.mp3", "music/33.mp3", "https://www.youtube.com/embed/lqFGzPM8wkg", "https://www.youtube.com/embed/xi1cWsfJTTs", "https://www.youtube.com/embed/uXkYCdL_HpY"];
+			const songNames = ["Tháp Rơi Tự Do", "Ghép Hình Tình Yêu", "Góp Vui", "Kiss Kiss Shy Shy", "Như", "Bất Công", "CocoCoCo", "Magnetic", "Sơn Hải", "Nhập Hoài", "Không Nỡ - Đấu La Đại Lục", "Có - Không Có", "Đối Diện", "Tham Cầu - Thần Ẩn", "Ring Ring Ring", "TA - Bàn Hổ", "Như Ca - Liệt Hỏa Như Ca", "Cái Đuôi Nhỏ", "Lưu Chuyển Doanh Hồi - Ngộ Long", "Đông Miên", "Polaroid Love", "For ya – Tưởng Tiểu Ni", "Say YES", "Chờ Đến Tháng 13", "Mình Cùng Nhau Đóng Băng", "Trang Giấy Cuối Cùng", "Blueming - IU", "Yêu Như Thế - Thần Ẩn", "Bích Thương Chiến Ca - Dữ Phượng Hành", "Phong - Thiếu Niên Ca Hành", "Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh", "Chưa Chắc - Ngô Cẩn Ngôn", "Học bài và nghe nhạc cùng tớ nhé", "Dữ Phượng Hành OST", "Playlist Nhạc Hè"];
 
 			let currentIndex = 0;
 			let isRandom = true;
+			let isFavoriteRandom = false;
 			let currentPage = 1;
 			const pageSize = 10;
+			let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 
 			const playerContainer = document.getElementById("playerContainer");
 			const modeSpan = document.getElementById("mode");
 			const currentSongDisplay = document.getElementById("currentSong");
 			const playlist = document.getElementById("playlist");
+			const playlistWrapper = document.getElementById("playlistWrapper");
+			const togglePlaylistBtn = document.getElementById("togglePlaylistBtn");
 
 			function renderPlaylist() {
 				playlist.innerHTML = "";
@@ -310,26 +73,38 @@
 				for (let idx = start; idx < end; idx++) {
 					const name = songNames[idx];
 					const url = musicList[idx];
-					let icon = "🎵";
-					if (url.includes("youtube.com") || url.includes("youtu.be")) {
-						icon = "▶️";
-					} else if (url.endsWith(".mp3")) {
-						icon = "🎶";
-					} else if (url.endsWith(".mp4")) {
-						icon = "🎬";
-					}
+					const isFavorite = favorites.includes(url);
 
 					const li = document.createElement("li");
-					li.textContent = `${icon} ${name}`;
-					li.className = "cursor-pointer px-4 py-2 hover:bg-gray-600 transition" + (idx === currentIndex ? " bg-gray-500 font-bold" : "");
-					li.onclick = () => {
-						currentIndex = idx;
-						play(currentIndex);
-						renderPlaylist();
+					li.className = "flex items-center justify-between px-4 py-2 hover:bg-gray-600 transition " + (idx === currentIndex ? "bg-gray-500 font-bold" : "");
+
+					const songContainer = document.createElement("div");
+					songContainer.className = "flex items-center space-x-2";
+					let icon = "🎵";
+					if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
+					else if (url.endsWith(".mp3")) icon = "🎶";
+					else if (url.endsWith(".mp4")) icon = "🎬";
+					songContainer.innerHTML = `<span class="text-xl">${icon}</span><span>${name}</span>`;
+					li.appendChild(songContainer);
+
+					const favoriteBtn = document.createElement("button");
+					favoriteBtn.className = "text-xl hover:text-pink-500 transition";
+					favoriteBtn.innerHTML = isFavorite ? "❤️" : "🤍";
+					favoriteBtn.onclick = (event) => {
+						event.stopPropagation();
+						toggleFavorite(idx);
+					};
+					li.appendChild(favoriteBtn);
+
+					li.onclick = (event) => {
+						if (event.target !== favoriteBtn) {
+							currentIndex = idx;
+							play(currentIndex);
+							renderPlaylist();
+						}
 					};
 					playlist.appendChild(li);
 				}
-
 				renderPagination();
 			}
 
@@ -338,7 +113,6 @@
 				pagination.innerHTML = "";
 				const totalPages = Math.ceil(songNames.length / pageSize);
 
-				// Nút Prev
 				const prevBtn = document.createElement("button");
 				prevBtn.textContent = "«";
 				prevBtn.disabled = currentPage === 1;
@@ -351,7 +125,6 @@
 				};
 				pagination.appendChild(prevBtn);
 
-				// Hiển thị số trang
 				for (let i = 1; i <= totalPages; i++) {
 					const pageBtn = document.createElement("button");
 					pageBtn.textContent = i;
@@ -363,7 +136,6 @@
 					pagination.appendChild(pageBtn);
 				}
 
-				// Nút Next
 				const nextBtn = document.createElement("button");
 				nextBtn.textContent = "»";
 				nextBtn.disabled = currentPage === totalPages;
@@ -379,13 +151,10 @@
 
 			function play(index) {
 				const url = musicList[index];
-				// Tự động chuyển trang chứa bài hát đang phát
 				currentPage = Math.floor(index / pageSize) + 1;
-
-				playerContainer.innerHTML = ""; // Xóa nội dung player cũ
+				playerContainer.innerHTML = "";
 
 				if (url.includes("youtube.com") || url.includes("youtu.be")) {
-					// Link YouTube
 					const iframe = document.createElement("iframe");
 					iframe.src = url + "?autoplay=1";
 					iframe.width = "100%";
@@ -395,7 +164,6 @@
 					iframe.allowFullscreen = true;
 					playerContainer.appendChild(iframe);
 				} else {
-					// File mp3/mp4
 					const video = document.createElement("video");
 					video.src = url;
 					video.controls = true;
@@ -404,26 +172,16 @@
 					video.className = "w-full";
 					video.volume = 0.5;
 					video.addEventListener("ended", function () {
-						if (isRepeat) {
-							play(currentIndex); // Phát lại bài hiện tại
-						} else {
-							playNext();
-						}
+						if (isRepeat) play(currentIndex);
+						else playNext();
 					});
 					playerContainer.appendChild(video);
 				}
 
-				// Xác định icon theo loại file
 				let icon = "🎵";
-				if (url.includes("youtube.com") || url.includes("youtu.be")) {
-					icon = "▶️";
-				} else if (url.endsWith(".mp3")) {
-					icon = "🎶";
-				} else if (url.endsWith(".mp4")) {
-					icon = "🎬";
-				}
-
-				// Cập nhật nội dung "Đang phát"
+				if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
+				else if (url.endsWith(".mp3")) icon = "🎶";
+				else if (url.endsWith(".mp4")) icon = "🎬";
 				currentSongDisplay.innerHTML = `<span class="text-2xl">${icon}</span> <span>${songNames[index]}</span>`;
 
 				renderPlaylist();
@@ -434,16 +192,22 @@
 				isRepeat = !isRepeat;
 				document.getElementById("repeatStatus").textContent = isRepeat ? "Bật" : "Tắt";
 			}
+
 			function playNext() {
-				if (isRandom) {
+				if (isFavoriteRandom && favorites.length > 0) {
+					let nextIndex;
+					do {
+						const randomPos = Math.floor(Math.random() * favorites.length);
+						nextIndex = musicList.indexOf(favorites[randomPos]);
+					} while (favorites.length > 1 && nextIndex === currentIndex);
+					currentIndex = nextIndex;
+				} else if (isRandom) {
 					let nextIndex;
 					const nonYoutubeIndexes = musicList.map((item, idx) => (!item.includes("youtube.com") && !item.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
-
 					do {
 						const randomPos = Math.floor(Math.random() * nonYoutubeIndexes.length);
 						nextIndex = nonYoutubeIndexes[randomPos];
 					} while (nonYoutubeIndexes.length > 1 && nextIndex === currentIndex);
-
 					currentIndex = nextIndex;
 				} else {
 					currentIndex = (currentIndex + 1) % musicList.length;
@@ -456,15 +220,52 @@
 				modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 			}
 
-			// Ẩn/hiện playlist
-			const playlistWrapper = document.getElementById("playlistWrapper");
-			const togglePlaylistBtn = document.getElementById("togglePlaylistBtn");
-			let isPlaylistVisible = false; // Mặc định ẩn
+			// Yêu thích
+			function toggleFavorite(index) {
+				const url = musicList[index];
+				const isFavorite = favorites.includes(url);
+				if (isFavorite) {
+					favorites = favorites.filter((song) => song !== url);
+				} else {
+					favorites.push(url);
+				}
+				localStorage.setItem("favorites", JSON.stringify(favorites));
+				renderPlaylist();
+				updateFavoritesList();
+			}
+			function toggleFavorites() {
+				const modal = document.getElementById("favoritesModal");
+				modal.classList.toggle("hidden");
+				updateFavoritesList();
+			}
+			function closeFavorites() {
+				document.getElementById("favoritesModal").classList.add("hidden");
+			}
+			function updateFavoritesList() {
+				const favoritesList = document.getElementById("favoritesList");
+				favoritesList.innerHTML = "";
+				favorites.forEach((url) => {
+					const index = musicList.indexOf(url);
+					if (index !== -1) {
+						const name = songNames[index];
+						const li = document.createElement("li");
+						li.className = "flex items-center justify-between px-4 py-2 hover:bg-gray-600 transition";
+						li.innerHTML = `<span>${name}</span>
+                        <button onclick="play(${index})" class="text-xl hover:text-blue-500 transition">▶️</button>`;
+						favoritesList.appendChild(li);
+					}
+				});
+			}
 
-			// Ẩn playlist khi mở trang
+			function toggleFavoriteRandom() {
+				isFavoriteRandom = !isFavoriteRandom;
+				document.getElementById("favoriteRandomStatus").textContent = isFavoriteRandom ? "Bật" : "Tắt";
+			}
+
+			// Ẩn/hiện playlist
+			let isPlaylistVisible = false; // Mặc định ẩn
 			playlistWrapper.style.display = "none";
 			togglePlaylistBtn.textContent = "Hiện playlist";
-
 			togglePlaylistBtn.onclick = function () {
 				isPlaylistVisible = !isPlaylistVisible;
 				playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
@@ -473,8 +274,15 @@
 
 			// Khởi động trang
 			modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
+			document.getElementById("favoriteRandomStatus").textContent = isFavoriteRandom ? "Bật" : "Tắt";
 			renderPlaylist();
-			// play(currentIndex);
+
+			// Đảm bảo cập nhật lại danh sách yêu thích khi load lại trang
+			window.addEventListener("storage", function () {
+				favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+				renderPlaylist();
+				updateFavoritesList();
+			});
 		</script>
 	</body>
 </html>
