@@ -30,18 +30,22 @@
 
 	<body class="min-h-screen flex items-center justify-center p-5 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
 		<div class="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-blue-700/30 rounded-3xl shadow-2xl max-w-md w-full p-5 sm:p-8 text-center relative overflow-hidden">
-			<div class="absolute -top-8 -left-8 w-24 h-24 sm:w-36 sm:h-36 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none blur-animate"></div>
-			<div class="absolute -bottom-10 -right-10 w-28 h-28 sm:w-40 sm:h-40 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none blur-animate"></div>
+			<div class="absolute -top-10 -left-10 w-32 h-32 sm:w-48 sm:h-48 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none blur-animate"></div>
+			<div class="absolute -bottom-12 -right-12 w-36 h-36 sm:w-52 sm:h-52 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none blur-animate"></div>
 
-			<!-- Khối đồng hồ -->
-			<div id="clockBox" class="flex flex-col items-center justify-center mb-4 sm:mb-7">
-				<span id="clockTime" class="font-mono text-2xl sm:text-3xl font-bold text-blue-300 drop-shadow-lg"></span>
-				<span id="clockDate" class="text-base sm:text-lg text-gray-300 mt-1"></span>
+			<div class="flex flex-col items-center space-y-4 mb-6">
+				<div class="flex items-center justify-center gap-4">
+					<div class="text-4xl sm:text-5xl text-blue-400">
+						<span class="material-icons">network_check</span>
+					</div>
+					<h2 class="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Network Information</h2>
+					<div class="text-4xl sm:text-5xl text-blue-400">
+						<span class="material-icons">network_check</span>
+					</div>
+				</div>
 			</div>
 
-			<h2 class="text-xl sm:text-2xl font-extrabold mb-4 sm:mb-7 bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Network Information</h2>
-
-			<div class="space-y-2 sm:space-y-3">
+			<div class="space-y-4 sm:space-y-5">
 				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
 					<div class="flex items-center gap-2 min-w-0">
 						<span class="material-icons text-blue-400 text-base sm:text-xl">public</span>
@@ -97,19 +101,6 @@
 		</div>
 
 		<script>
-			// ĐỒNG HỒ & NGÀY
-			function updateClock() {
-				const now = new Date();
-				const time = now.toLocaleTimeString("vi-VN", { hour12: false });
-				const days = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
-				const dayName = days[now.getDay()];
-				const dateStr = `${dayName}, ${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
-				document.getElementById("clockTime").textContent = time;
-				document.getElementById("clockDate").textContent = dateStr;
-			}
-			updateClock();
-			setInterval(updateClock, 1000);
-
 			// Lấy thông tin IP và địa lý
 			fetch("https://ipwho.is/")
 				.then((res) => res.json())
