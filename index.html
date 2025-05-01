@@ -25,6 +25,26 @@
 			.blur-animate {
 				animation: pulseBlur 6s ease-in-out infinite;
 			}
+			.tab-button {
+				padding: 0.5rem 1rem;
+				border-radius: 0.5rem;
+				color: #9ca3af;
+				transition: color 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				background-color: rgba(128, 128, 128, 0.5);
+			}
+			.tab-button:hover {
+				color: #3b82f6;
+			}
+			.tab-button.active {
+				color: #ffffff;
+			}
+			.tab-button.active .material-icons {
+				color: #3b82f6;
+			}
 		</style>
 	</head>
 
@@ -33,74 +53,194 @@
 			<div class="absolute -top-10 -left-10 w-32 h-32 sm:w-48 sm:h-48 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none blur-animate"></div>
 			<div class="absolute -bottom-12 -right-12 w-36 h-36 sm:w-52 sm:h-52 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none blur-animate"></div>
 
-			<div class="flex flex-col items-center space-y-4 mb-6">
-				<div class="flex items-center justify-center gap-4">
-					<div class="text-4xl sm:text-5xl text-blue-400">
-						<span class="material-icons">network_check</span>
+			<!-- Tab Navigation -->
+			<div class="mb-6">
+				<div class="flex justify-center space-x-2">
+					<button id="networkTab" class="tab-button" onclick="switchTab('network')">
+						<span class="material-icons text-base sm:text-lg">network_check</span>
+						<span class="ml-1">Network</span>
+					</button>
+					<button id="personalTab" class="tab-button active" onclick="switchTab('personal')">
+						<span class="material-icons text-base sm:text-lg">access_time</span>
+						<span class="ml-1">Real Time Clock</span>
+					</button>
+				</div>
+			</div>
+
+			<!-- Tab Content -->
+			<div id="networkContent" class="tab-content hidden">
+				<div class="flex flex-col items-center space-y-4 mb-6">
+					<div class="flex items-center justify-center gap-4">
+						<div class="text-4xl sm:text-5xl text-blue-400">
+							<span class="material-icons">network_check</span>
+						</div>
+						<h2 class="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Network Information</h2>
+						<div class="text-4xl sm:text-5xl text-blue-400">
+							<span class="material-icons">network_check</span>
+						</div>
 					</div>
-					<h2 class="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Network Information</h2>
-					<div class="text-4xl sm:text-5xl text-blue-400">
-						<span class="material-icons">network_check</span>
+				</div>
+
+				<div class="space-y-4 sm:space-y-5">
+					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+						<div class="flex items-center gap-2 min-w-0">
+							<span class="material-icons text-blue-400 text-base sm:text-xl">public</span>
+							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">IP:</span>
+						</div>
+						<span id="ip" class="text-red-400 bg-red-900/40 px-2 py-1 rounded font-bold text-base sm:text-lg cursor-pointer transition-transform duration-300 hover:bg-red-700/60 hover:text-white shadow-lg ring-2 ring-red-400/30 group-hover:scale-105 ml-2" title="Bấm để sao chép IP"> Đang tải... </span>
+					</div>
+
+					<div id="copyStatus" class="text-green-400 text-xs sm:text-sm mb-2 font-semibold text-right w-11/12 mx-auto hidden">✅ Đã sao chép IP!</div>
+
+					<div class="flex flex-col space-y-2">
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-yellow-300 text-sm sm:text-lg">flag</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Quốc gia:</span>
+							</div>
+							<span id="country" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-pink-300 text-sm sm:text-lg">location_city</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Thành phố:</span>
+							</div>
+							<span id="city" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105 whitespace-nowrap"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-green-300 text-sm sm:text-lg">dns</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">ISP:</span>
+							</div>
+							<span id="isp" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-cyan-300 text-sm sm:text-lg">language</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Trình duyệt:</span>
+							</div>
+							<span id="browser" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-purple-300 text-sm sm:text-lg">devices</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Hệ điều hành:</span>
+							</div>
+							<span id="os" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="space-y-4 sm:space-y-5">
-				<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-					<div class="flex items-center gap-2 min-w-0">
-						<span class="material-icons text-blue-400 text-base sm:text-xl">public</span>
-						<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">IP:</span>
+			<div id="personalContent" class="tab-content active">
+				<div class="flex flex-col items-center space-y-4 mb-6">
+					<div class="flex items-center justify-center gap-4">
+						<div class="text-4xl sm:text-5xl text-blue-400">
+							<span class="material-icons">access_time</span>
+						</div>
+						<h2 class="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Real Time Clock</h2>
+						<div class="text-4xl sm:text-5xl text-blue-400">
+							<span class="material-icons">access_time</span>
+						</div>
 					</div>
-					<span id="ip" class="text-red-400 bg-red-900/40 px-2 py-1 rounded font-bold text-base sm:text-lg cursor-pointer transition-transform duration-300 hover:bg-red-700/60 hover:text-white shadow-lg ring-2 ring-red-400/30 group-hover:scale-105 ml-2" title="Bấm để sao chép IP"> Đang tải... </span>
 				</div>
 
-				<div id="copyStatus" class="text-green-400 text-xs sm:text-sm mb-2 font-semibold text-right w-11/12 mx-auto hidden">✅ Đã sao chép IP!</div>
-
-				<div class="flex flex-col space-y-2">
-					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-						<div class="flex items-center gap-2 min-w-0">
-							<span class="material-icons text-yellow-300 text-sm sm:text-lg">flag</span>
-							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Quốc gia:</span>
-						</div>
-						<span id="country" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+				<div class="space-y-4 sm:space-y-5">
+					<div class="flex items-center justify-center gap-2 group w-11/12 mx-auto">
+						<span id="time" class="text-gray-200 font-medium text-2xl sm:text-3xl ml-2 transition hover:text-blue-400 hover:scale-105">00:00:00</span>
 					</div>
 
-					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-						<div class="flex items-center gap-2 min-w-0">
-							<span class="material-icons text-pink-300 text-sm sm:text-lg">location_city</span>
-							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Thành phố:</span>
-						</div>
-						<span id="city" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105 whitespace-nowrap"></span>
-					</div>
-
-					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-						<div class="flex items-center gap-2 min-w-0">
-							<span class="material-icons text-green-300 text-sm sm:text-lg">dns</span>
-							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">ISP:</span>
-						</div>
-						<span id="isp" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
-					</div>
-
-					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-						<div class="flex items-center gap-2 min-w-0">
-							<span class="material-icons text-cyan-300 text-sm sm:text-lg">language</span>
-							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Trình duyệt:</span>
-						</div>
-						<span id="browser" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
-					</div>
-
-					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
-						<div class="flex items-center gap-2 min-w-0">
-							<span class="material-icons text-purple-300 text-sm sm:text-lg">devices</span>
-							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Hệ điều hành:</span>
-						</div>
-						<span id="os" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+					<div class="flex items-center justify-center gap-2 group w-11/12 mx-auto">
+						<span id="date" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105">-</span>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<script>
+			// Update time and date
+			function updateTime() {
+				const now = new Date();
+				const daysOfWeek = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+
+				// Get time components
+				const hours = now.getHours().toString().padStart(2, "0");
+				const minutes = now.getMinutes().toString().padStart(2, "0");
+				const seconds = now.getSeconds().toString().padStart(2, "0");
+
+				// Get date components
+				const dayOfWeek = daysOfWeek[now.getDay()];
+				const date = now.getDate().toString().padStart(2, "0");
+				const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-based
+				const year = now.getFullYear();
+
+				// Format date string
+				const formattedDate = `${dayOfWeek}, ngày ${date} tháng ${month} năm ${year}`;
+
+				// Update elements
+				document.getElementById("time").textContent = `${hours}:${minutes}:${seconds}`;
+				document.getElementById("date").textContent = formattedDate;
+			}
+
+			// Update time every second
+			setInterval(updateTime, 1000);
+
+			// Initialize time on page load
+			document.addEventListener("DOMContentLoaded", () => {
+				updateTime();
+			});
+
+			// Tab Navigation
+			function switchTab(tab) {
+				// Update tab buttons
+				const networkTab = document.getElementById("networkTab");
+				const personalTab = document.getElementById("personalTab");
+
+				// Remove active class and reset transform
+				networkTab.classList.remove("active");
+				personalTab.classList.remove("active");
+				networkTab.style.transform = "translateY(0)";
+				personalTab.style.transform = "translateY(0)";
+
+				// Add transition for smooth animation
+				networkTab.style.transition = "transform 0.3s ease";
+				personalTab.style.transition = "transform 0.3s ease";
+
+				if (tab === "network") {
+					networkTab.classList.add("active");
+					networkTab.style.transform = "translateY(-2px)";
+				} else if (tab === "personal") {
+					personalTab.classList.add("active");
+					personalTab.style.transform = "translateY(-2px)";
+				}
+
+				// Update tab content (keep existing code)
+				const networkContent = document.getElementById("networkContent");
+				const personalContent = document.getElementById("personalContent");
+
+				networkContent.classList.remove("active");
+				networkContent.classList.add("hidden");
+				personalContent.classList.remove("active");
+				personalContent.classList.add("hidden");
+
+				if (tab === "network") {
+					networkContent.classList.remove("hidden");
+					networkContent.classList.add("active");
+				} else if (tab === "personal") {
+					personalContent.classList.remove("hidden");
+					personalContent.classList.add("active");
+				}
+			}
+
+			// Initialize tab
+			document.addEventListener("DOMContentLoaded", () => {
+				switchTab("personal");
+			});
+
 			// Lấy thông tin IP và địa lý
 			fetch("https://ipwho.is/")
 				.then((res) => res.json())
