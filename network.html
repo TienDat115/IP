@@ -32,6 +32,7 @@
 				color: #3b82f6;
 			}
 		</style>
+		<script src="asset/tab-navigation.js"></script>
 	</head>
 	<body class="min-h-screen flex items-center justify-center p-5 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
 		<div class="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-blue-700/30 rounded-3xl shadow-2xl max-w-md w-full p-5 sm:p-8 text-center relative overflow-hidden">
@@ -39,16 +40,10 @@
 			<div class="absolute -bottom-12 -right-12 w-36 h-36 sm:w-52 sm:h-52 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none blur-animate"></div>
 
 			<!-- Tab Navigation -->
-			<div class="mb-6">
-				<div class="flex justify-center space-x-2">
-					<button id="networkTab" class="tab-button active" onclick="window.location.href='network.html'">
-						<span class="material-icons text-base sm:text-lg">network_check</span>
-					</button>
-					<button id="personalTab" class="tab-button" onclick="window.location.href='clock.html'">
-						<span class="material-icons text-base sm:text-lg">access_time</span>
-					</button>
-				</div>
-			</div>
+			<div id="tabNavigation"></div>
+			<script>
+				document.getElementById("tabNavigation").innerHTML = createTabNavigation("network");
+			</script>
 
 			<!-- Tab Content -->
 			<div class="tab-content">
