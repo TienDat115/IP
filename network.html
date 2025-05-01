@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Network Information</title>
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+		<style>
+			body {
+				font-family: "Inter", sans-serif;
+			}
+			.tab-button {
+				padding: 0.5rem 1rem;
+				border-radius: 0.5rem;
+				color: #9ca3af;
+				transition: color 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				background-color: rgba(128, 128, 128, 0.5);
+			}
+			.tab-button:hover {
+				color: #3b82f6;
+			}
+			.tab-button.active {
+				color: #ffffff;
+			}
+			.tab-button.active .material-icons {
+				color: #3b82f6;
+			}
+		</style>
+	</head>
+	<body class="min-h-screen flex items-center justify-center p-5 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
+		<div class="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-blue-700/30 rounded-3xl shadow-2xl max-w-md w-full p-5 sm:p-8 text-center relative overflow-hidden">
+			<div class="absolute -top-10 -left-10 w-32 h-32 sm:w-48 sm:h-48 bg-blue-800/20 rounded-full blur-xl opacity-60 pointer-events-none blur-animate"></div>
+			<div class="absolute -bottom-12 -right-12 w-36 h-36 sm:w-52 sm:h-52 bg-purple-700/20 rounded-full blur-xl opacity-50 pointer-events-none blur-animate"></div>
+
+			<!-- Tab Navigation -->
+			<div class="mb-6">
+				<div class="flex justify-center space-x-2">
+					<button id="networkTab" class="tab-button active" onclick="window.location.href='network.html'">
+						<span class="material-icons text-base sm:text-lg">network_check</span>
+					</button>
+					<button id="personalTab" class="tab-button" onclick="window.location.href='clock.html'">
+						<span class="material-icons text-base sm:text-lg">access_time</span>
+					</button>
+				</div>
+			</div>
+
+			<!-- Tab Content -->
+			<div class="tab-content">
+				<div class="flex flex-col items-center space-y-4 mb-6">
+					<div class="flex items-center justify-center gap-4">
+						<div class="text-4xl sm:text-5xl text-blue-400">
+							<span class="material-icons">network_check</span>
+						</div>
+						<h2 class="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Network Information</h2>
+						<div class="text-4xl sm:text-5xl text-blue-400">
+							<span class="material-icons">network_check</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="space-y-4 sm:space-y-5">
+					<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+						<div class="flex items-center gap-2 min-w-0">
+							<span class="material-icons text-blue-400 text-base sm:text-xl">public</span>
+							<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">IP:</span>
+						</div>
+						<span id="ip" class="text-red-400 bg-red-900/40 px-2 py-1 rounded font-bold text-base sm:text-lg cursor-pointer transition-transform duration-300 hover:bg-red-700/60 hover:text-white shadow-lg ring-2 ring-red-400/30 group-hover:scale-105 ml-2" title="Bấm để sao chép IP">Đang tải...</span>
+					</div>
+
+					<div id="copyStatus" class="text-green-400 text-xs sm:text-sm mb-2 font-semibold text-right w-11/12 mx-auto hidden">✅ Đã sao chép IP!</div>
+
+					<div class="flex flex-col space-y-2">
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-yellow-300 text-sm sm:text-lg">flag</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Quốc gia:</span>
+							</div>
+							<span id="country" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-pink-300 text-sm sm:text-lg">location_city</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Thành phố:</span>
+							</div>
+							<span id="city" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105 whitespace-nowrap"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-green-300 text-sm sm:text-lg">dns</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">ISP:</span>
+							</div>
+							<span id="isp" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-cyan-300 text-sm sm:text-lg">language</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Trình duyệt:</span>
+							</div>
+							<span id="browser" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
+
+						<div class="flex items-center justify-between gap-2 group w-11/12 mx-auto">
+							<div class="flex items-center gap-2 min-w-0">
+								<span class="material-icons text-purple-300 text-sm sm:text-lg">devices</span>
+								<span class="font-semibold text-gray-400 text-sm sm:text-base whitespace-nowrap">Hệ điều hành:</span>
+							</div>
+							<span id="os" class="text-gray-200 font-medium text-sm sm:text-base ml-2 transition hover:text-blue-400 hover:scale-105"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// Lấy thông tin IP và địa lý
+			fetch("https://ipwho.is/")
+				.then((res) => res.json())
+				.then((data) => {
+					document.getElementById("ip").textContent = data.ip || "Không rõ";
+					document.getElementById("country").textContent = data.country || "Không rõ";
+					document.getElementById("city").textContent = data.city || "Không rõ";
+					document.getElementById("isp").textContent = data.connection?.isp || "Không rõ";
+				})
+				.catch(() => {
+					document.getElementById("ip").textContent = "Không thể lấy IP";
+				});
+
+			// Lấy trình duyệt và hệ điều hành
+			function getBrowserOS() {
+				const ua = navigator.userAgent;
+				let browser = "Không xác định";
+				let os = "Không xác định";
+
+				if (/chrome|crios/i.test(ua)) browser = "Chrome";
+				else if (/firefox|fxios/i.test(ua)) browser = "Firefox";
+				else if (/safari/i.test(ua)) browser = "Safari";
+				else if (/edg/i.test(ua)) browser = "Edge";
+
+				if (/windows/i.test(ua)) os = "Windows";
+				else if (/mac/i.test(ua)) os = "macOS";
+				else if (/android/i.test(ua)) os = "Android";
+				else if (/iphone|ipad/i.test(ua)) os = "iOS";
+				else if (/linux/i.test(ua)) os = "Linux";
+
+				document.getElementById("browser").textContent = browser;
+				document.getElementById("os").textContent = os;
+			}
+			getBrowserOS();
+
+			// Sao chép IP và hiệu ứng click
+			document.getElementById("ip").addEventListener("click", function () {
+				const ipText = this.textContent;
+				if (!ipText || ipText === "Đang tải..." || ipText === "Không thể lấy IP") return;
+
+				const tempInput = document.createElement("input");
+				tempInput.value = ipText;
+				document.body.appendChild(tempInput);
+				tempInput.select();
+				tempInput.setSelectionRange(0, 99999);
+				document.execCommand("copy");
+				document.body.removeChild(tempInput);
+
+				// Hiệu ứng
+				this.classList.add("scale-110");
+				setTimeout(() => this.classList.remove("scale-110"), 300);
+
+				const copyStatus = document.getElementById("copyStatus");
+				copyStatus.style.display = "block";
+				setTimeout(() => {
+					copyStatus.style.display = "none";
+				}, 1500);
+			});
+		</script>
+	</body>
+</html>
