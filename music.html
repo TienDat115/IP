@@ -19,125 +19,54 @@
 			}
 		</style>
 	</head>
-	<body class="bg-gray-800 text-white font-sans text-center p-5">
-		<h1 class="text-3xl font-bold mb-6 flex items-center justify-center space-x-3 text-gray-100">
-			<span>🎧</span>
-			<span>Trình Nghe Nhạc</span>
-		</h1>
+	<body class="bg-gray-800 text-white font-sans text-center p-3 sm:p-5">
+		<div class="w-full max-w-2xl mx-auto">
+			<!-- Header -->
+			<h1 class="text-2xl sm:text-3xl font-bold mb-4 flex items-center justify-center space-x-2 text-gray-100">
+				<span>🎧</span>
+				<span>Trình Nghe Nhạc</span>
+			</h1>
 
-		<!-- Nút điều khiển -->
-		<div class="mb-5 flex flex-row justify-center items-center space-x-2">
-			<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">Tiếp</button>
-			<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">🔄<span id="repeatStatus">Tắt</span></button>
-			<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">🎲<span id="mode">Ngẫu nhiên</span></button>
-		</div>
+			<!-- Nút điều khiển -->
+			<div class="mb-4 flex flex-wrap justify-center items-center space-x-2 sm:space-x-4">
+				<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">Tiếp</button>
+				<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">🔄<span id="repeatStatus">Tắt</span></button>
+				<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">🎲<span id="mode">Ngẫu nhiên</span></button>
+			</div>
 
-		<!-- Player Container -->
-		<div id="playerContainer" class="w-full max-w-lg mx-auto rounded-lg bg-black overflow-hidden"></div>
+			<!-- Player Container -->
+			<div id="playerContainer" class="w-full max-w-xl mx-auto rounded-lg bg-black overflow-hidden mb-4"></div>
 
-		<!-- Hiển thị bài hát hiện tại -->
-		<div id="currentSong" class="mt-4 mb-5 flex items-center justify-center space-x-3 text-lg bg-gray-700 p-3 rounded-xl shadow-lg max-w-md mx-auto"></div>
+			<!-- Hiển thị bài hát hiện tại -->
+			<div id="currentSong" class="mt-3 mb-4 flex items-center justify-center space-x-2 text-base sm:text-lg bg-gray-700 p-2 sm:p-3 rounded-lg shadow-lg max-w-md mx-auto"></div>
 
-		<!-- Nút điều khiển playlist và yêu thích -->
-		<div class="flex justify-center space-x-2 mb-4">
-			<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition">Ẩn playlist</button>
-			<button onclick="toggleFavorites()" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded transition"><span class="text-xl">❤️</span></button>
-			<button id="favoriteRandomBtn" onclick="toggleFavoriteRandom()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"><span class="text-xl">🎲</span><span id="favoriteRandomStatus">Tắt</span></button>
-		</div>
+			<!-- Nút điều khiển playlist và yêu thích -->
+			<div class="flex flex-wrap justify-center space-x-2 sm:space-x-4 mb-3">
+				<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition">Ẩn playlist</button>
+				<button onclick="toggleFavorites()" class="bg-pink-500 hover:bg-pink-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition"><span class="text-lg sm:text-xl">❤️</span></button>
+				<button id="favoriteRandomBtn" onclick="toggleFavoriteRandom()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition"><span class="text-lg sm:text-xl">🎲</span><span id="favoriteRandomStatus">Tắt</span></button>
+			</div>
 
-		<!-- Playlist Wrapper -->
-		<div id="playlistWrapper">
-			<ul id="playlist" class="mt-6 max-w-lg mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
-			<div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
-		</div>
+			<!-- Playlist Wrapper -->
+			<div id="playlistWrapper" class="hidden">
+				<ul id="playlist" class="mt-4 max-w-xl mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
+				<div id="pagination" class="flex justify-center items-center space-x-2 mt-3"></div>
+			</div>
 
-		<!-- Modal danh sách yêu thích -->
-		<div id="favoritesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-			<div class="bg-gray-800 p-6 rounded-lg max-w-md w-full relative">
-				<button onclick="closeFavorites()" class="absolute top-2 right-2 text-gray-300 hover:text-white">✕</button>
-				<h2 class="text-2xl mb-4">Danh sách yêu thích</h2>
-				<ul id="favoritesList" class="divide-y divide-gray-600"></ul>
+			<!-- Modal danh sách yêu thích -->
+			<div id="favoritesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+				<div class="bg-gray-800 p-4 sm:p-6 rounded-lg max-w-md w-full relative">
+					<button onclick="closeFavorites()" class="absolute top-2 right-2 text-gray-300 hover:text-white">✕</button>
+					<h2 class="text-xl mb-3">Danh sách yêu thích</h2>
+					<ul id="favoritesList" class="divide-y divide-gray-600"></ul>
+				</div>
 			</div>
 		</div>
 
 		<script>
-			const musicList = [
-				"music/1.mp3",
-				"music/2.mp3",
-				"music/3.mp3",
-				"music/4.mp3",
-				"music/5.mp3",
-				"music/6.mp3",
-				"music/7.mp3",
-				"music/8.mp3",
-				"music/9.mp3",
-				"music/10.mp3",
-				"music/11.mp3",
-				"music/12.mp3",
-				"music/13.mp3",
-				"music/14.mp3",
-				"music/15.mp3",
-				"music/16.mp3",
-				"music/17.mp3",
-				"music/18.mp3",
-				"music/19.mp3",
-				"music/20.mp3",
-				"music/21.mp3",
-				"music/22.mp3",
-				"music/24.mp3",
-				"music/25.mp3",
-				"music/26.mp3",
-				"music/27.mp3",
-				"music/28.mp3",
-				"music/29.mp3",
-				"music/30.mp3",
-				"music/31.mp3",
-				"music/32.mp3",
-				"music/33.mp3",
-				// Thêm link YouTube ví dụ:
-				"https://www.youtube.com/embed/lqFGzPM8wkg",
-				"https://www.youtube.com/embed/xi1cWsfJTTs",
-				"https://www.youtube.com/embed/uXkYCdL_HpY",
-			];
+			const musicList = ["music/1.mp3", "music/2.mp3", "music/3.mp3", "music/4.mp3", "music/5.mp3", "music/6.mp3", "music/7.mp3", "music/8.mp3", "music/9.mp3", "music/10.mp3", "music/11.mp3", "music/12.mp3", "music/13.mp3", "music/14.mp3", "music/15.mp3", "music/16.mp3", "music/17.mp3", "music/18.mp3", "music/19.mp3", "music/20.mp3", "music/21.mp3", "music/22.mp3", "music/24.mp3", "music/25.mp3", "music/26.mp3", "music/27.mp3", "music/28.mp3", "music/29.mp3", "music/30.mp3", "music/31.mp3", "music/32.mp3", "music/33.mp3", "https://www.youtube.com/embed/lqFGzPM8wkg", "https://www.youtube.com/embed/xi1cWsfJTTs", "https://www.youtube.com/embed/uXkYCdL_HpY"];
 
-			const songNames = [
-				"Tháp Rơi Tự Do",
-				"Ghép Hình Tình Yêu",
-				"Góp Vui",
-				"Kiss Kiss Shy Shy",
-				"Như",
-				"Bất Công",
-				"CocoCoCo",
-				"Magnetic",
-				"Sơn Hải",
-				"Nhập Hoài",
-				"Không Nỡ - Đấu La Đại Lục",
-				"Có - Không Có",
-				"Đối Diện",
-				"Tham Cầu - Thần Ẩn",
-				"Ring Ring Ring",
-				"TA - Bàn Hổ",
-				"Như Ca - Liệt Hỏa Như Ca",
-				"Cái Đuôi Nhỏ",
-				"Lưu Chuyển Doanh Hồi - Ngộ Long",
-				"Đông Miên",
-				"Polaroid Love",
-				"For ya – Tưởng Tiểu Ni",
-				"Say YES",
-				"Chờ Đến Tháng 13",
-				"Mình Cùng Nhau Đóng Băng",
-				"Trang Giấy Cuối Cùng",
-				"Blueming - IU",
-				"Yêu Như Thế - Thần Ẩn",
-				"Bích Thương Chiến Ca - Dữ Phượng Hành",
-				"Phong - Thiếu Niên Ca Hành",
-				"Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh",
-				"Chưa Chắc - Ngô Cẩn Ngôn",
-				// Tên bài cho YouTube link
-				"Học bài và nghe nhạc cùng tớ nhé",
-				"Dữ Phượng Hành OST",
-				"Playlist Nhạc Hè",
-			];
+			const songNames = ["Tháp Rơi Tự Do", "Ghép Hình Tình Yêu", "Góp Vui", "Kiss Kiss Shy Shy", "Như", "Bất Công", "CocoCoCo", "Magnetic", "Sơn Hải", "Nhập Hoài", "Không Nỡ - Đấu La Đại Lục", "Có - Không Có", "Đối Diện", "Tham Cầu - Thần Ẩn", "Ring Ring Ring", "TA - Bàn Hổ", "Như Ca - Liệt Hỏa Như Ca", "Cái Đuôi Nhỏ", "Lưu Chuyển Doanh Hồi - Ngộ Long", "Đông Miên", "Polaroid Love", "For ya – Tưởng Tiểu Ni", "Say YES", "Chờ Đến Tháng 13", "Mình Cùng Nhau Đóng Băng", "Trang Giấy Cuối Cùng", "Blueming - IU", "Yêu Như Thế - Thần Ẩn", "Bích Thương Chiến Ca - Dữ Phượng Hành", "Phong - Thiếu Niên Ca Hành", "Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh", "Chưa Chắc - Ngô Cẩn Ngôn", "Học bài và nghe nhạc cùng tớ nhé", "Dữ Phượng Hành OST", "Playlist Nhạc Hè"];
 
 			let currentIndex = 0;
 			let isRandom = true;
@@ -164,7 +93,7 @@
 					const isFavorite = favorites.includes(url);
 
 					const li = document.createElement("li");
-					li.className = "flex items-center justify-between px-4 py-2 hover:bg-gray-600 transition " + (idx === currentIndex ? "bg-gray-500 font-bold" : "");
+					li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition " + (idx === currentIndex ? "bg-gray-500 font-bold" : "");
 
 					const songContainer = document.createElement("div");
 					songContainer.className = "flex items-center space-x-2";
@@ -246,7 +175,7 @@
 					const iframe = document.createElement("iframe");
 					iframe.src = url + "?autoplay=1";
 					iframe.width = "100%";
-					iframe.height = "315";
+					iframe.height = "200";
 					iframe.frameBorder = "0";
 					iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
 					iframe.allowFullscreen = true;
@@ -270,10 +199,11 @@
 				if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
 				else if (url.endsWith(".mp3")) icon = "🎶";
 				else if (url.endsWith(".mp4")) icon = "🎬";
-				currentSongDisplay.innerHTML = `<span class="text-2xl">${icon}</span> <span>${songNames[index]}</span>`;
+				currentSongDisplay.innerHTML = `<span class="text-xl">${icon}</span> <span>${songNames[index]}</span>`;
 
 				renderPlaylist();
 			}
+
 			let isRepeat = false;
 
 			function toggleRepeat() {
@@ -308,7 +238,6 @@
 				modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 			}
 
-			// Yêu thích
 			function toggleFavorite(index) {
 				const url = musicList[index];
 				const isFavorite = favorites.includes(url);
@@ -321,14 +250,17 @@
 				renderPlaylist();
 				updateFavoritesList();
 			}
+
 			function toggleFavorites() {
 				const modal = document.getElementById("favoritesModal");
 				modal.classList.toggle("hidden");
 				updateFavoritesList();
 			}
+
 			function closeFavorites() {
 				document.getElementById("favoritesModal").classList.add("hidden");
 			}
+
 			function updateFavoritesList() {
 				const favoritesList = document.getElementById("favoritesList");
 				favoritesList.innerHTML = "";
@@ -337,9 +269,9 @@
 					if (index !== -1) {
 						const name = songNames[index];
 						const li = document.createElement("li");
-						li.className = "flex items-center justify-between px-4 py-2 hover:bg-gray-600 transition";
+						li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition";
 						li.innerHTML = `<span>${name}</span>
-							<button onclick="play(${index})" class="text-xl hover:text-blue-500 transition">▶️</button>`;
+							<button onclick="play(${index})" class="text-xl sm:text-lg hover:text-blue-500 transition">▶️</button>`;
 						favoritesList.appendChild(li);
 					}
 				});
@@ -360,7 +292,7 @@
 			}
 
 			// Ẩn/hiện playlist
-			let isPlaylistVisible = false; // Mặc định ẩn
+			let isPlaylistVisible = false;
 			playlistWrapper.style.display = "none";
 			togglePlaylistBtn.textContent = "Hiện";
 			togglePlaylistBtn.onclick = function () {
