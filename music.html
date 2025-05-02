@@ -149,370 +149,416 @@
 				transform: translateY(-2px);
 				transition: all 0.3s ease;
 			}
+
+			/* Tạo viền cho khung bọc */
+			.player-wrapper {
+				border: 2px solid #4b5563;
+				border-radius: 12px;
+				padding: 1rem;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				transition: all 0.3s ease;
+			}
+
+			.player-wrapper:hover {
+				border-color: #6b7280;
+				box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+			}
 		</style>
 	</head>
 	<body class="bg-gray-800 text-white font-sans text-center p-3 sm:p-5">
 		<div class="w-full max-w-2xl mx-auto">
-			<!-- Header -->
-			<h1 class="text-2xl sm:text-3xl font-bold mb-4 flex items-center justify-center space-x-2 text-gray-100">
-				<span>🎧</span>
-				<span>Trình Nghe Nhạc</span>
-			</h1>
+			<div class="player-wrapper">
+				<!-- Header -->
+				<h1 class="text-2xl sm:text-3xl font-bold mb-4 flex items-center justify-center space-x-2 text-gray-100">
+					<span>🎧</span>
+					<span>Trình Nghe Nhạc</span>
+				</h1>
 
-			<!-- Nút điều khiển -->
-			<div class="mb-4 flex flex-wrap justify-center items-center space-x-2 sm:space-x-4">
-				<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">Tiếp</button>
-				<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
-					<span class="text-lg sm:text-xl">🔄</span>
-				</button>
-				<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">🎲<span id="mode">Ngẫu nhiên</span></button>
-			</div>
+				<!-- Nút điều khiển -->
+				<div class="mb-4 flex flex-wrap justify-center items-center space-x-2 sm:space-x-4">
+					<!-- Nút Tiếp -->
+					<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
+						<span class="text-lg sm:text-xl">▶️</span>
+						<span class="hidden sm:inline">Tiếp</span>
+					</button>
 
-			<!-- Player Container -->
-			<div id="playerContainer" class="w-full max-w-xl mx-auto rounded-lg bg-black overflow-hidden mb-4"></div>
+					<!-- Nút Lặp lại -->
+					<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
+						<span class="text-lg sm:text-xl">🔄</span>
+						<span class="hidden sm:inline">Lặp lại</span>
+					</button>
 
-			<!-- Hiển thị bài hát hiện tại -->
-			<div id="currentSong" class="mt-3 mb-4 flex items-center justify-center space-x-2 text-base sm:text-lg bg-gray-700 p-2 sm:p-3 rounded-lg shadow-lg max-w-md mx-auto"></div>
+					<!-- Nút Ngẫu nhiên -->
+					<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
+						<span class="text-lg sm:text-xl">🎲</span>
+						<span class="hidden sm:inline">Ngẫu nhiên</span>
+					</button>
 
-			<!-- Nút điều khiển playlist và yêu thích -->
-			<div class="flex flex-wrap justify-center space-x-2 sm:space-x-4 mb-3">
-				<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition">Ẩn playlist</button>
-			</div>
+					<!-- Nút Playlist -->
+					<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition">
+						<span class="text-lg sm:text-xl">📜</span>
+						<span class="hidden sm:inline">Playlist</span>
+					</button>
+				</div>
 
-			<!-- Playlist Wrapper -->
-			<div id="playlistWrapper">
-				<select id="categorySelect" class="w-full bg-gray-500 text-white p-2 mb-2 rounded"></select>
-				<ul id="playlist" class="mt-4 max-w-xl mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
-				<div id="pagination" class="flex justify-center items-center space-x-2 mt-3"></div>
-			</div>
+				<!-- Player Container -->
+				<div id="playerContainer" class="w-full max-w-xl mx-auto rounded-lg bg-black overflow-hidden mb-4"></div>
 
-			<!-- Modal danh sách yêu thích -->
-			<div id="favoritesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-				<div class="bg-gray-800 p-4 sm:p-6 rounded-lg max-w-md w-full relative">
-					<button onclick="closeFavorites()" class="absolute top-2 right-2 text-gray-300 hover:text-white">✕</button>
-					<h2 class="text-xl mb-3">Danh sách yêu thích</h2>
-					<ul id="favoritesList" class="divide-y divide-gray-600"></ul>
+				<!-- Hiển thị bài hát hiện tại -->
+				<div id="currentSong" class="mt-3 mb-4 flex items-center justify-center space-x-2 text-base sm:text-lg bg-gray-700 p-2 sm:p-3 rounded-lg shadow-lg max-w-md mx-auto"></div>
+
+				<!-- Playlist Wrapper -->
+				<div id="playlistWrapper" style="display: none">
+					<select id="categorySelect" class="w-full bg-gray-500 text-white p-2 mb-2 rounded"></select>
+					<ul id="playlist" class="mt-4 max-w-xl mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
+					<div id="pagination" class="flex justify-center items-center space-x-2 mt-3"></div>
+				</div>
+
+				<!-- Modal danh sách yêu thích -->
+				<div id="favoritesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div class="bg-gray-800 p-4 sm:p-6 rounded-lg max-w-md w-full relative">
+						<button onclick="closeFavorites()" class="absolute top-2 right-2 text-gray-300 hover:text-white">✕</button>
+						<h2 class="text-xl mb-3">Danh sách yêu thích</h2>
+						<ul id="favoritesList" class="divide-y divide-gray-600"></ul>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<script>
-			const playlists = {
-				"Tất cả bài hát": {
-					music: [],
-					songs: [],
-				},
-				"Chill Music": {
-					music: ["music/1.mp3", "music/2.mp3", "music/3.mp3", "music/4.mp3", "music/5.mp3", "music/6.mp3", "music/7.mp3", "music/12.mp3", "music/13.mp3", "music/15.mp3", "music/16.mp3", "music/20.mp3", "music/22.mp3", "music/25.mp3", "music/27.mp3", "music/33.mp3"],
-					songs: ["Tháp Rơi Tự Do", "Ghép Hình Tình Yêu", "Góp Vui", "Kiss Kiss Shy Shy", "Như", "Bất Công", "CocoCoCo", "Có - Không Có", "Đối Diện", "Ring Ring Ring", "TA - Bàn Hổ", "Đông Miên", "For ya – Tưởng Tiểu Ni", "Chờ Đến Tháng 13", "Trang Giấy Cuối Cùng", "Chưa Chắc - Ngô Cẩn Ngôn"],
-				},
-				"OST Phim": {
-					music: ["music/30.mp3", "music/29.mp3", "music/14.mp3", "music/17.mp3", "music/18.mp3", "music/19.mp3", "music/31.mp3", "music/32.mp3", "music/9.mp3", "music/10.mp3", "music/11.mp3"],
-					songs: ["Bích Thương Chiến Ca - Dữ Phượng Hành", "Yêu Như Thế - Thần Ẩn", "Tham Cầu - Thần Ẩn", "Như Ca - Liệt Hỏa Như Ca", "Cái Đuôi Nhỏ", "Lưu Chuyển Doanh Hồi - Ngộ Long", "Phong - Thiếu Niên Ca Hành", "Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh", "Sơn Hải", "Nhập Hoài", "Không Nỡ - Đấu La Đại Lục"],
-				},
-				"Nhạc Việt": {
-					music: ["music/26.mp3"],
-					songs: ["Mình Cùng Nhau Đóng Băng"],
-				},
-				"Nhạc Hàn": {
-					music: ["music/8.mp3", "music/24.mp3", "music/28.mp3", "music/21.mp3"],
-					songs: ["Magnetic", "Say YES", "Blueming - IU", "Polaroid Love"],
-				},
-				"YouTube Videos": {
-					music: ["https://www.youtube.com/embed/lqFGzPM8wkg", "https://www.youtube.com/embed/xi1cWsfJTTs", "https://www.youtube.com/embed/uXkYCdL_HpY"],
-					songs: ["Học bài và nghe nhạc cùng tớ nhé", "Dữ Phượng Hành OST", "Playlist Nhạc Hè"],
-				},
-				"Danh Sách Yêu Thích": {
-					music: [],
-					songs: [],
-				},
-			};
-
-			// Tạo danh sách "Tất cả bài hát"
-			Object.values(playlists).forEach((list, index) => {
-				if (index === 0) return; // Bỏ qua chính nó
-				playlists["Tất cả bài hát"].music.push(...list.music);
-				playlists["Tất cả bài hát"].songs.push(...list.songs);
-			});
-
-			// Cập nhật danh sách yêu thích từ local storage
-			let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-			favorites = Array.isArray(favorites) ? favorites : [];
-
-			// Cập nhật danh sách yêu thích
-			favorites.forEach((favoriteUrl) => {
-				for (const [playlistName, list] of Object.entries(playlists)) {
-					const index = list.music.indexOf(favoriteUrl);
-					if (index !== -1) {
-						playlists["Danh Sách Yêu Thích"].music.push(favoriteUrl);
-						playlists["Danh Sách Yêu Thích"].songs.push(`${list.songs[index]}`);
-						break;
-					}
-				}
-			});
-
-			// Cập nhật select box
-			const categorySelect = document.getElementById("categorySelect");
-			categorySelect.innerHTML = "";
-			Object.keys(playlists).forEach((playlistName) => {
-				const option = document.createElement("option");
-				option.value = playlistName;
-				option.textContent = playlistName;
-				categorySelect.appendChild(option);
-			});
-
-			let currentPlaylist = "Tất cả bài hát";
-			let currentIndex = 0;
-			let isRandom = true;
-			let currentPage = 1;
-			const pageSize = 10;
-
-			const playerContainer = document.getElementById("playerContainer");
-			const modeSpan = document.getElementById("mode");
-			const currentSongDisplay = document.getElementById("currentSong");
-			const playlist = document.getElementById("playlist");
-			const playlistWrapper = document.getElementById("playlistWrapper");
-			const togglePlaylistBtn = document.getElementById("togglePlaylistBtn");
-
-			categorySelect.onchange = function () {
-				currentPlaylist = this.value;
-				currentIndex = 0;
-				currentPage = 1;
-				renderPlaylist();
-			};
-
-			function renderPlaylist() {
-				playlist.innerHTML = "";
-				const currentList = playlists[currentPlaylist];
-				const start = (currentPage - 1) * pageSize;
-				const end = Math.min(start + pageSize, currentList.songs.length);
-
-				for (let idx = start; idx < end; idx++) {
-					const name = currentList.songs[idx];
-					const url = currentList.music[idx];
-					const isFavorite = favorites.includes(url);
-
-					const li = document.createElement("li");
-					li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition " + (idx === currentIndex ? "bg-gray-500 font-bold" : "");
-
-					const songContainer = document.createElement("div");
-					songContainer.className = "flex items-center space-x-2";
-					let icon = "🎵";
-					if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
-					else if (url.endsWith(".mp3")) icon = "🎶";
-					else if (url.endsWith(".mp4")) icon = "🎬";
-					songContainer.innerHTML = `<span class="text-xl">${icon}</span><span>${name}</span>`;
-					li.appendChild(songContainer);
-
-					const favoriteBtn = document.createElement("button");
-					favoriteBtn.className = "text-xl hover:text-pink-500 transition";
-					favoriteBtn.innerHTML = isFavorite ? "❤️" : "🤍";
-					favoriteBtn.onclick = (event) => {
-						event.stopPropagation();
-						toggleFavorite(url);
-					};
-					li.appendChild(favoriteBtn);
-
-					li.onclick = (event) => {
-						if (event.target !== favoriteBtn) {
-							currentIndex = idx;
-							play(currentIndex);
-							renderPlaylist();
-						}
-					};
-					playlist.appendChild(li);
-				}
-				renderPagination();
-			}
-
-			function renderPagination() {
-				const pagination = document.getElementById("pagination");
-				pagination.innerHTML = "";
-				const totalPages = Math.ceil(playlists[currentPlaylist].songs.length / pageSize);
-
-				const prevBtn = document.createElement("button");
-				prevBtn.textContent = "«";
-				prevBtn.disabled = currentPage === 1;
-				prevBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 disabled:opacity-50";
-				prevBtn.onclick = () => {
-					if (currentPage > 1) {
-						currentPage--;
-						renderPlaylist();
-					}
+			<script>
+				const playlists = {
+					"Tất cả bài hát": {
+						music: [],
+						songs: [],
+					},
+					"Chill Music": {
+						music: ["music/1.mp3", "music/2.mp3", "music/3.mp3", "music/4.mp3", "music/5.mp3", "music/6.mp3", "music/7.mp3", "music/12.mp3", "music/13.mp3", "music/15.mp3", "music/16.mp3", "music/20.mp3", "music/22.mp3", "music/25.mp3", "music/27.mp3", "music/33.mp3", "music/38.mp3"],
+						songs: ["Tháp Rơi Tự Do", "Ghép Hình Tình Yêu", "Góp Vui", "Kiss Kiss Shy Shy", "Như", "Bất Công", "CocoCoCo", "Có - Không Có", "Đối Diện", "Ring Ring Ring", "TA - Bàn Hổ", "Đông Miên", "For ya – Tưởng Tiểu Ni", "Chờ Đến Tháng 13", "Trang Giấy Cuối Cùng", "Chưa Chắc - Ngô Cẩn Ngôn", "Renai Circulation - Anime"],
+					},
+					"OST Phim": {
+						music: ["music/30.mp3", "music/29.mp3", "music/14.mp3", "music/17.mp3", "music/18.mp3", "music/19.mp3", "music/31.mp3", "music/32.mp3", "music/9.mp3", "music/10.mp3", "music/11.mp3"],
+						songs: ["Bích Thương Chiến Ca - Dữ Phượng Hành", "Yêu Như Thế - Thần Ẩn", "Tham Cầu - Thần Ẩn", "Như Ca - Liệt Hỏa Như Ca", "Cái Đuôi Nhỏ", "Lưu Chuyển Doanh Hồi - Ngộ Long", "Phong - Thiếu Niên Ca Hành", "Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh", "Sơn Hải", "Nhập Hoài", "Không Nỡ - Đấu La Đại Lục"],
+					},
+					"Nhạc Việt": {
+						music: ["music/26.mp3"],
+						songs: ["Mình Cùng Nhau Đóng Băng"],
+					},
+					"Nhạc Hàn": {
+						music: ["music/8.mp3", "music/24.mp3", "music/28.mp3", "music/21.mp3", "music/37.mp3", "music/39.mp3"],
+						songs: ["Magnetic", "Say YES", "Blueming - IU", "Polaroid Love", "BIGBANG - HARU HARU", "Apink - Mr.Chu"],
+					},
+					"Nhạc Game": {
+						music: ["music/23.mp3", "music/34.mp3", "music/35.mp3", "music/36.mp3"],
+						songs: ["ANIMA POWER - QWER", "Warriors - Worlds 2014", "Legends Never Die - Worlds 2017", "K/DA - (G)I-DLE"],
+					},
+					"YouTube Videos": {
+						music: ["https://www.youtube.com/embed/lqFGzPM8wkg", "https://www.youtube.com/embed/xi1cWsfJTTs", "https://www.youtube.com/embed/uXkYCdL_HpY"],
+						songs: ["Học bài và nghe nhạc cùng tớ nhé", "Dữ Phượng Hành OST", "Playlist Nhạc Hè"],
+					},
+					"Danh Sách Yêu Thích": {
+						music: [],
+						songs: [],
+					},
 				};
-				pagination.appendChild(prevBtn);
 
-				for (let i = 1; i <= totalPages; i++) {
-					const pageBtn = document.createElement("button");
-					pageBtn.textContent = i;
-					pageBtn.className = "px-2 py-1 rounded " + (i === currentPage ? "bg-blue-500 text-white" : "bg-gray-600 hover:bg-gray-500");
-					pageBtn.onclick = () => {
-						currentPage = i;
-						renderPlaylist();
-					};
-					pagination.appendChild(pageBtn);
-				}
+				// Tạo danh sách "Tất cả bài hát"
+				Object.values(playlists).forEach((list, index) => {
+					if (index === 0) return; // Bỏ qua chính nó
+					playlists["Tất cả bài hát"].music.push(...list.music);
+					playlists["Tất cả bài hát"].songs.push(...list.songs);
+				});
 
-				const nextBtn = document.createElement("button");
-				nextBtn.textContent = "»";
-				nextBtn.disabled = currentPage === totalPages;
-				nextBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 disabled:opacity-50";
-				nextBtn.onclick = () => {
-					if (currentPage < totalPages) {
-						currentPage++;
-						renderPlaylist();
-					}
-				};
-				pagination.appendChild(nextBtn);
-			}
+				// Cập nhật danh sách yêu thích từ local storage
+				let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+				favorites = Array.isArray(favorites) ? favorites : [];
 
-			function play(index) {
-				const currentList = playlists[currentPlaylist];
-				const url = currentList.music[index];
-				currentPage = Math.floor(index / pageSize) + 1;
-				playerContainer.innerHTML = "";
-
-				if (url.includes("youtube.com") || url.includes("youtu.be")) {
-					const iframe = document.createElement("iframe");
-					iframe.src = url + "?autoplay=1";
-					iframe.width = "100%";
-					iframe.height = "200";
-					iframe.frameBorder = "0";
-					iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-					iframe.allowFullscreen = true;
-					playerContainer.appendChild(iframe);
-				} else {
-					const video = document.createElement("video");
-					video.src = url;
-					video.controls = true;
-					video.playsInline = true;
-					video.autoplay = true;
-					video.className = "w-full";
-					video.volume = 0.5;
-					video.addEventListener("ended", function () {
-						if (isRepeat) play(currentIndex);
-						else playNext();
-					});
-					playerContainer.appendChild(video);
-				}
-
-				let icon = "🎵";
-				if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
-				else if (url.endsWith(".mp3")) icon = "🎶";
-				else if (url.endsWith(".mp4")) icon = "🎬";
-				currentSongDisplay.innerHTML = `<span class="text-xl">${icon}</span> <span>${currentList.songs[index]}</span>`;
-
-				renderPlaylist();
-			}
-
-			let isRepeat = false;
-
-			function toggleRepeat() {
-				isRepeat = !isRepeat;
-				const repeatBtn = document.getElementById("repeatBtn");
-				if (isRepeat) {
-					repeatBtn.classList.add("active");
-					repeatBtn.classList.remove("inactive");
-				} else {
-					repeatBtn.classList.add("inactive");
-					repeatBtn.classList.remove("active");
-				}
-			}
-
-			function playNext() {
-				const currentList = playlists[currentPlaylist];
-				if (isRandom) {
-					let nextIndex;
-					const nonYoutubeIndexes = currentList.music.map((item, idx) => (!item.includes("youtube.com") && !item.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
-					do {
-						const randomPos = Math.floor(Math.random() * nonYoutubeIndexes.length);
-						nextIndex = nonYoutubeIndexes[randomPos];
-					} while (nonYoutubeIndexes.length > 1 && nextIndex === currentIndex);
-					currentIndex = nextIndex;
-				} else {
-					currentIndex = (currentIndex + 1) % currentList.music.length;
-				}
-				play(currentIndex);
-			}
-
-			function toggleRandom() {
-				isRandom = !isRandom;
-				modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
-			}
-
-			function toggleFavorite(url) {
-				const isFavorite = favorites.includes(url);
-				if (isFavorite) {
-					favorites = favorites.filter((song) => song !== url);
-					// Xóa bài hát khỏi danh sách yêu thích
-					const index = playlists["Danh Sách Yêu Thích"].music.indexOf(url);
-					if (index !== -1) {
-						playlists["Danh Sách Yêu Thích"].music.splice(index, 1);
-						playlists["Danh Sách Yêu Thích"].songs.splice(index, 1);
-					}
-				} else {
-					favorites.push(url);
-					// Thêm bài hát vào danh sách yêu thích
-					const currentList = playlists[currentPlaylist];
-					const songIndex = currentList.music.indexOf(url);
-					if (songIndex !== -1) {
-						playlists["Danh Sách Yêu Thích"].music.push(url);
-						playlists["Danh Sách Yêu Thích"].songs.push(currentList.songs[songIndex]);
-					}
-				}
-				localStorage.setItem("favorites", JSON.stringify(favorites));
-				renderPlaylist();
-				updateFavoritesList();
-			}
-
-			function toggleFavorites() {
-				const modal = document.getElementById("favoritesModal");
-				modal.classList.toggle("hidden");
-				updateFavoritesList();
-			}
-
-			function closeFavorites() {
-				document.getElementById("favoritesModal").classList.add("hidden");
-			}
-
-			function updateFavoritesList() {
-				const favoritesList = document.getElementById("favoritesList");
-				favoritesList.innerHTML = "";
-				favorites.forEach((url) => {
+				// Cập nhật danh sách yêu thích
+				favorites.forEach((favoriteUrl) => {
 					for (const [playlistName, list] of Object.entries(playlists)) {
-						const index = list.music.indexOf(url);
+						const index = list.music.indexOf(favoriteUrl);
 						if (index !== -1) {
-							const li = document.createElement("li");
-							li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition";
-							li.innerHTML = `<span>${list.songs[index]}</span>
-										<button onclick="play(${index})" class="text-xl sm:text-lg hover:text-blue-500 transition">▶️</button>`;
-							favoritesList.appendChild(li);
+							playlists["Danh Sách Yêu Thích"].music.push(favoriteUrl);
+							playlists["Danh Sách Yêu Thích"].songs.push(`${list.songs[index]}`);
 							break;
 						}
 					}
 				});
-			}
 
-			// Ẩn/hiện playlist
-			let isPlaylistVisible = true;
-			playlistWrapper.style.display = "block";
-			togglePlaylistBtn.textContent = "Ẩn";
-			togglePlaylistBtn.onclick = function () {
-				isPlaylistVisible = !isPlaylistVisible;
-				playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
-				togglePlaylistBtn.textContent = isPlaylistVisible ? "Ẩn" : "Hiện";
-			};
+				// Cập nhật select box
+				const categorySelect = document.getElementById("categorySelect");
+				categorySelect.innerHTML = "";
+				Object.keys(playlists).forEach((playlistName) => {
+					const option = document.createElement("option");
+					option.value = playlistName;
+					option.textContent = playlistName;
+					categorySelect.appendChild(option);
+				});
 
-			// Khởi động trang
-			renderPlaylist();
+				let currentPlaylist = "Tất cả bài hát";
+				let currentIndex = 0;
+				let isRandom = true;
+				let currentPage = 1;
+				const pageSize = 10;
 
-			// Đảm bảo cập nhật lại danh sách yêu thích khi load lại trang
-			window.addEventListener("storage", function () {
-				favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-				favorites = Array.isArray(favorites) ? favorites : [];
+				const playerContainer = document.getElementById("playerContainer");
+				const currentSongDisplay = document.getElementById("currentSong");
+				const playlist = document.getElementById("playlist");
+				const playlistWrapper = document.getElementById("playlistWrapper");
+				const togglePlaylistBtn = document.getElementById("togglePlaylistBtn");
+
+				categorySelect.onchange = function () {
+					currentPlaylist = this.value;
+					currentIndex = 0;
+					currentPage = 1;
+					renderPlaylist();
+				};
+
+				function renderPlaylist() {
+					playlist.innerHTML = "";
+					const currentList = playlists[currentPlaylist];
+					const start = (currentPage - 1) * pageSize;
+					const end = Math.min(start + pageSize, currentList.songs.length);
+
+					for (let idx = start; idx < end; idx++) {
+						const name = currentList.songs[idx];
+						const url = currentList.music[idx];
+						const isFavorite = favorites.includes(url);
+
+						const li = document.createElement("li");
+						li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition " + (idx === currentIndex ? "bg-gray-500 font-bold" : "");
+
+						const songContainer = document.createElement("div");
+						songContainer.className = "flex items-center space-x-2";
+						let icon = "🎵";
+						if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
+						else if (url.endsWith(".mp3")) icon = "🎶";
+						else if (url.endsWith(".mp4")) icon = "🎬";
+						songContainer.innerHTML = `<span class="text-xl">${icon}</span><span>${name}</span>`;
+						li.appendChild(songContainer);
+
+						const favoriteBtn = document.createElement("button");
+						favoriteBtn.className = "text-xl hover:text-pink-500 transition";
+						favoriteBtn.innerHTML = isFavorite ? "❤️" : "🤍";
+						favoriteBtn.onclick = (event) => {
+							event.stopPropagation();
+							toggleFavorite(url);
+						};
+						li.appendChild(favoriteBtn);
+
+						li.onclick = (event) => {
+							if (event.target !== favoriteBtn) {
+								currentIndex = idx;
+								play(currentIndex);
+								renderPlaylist();
+							}
+						};
+						playlist.appendChild(li);
+					}
+					renderPagination();
+				}
+
+				function renderPagination() {
+					const pagination = document.getElementById("pagination");
+					pagination.innerHTML = "";
+					const totalPages = Math.ceil(playlists[currentPlaylist].songs.length / pageSize);
+
+					const prevBtn = document.createElement("button");
+					prevBtn.textContent = "«";
+					prevBtn.disabled = currentPage === 1;
+					prevBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 disabled:opacity-50";
+					prevBtn.onclick = () => {
+						if (currentPage > 1) {
+							currentPage--;
+							renderPlaylist();
+						}
+					};
+					pagination.appendChild(prevBtn);
+
+					for (let i = 1; i <= totalPages; i++) {
+						const pageBtn = document.createElement("button");
+						pageBtn.textContent = i;
+						pageBtn.className = "px-2 py-1 rounded " + (i === currentPage ? "bg-blue-500 text-white" : "bg-gray-600 hover:bg-gray-500");
+						pageBtn.onclick = () => {
+							currentPage = i;
+							renderPlaylist();
+						};
+						pagination.appendChild(pageBtn);
+					}
+
+					const nextBtn = document.createElement("button");
+					nextBtn.textContent = "»";
+					nextBtn.disabled = currentPage === totalPages;
+					nextBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 disabled:opacity-50";
+					nextBtn.onclick = () => {
+						if (currentPage < totalPages) {
+							currentPage++;
+							renderPlaylist();
+						}
+					};
+					pagination.appendChild(nextBtn);
+				}
+
+				function play(index) {
+					const currentList = playlists[currentPlaylist];
+					const url = currentList.music[index];
+					currentPage = Math.floor(index / pageSize) + 1;
+					playerContainer.innerHTML = "";
+
+					if (url.includes("youtube.com") || url.includes("youtu.be")) {
+						const iframe = document.createElement("iframe");
+						iframe.src = url + "?autoplay=1";
+						iframe.width = "100%";
+						iframe.height = "200";
+						iframe.frameBorder = "0";
+						iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+						iframe.allowFullscreen = true;
+						playerContainer.appendChild(iframe);
+					} else {
+						const video = document.createElement("video");
+						video.src = url;
+						video.controls = true;
+						video.playsInline = true;
+						video.autoplay = true;
+						video.className = "w-full";
+						video.volume = 0.5;
+						video.addEventListener("ended", function () {
+							if (isRepeat) play(currentIndex);
+							else playNext();
+						});
+						playerContainer.appendChild(video);
+					}
+
+					let icon = "🎵";
+					if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
+					else if (url.endsWith(".mp3")) icon = "🎶";
+					else if (url.endsWith(".mp4")) icon = "🎬";
+					currentSongDisplay.innerHTML = `<span class="text-xl">${icon}</span> <span>${currentList.songs[index]}</span>`;
+
+					renderPlaylist();
+				}
+
+				let isRepeat = false;
+
+				function toggleRepeat() {
+					isRepeat = !isRepeat;
+					const repeatBtn = document.getElementById("repeatBtn");
+					if (repeatBtn) {
+						if (isRepeat) {
+							repeatBtn.classList.add("active");
+							repeatBtn.classList.remove("inactive");
+						} else {
+							repeatBtn.classList.add("inactive");
+							repeatBtn.classList.remove("active");
+						}
+					}
+				}
+
+				function playNext() {
+					const currentList = playlists[currentPlaylist];
+					if (isRandom) {
+						let nextIndex;
+						const nonYoutubeIndexes = currentList.music.map((item, idx) => (!item.includes("youtube.com") && !item.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
+						do {
+							const randomPos = Math.floor(Math.random() * nonYoutubeIndexes.length);
+							nextIndex = nonYoutubeIndexes[randomPos];
+						} while (nonYoutubeIndexes.length > 1 && nextIndex === currentIndex);
+						currentIndex = nextIndex;
+					} else {
+						currentIndex = (currentIndex + 1) % currentList.music.length;
+					}
+					play(currentIndex);
+				}
+
+				function toggleRandom() {
+					isRandom = !isRandom;
+					const randomBtn = document.querySelector('button[onclick="toggleRandom()"]');
+					if (randomBtn) {
+						const modeSpan = randomBtn.querySelector("span:last-child");
+						if (modeSpan) {
+							modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
+						}
+					}
+					Swal.fire({
+						title: isRandom ? "Chế độ ngẫu nhiên" : "Chế độ tuần tự",
+						text: isRandom ? "Bài hát sẽ được phát ngẫu nhiên" : "Bài hát sẽ được phát theo thứ tự",
+						icon: "info",
+						confirmButtonText: "OK",
+					});
+				}
+
+				function toggleFavorite(url) {
+					const isFavorite = favorites.includes(url);
+					if (isFavorite) {
+						favorites = favorites.filter((song) => song !== url);
+						// Xóa bài hát khỏi danh sách yêu thích
+						const index = playlists["Danh Sách Yêu Thích"].music.indexOf(url);
+						if (index !== -1) {
+							playlists["Danh Sách Yêu Thích"].music.splice(index, 1);
+							playlists["Danh Sách Yêu Thích"].songs.splice(index, 1);
+						}
+					} else {
+						favorites.push(url);
+						// Thêm bài hát vào danh sách yêu thích
+						const currentList = playlists[currentPlaylist];
+						const songIndex = currentList.music.indexOf(url);
+						if (songIndex !== -1) {
+							playlists["Danh Sách Yêu Thích"].music.push(url);
+							playlists["Danh Sách Yêu Thích"].songs.push(currentList.songs[songIndex]);
+						}
+					}
+					localStorage.setItem("favorites", JSON.stringify(favorites));
+					renderPlaylist();
+					updateFavoritesList();
+				}
+
+				function toggleFavorites() {
+					const modal = document.getElementById("favoritesModal");
+					modal.classList.toggle("hidden");
+					updateFavoritesList();
+				}
+
+				function closeFavorites() {
+					document.getElementById("favoritesModal").classList.add("hidden");
+				}
+
+				function updateFavoritesList() {
+					const favoritesList = document.getElementById("favoritesList");
+					favoritesList.innerHTML = "";
+					favorites.forEach((url) => {
+						for (const [playlistName, list] of Object.entries(playlists)) {
+							const index = list.music.indexOf(url);
+							if (index !== -1) {
+								const li = document.createElement("li");
+								li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition";
+								li.innerHTML = `<span>${list.songs[index]}</span>
+										<button onclick="play(${index})" class="text-xl sm:text-lg hover:text-blue-500 transition">▶️</button>`;
+								favoritesList.appendChild(li);
+								break;
+							}
+						}
+					});
+				}
+
+				// Ẩn/hiện playlist
+				let isPlaylistVisible = false;
+				playlistWrapper.style.display = "none";
+				togglePlaylistBtn.innerHTML = `<span class="text-lg sm:text-xl">📜</span><span class="hidden sm:inline"> Playlist</span>`;
+				togglePlaylistBtn.onclick = function () {
+					isPlaylistVisible = !isPlaylistVisible;
+					playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
+					this.innerHTML = `<span class="text-lg sm:text-xl">📜</span><span class="hidden sm:inline"> ${isPlaylistVisible ? "Playlist" : "Playlist"}</span>`;
+				};
+
+				// Khởi động trang
 				renderPlaylist();
-				updateFavoritesList();
-			});
-		</script>
+
+				// Đảm bảo cập nhật lại danh sách yêu thích khi load lại trang
+				window.addEventListener("storage", function () {
+					favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+					favorites = Array.isArray(favorites) ? favorites : [];
+					renderPlaylist();
+					updateFavoritesList();
+				});
+			</script>
+		</div>
 	</body>
 </html>
