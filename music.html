@@ -17,6 +17,138 @@
 			.swal2-confirm {
 				color: #f3f4f6 !important;
 			}
+
+			/* Màu nền chính */
+			.bg-gray-800 {
+				background-color: #1f2937 !important;
+			}
+
+			/* Màu nền playlist và modal */
+			.bg-gray-700 {
+				background-color: #374151 !important;
+			}
+
+			/* Màu nền nút điều khiển */
+			.bg-gray-300 {
+				background-color: #4b5563 !important;
+			}
+
+			/* Màu nền nút hover */
+			.hover:bg-gray-400 {
+				background-color: #6b7280 !important;
+			}
+
+			/* Màu nền nút playlist */
+			.bg-gray-500 {
+				background-color: #6b7280 !important;
+			}
+
+			/* Màu nền nút hover playlist */
+			.hover:bg-gray-600 {
+				background-color: #4b5563 !important;
+			}
+
+			/* Màu nền nút yêu thích */
+			.bg-pink-500 {
+				background-color: #ec4899 !important;
+			}
+
+			/* Màu nền nút hover yêu thích */
+			.hover:bg-pink-600 {
+				background-color: #db2777 !important;
+			}
+
+			/* Màu nền nút ngẫu nhiên yêu thích */
+			.bg-purple-500 {
+				background-color: #a855f7 !important;
+			}
+
+			/* Màu nền nút hover ngẫu nhiên yêu thích */
+			.hover:bg-purple-600 {
+				background-color: #9333ea !important;
+			}
+
+			/* Màu chữ chính */
+			.text-white {
+				color: #f3f4f6 !important;
+			}
+
+			/* Màu chữ tiêu đề */
+			.text-gray-100 {
+				color: #f3f4f6 !important;
+			}
+
+			/* Màu chữ playlist */
+			.text-gray-300 {
+				color: #d1d5db !important;
+			}
+
+			/* Màu chữ nút điều khiển */
+			.text-gray-800 {
+				color: #f3f4f6 !important;
+			}
+
+			/* Màu chữ nút hover */
+			.hover:text-white {
+				color: #f3f4f6 !important;
+			}
+
+			/* Màu chữ nút playlist */
+			.text-gray-500 {
+				color: #e5e7eb !important;
+			}
+
+			/* Màu chữ nút hover playlist */
+			.hover:text-gray-300 {
+				color: #d1d5db !important;
+			}
+
+			/* Màu chữ nút yêu thích */
+			.text-pink-500 {
+				color: #ec4899 !important;
+			}
+
+			/* Màu chữ nút hover yêu thích */
+			.hover:text-pink-600 {
+				color: #db2777 !important;
+			}
+
+			/* Màu chữ nút ngẫu nhiên yêu thích */
+			.text-purple-500 {
+				color: #a855f7 !important;
+			}
+
+			/* Màu chữ nút hover ngẫu nhiên yêu thích */
+			.hover:text-purple-600 {
+				color: #9333ea !important;
+			}
+
+			/* Hiệu ứng nút đang bật */
+			.active {
+				box-shadow: 0 0 15px rgba(17, 24, 39, 0.5);
+				transform: translateY(-2px);
+				transition: all 0.3s ease;
+			}
+
+			/* Hiệu ứng nút đang tắt */
+			.inactive {
+				opacity: 0.7;
+				transition: all 0.3s ease;
+			}
+
+			/* Hiệu ứng nút yêu thích đang bật */
+			.active-favorite {
+				box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+				transform: translateY(-2px);
+				transition: all 0.3s ease;
+			}
+
+			/* Hiệu ứng nút ngẫu nhiên yêu thích đang bật */
+			.active-favorite-random {
+				box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+				transform: translateY(-2px);
+				transition: all 0.3s ease;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-800 text-white font-sans text-center p-3 sm:p-5">
@@ -30,7 +162,9 @@
 			<!-- Nút điều khiển -->
 			<div class="mb-4 flex flex-wrap justify-center items-center space-x-2 sm:space-x-4">
 				<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">Tiếp</button>
-				<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">🔄<span id="repeatStatus">Tắt</span></button>
+				<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
+					<span class="text-lg sm:text-xl">🔄</span>
+				</button>
 				<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">🎲<span id="mode">Ngẫu nhiên</span></button>
 			</div>
 
@@ -44,7 +178,9 @@
 			<div class="flex flex-wrap justify-center space-x-2 sm:space-x-4 mb-3">
 				<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition">Ẩn playlist</button>
 				<button onclick="toggleFavorites()" class="bg-pink-500 hover:bg-pink-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition"><span class="text-lg sm:text-xl">❤️</span></button>
-				<button id="favoriteRandomBtn" onclick="toggleFavoriteRandom()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition"><span class="text-lg sm:text-xl">🎲</span><span id="favoriteRandomStatus">Tắt</span></button>
+				<button id="favoriteRandomBtn" onclick="toggleFavoriteRandom()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition">
+					<span class="text-lg sm:text-xl">Ngẫu Nhiên Yêu Thích</span>
+				</button>
 			</div>
 
 			<!-- Playlist Wrapper -->
@@ -208,7 +344,14 @@
 
 			function toggleRepeat() {
 				isRepeat = !isRepeat;
-				document.getElementById("repeatStatus").textContent = isRepeat ? "Bật" : "Tắt";
+				const repeatBtn = document.getElementById("repeatBtn");
+				if (isRepeat) {
+					repeatBtn.classList.add("active");
+					repeatBtn.classList.remove("inactive");
+				} else {
+					repeatBtn.classList.add("inactive");
+					repeatBtn.classList.remove("active");
+				}
 			}
 
 			function playNext() {
@@ -288,7 +431,14 @@
 					return;
 				}
 				isFavoriteRandom = !isFavoriteRandom;
-				document.getElementById("favoriteRandomStatus").textContent = isFavoriteRandom ? "Bật" : "Tắt";
+				const favoriteRandomBtn = document.getElementById("favoriteRandomBtn");
+				if (isFavoriteRandom) {
+					favoriteRandomBtn.classList.add("active-favorite-random");
+					favoriteRandomBtn.classList.remove("inactive");
+				} else {
+					favoriteRandomBtn.classList.add("inactive");
+					favoriteRandomBtn.classList.remove("active-favorite-random");
+				}
 			}
 
 			// Ẩn/hiện playlist
@@ -302,6 +452,21 @@
 			};
 
 			// Khởi động trang
+			const repeatBtn = document.getElementById("repeatBtn");
+			const favoriteRandomBtn = document.getElementById("favoriteRandomBtn");
+
+			if (isRepeat) {
+				repeatBtn.classList.add("active");
+			} else {
+				repeatBtn.classList.add("inactive");
+			}
+
+			if (isFavoriteRandom) {
+				favoriteRandomBtn.classList.add("active-favorite-random");
+			} else {
+				favoriteRandomBtn.classList.add("inactive");
+			}
+
 			modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 			document.getElementById("favoriteRandomStatus").textContent = isFavoriteRandom ? "Bật" : "Tắt";
 			renderPlaylist();
