@@ -1,0 +1,130 @@
+{
+	"Tất cả bài hát": {
+		"music": [],
+		"songs": []
+	},
+	"Chill Music": {
+		"music": [
+			"music/1.mp3",
+			"music/2.mp3",
+			"music/3.mp3",
+			"music/4.mp3",
+			"music/5.mp3",
+			"music/6.mp3",
+			"music/7.mp3",
+			"music/12.mp3",
+			"music/13.mp3",
+			"music/15.mp3",
+			"music/16.mp3",
+			"music/20.mp3",
+			"music/22.mp3",
+			"music/25.mp3",
+			"music/27.mp3",
+			"music/33.mp3",
+			"music/38.mp3"
+		],
+		"songs": [
+			"Tháp Rơi Tự Do",
+			"Ghép Hình Tình Yêu",
+			"Góp Vui",
+			"Kiss Kiss Shy Shy",
+			"Như",
+			"Bất Công",
+			"CocoCoCo",
+			"Có - Không Có",
+			"Đối Diện",
+			"Ring Ring Ring",
+			"TA - Bàn Hổ",
+			"Đông Miên",
+			"For ya – Tưởng Tiểu Ni",
+			"Chờ Đến Tháng 13",
+			"Trang Giấy Cuối Cùng",
+			"Chưa Chắc - Ngô Cẩn Ngôn",
+			"Renai Circulation - Anime"
+		]
+	},
+	"OST Phim": {
+		"music": [
+			"music/30.mp3",
+			"music/29.mp3",
+			"music/14.mp3",
+			"music/17.mp3",
+			"music/18.mp3",
+			"music/19.mp3",
+			"music/31.mp3",
+			"music/32.mp3",
+			"music/9.mp3",
+			"music/10.mp3",
+			"music/11.mp3"
+		],
+		"songs": [
+			"Bích Thương Chiến Ca - Dữ Phượng Hành",
+			"Yêu Như Thế - Thần Ẩn",
+			"Tham Cầu - Thần Ẩn",
+			"Như Ca - Liệt Hỏa Như Ca",
+			"Cái Đuôi Nhỏ",
+			"Lưu Chuyển Doanh Hồi - Ngộ Long",
+			"Phong - Thiếu Niên Ca Hành",
+			"Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh",
+			"Sơn Hải",
+			"Nhập Hoài",
+			"Không Nỡ - Đấu La Đại Lục"
+		]
+	},
+	"Nhạc Việt": {
+		"music": [
+			"music/26.mp3"
+		],
+		"songs": [
+			"Mình Cùng Nhau Đóng Băng"
+		]
+	},
+	"Nhạc Hàn": {
+		"music": [
+			"music/8.mp3",
+			"music/24.mp3",
+			"music/28.mp3",
+			"music/21.mp3",
+			"music/37.mp3",
+			"music/39.mp3"
+		],
+		"songs": [
+			"Magnetic",
+			"Say YES",
+			"Blueming - IU",
+			"Polaroid Love",
+			"BIGBANG - HARU HARU",
+			"Apink - Mr.Chu"
+		]
+	},
+	"Nhạc Game": {
+		"music": [
+			"music/23.mp3",
+			"music/34.mp3",
+			"music/35.mp3",
+			"music/36.mp3"
+		],
+		"songs": [
+			"ANIMA POWER - QWER",
+			"Warriors - Worlds 2014",
+			"Legends Never Die - Worlds 2017",
+			"K/DA - (G)I-DLE"
+		]
+	},
+	"YouTube Videos": {
+		"music": [
+			"https://www.youtube.com/embed/lqFGzPM8wkg",
+			"https://www.youtube.com/embed/xi1cWsfJTTs",
+			"https://www.youtube.com/embed/uXkYCdL_HpY"
+		],
+		"songs": [
+			"Học bài và nghe nhạc cùng tớ nhé",
+			"Dữ Phượng Hành OST",
+			"Playlist Nhạc Hè"
+		]
+	},
+	"Danh Sách Yêu Thích": {
+		"music": [],
+		"songs": []
+	}
+}
