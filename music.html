@@ -6,6 +6,8 @@
 		<title>Lofi Music</title>
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet" />
 		<style>
 			/* Tùy chỉnh màu nền của SweetAlert */
 			.swal2-popup {
@@ -450,6 +452,21 @@
 							repeatBtn.classList.remove("active");
 						}
 					}
+					Swal.fire({
+						title: isRepeat ? "Lặp lại bài hát" : "Chơi tiếp bài tiếp theo",
+						toast: true,
+						position: "top-right",
+						showConfirmButton: false,
+						timer: 3000,
+						timerProgressBar: true,
+						background: "#1f2937",
+						color: "#f3f4f6",
+						customClass: {
+							popup: "swal2-toast",
+							title: "swal2-title",
+							content: "swal2-content",
+						},
+					});
 				}
 
 				function playNext() {
@@ -476,12 +493,29 @@
 						if (modeSpan) {
 							modeSpan.textContent = isRandom ? "Ngẫu nhiên" : "Tuần tự";
 						}
+						// Thay đổi icon
+						const icon = randomBtn.querySelector("span:first-child");
+						if (icon) {
+							icon.textContent = isRandom ? "🎲" : "→";
+						}
 					}
 					Swal.fire({
 						title: isRandom ? "Chế độ ngẫu nhiên" : "Chế độ tuần tự",
-						text: isRandom ? "Bài hát sẽ được phát ngẫu nhiên" : "Bài hát sẽ được phát theo thứ tự",
-						icon: "info",
-						confirmButtonText: "OK",
+						toast: true,
+						position: "top-end",
+						showConfirmButton: false,
+						timer: 3000,
+						timerProgressBar: true,
+						didOpen: (toast) => {
+							toast.addEventListener("mouseenter", Swal.stopTimer);
+							toast.addEventListener("mouseleave", Swal.resumeTimer);
+						},
+						customClass: {
+							popup: "bg-gray-800 text-white",
+							title: "text-xl font-bold",
+							content: "text-lg",
+							icon: "text-2xl",
+						},
 					});
 				}
 
