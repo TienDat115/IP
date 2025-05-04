@@ -561,6 +561,9 @@
 							renderPlaylist();
 							updateFavoritesList();
 						});
+						window.playNext = playNext;
+						window.toggleRepeat = toggleRepeat;
+						window.toggleRandom = toggleRandom;
 					})
 					.catch((error) => {
 						console.error("Error loading playlists:", error);
