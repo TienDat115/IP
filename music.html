@@ -171,49 +171,55 @@
 		<div class="w-full max-w-2xl mx-auto">
 			<div class="player-wrapper">
 				<!-- Header -->
-				<h1 class="text-2xl sm:text-3xl font-bold mb-4 flex items-center justify-center space-x-2 text-gray-100">
+				<h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 flex items-center justify-center space-x-2 text-gray-100">
 					<span>🎧</span>
 					<span>Trình Nghe Nhạc</span>
 				</h1>
 
 				<!-- Nút điều khiển -->
-				<div class="mb-4 flex flex-wrap justify-center items-center space-x-2 sm:space-x-4">
+				<div class="mb-3 sm:mb-4 flex flex-wrap justify-center items-center space-x-2 sm:space-x-3 md:space-x-4">
 					<!-- Nút Tiếp -->
-					<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
-						<span class="text-lg sm:text-xl">▶️</span>
+					<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded hover:bg-gray-400 transition">
+						<span class="text-base sm:text-lg md:text-xl">▶️</span>
 						<span class="hidden sm:inline">Tiếp</span>
 					</button>
 
 					<!-- Nút Lặp lại -->
-					<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
-						<span class="text-lg sm:text-xl">🔄</span>
+					<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded hover:bg-gray-400 transition">
+						<span class="text-base sm:text-lg md:text-xl">🔄</span>
 						<span class="hidden sm:inline">Lặp lại</span>
 					</button>
 
 					<!-- Nút Ngẫu nhiên -->
-					<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-gray-400 transition">
-						<span class="text-lg sm:text-xl">🎲</span>
+					<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded hover:bg-gray-400 transition">
+						<span class="text-base sm:text-lg md:text-xl">🎲</span>
 						<span class="hidden sm:inline">Ngẫu nhiên</span>
 					</button>
 
+					<!-- Nút Không lặp lại -->
+					<button onclick="toggleNoRepeat()" id="noRepeatBtn" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded hover:bg-gray-400 transition">
+						<span class="text-base sm:text-lg md:text-xl">🎯</span>
+						<span class="hidden sm:inline">Không lặp lại</span>
+					</button>
+
 					<!-- Nút Playlist -->
-					<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded transition">
-						<span class="text-lg sm:text-xl">📜</span>
+					<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded transition">
+						<span class="text-base sm:text-lg md:text-xl">📜</span>
 						<span class="hidden sm:inline">Playlist</span>
 					</button>
 				</div>
 
 				<!-- Player Container -->
-				<div id="playerContainer" class="w-full max-w-xl mx-auto rounded-lg bg-black overflow-hidden mb-4"></div>
+				<div id="playerContainer" class="w-full sm:max-w-3xl mx-auto rounded-lg bg-black overflow-hidden mb-3 sm:mb-4"></div>
 
 				<!-- Hiển thị bài hát hiện tại -->
-				<div id="currentSong" class="mt-3 mb-4 flex items-center justify-center space-x-2 text-base sm:text-lg bg-gray-700 p-2 sm:p-3 rounded-lg shadow-lg max-w-md mx-auto"></div>
+				<div id="currentSong" class="mt-2 sm:mt-3 mb-3 sm:mb-4 flex items-center justify-center space-x-2 text-sm sm:text-base md:text-lg bg-gray-700 p-2 sm:p-2.5 md:p-3 rounded-lg shadow-lg sm:max-w-3xl mx-auto"></div>
 
 				<!-- Playlist Wrapper -->
 				<div id="playlistWrapper" style="display: none">
-					<select id="categorySelect" class="w-full bg-gray-500 text-white p-2 mb-2 rounded"></select>
-					<ul id="playlist" class="mt-4 max-w-xl mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
-					<div id="pagination" class="flex justify-center items-center space-x-2 mt-3"></div>
+					<select id="categorySelect" class="w-full sm:max-w-3xl bg-gray-500 text-white p-2 sm:p-2.5 rounded"></select>
+					<ul id="playlist" class="mt-3 sm:mt-4 sm:max-w-3xl mx-auto bg-gray-700 rounded-lg shadow divide-y divide-gray-600 text-left"></ul>
+					<div id="pagination" class="flex justify-center items-center space-x-2 mt-2 sm:mt-3"></div>
 				</div>
 			</div>
 
@@ -258,8 +264,10 @@
 						let currentPlaylist = "Tất cả bài hát";
 						let currentIndex = 0;
 						let isRandom = true;
+						let isNoRepeat = false;
 						let currentPage = 1;
 						const pageSize = 10;
+						let playedSongs = new Set();
 
 						const playerContainer = document.getElementById("playerContainer");
 						const currentSongDisplay = document.getElementById("currentSong");
@@ -381,7 +389,7 @@
 								video.playsInline = true;
 								video.autoplay = true;
 								video.className = "w-full";
-								video.volume = 0.5;
+								video.volume = 0.25;
 								video.addEventListener("ended", function () {
 									if (isRepeat) play(currentIndex);
 									else playNext();
@@ -434,15 +442,61 @@
 							if (isRandom) {
 								let nextIndex;
 								const nonYoutubeIndexes = currentList.music.map((item, idx) => (!item.includes("youtube.com") && !item.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
-								do {
-									const randomPos = Math.floor(Math.random() * nonYoutubeIndexes.length);
-									nextIndex = nonYoutubeIndexes[randomPos];
-								} while (nonYoutubeIndexes.length > 1 && nextIndex === currentIndex);
+
+								if (isNoRepeat) {
+									// Lọc các bài hát chưa được phát
+									const availableIndexes = nonYoutubeIndexes.filter((idx) => !playedSongs.has(idx));
+
+									if (availableIndexes.length === 0) {
+										// Nếu tất cả bài hát đã được phát, reset set và lấy lại bài hát đầu tiên
+										playedSongs.clear();
+										nextIndex = nonYoutubeIndexes[0];
+									} else {
+										// Chọn ngẫu nhiên từ các bài hát chưa được phát
+										const randomPos = Math.floor(Math.random() * availableIndexes.length);
+										nextIndex = availableIndexes[randomPos];
+									}
+									playedSongs.add(nextIndex);
+								} else {
+									// Nếu không bật "Không lặp lại", hoạt động như bình thường
+									nextIndex = nonYoutubeIndexes[Math.floor(Math.random() * nonYoutubeIndexes.length)];
+								}
 								currentIndex = nextIndex;
 							} else {
 								currentIndex = (currentIndex + 1) % currentList.music.length;
 							}
 							play(currentIndex);
+						}
+
+						function toggleNoRepeat() {
+							isNoRepeat = !isNoRepeat;
+							const noRepeatBtn = document.getElementById("noRepeatBtn");
+							if (noRepeatBtn) {
+								if (isNoRepeat) {
+									playedSongs.clear();
+									noRepeatBtn.classList.add("active");
+									noRepeatBtn.classList.remove("inactive");
+								} else {
+									playedSongs.clear();
+									noRepeatBtn.classList.add("inactive");
+									noRepeatBtn.classList.remove("active");
+								}
+							}
+							Swal.fire({
+								title: isNoRepeat ? "Không lặp lại bài hát" : "Có thể lặp lại bài hát",
+								toast: true,
+								position: "top-right",
+								showConfirmButton: false,
+								timer: 3000,
+								timerProgressBar: true,
+								background: "#1f2937",
+								color: "#f3f4f6",
+								customClass: {
+									popup: "swal2-toast",
+									title: "swal2-title",
+									content: "swal2-content",
+								},
+							});
 						}
 
 						function toggleRandom() {
@@ -555,6 +609,7 @@
 						window.playNext = playNext;
 						window.toggleRepeat = toggleRepeat;
 						window.toggleRandom = toggleRandom;
+						window.toggleNoRepeat = toggleNoRepeat;
 					})
 					.catch((error) => {
 						console.error("Error loading playlists:", error);
