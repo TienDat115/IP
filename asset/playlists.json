@@ -21,7 +21,10 @@
 			"music/25.mp3",
 			"music/27.mp3",
 			"music/33.mp3",
-			"music/38.mp3"
+			"music/38.mp3",
+			"music/44.mp3",
+			"music/45.mp3",
+			"music/48.mp3"
 		],
 		"songs": [
 			"Tháp Rơi Tự Do",
@@ -40,7 +43,10 @@
 			"Chờ Đến Tháng 13",
 			"Trang Giấy Cuối Cùng",
 			"Chưa Chắc - Ngô Cẩn Ngôn",
-			"Renai Circulation - Anime"
+			"Renai Circulation - Anime",
+			"Đều Trách Tại Em - Hồ 66",
+			"Ta Tên Trường An, Chàng Tên Cố Lý",
+			"Sứ Thanh Hoa"
 		]
 	},
 	"OST Phim": {
@@ -57,7 +63,12 @@
 			"music/10.mp3",
 			"music/11.mp3",
 			"music/40.mp3",
-			"music/41.mp3"
+			"music/41.mp3",
+			"music/42.mp3",
+			"music/43.mp3",
+			"music/46.mp3",
+			"music/47.mp3",
+			"music/49.mp3"
 		],
 		"songs": [
 			"Bích Thương Chiến Ca - Dữ Phượng Hành",
@@ -72,7 +83,12 @@
 			"Nhập Hoài",
 			"Không Nỡ - Đấu La Đại Lục",
 			"Như Ngày Năng Tựa Ngày Mưa - Khó Dỗ Dành",
-			"Chỉ Muốn Vụng Trộm Giấu Em Đi - Vụng Trộm"
+			"Chỉ Muốn Vụng Trộm Giấu Em Đi - Vụng Trộm",
+			"Làm Trái Tim Em Mỉm Cười",
+			"Mối Quan Hệ Kỳ Diệu",
+			"Futari no kimochi (Ost Inuyasha)",
+			"Như Cố - Trường An Như Cố",
+			"Thanh Vân Chí"
 		]
 	},
 	"Nhạc Việt": {

@@ -4,6 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Lofi Music</title>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -180,31 +181,31 @@
 				<div class="mb-3 sm:mb-4 flex justify-center items-center space-x-2 sm:space-x-3 md:space-x-4">
 					<!-- Nút Tiếp -->
 					<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="text-base sm:text-lg md:text-xl">▶️</span>
+						<span class="material-icons text-base sm:text-lg md:text-xl">skip_next</span>
 						<span class="hidden sm:block text-sm sm:text-base">Tiếp</span>
 					</button>
 
 					<!-- Nút Lặp lại -->
 					<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="text-base sm:text-lg md:text-xl">🔄</span>
+						<span class="material-icons text-base sm:text-lg md:text-xl">repeat</span>
 						<span class="hidden sm:block text-sm sm:text-base">Lặp lại</span>
 					</button>
 
 					<!-- Nút Ngẫu nhiên -->
 					<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="text-base sm:text-lg md:text-xl">🎲</span>
+						<span class="material-icons text-base sm:text-lg md:text-xl">shuffle</span>
 						<span class="hidden sm:block text-sm sm:text-base">Ngẫu nhiên</span>
 					</button>
 
 					<!-- Nút Không lặp lại -->
 					<button onclick="toggleNoRepeat()" id="noRepeatBtn" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="text-base sm:text-lg md:text-xl">🎯</span>
+						<span class="material-icons text-base sm:text-lg md:text-xl">not_interested</span>
 						<span class="hidden sm:block text-sm sm:text-base">Không lặp lại</span>
 					</button>
 
 					<!-- Nút Playlist -->
 					<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded transition flex flex-col items-center justify-center">
-						<span class="text-base sm:text-lg md:text-xl">📜</span>
+						<span class="material-icons text-base sm:text-lg md:text-xl">queue_music</span>
 						<span class="hidden sm:block text-sm sm:text-base">Playlist</span>
 					</button>
 				</div>
@@ -425,7 +426,7 @@
 								toast: true,
 								position: "top-right",
 								showConfirmButton: false,
-								timer: 3000,
+								timer: 1000,
 								timerProgressBar: true,
 								background: "#1f2937",
 								color: "#f3f4f6",
@@ -487,7 +488,7 @@
 								toast: true,
 								position: "top-right",
 								showConfirmButton: false,
-								timer: 3000,
+								timer: 1000,
 								timerProgressBar: true,
 								background: "#1f2937",
 								color: "#f3f4f6",
@@ -510,7 +511,7 @@
 								// Thay đổi icon
 								const icon = randomBtn.querySelector("span:first-child");
 								if (icon) {
-									icon.textContent = isRandom ? "🎲" : "→";
+									icon.textContent = isRandom ? "shuffle" : "queue_play_next";
 								}
 							}
 							Swal.fire({
@@ -518,7 +519,7 @@
 								toast: true,
 								position: "top-end",
 								showConfirmButton: false,
-								timer: 3000,
+								timer: 1000,
 								timerProgressBar: true,
 								didOpen: (toast) => {
 									toast.addEventListener("mouseenter", Swal.stopTimer);
@@ -589,11 +590,11 @@
 						// Ẩn/hiện playlist
 						let isPlaylistVisible = false;
 						playlistWrapper.style.display = "none";
-						togglePlaylistBtn.innerHTML = `<span class="text-lg sm:text-xl">📜</span><span class="hidden sm:inline"> Playlist</span>`;
+						togglePlaylistBtn.innerHTML = `<span class="material-icons text-lg sm:text-xl">queue_music</span><span class="hidden sm:inline"> Playlist</span>`;
 						togglePlaylistBtn.onclick = function () {
 							isPlaylistVisible = !isPlaylistVisible;
 							playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
-							this.innerHTML = `<span class="text-lg sm:text-xl">📜</span><span class="hidden sm:inline"> ${isPlaylistVisible ? "Playlist" : "Playlist"}</span>`;
+							this.innerHTML = `<span class="material-icons text-lg sm:text-xl">queue_music</span><span class="hidden sm:inline"> ${isPlaylistVisible ? "Playlist" : "Playlist"}</span>`;
 						};
 
 						// Đặt trạng thái mặc định cho nút Không lặp lại
