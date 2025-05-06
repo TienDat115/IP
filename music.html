@@ -596,6 +596,18 @@
 							this.innerHTML = `<span class="text-lg sm:text-xl">📜</span><span class="hidden sm:inline"> ${isPlaylistVisible ? "Playlist" : "Playlist"}</span>`;
 						};
 
+						// Đặt trạng thái mặc định cho nút Không lặp lại
+						const noRepeatBtn = document.getElementById("noRepeatBtn");
+						if (noRepeatBtn) {
+							noRepeatBtn.classList.add("inactive");
+						}
+
+						// Đặt trạng thái mặc định cho nút Lặp lại
+						const repeatBtn = document.getElementById("repeatBtn");
+						if (repeatBtn) {
+							repeatBtn.classList.add("inactive");
+						}
+
 						// Khởi động trang
 						renderPlaylist();
 
