@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Lịch Âm Lịch</title>
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.3/lunar.min.js"></script>
+		<script src="asset/tab-navigation.js"></script>
+		<style>
+			body {
+				font-family: "Inter", sans-serif;
+			}
+			.tab-button {
+				padding: 0.5rem 1rem;
+				border-radius: 0.5rem;
+				color: #9ca3af;
+				transition: color 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				background-color: rgba(128, 128, 128, 0.5);
+			}
+			.tab-button:hover {
+				color: #3b82f6;
+			}
+			.tab-button.active {
+				color: #ffffff;
+			}
+			.tab-button.active .material-icons {
+				color: #3b82f6;
+			}
+		</style>
+	</head>
+	<body class="min-h-screen flex items-center justify-center p-3 sm:p-5 bg-gray-900 font-sans">
+		<div class="calendar-container max-w-full mx-auto bg-opacity-5 backdrop-blur-sm border border-blue-200/20 rounded-2xl p-2 h-[700px] flex flex-col">
+			<!-- Tab Navigation -->
+			<div id="tabNavigation"></div>
+			<script>
+				document.getElementById("tabNavigation").innerHTML = createTabNavigation("calendar");
+			</script>
+			<div class="calendar-header flex flex-col items-center mb-4">
+				<div class="flex items-center justify-center gap-4">
+					<div class="text-4xl sm:text-5xl text-blue-400">
+						<span class="material-icons">calendar_today</span>
+					</div>
+					<div class="flex flex-col items-center">
+						<h2 class="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Lịch Âm</h2>
+						<div class="month-year text-lg font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase mt-2 animate-pulse" id="monthYear"></div>
+					</div>
+					<div class="text-4xl sm:text-5xl text-blue-400">
+						<span class="material-icons">calendar_today</span>
+					</div>
+				</div>
+				<div class="controls flex gap-1 mt-2">
+					<button onclick="prevMonth()" class="px-3 py-1.5 rounded-lg bg-blue-200/10 text-gray-200 cursor-pointer transition-all duration-300 text-sm flex items-center gap-1 hover:bg-blue-200/20 hover:transform hover:-translate-y-0.5">
+						<span class="material-icons">arrow_back</span>
+						Trước
+					</button>
+					<button onclick="nextMonth()" class="px-3 py-1.5 rounded-lg bg-blue-200/10 text-gray-200 cursor-pointer transition-all duration-300 text-sm flex items-center gap-1 hover:bg-blue-200/20 hover:transform hover:-translate-y-0.5">
+						Sau
+						<span class="material-icons">arrow_forward</span>
+					</button>
+				</div>
+			</div>
+			<div class="calendar-month grid grid-cols-7 gap-1 flex-1 overflow-hidden" id="calendarMonth"></div>
+		</div>
+
+		<script>
+			let currentDate = new Date();
+
+			function getLunarDate(solarDate) {
+				const solar = Solar.fromYmd(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+				const lunar = solar.getLunar();
+				return {
+					day: lunar.getDay(),
+					month: lunar.getMonth(),
+				};
+			}
+
+			function updateCalendar() {
+				const currentMonth = currentDate.getMonth();
+				const currentYear = currentDate.getFullYear();
+
+				document.getElementById("monthYear").textContent = `Tháng ${currentMonth + 1}, ${currentYear}`;
+				const calendar = document.getElementById("calendarMonth");
+				calendar.innerHTML = "";
+
+				const daysOfWeek = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+				daysOfWeek.forEach((day) => {
+					const cell = document.createElement("div");
+					cell.className = "day-cell border border-blue-200/10 p-2 text-center h-[4.5rem] flex flex-col items-center justify-center text-sm transition-all duration-300 bg-gray-900/10 rounded-xl";
+					cell.innerHTML = `<div class="day-name text-gray-400 text-xs font-medium mb-1">${day}</div>`;
+					calendar.appendChild(cell);
+				});
+
+				const firstDay = new Date(currentYear, currentMonth, 1);
+				const startDay = (firstDay.getDay() + 6) % 7;
+				const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+				for (let i = 0; i < daysInMonth + startDay; i++) {
+					const cell = document.createElement("div");
+					cell.className = "day-cell border border-blue-200/10 p-2 text-center h-[4.5rem] flex flex-col items-center justify-center text-sm transition-all duration-300 bg-gray-900/10 rounded-xl";
+
+					if (i >= startDay) {
+						const day = i - startDay + 1;
+						const date = new Date(currentYear, currentMonth, day);
+						const lunarDate = getLunarDate(date);
+
+						// Kiểm tra xem đây có phải là ngày hiện tại không
+						const isToday = date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear();
+
+						if (isToday) {
+							cell.classList.add("bg-blue-500/20");
+						}
+
+						let lunarDisplay = lunarDate.day;
+						if (lunarDate.month !== currentMonth + 1) {
+							lunarDisplay += `/${lunarDate.month}`;
+						}
+
+						cell.innerHTML = `
+							<div class="solar-date text-gray-200 font-bold text-lg mb-1 ${isToday ? "text-blue-500" : ""}">${day}</div>
+							<div class="lunar-date text-red-500 font-bold text-xs">${lunarDisplay}</div>
+						`;
+					}
+
+					calendar.appendChild(cell);
+				}
+			}
+
+			function prevMonth() {
+				currentDate.setMonth(currentDate.getMonth() - 1);
+				updateCalendar();
+			}
+
+			function nextMonth() {
+				currentDate.setMonth(currentDate.getMonth() + 1);
+				updateCalendar();
+			}
+
+			// Khi trang được tải, cuộn đến cuối trang
+			document.addEventListener("DOMContentLoaded", function () {
+				window.scrollTo({
+					top: document.documentElement.scrollHeight,
+					behavior: "smooth",
+				});
+			});
+
+			updateCalendar();
+		</script>
+	</body>
+</html>

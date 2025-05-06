@@ -8,6 +8,9 @@ function createTabNavigation(activeTab) {
                 <button id="personalTab" class="tab-button ${activeTab === "clock" ? "active" : ""}" onclick="window.location.href='clock.html'">
                     <span class="material-icons text-base sm:text-lg">access_time</span>
                 </button>
+                <button id="calendarTab" class="tab-button ${activeTab === "calendar" ? "active" : ""}" onclick="window.location.href='calendar.html'">
+                    <span class="material-icons text-base sm:text-lg">calendar_today</span>
+                </button>
             </div>
         </div>
     `;
