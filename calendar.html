@@ -118,9 +118,16 @@
 						}
 
 						let lunarDisplay = lunarDate.day;
-						// if (lunarDate.month !== currentMonth + 1) {
-						lunarDisplay += `/${lunarDate.month}`;
-						// }
+						// Chuyển đổi tháng âm thành số dương
+						let lunarMonth = lunarDate.month;
+						if (lunarMonth < 0) {
+							lunarMonth = Math.abs(lunarMonth);
+							// Thêm dấu hiệu tháng nhuận cho ngày 1
+							if (lunarDate.day === 1) {
+								lunarDisplay += "*";
+							}
+						}
+						lunarDisplay += `/${lunarMonth}`;
 
 						cell.innerHTML = `
 							<div class="solar-date text-gray-200 font-bold text-lg mb-1 ${isToday ? "text-blue-500" : ""}">${day}</div>
