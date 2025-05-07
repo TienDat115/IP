@@ -118,9 +118,9 @@
 						}
 
 						let lunarDisplay = lunarDate.day;
-						if (lunarDate.month !== currentMonth + 1) {
-							lunarDisplay += `/${lunarDate.month}`;
-						}
+						// if (lunarDate.month !== currentMonth + 1) {
+						lunarDisplay += `/${lunarDate.month}`;
+						// }
 
 						cell.innerHTML = `
 							<div class="solar-date text-gray-200 font-bold text-lg mb-1 ${isToday ? "text-blue-500" : ""}">${day}</div>
