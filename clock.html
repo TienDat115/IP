@@ -33,6 +33,7 @@
 			}
 		</style>
 		<script src="asset/tab-navigation.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.3/lunar.min.js"></script>
 	</head>
 	<body class="min-h-screen flex items-center justify-center p-3 sm:p-5 bg-gray-900">
 		<div class="bg-white/5 backdrop-blur-sm border border-blue-700/30 rounded-3xl shadow-2xl w-full p-3 sm:p-5 text-center relative overflow-hidden">
@@ -64,6 +65,9 @@
 					<div class="flex items-center justify-center gap-2 group w-11/12 mx-auto">
 						<span id="date" class="text-gray-200 font-medium text-lg sm:text-xl ml-2 transition hover:text-blue-400 hover:scale-105">-</span>
 					</div>
+					<div class="flex items-center justify-center gap-2 group w-11/12 mx-auto mt-2">
+						<span id="lunarDate" class="text-red-400 font-medium text-base sm:text-lg ml-2 transition hover:text-blue-400 hover:scale-105">-</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -91,6 +95,23 @@
 				// Update elements
 				document.getElementById("time").textContent = `${hours}:${minutes}:${seconds}`;
 				document.getElementById("date").textContent = formattedDate;
+				// Get lunar date
+				function getLunarDate(solarDate) {
+					const solar = Solar.fromYmd(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+					const lunar = solar.getLunar();
+					return {
+						day: lunar.getDay(),
+						month: lunar.getMonth(),
+					};
+				}
+
+				// Update element
+				try {
+					const lunarDate = getLunarDate(now);
+					document.getElementById("lunarDate").textContent = `(${lunarDate.day}/${lunarDate.month})`;
+				} catch (error) {
+					console.error("Error getting lunar date:", error);
+				}
 			}
 
 			// Update time every second
