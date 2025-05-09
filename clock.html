@@ -108,7 +108,16 @@
 				// Update element
 				try {
 					const lunarDate = getLunarDate(now);
-					document.getElementById("lunarDate").textContent = `(${lunarDate.day}/${lunarDate.month} ÂL)`;
+					let lunarDisplay = lunarDate.day;
+					// Chuyển đổi tháng âm thành số dương
+					let lunarMonth = lunarDate.month;
+					if (lunarMonth < 0) {
+						lunarMonth = Math.abs(lunarMonth);
+						lunarDisplay += `/${lunarMonth} ÂL (Tháng Nhuận)`;
+					} else {
+						lunarDisplay += `/${lunarMonth} ÂL`;
+					}
+					document.getElementById("lunarDate").textContent = `(${lunarDisplay})`;
 				} catch (error) {
 					console.error("Error getting lunar date:", error);
 				}
