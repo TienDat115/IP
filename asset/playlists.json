@@ -95,10 +95,30 @@
 	},
 	"Nhạc Việt": {
 		"music": [
-			"music/26.mp3"
+			"music/26.mp3",
+			"music/55.mp3",
+			"music/56.mp3",
+			"music/57.mp3"
 		],
 		"songs": [
-			"Mình Cùng Nhau Đóng Băng"
+			"Mình Cùng Nhau Đóng Băng",
+			"Pháo | SỰ NGHIỆP CHƯỚNG",
+			"LOU HOÀNG - NGÀY ĐẸP TRỜI ĐỂ NÓI CHIA TAY",
+			"BẮC BLING ( BẮC NINH )"
+		]
+	},
+	"Nhạc Âu Mỹ": {
+		"music": [
+			"music/52.mp3",
+			"music/53.mp3",
+			"music/54.mp3",
+			"music/58.mp3"
+		],
+		"songs": [
+			"Nothing's Gonna Change My Love For You",
+			"Everytime We Touch - Cascada",
+			"Cry On My Shoulder",
+			"Westlife - My Love"
 		]
 	},
 	"Nhạc Hàn": {
