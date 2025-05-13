@@ -210,6 +210,13 @@
 					</button>
 				</div>
 
+				<!-- Volume Control -->
+				<div class="flex items-center justify-center space-x-2 mt-3 sm:mt-4">
+					<span class="material-icons text-lg">volume_up</span>
+					<input type="range" id="volumeSlider" min="0" max="100" value="100" class="w-32 sm:w-48 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer" />
+					<span id="volumeValue" class="text-gray-300">100%</span>
+				</div>
+
 				<!-- Player Container -->
 				<div id="playerContainer" class="w-full sm:max-w-3xl mx-auto rounded-lg bg-black overflow-hidden mb-3 sm:mb-4"></div>
 
@@ -390,7 +397,8 @@
 								video.playsInline = true;
 								video.autoplay = true;
 								video.className = "w-full";
-								video.volume = 0.25;
+								// Sử dụng volume từ thanh điều chỉnh
+								video.volume = volumeSlider.value / 100;
 								video.addEventListener("ended", function () {
 									if (isRepeat) play(currentIndex);
 									else playNext();
@@ -585,6 +593,76 @@
 									}
 								}
 							});
+						}
+
+						// Volume control
+						const volumeSlider = document.getElementById("volumeSlider");
+						const volumeValue = document.getElementById("volumeValue");
+
+						if (volumeSlider) {
+							volumeSlider.addEventListener("input", function () {
+								const volume = this.value / 100;
+								volumeValue.textContent = `${this.value}%`;
+
+								// Update volume for all audio elements
+								const audioElements = document.getElementsByTagName("audio");
+								const videoElements = document.getElementsByTagName("video");
+								const iframeElements = document.getElementsByTagName("iframe");
+
+								// Update volume for audio elements
+								for (let audio of audioElements) {
+									audio.volume = volume;
+								}
+
+								// Update volume for video elements
+								for (let video of videoElements) {
+									video.volume = volume;
+								}
+
+								// Update volume for YouTube iframes
+								for (let iframe of iframeElements) {
+									if (iframe.src.includes("youtube.com") || iframe.src.includes("youtu.be")) {
+										iframe.contentWindow.postMessage(
+											JSON.stringify({
+												event: "command",
+												func: "setVolume",
+												args: [volume * 100],
+											}),
+											"*"
+										);
+									}
+								}
+							});
+
+							// Set initial volume
+							volumeSlider.value = 100;
+							volumeValue.textContent = "100%";
+
+							// Apply initial volume to all elements
+							const audioElements = document.getElementsByTagName("audio");
+							const videoElements = document.getElementsByTagName("video");
+							const iframeElements = document.getElementsByTagName("iframe");
+
+							for (let audio of audioElements) {
+								audio.volume = 1;
+							}
+
+							for (let video of videoElements) {
+								video.volume = 1;
+							}
+
+							for (let iframe of iframeElements) {
+								if (iframe.src.includes("youtube.com") || iframe.src.includes("youtu.be")) {
+									iframe.contentWindow.postMessage(
+										JSON.stringify({
+											event: "command",
+											func: "setVolume",
+											args: [100],
+										}),
+										"*"
+									);
+								}
+							}
 						}
 
 						// Ẩn/hiện playlist
