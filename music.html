@@ -392,6 +392,18 @@
 								iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
 								iframe.allowFullscreen = true;
 								playerContainer.appendChild(iframe);
+
+								// Set volume for YouTube iframe
+								if (isMuted) {
+									iframe.contentWindow.postMessage(
+										JSON.stringify({
+											event: "command",
+											func: "setVolume",
+											args: [0],
+										}),
+										"*"
+									);
+								}
 							} else {
 								const video = document.createElement("video");
 								video.src = url;
@@ -399,8 +411,7 @@
 								video.playsInline = true;
 								video.autoplay = true;
 								video.className = "w-full";
-								// Sử dụng volume từ thanh điều chỉnh
-								video.volume = volumeSlider.value / 100;
+								video.volume = isMuted ? 0 : volumeSlider.value / 100;
 								video.addEventListener("ended", function () {
 									if (isRepeat) play(currentIndex);
 									else playNext();
