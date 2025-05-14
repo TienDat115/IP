@@ -215,8 +215,8 @@
 					<button id="muteBtn" class="text-lg hover:text-pink-500 transition">
 						<span class="material-icons">volume_up</span>
 					</button>
-					<input type="range" id="volumeSlider" min="0" max="100" value="100" class="w-32 sm:w-48 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer" />
-					<span id="volumeValue" class="text-gray-300">100%</span>
+					<input type="range" id="volumeSlider" min="0" max="100" value="50" class="w-32 sm:w-48 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer" />
+					<span id="volumeValue" class="text-gray-300">50%</span>
 				</div>
 
 				<!-- Player Container -->
@@ -404,6 +404,18 @@
 										"*"
 									);
 								}
+							} else if (url.endsWith(".mp3")) {
+								const audio = document.createElement("audio");
+								audio.src = url;
+								audio.controls = true;
+								audio.autoplay = true;
+								audio.className = "w-full";
+								audio.volume = isMuted ? 0 : volumeSlider.value / 100;
+								audio.addEventListener("ended", function () {
+									if (isRepeat) play(currentIndex);
+									else playNext();
+								});
+								playerContainer.appendChild(audio);
 							} else {
 								const video = document.createElement("video");
 								video.src = url;
@@ -695,8 +707,8 @@
 							};
 
 							// Set initial volume
-							volumeSlider.value = 100;
-							volumeValue.textContent = "100%";
+							volumeSlider.value = 50;
+							volumeValue.textContent = "50%";
 
 							// Apply initial volume to all elements
 							const audioElements = document.getElementsByTagName("audio");
@@ -704,11 +716,11 @@
 							const iframeElements = document.getElementsByTagName("iframe");
 
 							for (let audio of audioElements) {
-								audio.volume = 1;
+								audio.volume = 0.5;
 							}
 
 							for (let video of videoElements) {
-								video.volume = 1;
+								video.volume = 0.5;
 							}
 
 							for (let iframe of iframeElements) {
@@ -717,7 +729,7 @@
 										JSON.stringify({
 											event: "command",
 											func: "setVolume",
-											args: [100],
+											args: [50],
 										}),
 										"*"
 									);
