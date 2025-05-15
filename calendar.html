@@ -35,38 +35,38 @@
 			}
 		</style>
 	</head>
-	<body class="min-h-screen flex items-center justify-center p-3 sm:p-5 bg-gray-900 font-sans">
-		<div class="calendar-container max-w-full mx-auto bg-opacity-5 backdrop-blur-sm border border-blue-200/20 rounded-2xl p-2 h-[700px] flex flex-col">
+	<body class="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-gray-900 font-sans">
+		<div class="calendar-container w-full sm:max-w-4xl mx-auto bg-opacity-5 backdrop-blur-sm border border-blue-200/20 rounded-2xl p-2 sm:p-4 h-[700px] sm:h-[80vh] flex flex-col">
 			<!-- Tab Navigation -->
 			<div id="tabNavigation"></div>
 			<script>
 				document.getElementById("tabNavigation").innerHTML = createTabNavigation("calendar");
 			</script>
-			<div class="calendar-header flex flex-col items-center mb-4">
-				<div class="flex items-center justify-center gap-4">
-					<div class="text-4xl sm:text-5xl text-blue-400">
+			<div class="calendar-header flex flex-col items-center mb-4 sm:mb-6">
+				<div class="flex items-center justify-center gap-2 sm:gap-4">
+					<div class="text-3xl sm:text-4xl text-blue-400">
 						<span class="material-icons">calendar_today</span>
 					</div>
 					<div class="flex flex-col items-center">
-						<h2 class="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Lịch Âm</h2>
-						<div class="month-year text-lg font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase mt-2 animate-pulse" id="monthYear"></div>
+						<h2 class="text-lg sm:text-xl font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Lịch Âm</h2>
+						<div class="month-year text-base sm:text-lg font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase mt-2 animate-pulse" id="monthYear"></div>
 					</div>
-					<div class="text-4xl sm:text-5xl text-blue-400">
+					<div class="text-3xl sm:text-4xl text-blue-400">
 						<span class="material-icons">calendar_today</span>
 					</div>
 				</div>
-				<div class="controls flex gap-1 mt-2">
-					<button onclick="prevMonth()" class="px-3 py-1.5 rounded-lg bg-blue-200/10 text-gray-200 cursor-pointer transition-all duration-300 text-sm flex items-center gap-1 hover:bg-blue-200/20 hover:transform hover:-translate-y-0.5">
+				<div class="controls flex gap-1 sm:gap-2 mt-2">
+					<button onclick="prevMonth()" class="px-2 sm:px-3 py-1 rounded-lg bg-blue-200/10 text-gray-200 cursor-pointer transition-all duration-300 text-xs sm:text-sm flex items-center gap-1 hover:bg-blue-200/20 hover:transform hover:-translate-y-0.5">
 						<span class="material-icons">arrow_back</span>
 						Trước
 					</button>
-					<button onclick="nextMonth()" class="px-3 py-1.5 rounded-lg bg-blue-200/10 text-gray-200 cursor-pointer transition-all duration-300 text-sm flex items-center gap-1 hover:bg-blue-200/20 hover:transform hover:-translate-y-0.5">
+					<button onclick="nextMonth()" class="px-2 sm:px-3 py-1 rounded-lg bg-blue-200/10 text-gray-200 cursor-pointer transition-all duration-300 text-xs sm:text-sm flex items-center gap-1 hover:bg-blue-200/20 hover:transform hover:-translate-y-0.5">
 						Sau
 						<span class="material-icons">arrow_forward</span>
 					</button>
 				</div>
 			</div>
-			<div class="calendar-month grid grid-cols-7 gap-1 flex-1 overflow-hidden" id="calendarMonth"></div>
+			<div class="calendar-month grid grid-cols-7 gap-1 sm:gap-2 flex-1 overflow-hidden" id="calendarMonth"></div>
 		</div>
 
 		<script>
@@ -130,8 +130,8 @@
 						lunarDisplay += `/${lunarMonth}`;
 
 						cell.innerHTML = `
-							<div class="solar-date text-gray-200 font-bold text-lg mb-1 ${isToday ? "text-blue-500" : ""}">${day}</div>
-							<div class="lunar-date text-red-500 font-bold text-xs">${lunarDisplay}</div>
+							<div class="solar-date text-gray-200 font-bold text-base sm:text-lg mb-1 ${isToday ? "text-blue-500" : ""}">${day}</div>
+							<div class="lunar-date text-red-500 font-bold text-xs sm:text-sm">${lunarDisplay}</div>
 						`;
 					}
 
