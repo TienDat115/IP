@@ -737,6 +737,49 @@
 							}
 						}
 
+						// Thêm sự kiện lắng nghe phím
+						document.addEventListener("keydown", function (event) {
+							const volumeSlider = document.getElementById("volumeSlider");
+							if (!volumeSlider) return;
+
+							let currentVolume = parseInt(volumeSlider.value);
+							const step = 1; // Bước nhảy âm lượng
+
+							switch (event.key) {
+								case "ArrowRight":
+									event.preventDefault();
+									currentVolume = Math.min(100, currentVolume + step);
+									break;
+								case "ArrowLeft":
+									event.preventDefault();
+									currentVolume = Math.max(0, currentVolume - step);
+									break;
+								case "m":
+								case "M":
+									event.preventDefault();
+									const muteBtn = document.getElementById("muteBtn");
+									if (muteBtn) muteBtn.click();
+									return; // Không cần cập nhật thanh trượt vì đã xử lý trong click event
+								case " ":
+									event.preventDefault(); // Ngăn cuộn trang khi nhấn space
+									const player = document.querySelector("audio, video");
+									if (player) {
+										if (player.paused) {
+											player.play();
+										} else {
+											player.pause();
+										}
+									}
+									return;
+								default:
+									return; // Thoát nếu không phải phím hỗ trợ
+							}
+
+							// Cập nhật thanh trượt và kích hoạt sự kiện input
+							volumeSlider.value = currentVolume;
+							volumeSlider.dispatchEvent(new Event("input"));
+						});
+
 						// Ẩn/hiện playlist
 						let isPlaylistVisible = true;
 						playlistWrapper.style.display = "block";
