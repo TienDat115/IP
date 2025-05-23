@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Thời Tiết</title>
+		<title>Dự báo thời tiết</title>
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -12,27 +12,117 @@
 				font-family: "Inter", sans-serif;
 			}
 			.tab-button {
-				padding: 0.5rem 1rem;
-				border-radius: 0.5rem;
-				color: #9ca3af;
-				transition: color 0.3s ease;
+				padding: 0.6rem 1.2rem;
+				border-radius: 2rem;
+				transition: all 0.3s ease;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				cursor: pointer;
-				background-color: rgba(128, 128, 128, 0.5);
+				font-weight: 600;
+				border: 1px solid transparent;
 			}
 			.tab-button:hover {
-				color: #3b82f6;
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			}
+			.tab-button:active {
+				transform: translateY(0);
 			}
 			.tab-button.active {
-				color: #ffffff;
+				background: linear-gradient(135deg, #3b82f6, #06b6d4);
+				color: white;
+				box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 			}
-			.tab-button.active .material-icons {
-				color: #3b82f6;
+			.tab-button.inactive {
+				background: rgba(31, 41, 55, 0.6);
+				color: #9ca3af;
+			}
+			.weather-card {
+				background: rgba(31, 41, 55, 0.6);
+				backdrop-filter: blur(12px);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 1rem;
+				transition: all 0.3s ease;
+			}
+			.weather-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+			}
+			.hourly-forecast-item {
+				transition: all 0.3s ease;
+			}
+			.hourly-forecast-item:hover {
+				transform: translateY(-3px);
+				background: rgba(55, 65, 81, 0.4) !important;
+			}
+			.city-btn {
+				transition: all 0.2s ease;
+			}
+			.city-btn:hover {
+				transform: scale(1.05);
+			}
+			.error-message {
+				display: none;
+				background: rgba(239, 68, 68, 0.1);
+				border-left: 4px solid #ef4444;
+				padding: 1rem;
+				margin: 1rem 0;
+				border-radius: 0.5rem;
+				color: #fecaca;
 			}
 		</style>
 		<script src="asset/tab-navigation.js"></script>
+	</head>
+	<body class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+		<div class="container mx-auto px-4 py-8 max-w-4xl">
+			<!-- Header -->
+			<div class="text-center mb-8">
+				<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg shadow-blue-500/20 mb-4">
+					<span class="material-icons text-3xl text-white">wb_sunny</span>
+				</div>
+				<h1 class="text-3xl font-extrabold text-white mb-2">Dự báo thời tiết</h1>
+			</div>
+			<!-- Tab Navigation -->
+			<div id="tabNavigation"></div>
+			<script>
+				document.getElementById("tabNavigation").innerHTML = createTabNavigation("weather");
+			</script>
+			<!-- City Selector -->
+			<div class="flex flex-wrap justify-center gap-3 mb-8">
+				<div id="citySelector" class="flex flex-wrap justify-center gap-3"></div>
+			</div>
+
+			<!-- Tab Navigation -->
+			<div class="flex justify-center mb-8 gap-3">
+				<button onclick="switchTab('current')" data-tab="current" class="tab-button active">
+					<span class="material-icons text-sm mr-2">today</span>
+					Hiện tại
+				</button>
+				<button onclick="switchTab('hourly')" data-tab="hourly" class="tab-button inactive">
+					<span class="material-icons text-sm mr-2">schedule</span>
+					Theo giờ
+				</button>
+			</div>
+
+			<!-- Loading Indicator -->
+			<div id="loading" class="text-center py-12 hidden">
+				<div class="inline-flex items-center justify-center space-x-3">
+					<div class="w-3 h-3 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0s"></div>
+					<div class="w-3 h-3 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0.2s"></div>
+					<div class="w-3 h-3 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0.4s"></div>
+				</div>
+				<p class="mt-4 text-gray-400">Đang tải dữ liệu thời tiết...</p>
+			</div>
+
+			<!-- Error Message -->
+			<div id="error-message" class="error-message hidden"></div>
+
+			<!-- Weather Content -->
+			<div id="current-weather" class="mb-8"></div>
+			<div id="hourly-forecast" class="mb-8 hidden"></div>
+		</div>
+
 		<script>
 			const apiKey = "979e7e4e95bc0ce656178e6a32d61218";
 			const cities = [
@@ -40,99 +130,202 @@
 				{ name: "Long Khanh", lat: 11.0167, lon: 107.15 },
 			];
 
-			async function getWeatherData(city) {
+			let currentTab = "current";
+			let selectedCity = cities[0];
+
+			async function getWeatherData(city, forecast = false) {
 				try {
-					const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&appid=${apiKey}&units=metric&lang=vi`);
+					let url = `https://api.openweathermap.org/data/2.5/`;
+					if (forecast) {
+						url += `forecast?lat=${city.lat}&lon=${city.lon}&appid=${apiKey}&units=metric&lang=vi&cnt=8`;
+					} else {
+						url += `weather?lat=${city.lat}&lon=${city.lon}&appid=${apiKey}&units=metric&lang=vi`;
+					}
+
+					const response = await fetch(url);
 					const data = await response.json();
+
+					if (!response.ok) {
+						throw new Error(data.message || "Lỗi không xác định từ API");
+					}
+
 					return data;
 				} catch (error) {
 					console.error("Lỗi khi lấy dữ liệu thời tiết:", error);
-					return null;
+					throw error;
 				}
 			}
 
-			function updateWeatherDisplay(city, weatherData) {
-				const container = document.getElementById(`weather-${city.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}`);
-				if (!container) return;
+			function updateCurrentWeather(city, weatherData) {
+				const container = document.getElementById("current-weather");
+				if (!container || !weatherData) return;
 
-				if (weatherData) {
-					container.innerHTML = `
-						<div class="bg-gray-900/50 backdrop-blur-lg border border-gray-800/50 rounded-xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-gray-900/30 hover:-translate-y-2">
-							<h3 class="text-xl font-bold mb-4 text-white">${city.name}</h3>
-							<div class="flex items-center gap-6 mb-6">
-								<img src="http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" alt="${weatherData.weather[0].description}" class="w-12 h-12">
+				container.innerHTML = `
+					<div class="weather-card p-6 transition-all duration-300">
+						<div class="flex justify-between items-start mb-6">
+							<div>
+								<h3 class="text-2xl font-bold text-white mb-1">${city.name}</h3>
+								<p class="text-gray-300 text-sm">${new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "long" })}</p>
+							</div>
+							<div class="text-right">
+								<p class="text-gray-300 text-sm">Cập nhật: ${new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</p>
+							</div>
+						</div>
+						<div class="flex items-center justify-between mb-8">
+							<div class="flex items-center gap-6">
+								<img src="http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png" 
+									 alt="${weatherData.weather[0].description}" class="w-24 h-24">
 								<div>
-									<p class="text-4xl font-bold text-white">${Math.round(weatherData.main.temp)}°C</p>
-									<p class="text-gray-400">${weatherData.weather[0].description}</p>
+									<p class="text-5xl font-bold text-white">${Math.round(weatherData.main.temp)}<span class="text-3xl text-gray-300">°C</span></p>
+									<p class="text-lg text-gray-300 capitalize -mt-1">${weatherData.weather[0].description}</p>
+									<p class="text-gray-400 text-sm">Cảm giác như: ${Math.round(weatherData.main.feels_like)}°C</p>
 								</div>
 							</div>
-							<div class="grid grid-cols-2 gap-4 text-gray-400">
-								<div class="p-3 rounded-lg bg-gray-900/20 backdrop-blur-sm">
-									<p class="text-sm font-medium mb-1">Tốc độ gió</p>
-									<p class="text-lg font-semibold">${weatherData.wind.speed} m/s</p>
-								</div>
-								<div class="p-3 rounded-lg bg-gray-900/20 backdrop-blur-sm">
-									<p class="text-sm font-medium mb-1">Độ ẩm</p>
-									<p class="text-lg font-semibold">${weatherData.main.humidity}%</p>
-								</div>
-								<div class="p-3 rounded-lg bg-gray-900/20 backdrop-blur-sm">
-									<p class="text-sm font-medium mb-1">Áp suất</p>
-									<p class="text-lg font-semibold">${weatherData.main.pressure} hPa</p>
-								</div>
-								<div class="p-3 rounded-lg bg-gray-900/20 backdrop-blur-sm">
-									<p class="text-sm font-medium mb-1">Độ mây</p>
-									<p class="text-lg font-semibold">${weatherData.clouds.all}%</p>
-								</div>
+						</div>
+						<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+							<div class="bg-gray-800/40 rounded-xl p-4 text-center">
+								<div class="text-blue-400 mb-1"><span class="material-icons">air</span></div>
+								<p class="text-sm text-gray-300 mb-1">Tốc độ gió</p>
+								<p class="text-lg font-semibold text-white">${weatherData.wind.speed} <span class="text-sm text-gray-400">m/s</span></p>
 							</div>
+							<div class="bg-gray-800/40 rounded-xl p-4 text-center">
+								<div class="text-blue-400 mb-1"><span class="material-icons">water_drop</span></div>
+								<p class="text-sm text-gray-300 mb-1">Độ ẩm</p>
+								<p class="text-lg font-semibold text-white">${weatherData.main.humidity}<span class="text-sm text-gray-400">%</span></p>
+							</div>
+							<div class="bg-gray-800/40 rounded-xl p-4 text-center">
+								<div class="text-blue-400 mb-1"><span class="material-icons">speed</span></div>
+								<p class="text-sm text-gray-300 mb-1">Áp suất</p>
+								<p class="text-lg font-semibold text-white">${weatherData.main.pressure} <span class="text-sm text-gray-400">hPa</span></p>
+							</div>
+							<div class="bg-gray-800/40 rounded-xl p-4 text-center">
+								<div class="text-blue-400 mb-1"><span class="material-icons">visibility</span></div>
+								<p class="text-sm text-gray-300 mb-1">Tầm nhìn</p>
+								<p class="text-lg font-semibold text-white">${(weatherData.visibility / 1000).toFixed(1)} <span class="text-sm text-gray-400">km</span></p>
+							</div>
+						</div>
+					</div>`;
+			}
+
+			function updateHourlyForecast(city, forecastData) {
+				const container = document.getElementById("hourly-forecast");
+				if (!container || !forecastData) return;
+
+				let forecastHTML = `
+					<div class="weather-card p-6">
+						<h3 class="text-xl font-bold text-white mb-4">Dự báo theo giờ - ${city.name}</h3>
+						<div id="hourly-forecast-container" class="flex overflow-x-auto pb-4 gap-4">`;
+
+				forecastData.list.forEach((hour) => {
+					const date = new Date(hour.dt * 1000);
+					const time = date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+
+					forecastHTML += `
+						<div class="hourly-forecast-item flex-shrink-0 bg-gray-800/30 rounded-xl p-4 text-center w-24">
+							<p class="text-gray-300 font-medium text-sm">${time}</p>
+							<div class="my-2 flex justify-center">
+								<img src="http://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png" 
+									alt="${hour.weather[0].description}" class="w-12 h-12">
+							</div>
+							<p class="text-xl font-bold text-white">${Math.round(hour.main.temp)}°</p>
+							<p class="text-xs text-gray-400 capitalize truncate">${hour.weather[0].description}</p>
 						</div>`;
-				} else {
-					container.innerHTML = '<p class="text-red-400 text-center p-4 rounded-lg bg-red-900/20">Không thể lấy dữ liệu thời tiết</p>';
-				}
+				});
+
+				forecastHTML += `
+						</div>
+					</div>`;
+
+				container.innerHTML = forecastHTML;
 			}
 
 			async function updateWeather() {
-				for (const city of cities) {
-					const weatherData = await getWeatherData(city);
-					updateWeatherDisplay(city, weatherData);
+				const loading = document.getElementById("loading");
+				const errorElement = document.getElementById("error-message");
+
+				try {
+					errorElement.style.display = "none";
+					loading.classList.remove("hidden");
+
+					if (currentTab === "current") {
+						const weatherData = await getWeatherData(selectedCity);
+						if (weatherData && weatherData.cod === 200) {
+							updateCurrentWeather(selectedCity, weatherData);
+							document.getElementById("current-weather").classList.remove("hidden");
+							document.getElementById("hourly-forecast").classList.add("hidden");
+						} else {
+							throw new Error("Không thể tải dữ liệu thời tiết hiện tại");
+						}
+					} else {
+						const forecastData = await getWeatherData(selectedCity, true);
+						if (forecastData && forecastData.cod === "200") {
+							updateHourlyForecast(selectedCity, forecastData);
+							document.getElementById("current-weather").classList.add("hidden");
+							document.getElementById("hourly-forecast").classList.remove("hidden");
+						} else {
+							throw new Error("Không thể tải dự báo thời tiết");
+						}
+					}
+				} catch (error) {
+					console.error("Lỗi khi cập nhật thời tiết:", error);
+					errorElement.textContent = `Lỗi: ${error.message}. Vui lòng thử lại sau.`;
+					errorElement.classList.remove("hidden");
+				} finally {
+					loading.classList.add("hidden");
 				}
 			}
 
-			document.addEventListener("DOMContentLoaded", updateWeather);
-			setInterval(updateWeather, 30 * 60 * 1000);
+			function switchTab(tab) {
+				currentTab = tab;
+				document.querySelectorAll(".tab-button").forEach((btn) => {
+					if (btn.dataset.tab === tab) {
+						btn.classList.add("active");
+						btn.classList.remove("inactive");
+					} else {
+						btn.classList.add("inactive");
+						btn.classList.remove("active");
+					}
+				});
+
+				document.getElementById("error-message").classList.add("hidden");
+				updateWeather();
+			}
+
+			function selectCity(cityName) {
+				const city = cities.find((c) => c.name === cityName);
+				if (city) {
+					selectedCity = city;
+					document.querySelectorAll(".city-btn").forEach((btn) => {
+						if (btn.textContent === cityName) {
+							btn.classList.add("bg-gradient-to-r", "from-blue-500", "to-cyan-400", "text-white", "shadow-lg", "shadow-blue-500/20");
+							btn.classList.remove("bg-gray-800/50", "text-gray-300");
+						} else {
+							btn.classList.remove("bg-gradient-to-r", "from-blue-500", "to-cyan-400", "text-white", "shadow-lg", "shadow-blue-500/20");
+							btn.classList.add("bg-gray-800/50", "text-gray-300", "hover:bg-gray-700/60");
+						}
+					});
+					document.getElementById("error-message").classList.add("hidden");
+					updateWeather();
+				}
+			}
+
+			document.addEventListener("DOMContentLoaded", () => {
+				// Thêm các nút thành phố
+				const cityContainer = document.getElementById("citySelector");
+				cities.forEach((city, index) => {
+					const button = document.createElement("button");
+					button.className = `city-btn px-5 py-2.5 rounded-full transition-all font-medium text-sm ${index === 0 ? "bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-lg shadow-blue-500/20" : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/60"}`;
+					button.textContent = city.name;
+					button.onclick = () => selectCity(city.name);
+					cityContainer.appendChild(button);
+				});
+
+				// Khởi tạo tab mặc định
+				switchTab("current");
+			});
+
+			// Cập nhật dữ liệu mỗi 5 phút
+			setInterval(updateWeather, 5 * 60 * 1000);
 		</script>
-	</head>
-	<body class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-		<div class="bg-gray-900/50 backdrop-blur-lg border border-gray-800/50 rounded-3xl shadow-2xl w-full sm:max-w-2xl mx-auto p-4 text-center relative overflow-hidden h-[400px] sm:h-[80vh]">
-			<!-- Tab Navigation -->
-			<div id="tabNavigation" class="mb-6"></div>
-			<script>
-				document.getElementById("tabNavigation").innerHTML = createTabNavigation("weather");
-			</script>
-
-			<!-- Tab Content -->
-			<div class="tab-content h-full">
-				<div class="space-y-4">
-					<div class="flex items-center justify-center gap-4">
-						<div class="text-2xl text-blue-400">
-							<span class="material-icons">wb_sunny</span>
-						</div>
-						<h2 class="text-sm font-extrabold bg-gradient-to-r from-blue-400 via-sky-400 to-purple-400 bg-clip-text text-transparent tracking-wider drop-shadow-lg uppercase animate-pulse">Thời Tiết</h2>
-						<div class="text-2xl text-blue-400">
-							<span class="material-icons">wb_sunny</span>
-						</div>
-					</div>
-
-					<div class="space-y-4">
-						<div class="flex flex-col items-center w-full">
-							<!-- Weather Containers -->
-							<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-								<div id="weather-nha-be" class="w-full"></div>
-								<div id="weather-long-khanh" class="w-full"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
 	</body>
 </html>
