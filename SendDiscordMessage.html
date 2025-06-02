@@ -60,6 +60,45 @@
 			.emoji-btn:hover {
 				transform: scale(1.2);
 			}
+			.emoji-btn-container {
+				margin-top: 10px;
+				background-color: #f8f9fa;
+				padding: 5px;
+				border: 1px solid #ddd;
+				border-radius: 5px;
+			}
+
+			/* CSS cho tab navigation */
+			.nav-tabs {
+				border-bottom: 1px solid #dee2e6;
+				overflow-x: auto;
+				white-space: nowrap;
+				padding: 0 10px;
+				margin-bottom: 15px;
+			}
+			.nav-tabs .nav-link {
+				padding: 0.5rem 1rem;
+				margin-right: 0.5rem;
+				border: 1px solid transparent;
+				border-radius: 4px 4px 0 0;
+			}
+			.nav-tabs .nav-link.active {
+				border-bottom-color: #dee2e6;
+			}
+
+			/* Responsive adjustments */
+			@media (max-width: 768px) {
+				.nav-tabs {
+					overflow-x: auto;
+					white-space: nowrap;
+					padding: 0 5px;
+				}
+				.nav-tabs .nav-link {
+					padding: 0.3rem 0.8rem;
+					margin-right: 0.3rem;
+					font-size: 0.9rem;
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -142,26 +181,22 @@
 						<div class="tab-pane fade show active" id="text" role="tabpanel">
 							<div class="mb-3">
 								<label class="form-label">Nội dung tin nhắn:</label>
-								<div class="d-flex justify-content-between mb-2">
-									<div>
-										<select id="templateSelect" class="form-select form-select-sm" style="width: 200px; display: inline-block" onchange="applyTemplate(this.value)">
-											<option value="">-- Chọn mẫu tin nhắn --</option>
-											<option value="rollback_thất_bại">📢 Rollback Thất Bại</option>
-											<option value="bao_tri">🔧 Thông báo</option>
-											<option value="canh_bao">⚠️ Cảnh báo</option>
-										</select>
-									</div>
-									<div>
-										<span class="emoji-btn" title="In đậm" onclick="insertText('**', '**')">B</span>
-										<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*')">I</span>
-										<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__')">U̲</span>
-										<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~')">S̶</span>
-										<!-- <span class="emoji-btn" title="Mã đơn" onclick="insertText('`', '`')">`code`</span> -->
-										<!-- <span class="emoji-btn" title="Khối code" onclick="insertText('```\n', '\n```')">```code```</span> -->
-										<span class="emoji-btn" title="Thời gian" onclick="insertText('', getCurrentTime())">🕒</span>
-									</div>
+								<div class="mb-2">
+									<select id="templateSelect" class="form-select form-select-sm" style="width: 200px; display: inline-block" onchange="applyTemplate(this.value)">
+										<option value="">-- Chọn mẫu tin nhắn --</option>
+										<option value="rollback_thất_bại">📢 Rollback Thất Bại</option>
+										<option value="bao_tri">🔧 Thông báo</option>
+										<option value="canh_bao">⚠️ Cảnh báo</option>
+									</select>
 								</div>
 								<textarea class="form-control" id="messageText" rows="8" placeholder="Nhập nội dung tin nhắn..."></textarea>
+								<div class="mt-2 emoji-btn-container">
+									<span class="emoji-btn" title="In đậm" onclick="insertText('**', '**')">B</span>
+									<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*')">I</span>
+									<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__')">U̲</span>
+									<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~')">S̶</span>
+									<span class="emoji-btn" title="Thời gian" onclick="insertText('', getCurrentTime())">🕒</span>
+								</div>
 							</div>
 							<div class="form-check mb-3">
 								<input class="form-check-input" type="checkbox" id="tts" />
@@ -194,8 +229,11 @@
 								<textarea class="form-control" id="embedDescription" rows="3" placeholder="Nhập mô tả"></textarea>
 							</div>
 							<div class="mb-3">
-								<label class="form-label">Màu sắc (mã hex, không cần #):</label>
-								<input type="text" class="form-control" id="embedColor" value="5865F2" placeholder="VD: 5865F2 (màu xanh Discord)" />
+								<label class="form-label">Màu sắc:</label>
+								<div class="d-flex gap-2">
+									<input type="color" class="form-control form-control-color" id="embedColorPicker" value="#5865F2" title="Chọn màu" style="height: 38px; padding: 0; cursor: pointer" />
+									<input type="text" class="form-control" id="embedColor" value="5865F2" placeholder="VD: 5865F2 (màu xanh Discord)" readonly />
+								</div>
 							</div>
 							<div id="embedFields">
 								<div class="embed-field mb-3 p-2 border rounded">
@@ -256,6 +294,11 @@
 
 			// Hiển thị modal đăng nhập khi trang tải xong
 			document.addEventListener("DOMContentLoaded", function () {
+				// Xóa session và token khi trang tải
+				auth.signOut().catch((error) => {
+					console.error("Lỗi khi xóa session:", error);
+				});
+
 				const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
 				loginModal.show();
 
@@ -273,6 +316,8 @@
 					} else {
 						// Chưa đăng nhập
 						document.querySelector(".container").classList.add("d-none");
+						// Hiển thị lại modal đăng nhập nếu bị đóng
+						loginModal.show();
 					}
 				});
 			});
@@ -561,7 +606,7 @@
 				const webhookUrl = webhookUrls[document.getElementById("webhookSelect").value];
 				const title = document.getElementById("embedTitle").value;
 				const description = document.getElementById("embedDescription").value;
-				const color = document.getElementById("embedColor").value;
+				const color = document.getElementById("embedColorPicker").value;
 				const footer = document.getElementById("embedFooter").value;
 				const username = document.getElementById("username").value;
 				const avatarUrl = document.getElementById("avatarUrl").value;
@@ -618,7 +663,7 @@
 						// Xóa form
 						document.getElementById("embedTitle").value = "";
 						document.getElementById("embedDescription").value = "";
-						document.getElementById("embedColor").value = "5865F2";
+						document.getElementById("embedColorPicker").value = "#5865F2";
 						document.getElementById("embedFooter").value = "";
 						// Giữ lại 1 trường trống
 						const fieldsContainer = document.getElementById("embedFields");
@@ -674,7 +719,6 @@
 					name: "🔧 Thông báo",
 					content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ 
-		⚠️ __**Lý Do:**__ ID 48234845 không hoàn thành Nhiệm Vụ Ngày ở ngày 31/05/2025 ==> Đến ngày 01/06/2025 sẽ bắt đầu tính lại từ 1
 		🕙 __**Thời gian:**__ ${getCurrentTime()}
 		@everyone`,
 				},
@@ -682,7 +726,7 @@
 				canh_bao: {
 					name: "⚠️ Cảnh báo hệ thống",
 					content: `❓ **THÔNG BÁO** ❓
-		📢 __**Nội Dung:**__ Nội dung file Thay đổi hong kong 1.txt (Lần 6) [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
+		📢 __**Nội Dung:**__ 
 		⚠️ __**Lý Do:**__
 		🕙 __**Thời gian:**__ ${getCurrentTime()}
 		@everyone`,
@@ -746,6 +790,12 @@
 						e.preventDefault();
 						sendTextMessage();
 					}
+				});
+
+				// Xử lý sự kiện thay đổi màu
+				document.getElementById("embedColorPicker").addEventListener("change", function () {
+					const color = this.value.substring(1); // Loại bỏ ký tự #
+					document.getElementById("embedColor").value = color.toUpperCase();
 				});
 			});
 		</script>
