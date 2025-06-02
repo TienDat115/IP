@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Gửi Tin Nhắn Discord</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<style>
+			body {
+				background-color: #f8f9fa;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			}
+			.container {
+				max-width: 800px;
+				margin-top: 30px;
+			}
+			.card {
+				border-radius: 10px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				margin-bottom: 20px;
+			}
+			.card-header {
+				background-color: #5865f2;
+				color: white;
+				font-weight: bold;
+				border-radius: 10px 10px 0 0 !important;
+			}
+			.btn-primary {
+				background-color: #5865f2;
+				border: none;
+			}
+			.btn-primary:hover {
+				background-color: #4752c4;
+			}
+			.webhook-item {
+				cursor: pointer;
+				padding: 10px;
+				border-radius: 5px;
+				margin-bottom: 5px;
+				transition: all 0.2s;
+			}
+			.webhook-item:hover {
+				background-color: #f1f1f1;
+			}
+			.webhook-item.highlight {
+				background-color: #e9f7fe;
+				border-left: 4px solid #2196f3;
+			}
+			.divider {
+				border-top: 2px solid #e0e0e0;
+				margin: 10px 0;
+			}
+			.emoji-btn {
+				font-size: 1.2em;
+				cursor: pointer;
+				margin: 0 5px;
+				transition: transform 0.2s;
+			}
+			.emoji-btn:hover {
+				transform: scale(1.2);
+			}
+		</style>
+	</head>
+	<body>
+		<!-- Modal Đăng nhập -->
+		<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Đăng nhập hệ thống</h5>
+					</div>
+					<div class="modal-body">
+						<div id="loginAlert" class="alert alert-danger d-none"></div>
+						<div class="mb-3">
+							<label for="email" class="form-label">Email</label>
+							<input type="email" class="form-control" id="email" required />
+						</div>
+						<div class="mb-3">
+							<label for="password" class="form-label">Mật khẩu</label>
+							<input type="password" class="form-control" id="password" required />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="btnLogin">Đăng nhập</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container d-none">
+			<div class="text-center mb-4">
+				<h1 class="display-5">Gửi Tin Nhắn Discord</h1>
+				<p class="text-muted">Công cụ gửi tin nhắn qua Webhook Discord</p>
+			</div>
+
+			<div class="card mb-4">
+				<div class="card-header">Cấu Hình Webhook</div>
+				<div class="card-body">
+					<div class="mb-3">
+						<label class="form-label">Chọn Webhook:</label>
+						<select id="webhookSelect" class="form-select">
+							<option value="1">[JXM] Võ Lâm Xích Hỏa - Hệ Thống</option>
+							<option value="2">[JXM] Võ Lâm Xích Hỏa - Thảo Luận</option>
+							<option value="3">[JXM] Võ Lâm Tây Vực - Hệ Thống</option>
+							<option value="4">[JXM] Võ Lâm Tây Vực - Thảo Luận</option>
+							<option value="5">[JXM] Võ Lâm Tây Vực - File Bảo Trì</option>
+							<option value="6">TEST</option>
+							<option value="7">[JXM] Võ Lâm Hồng Kông - Hệ Thống</option>
+							<option value="8">[JXM] Võ Lâm Hồng Kông - Thảo Luận</option>
+							<option value="9">[JXM] Võ Lâm Hồng Kông - File Bảo Trì</option>
+						</select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Tùy chỉnh tên người gửi (tùy chọn):</label>
+						<input type="text" id="username" class="form-control" placeholder="Để trống để sử dụng tên mặc định" />
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Avatar URL (tùy chọn):</label>
+						<input type="text" id="avatarUrl" class="form-control" placeholder="URL hình đại diện" />
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-4">
+				<div class="card-header">Nội Dung Tin Nhắn</div>
+				<div class="card-body">
+					<ul class="nav nav-tabs mb-3" id="messageTabs" role="tablist">
+						<li class="nav-item" role="presentation">
+							<button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab">Văn Bản</button>
+						</li>
+						<li class="nav-item" role="presentation">
+							<button class="nav-link" id="file-tab" data-bs-toggle="tab" data-bs-target="#file" type="button" role="tab">File Đính Kèm</button>
+						</li>
+						<li class="nav-item" role="presentation">
+							<button class="nav-link" id="embed-tab" data-bs-toggle="tab" data-bs-target="#embed" type="button" role="tab">Tin Nhúng</button>
+						</li>
+					</ul>
+
+					<div class="tab-content" id="messageTabsContent">
+						<!-- Tab Văn Bản -->
+						<div class="tab-pane fade show active" id="text" role="tabpanel">
+							<div class="mb-3">
+								<label class="form-label">Nội dung tin nhắn:</label>
+								<div class="d-flex justify-content-between mb-2">
+									<div>
+										<select id="templateSelect" class="form-select form-select-sm" style="width: 200px; display: inline-block" onchange="applyTemplate(this.value)">
+											<option value="">-- Chọn mẫu tin nhắn --</option>
+											<option value="rollback_thất_bại">📢 Rollback Thất Bại</option>
+											<option value="bao_tri">🔧 Thông báo</option>
+											<option value="canh_bao">⚠️ Cảnh báo</option>
+										</select>
+									</div>
+									<div>
+										<span class="emoji-btn" title="In đậm" onclick="insertText('**', '**')">**B**</span>
+										<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*')">*I*</span>
+										<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__')">U̲</span>
+										<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~')">S̶</span>
+										<span class="emoji-btn" title="Mã đơn" onclick="insertText('`', '`')">`code`</span>
+										<span class="emoji-btn" title="Khối code" onclick="insertText('```\n', '\n```')">```code```</span>
+										<span class="emoji-btn" title="Thời gian" onclick="insertText('', getCurrentTime())">🕒</span>
+									</div>
+								</div>
+								<textarea class="form-control" id="messageText" rows="8" placeholder="Nhập nội dung tin nhắn..."></textarea>
+							</div>
+							<div class="form-check mb-3">
+								<input class="form-check-input" type="checkbox" id="tts" />
+								<label class="form-check-label" for="tts">Đọc to (Text-to-Speech)</label>
+							</div>
+							<button class="btn btn-primary" onclick="sendTextMessage()">Gửi Tin Nhắn</button>
+						</div>
+
+						<!-- Tab File Đính Kèm -->
+						<div class="tab-pane fade" id="file" role="tabpanel">
+							<div class="mb-3">
+								<label class="form-label">Chọn file đính kèm:</label>
+								<input type="file" class="form-control" id="fileInput" multiple />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Nội dung kèm theo (tùy chọn):</label>
+								<textarea class="form-control" id="fileMessage" rows="3" placeholder="Nhập nội dung kèm theo file..."></textarea>
+							</div>
+							<button class="btn btn-primary" onclick="sendFileMessage()">Gửi File</button>
+						</div>
+
+						<!-- Tab Tin Nhúng -->
+						<div class="tab-pane fade" id="embed" role="tabpanel">
+							<div class="mb-3">
+								<label class="form-label">Tiêu đề:</label>
+								<input type="text" class="form-control" id="embedTitle" placeholder="Nhập tiêu đề" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Mô tả:</label>
+								<textarea class="form-control" id="embedDescription" rows="3" placeholder="Nhập mô tả"></textarea>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Màu sắc (mã hex, không cần #):</label>
+								<input type="text" class="form-control" id="embedColor" value="5865F2" placeholder="VD: 5865F2 (màu xanh Discord)" />
+							</div>
+							<div id="embedFields">
+								<div class="embed-field mb-3 p-2 border rounded">
+									<div class="d-flex justify-content-between mb-2">
+										<h6>Trường 1</h6>
+										<button class="btn btn-sm btn-danger" onclick="removeEmbedField(this)">Xóa</button>
+									</div>
+									<input type="text" class="form-control mb-2" placeholder="Tên trường" />
+									<textarea class="form-control mb-2" placeholder="Giá trị"></textarea>
+									<div class="form-check">
+										<input class="form-check-input" type="checkbox" />
+										<label class="form-check-label">Hiển thị cùng dòng</label>
+									</div>
+								</div>
+							</div>
+							<button class="btn btn-secondary mb-3" onclick="addEmbedField()">+ Thêm Trường</button>
+							<div class="mb-3">
+								<label class="form-label">Chân trang:</label>
+								<input type="text" class="form-control" id="embedFooter" placeholder="Nhập chân trang" />
+							</div>
+							<button class="btn btn-primary" onclick="sendEmbedMessage()">Gửi Tin Nhúng</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header">Nhật Ký Hoạt Động</div>
+				<div class="card-body">
+					<div id="logArea" class="bg-light p-3" style="min-height: 100px; max-height: 200px; overflow-y: auto; border-radius: 5px; font-family: monospace">
+						<div>Hệ thống đã sẵn sàng. Chọn các tùy chọn và gửi tin nhắn.</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+		<!-- Thêm Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+		<script>
+			// Khởi tạo Firebase
+			const firebaseConfig = {
+				apiKey: "AIzaSyA0lOPK7ngRqblR6osPdUyGeoH9uUEQNo8",
+				authDomain: "discordwebhooks-c3158.firebaseapp.com",
+				projectId: "discordwebhooks-c3158",
+				storageBucket: "discordwebhooks-c3158.firebasestorage.app",
+				messagingSenderId: "75120159974",
+				appId: "1:75120159974:web:bd9bee21fd8639b25d9f27",
+				measurementId: "G-H06TGKVTP8",
+			};
+
+			// Khởi tạo Firebase
+			firebase.initializeApp(firebaseConfig);
+			const auth = firebase.auth();
+			const db = firebase.firestore();
+
+			// Hiển thị modal đăng nhập khi trang tải xong
+			document.addEventListener("DOMContentLoaded", function () {
+				const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+				loginModal.show();
+
+				// Xử lý sự kiện đăng nhập
+				document.getElementById("btnLogin").addEventListener("click", loginUser);
+
+				// Kiểm tra trạng thái đăng nhập
+				auth.onAuthStateChanged((user) => {
+					if (user) {
+						// Người dùng đã đăng nhập
+						loginModal.hide();
+						document.querySelector(".container").classList.remove("d-none");
+						// Load dữ liệu sau khi đăng nhập
+						loadWebhooks();
+					} else {
+						// Chưa đăng nhập
+						document.querySelector(".container").classList.add("d-none");
+					}
+				});
+			});
+
+			// Hàm đăng nhập
+			async function loginUser() {
+				const email = document.getElementById("email").value;
+				const password = document.getElementById("password").value;
+
+				try {
+					await auth.signInWithEmailAndPassword(email, password);
+
+					// Thông báo đăng nhập thành công
+					await Swal.fire({
+						icon: "success",
+						title: "Đăng nhập thành công!",
+						showConfirmButton: true,
+						confirmButtonText: "OK",
+						allowOutsideClick: false,
+					});
+
+					// Ẩn cảnh báo lỗi nếu có
+					const loginAlert = document.getElementById("loginAlert");
+					if (loginAlert) {
+						loginAlert.classList.add("d-none");
+					}
+				} catch (error) {
+					// Thông báo lỗi đăng nhập
+					await Swal.fire({
+						icon: "error",
+						title: "Đăng nhập thất bại",
+						text: error.message,
+						confirmButtonText: "Thử lại",
+						confirmButtonColor: "#dc3545",
+					});
+
+					// Focus lại vào trường email
+					document.getElementById("email").focus();
+				}
+			}
+
+			// Hàm tải webhooks (chỉ gọi sau khi đăng nhập thành công)
+			async function loadWebhooks() {
+				try {
+					const webhooks = {};
+					const querySnapshot = await db.collection("webhooks").get();
+					querySnapshot.forEach((doc) => {
+						const data = doc.data();
+						webhooks[data.id] = data.url;
+					});
+					// Cập nhật giao diện với danh sách webhooks
+					updateWebhookUI(webhooks);
+				} catch (error) {
+					console.error("Lỗi khi lấy webhooks:", error);
+				}
+			}
+
+			// Hàm cập nhật giao diện với danh sách webhooks
+			function updateWebhookUI(webhooks) {
+				// Thêm code cập nhật giao diện ở đây
+			}
+
+			// Hàm lấy webhook URLs từ Firebase
+			async function getWebhookUrls() {
+				try {
+					const webhooks = {};
+					const querySnapshot = await db.collection("webhooks").get();
+					querySnapshot.forEach((doc) => {
+						const data = doc.data();
+						webhooks[data.id] = data.url;
+					});
+					return webhooks;
+				} catch (error) {
+					console.error("Lỗi khi lấy webhooks:", error);
+					return {};
+				}
+			}
+
+			// Thêm log vào khung nhật ký
+			function addLog(message, isError = false) {
+				const logArea = document.getElementById("logArea");
+				const logEntry = document.createElement("div");
+				const timestamp = new Date().toLocaleTimeString();
+
+				logEntry.innerHTML = `<span class="text-muted">[${timestamp}]</span> ${message}`;
+				if (isError) {
+					logEntry.className = "text-danger";
+				}
+
+				logArea.prepend(logEntry);
+
+				// Giới hạn số lượng log hiển thị
+				if (logArea.children.length > 50) {
+					logArea.removeChild(logArea.lastChild);
+				}
+			}
+
+			// Chèn văn bản vào textarea
+			function insertText(before, after) {
+				const textarea = document.getElementById("messageText");
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				const text = textarea.value;
+				const selectedText = text.substring(start, end);
+
+				textarea.value = text.substring(0, start) + before + selectedText + after + text.substring(end);
+
+				// Đặt lại vị trí con trỏ
+				const newCursorPos = start + before.length;
+				textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
+				textarea.focus();
+			}
+
+			// Lấy thời gian hiện tại
+			function getCurrentTime() {
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = String(now.getMonth() + 1).padStart(2, "0");
+				const day = String(now.getDate()).padStart(2, "0");
+				const hours = String(now.getHours()).padStart(2, "0");
+				const minutes = String(now.getMinutes()).padStart(2, "0");
+				const seconds = String(now.getSeconds()).padStart(2, "0");
+
+				return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+			}
+
+			// Gửi tin nhắn văn bản
+			async function sendTextMessage() {
+				const webhooks = await getWebhookUrls();
+				const selectedWebhookId = document.getElementById("webhookSelect").value;
+				const webhookUrl = webhooks[selectedWebhookId];
+				const message = document.getElementById("messageText").value;
+				const username = document.getElementById("username").value;
+				const avatarUrl = document.getElementById("avatarUrl").value;
+				const tts = document.getElementById("tts").checked;
+
+				if (!message.trim()) {
+					addLog("❌ Vui lòng nhập nội dung tin nhắn", true);
+					return;
+				}
+
+				const payload = {
+					content: message,
+					tts: tts,
+				};
+
+				if (username) payload.username = username;
+				if (avatarUrl) payload.avatar_url = avatarUrl;
+
+				try {
+					const response = await fetch(webhookUrl, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(payload),
+					});
+
+					if (response.ok) {
+						addLog("✅ Đã gửi tin nhắn thành công!");
+						// Hiển thị thông báo thành công
+						await Swal.fire({
+							icon: "success",
+							title: "Thành công!",
+							text: "Tin nhắn đã được gửi thành công.",
+							showConfirmButton: true,
+						});
+					} else {
+						const error = await response.text();
+						addLog(`❌ Lỗi khi gửi tin nhắn: ${error}`, true);
+						await Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: "Đã xảy ra lỗi khi gửi tin nhắn: " + error.message,
+						});
+					}
+				} catch (error) {
+					addLog(`❌ Lỗi kết nối: ${error.message}`, true);
+					await Swal.fire({
+						icon: "error",
+						title: "Lỗi!",
+						text: "Đã xảy ra lỗi khi gửi tin nhắn: " + error.message,
+					});
+				}
+			}
+
+			// Gửi file đính kèm
+			async function sendFileMessage() {
+				try {
+					const webhooks = await getWebhookUrls();
+					const selectedWebhookId = document.getElementById("webhookSelect").value;
+					const webhookUrl = webhooks[selectedWebhookId];
+					const fileInput = document.getElementById("fileInput");
+					const files = fileInput.files;
+					const message = document.getElementById("fileMessage").value;
+					const username = document.getElementById("username").value;
+					const avatarUrl = document.getElementById("avatarUrl").value;
+
+					if (files.length === 0) {
+						addLog("❌ Vui lòng chọn ít nhất một file", true);
+						return;
+					}
+
+					const formData = new FormData();
+					if (message) formData.append("content", message);
+					if (username) formData.append("username", username);
+					if (avatarUrl) formData.append("avatar_url", avatarUrl);
+
+					// Thêm tất cả các file đã chọn
+					for (let i = 0; i < files.length; i++) {
+						formData.append(`file${i}`, files[i]);
+					}
+
+					const response = await fetch(webhookUrl, {
+						method: "POST",
+						body: formData,
+					});
+
+					if (response.ok) {
+						addLog(`✅ Đã gửi ${files.length} file thành công!`);
+						fileInput.value = ""; // Xóa file đã chọn
+						document.getElementById("fileMessage").value = ""; // Xóa nội dung tin nhắn
+
+						await Swal.fire({
+							icon: "success",
+							title: "Thành công!",
+							text: `Bạn đã gửi ${files.length} file thành công.`,
+							showConfirmButton: true,
+						});
+					} else {
+						const error = await response.json();
+						addLog(`❌ Lỗi khi gửi file: ${error.message || response.statusText}`, true);
+
+						await Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: `Lỗi khi gửi file: ${error.message || response.statusText}`,
+						});
+					}
+				} catch (error) {
+					console.error("Lỗi khi gửi file:", error);
+					addLog(`❌ Lỗi: ${error.message}`, true);
+
+					await Swal.fire({
+						icon: "error",
+						title: "Lỗi!",
+						text: `Lỗi khi gửi file: ${error.message}`,
+					});
+				}
+			}
+
+			// Thêm trường mới vào tin nhúng
+			function addEmbedField() {
+				const fieldsContainer = document.getElementById("embedFields");
+				const fieldCount = fieldsContainer.children.length + 1;
+
+				const fieldDiv = document.createElement("div");
+				fieldDiv.className = "embed-field mb-3 p-2 border rounded";
+				fieldDiv.innerHTML = `
+                <div class="d-flex justify-content-between mb-2">
+                    <h6>Trường ${fieldCount}</h6>
+                    <button class="btn btn-sm btn-danger" onclick="removeEmbedField(this)">Xóa</button>
+                </div>
+                <input type="text" class="form-control mb-2" placeholder="Tên trường">
+                <textarea class="form-control mb-2" placeholder="Giá trị"></textarea>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Hiển thị cùng dòng</label>
+                </div>
+            `;
+
+				fieldsContainer.appendChild(fieldDiv);
+			}
+
+			// Xóa trường tin nhúng
+			function removeEmbedField(button) {
+				if (document.querySelectorAll(".embed-field").length > 1) {
+					button.closest(".embed-field").remove();
+				} else {
+					addLog("❌ Phải có ít nhất một trường", true);
+				}
+			}
+
+			// Gửi tin nhắn nhúng
+			async function sendEmbedMessage() {
+				const webhookUrl = webhookUrls[document.getElementById("webhookSelect").value];
+				const title = document.getElementById("embedTitle").value;
+				const description = document.getElementById("embedDescription").value;
+				const color = document.getElementById("embedColor").value;
+				const footer = document.getElementById("embedFooter").value;
+				const username = document.getElementById("username").value;
+				const avatarUrl = document.getElementById("avatarUrl").value;
+
+				if (!title && !description) {
+					addLog("❌ Vui lòng nhập tiêu đề hoặc mô tả", true);
+					return;
+				}
+
+				// Thu thập các trường
+				const fields = [];
+				document.querySelectorAll(".embed-field").forEach((field) => {
+					const name = field.querySelector('input[type="text"]').value;
+					const value = field.querySelector("textarea").value;
+					const inline = field.querySelector('input[type="checkbox"]').checked;
+
+					if (name && value) {
+						fields.push({
+							name: name,
+							value: value,
+							inline: inline,
+						});
+					}
+				});
+
+				const embed = {
+					title: title,
+					description: description,
+					color: parseInt(color.replace("#", ""), 16) || 0x5865f2, // Mặc định là màu xanh Discord
+					fields: fields,
+					footer: {
+						text: footer || `Hệ thống thông báo - ${new Date().toLocaleString("vi-VN")}`,
+					},
+				};
+
+				const payload = {
+					embeds: [embed],
+				};
+
+				if (username) payload.username = username;
+				if (avatarUrl) payload.avatar_url = avatarUrl;
+
+				try {
+					const response = await fetch(webhookUrl, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(payload),
+					});
+
+					if (response.ok) {
+						addLog("✅ Đã gửi tin nhúng thành công!");
+						// Xóa form
+						document.getElementById("embedTitle").value = "";
+						document.getElementById("embedDescription").value = "";
+						document.getElementById("embedColor").value = "5865F2";
+						document.getElementById("embedFooter").value = "";
+						// Giữ lại 1 trường trống
+						const fieldsContainer = document.getElementById("embedFields");
+						fieldsContainer.innerHTML = "";
+						addEmbedField();
+
+						await Swal.fire({
+							icon: "success",
+							title: "Thành công!",
+							text: "Tin nhúng đã được gửi thành công.",
+							showConfirmButton: true,
+						});
+					} else {
+						const error = await response.text();
+						addLog(`❌ Lỗi khi gửi tin nhúng: ${error}`, true);
+
+						await Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: "Đã xảy ra lỗi khi gửi tin nhúng: " + error.message,
+						});
+					}
+				} catch (error) {
+					addLog(`❌ Lỗi kết nối: ${error.message}`, true);
+
+					await Swal.fire({
+						icon: "error",
+						title: "Lỗi!",
+						text: "Không thể gửi tin nhúng: " + error.message,
+					});
+				}
+			}
+
+			// Biến lưu template hiện tại
+			let currentTemplate = null;
+
+			// Định nghĩa các mẫu tin nhắn
+			const messageTemplates = {
+				rollback_thất_bại: {
+					name: "📢 Rollback Thất Bại",
+					content: `❓ THÔNG BÁO ❓
+		🆎 Nội Dung: Rollback thất bại
+		💳 Tài Khoản: 
+		👤 ID Nhân Vật: 
+		🖥️ Máy Chủ: Võ Lâm Tây Vực - 
+		⚠️ Lý Do: 
+		🕙 Thời gian: ${getCurrentTime()}
+		Vui lòng kiểm tra và trả lại Account cho khách hàng!
+		@everyone`,
+				},
+
+				bao_tri: {
+					name: "🔧 Thông báo",
+					content: `🔔 **THÔNG BÁO** 🔔
+		📢 __**Nội Dung:**__ 
+		⚠️ __**Lý Do:**__ ID 48234845 không hoàn thành Nhiệm Vụ Ngày ở ngày 31/05/2025 ==> Đến ngày 01/06/2025 sẽ bắt đầu tính lại từ 1
+		🕙 __**Thời gian:**__ ${getCurrentTime()}
+		@everyone`,
+				},
+
+				canh_bao: {
+					name: "⚠️ Cảnh báo hệ thống",
+					content: `❓ **THÔNG BÁO** ❓
+		📢 __**Nội Dung:**__ Nội dung file Thay đổi hong kong 1.txt (Lần 6) [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
+		⚠️ __**Lý Do:**__
+		🕙 __**Thời gian:**__ ${getCurrentTime()}
+		@everyone`,
+				},
+			};
+
+			// Áp dụng mẫu tin nhắn đã chọn
+			function applyTemplate(templateId) {
+				const templateSelect = document.getElementById("templateSelect");
+
+				if (!templateId) {
+					currentTemplate = null;
+					templateSelect.selectedIndex = 0;
+					return;
+				}
+
+				const template = messageTemplates[templateId];
+				if (!template) return;
+
+				// Lưu template hiện tại
+				currentTemplate = templateId;
+
+				// Cập nhật nội dung tin nhắn
+				const messageText = document.getElementById("messageText");
+				messageText.value = template.content;
+
+				// Đặt con trỏ vào vị trí đầu tiên có dấu [
+				setTimeout(() => {
+					const pos = messageText.value.indexOf("[");
+					if (pos !== -1) {
+						messageText.setSelectionRange(pos, pos);
+						messageText.focus();
+					}
+				}, 0);
+
+				// Cập nhật lại dropdown để hiển thị đúng tên template
+				setTimeout(() => {
+					templateSelect.value = templateId;
+				}, 0);
+			}
+
+			// Reset dropdown khi click vào option đầu tiên
+			document.querySelector('#templateSelect option[value=""]').addEventListener("click", function () {
+				currentTemplate = null;
+				document.getElementById("messageText").value = "";
+			});
+
+			// Khởi tạo
+			document.addEventListener("DOMContentLoaded", function () {
+				// Thêm sự kiện cho các tab
+				const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+				tabEls.forEach((tabEl) => {
+					tabEl.addEventListener("shown.bs.tab", function (event) {
+						// Có thể thêm xử lý khi chuyển tab ở đây
+					});
+				});
+
+				// Thêm sự kiện cho nút gửi bằng phím Enter trong textarea
+				document.getElementById("messageText").addEventListener("keydown", function (e) {
+					if (e.key === "Enter" && e.ctrlKey) {
+						e.preventDefault();
+						sendTextMessage();
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
