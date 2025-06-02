@@ -99,6 +99,168 @@
 					font-size: 0.9rem;
 				}
 			}
+
+			/* Dark Mode styles */
+			body.dark-mode {
+				background-color: #1a1a1a;
+				color: #ffffff;
+			}
+
+			.dark-mode .container {
+				background-color: #2d2d2d;
+				border-radius: 10px;
+			}
+
+			.dark-mode .card {
+				background-color: #2d2d2d;
+				border-color: #3d3d3d;
+			}
+
+			.dark-mode .card-header {
+				background-color: #3d3d3d;
+				border-bottom-color: #4d4d4d;
+			}
+
+			.dark-mode .form-control,
+			.dark-mode .form-select,
+			.dark-mode .form-check-input {
+				background-color: #3d3d3d;
+				border-color: #4d4d4d;
+				color: #ffffff;
+			}
+
+			.dark-mode .form-control:focus,
+			.dark-mode .form-select:focus {
+				border-color: #5865f2;
+				box-shadow: 0 0 0 0.25rem rgba(88, 101, 242, 0.25);
+			}
+
+			.dark-mode .btn-primary {
+				background-color: #5865f2;
+				border-color: #5865f2;
+			}
+
+			.dark-mode .btn-primary:hover {
+				background-color: #4752c4;
+				border-color: #4752c4;
+			}
+
+			.dark-mode .btn-secondary {
+				background-color: #4d4d4d;
+				border-color: #4d4d4d;
+			}
+
+			.dark-mode .btn-secondary:hover {
+				background-color: #5d5d5d;
+				border-color: #5d5d5d;
+			}
+
+			.dark-mode .nav-tabs .nav-link {
+				color: #ffffff;
+			}
+
+			.dark-mode .nav-tabs .nav-link.active {
+				background-color: #3d3d3d;
+				border-bottom-color: #5865f2;
+			}
+
+			.dark-mode .emoji-btn {
+				background-color: #3d3d3d;
+			}
+
+			.dark-mode .emoji-btn:hover {
+				background-color: #4d4d4d;
+			}
+
+			.dark-mode .emoji-btn-container {
+				background-color: #3d3d3d;
+				border-color: #4d4d4d;
+			}
+
+			.dark-mode .embed-field {
+				background-color: #3d3d3d;
+				border-color: #4d4d4d;
+			}
+
+			.dark-mode .embed-field input,
+			.dark-mode .embed-field textarea {
+				background-color: #3d3d3d;
+				border-color: #4d4d4d;
+			}
+
+			.dark-mode .embed-field input:focus,
+			.dark-mode .embed-field textarea:focus {
+				border-color: #5865f2;
+				box-shadow: 0 0 0 0.25rem rgba(88, 101, 242, 0.25);
+			}
+
+			.dark-mode .embed-field .btn-danger {
+				background-color: #dc3545;
+				border-color: #dc3545;
+			}
+
+			.dark-mode .embed-field .btn-danger:hover {
+				background-color: #c82333;
+				border-color: #bd2130;
+			}
+
+			.dark-mode .logArea {
+				background-color: #3d3d3d;
+				color: #ffffff;
+			}
+
+			.dark-mode .logArea .text-danger {
+				color: #dc3545;
+			}
+
+			/* Mode toggle button */
+			.mode-toggle {
+				position: fixed;
+				top: 1rem;
+				right: 1rem;
+				z-index: 1000;
+			}
+
+			.mode-toggle button {
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				background: none;
+				border: none;
+				cursor: pointer;
+				padding: 0;
+				outline: none;
+				transition: all 0.3s ease;
+			}
+
+			.mode-toggle button:hover {
+				transform: scale(1.1);
+			}
+
+			.mode-toggle .sun,
+			.mode-toggle .moon {
+				display: none;
+			}
+
+			.mode-toggle .sun {
+				display: block;
+			}
+
+			body.dark-mode .mode-toggle .sun {
+				display: none;
+			}
+
+			body.dark-mode .mode-toggle .moon {
+				display: block;
+			}
+
+			.mode-toggle .sun,
+			.mode-toggle .moon {
+				width: 24px;
+				height: 24px;
+				fill: currentColor;
+				color: #5865f2;
+			}
 		</style>
 	</head>
 	<body>
@@ -125,6 +287,18 @@
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<!-- Mode toggle button -->
+		<div class="mode-toggle d-none" id="modeToggleContainer">
+			<button id="modeToggle" title="Chuyển đổi chế độ">
+				<svg class="sun" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+					<path d="M12 3a9 9 0 0 1 9 9a9 9 0 0 1-9 9a9 9 0 0 1-9-9a9 9 0 0 1 9-9m0 16a7 7 0 0 1-7-7a7 7 0 0 1 7-7a7 7 0 0 1 7 7a7 7 0 0 1-7 7M12 5a4 4 0 0 0-4 4a4 4 0 0 0 4 4a4 4 0 0 0 4-4a4 4 0 0 0-4-4z" />
+				</svg>
+				<svg class="moon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+					<path d="M21 12.75A9 9 0 1 1 12 3a9 9 0 0 1 9 9.75M21 12a7 7 0 1 0-14 0 7 7 0 0 0 14 0z" />
+				</svg>
+			</button>
 		</div>
 
 		<div class="container d-none">
@@ -169,7 +343,7 @@
 							<button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab">Văn Bản</button>
 						</li>
 						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="file-tab" data-bs-toggle="tab" data-bs-target="#file" type="button" role="tab">File Đính Kèm</button>
+							<button class="nav-link" id="file-tab" data-bs-toggle="tab" data-bs-target="#file" type="button" role="tab">Gửi File</button>
 						</li>
 						<li class="nav-item" role="presentation">
 							<button class="nav-link" id="embed-tab" data-bs-toggle="tab" data-bs-target="#embed" type="button" role="tab">Tin Nhúng</button>
@@ -311,11 +485,15 @@
 						// Người dùng đã đăng nhập
 						loginModal.hide();
 						document.querySelector(".container").classList.remove("d-none");
+						// Hiển thị nút chuyển đổi chế độ
+						document.getElementById("modeToggleContainer").classList.remove("d-none");
 						// Load dữ liệu sau khi đăng nhập
 						loadWebhooks();
 					} else {
 						// Chưa đăng nhập
 						document.querySelector(".container").classList.add("d-none");
+						// Ẩn nút chuyển đổi chế độ
+						document.getElementById("modeToggleContainer").classList.add("d-none");
 						// Hiển thị lại modal đăng nhập nếu bị đóng
 						loginModal.show();
 					}
@@ -797,7 +975,26 @@
 					const color = this.value.substring(1); // Loại bỏ ký tự #
 					document.getElementById("embedColor").value = color.toUpperCase();
 				});
+
+				// Kiểm tra và áp dụng chế độ từ localStorage
+				const savedMode = localStorage.getItem("darkMode");
+				if (savedMode === "true") {
+					document.body.classList.add("dark-mode");
+				}
+
+				// Thêm sự kiện cho nút chuyển đổi chế độ
+				document.getElementById("modeToggle").addEventListener("click", toggleMode);
 			});
+
+			// Chức năng chuyển đổi chế độ sáng/tối
+			function toggleMode() {
+				const body = document.body;
+				body.classList.toggle("dark-mode");
+
+				// Lưu trạng thái vào localStorage
+				const isDarkMode = body.classList.contains("dark-mode");
+				localStorage.setItem("darkMode", isDarkMode);
+			}
 		</script>
 	</body>
 </html>
