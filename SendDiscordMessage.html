@@ -418,6 +418,17 @@
 			<div class="card">
 				<div class="card-header">Nhật Ký Hoạt Động</div>
 				<div class="card-body">
+					<!-- Thêm nút tải log và xóa log -->
+					<button class="btn btn-primary download-btn" onclick="downloadLogs()"><i class="fas fa-download"></i> Tải log</button>
+					<button class="btn btn-danger download-btn" onclick="deleteLogs()"><i class="fas fa-trash"></i> Xóa log</button>
+
+					<!-- Thêm CSS cho nút -->
+					<style>
+						.download-btn {
+							margin-bottom: 1rem;
+							margin-right: 1rem;
+						}
+					</style>
 					<div id="logArea" class="bg-light p-3" style="min-height: 100px; max-height: 200px; overflow-y: auto; border-radius: 5px; font-family: monospace">
 						<div>Hệ thống đã sẵn sàng. Chọn các tùy chọn và gửi tin nhắn.</div>
 					</div>
@@ -468,6 +479,7 @@
 						document.querySelector(".container").classList.remove("d-none");
 						// Load dữ liệu sau khi đăng nhập
 						loadWebhooks();
+						loadLogs();
 					} else {
 						// Chưa đăng nhập
 						document.querySelector(".container").classList.add("d-none");
@@ -551,15 +563,79 @@
 				}
 			}
 
-			// Thêm log vào khung nhật ký
-			function addLog(message, isError = false) {
+			// Hàm tải log từ Firebase
+			async function loadLogs() {
+				try {
+					const logsRef = db.collection("logs");
+					const querySnapshot = await logsRef.orderBy("timestamp", "desc").limit(50).get();
+					const logArea = document.getElementById("logArea");
+
+					querySnapshot.forEach((doc) => {
+						const data = doc.data();
+						const logEntry = document.createElement("div");
+
+						if (data.isError) {
+							logEntry.innerHTML = `<span class="text-muted">[${data.timestamp}]</span> ${data.message}`;
+							logEntry.className = "text-danger";
+						} else {
+							logEntry.innerHTML = `
+								<div class="log-item">
+									<span class="text-muted">[${data.timestamp}]</span> ${data.message}
+									<div class="log-content">
+										<div class="log-field">Name: ${data.webhookName}</div>
+										${data.text ? `<div class="log-field">text: ${data.text}</div>` : ""}
+									</div>
+								</div>
+							`;
+						}
+
+						logArea.prepend(logEntry);
+					});
+				} catch (error) {
+					console.error("Lỗi khi tải log:", error);
+				}
+			}
+
+			// Hàm thêm log vào Firebase
+			async function addLogToFirebase(message, text, webhookName, webhookUrl, isError = false) {
+				try {
+					const timestamp = new Date().toLocaleString();
+					const logData = {
+						message,
+						text,
+						webhookName,
+						webhookUrl,
+						timestamp,
+						isError,
+						user: auth.currentUser?.email || "unknown",
+					};
+
+					await db.collection("logs").add(logData);
+				} catch (error) {
+					console.error("Lỗi khi lưu log:", error);
+				}
+			}
+
+			// Hàm thêm log vào khung nhật ký
+			function addLog(message, text, webhookName, webhookUrl, isError = false) {
 				const logArea = document.getElementById("logArea");
 				const logEntry = document.createElement("div");
-				const timestamp = new Date().toLocaleTimeString();
+				const timestamp = new Date().toLocaleString();
 
-				logEntry.innerHTML = `<span class="text-muted">[${timestamp}]</span> ${message}`;
 				if (isError) {
+					logEntry.innerHTML = `<span class="text-muted">[${timestamp}]</span> ${message}`;
 					logEntry.className = "text-danger";
+				} else {
+					logEntry.innerHTML = `
+						<div class="log-item">
+							<span class="text-muted">[${timestamp}]</span> ${message}
+							<div class="log-content">
+								<div class="log-field">Name: ${webhookName}</div>
+								${text ? `<div class="log-field">text: ${text.replace(/\n/g, "\n    ")}</div>` : ""}
+							</div>
+						</div>
+					`;
+					addLogToFirebase(message, text, webhookName, webhookUrl, isError);
 				}
 
 				logArea.prepend(logEntry);
@@ -604,13 +680,14 @@
 				const webhooks = await getWebhookUrls();
 				const selectedWebhookId = document.getElementById("webhookSelect").value;
 				const webhookUrl = webhooks[selectedWebhookId];
+				const webhookName = document.getElementById("webhookSelect").options[selectedWebhookId - 1].text;
 				const message = document.getElementById("messageText").value;
 				const username = document.getElementById("customUsername").value;
 				const avatarUrl = document.getElementById("avatarUrl").value;
 				const tts = document.getElementById("tts").checked;
 
 				if (!message.trim()) {
-					addLog("❌ Vui lòng nhập nội dung tin nhắn", true);
+					addLog("❌ Vui lòng nhập nội dung tin nhắn", "", webhookName, webhookUrl, true);
 					return;
 				}
 
@@ -632,7 +709,7 @@
 					});
 
 					if (response.ok) {
-						addLog("✅ Đã gửi tin nhắn thành công!");
+						addLog("✅ Đã gửi tin nhắn thành công!", message, webhookName, webhookUrl);
 						// Hiển thị thông báo thành công
 						await Swal.fire({
 							icon: "success",
@@ -642,7 +719,7 @@
 						});
 					} else {
 						const error = await response.text();
-						addLog(`❌ Lỗi khi gửi tin nhắn: ${error}`, true);
+						addLog(`❌ Lỗi khi gửi tin nhắn: ${error}`, "", webhookName, webhookUrl, true);
 						await Swal.fire({
 							icon: "error",
 							title: "Lỗi!",
@@ -650,7 +727,7 @@
 						});
 					}
 				} catch (error) {
-					addLog(`❌ Lỗi kết nối: ${error.message}`, true);
+					addLog(`❌ Lỗi kết nối: ${error.message}`, "", webhookName, webhookUrl, true);
 					await Swal.fire({
 						icon: "error",
 						title: "Lỗi!",
@@ -665,6 +742,7 @@
 					const webhooks = await getWebhookUrls();
 					const selectedWebhookId = document.getElementById("webhookSelect").value;
 					const webhookUrl = webhooks[selectedWebhookId];
+					const webhookName = document.getElementById("webhookSelect").options[selectedWebhookId - 1].text;
 					const fileInput = document.getElementById("fileInput");
 					const files = fileInput.files;
 					const message = document.getElementById("fileMessage").value;
@@ -672,7 +750,7 @@
 					const avatarUrl = document.getElementById("avatarUrl").value;
 
 					if (files.length === 0) {
-						addLog("❌ Vui lòng chọn ít nhất một file", true);
+						addLog("❌ Vui lòng chọn ít nhất một file", "", webhookName, webhookUrl, true);
 						return;
 					}
 
@@ -693,7 +771,7 @@
 
 					if (response.ok) {
 						const sentFilesCount = files.length;
-						addLog(`✅ Đã gửi ${sentFilesCount} file thành công!`);
+						addLog(`✅ Đã gửi ${sentFilesCount} file thành công!`, document.getElementById("fileMessage").value, webhookName, webhookUrl);
 						fileInput.value = ""; // Xóa file đã chọn
 						document.getElementById("fileMessage").value = ""; // Xóa nội dung tin nhắn
 
@@ -705,7 +783,7 @@
 						});
 					} else {
 						const error = await response.json();
-						addLog(`❌ Lỗi khi gửi file: ${error.message || response.statusText}`, true);
+						addLog(`❌ Lỗi khi gửi file: ${error.message || response.statusText}`, "", webhookName, webhookUrl, true);
 
 						await Swal.fire({
 							icon: "error",
@@ -715,7 +793,7 @@
 					}
 				} catch (error) {
 					console.error("Lỗi khi gửi file:", error);
-					addLog(`❌ Lỗi: ${error.message}`, true);
+					addLog(`❌ Lỗi: ${error.message}`, "", webhookName, webhookUrl, true);
 
 					await Swal.fire({
 						icon: "error",
@@ -753,7 +831,7 @@
 				if (document.querySelectorAll(".embed-field").length > 1) {
 					button.closest(".embed-field").remove();
 				} else {
-					addLog("❌ Phải có ít nhất một trường", true);
+					addLog("❌ Phải có ít nhất một trường", "", webhookName, webhookUrl, true);
 				}
 			}
 
@@ -762,6 +840,7 @@
 				const webhooks = await getWebhookUrls();
 				const selectedWebhookId = document.getElementById("webhookSelect").value;
 				const webhookUrl = webhooks[selectedWebhookId];
+				const webhookName = document.getElementById("webhookSelect").options[selectedWebhookId - 1].text;
 				const title = document.getElementById("embedTitle").value;
 				const description = document.getElementById("embedDescription").value;
 				const color = document.getElementById("embedColorPicker").value;
@@ -770,7 +849,7 @@
 				const avatarUrl = document.getElementById("avatarUrl").value;
 
 				if (!title && !description) {
-					addLog("❌ Vui lòng nhập tiêu đề hoặc mô tả", true);
+					addLog("❌ Vui lòng nhập tiêu đề hoặc mô tả", "", webhookName, webhookUrl, true);
 					return;
 				}
 
@@ -817,7 +896,7 @@
 					});
 
 					if (response.ok) {
-						addLog("✅ Đã gửi tin nhúng thành công!");
+						addLog("✅ Đã gửi tin nhúng thành công!", "", webhookName, webhookUrl);
 						// Xóa form
 						document.getElementById("embedTitle").value = "";
 						document.getElementById("embedDescription").value = "";
@@ -836,7 +915,7 @@
 						});
 					} else {
 						const error = await response.text();
-						addLog(`❌ Lỗi khi gửi tin nhúng: ${error}`, true);
+						addLog(`❌ Lỗi khi gửi tin nhúng: ${error}`, "", webhookName, webhookUrl, true);
 
 						await Swal.fire({
 							icon: "error",
@@ -845,7 +924,7 @@
 						});
 					}
 				} catch (error) {
-					addLog(`❌ Lỗi kết nối: ${error.message}`, true);
+					addLog(`❌ Lỗi kết nối: ${error.message}`, "", webhookName, webhookUrl, true);
 
 					await Swal.fire({
 						icon: "error",
@@ -1080,6 +1159,137 @@
 					timerProgressBar: true,
 					showConfirmButton: false,
 				});
+			}
+
+			// Hàm tải log
+			async function downloadLogs() {
+				try {
+					if (!auth.currentUser) {
+						addLog("❌ Bạn cần đăng nhập để tải log", "", "", "", true);
+						return;
+					}
+
+					// Hiển thị loading
+					Swal.fire({
+						title: "Đang tải log...",
+						allowOutsideClick: false,
+						showConfirmButton: false,
+						didOpen: () => {
+							Swal.showLoading();
+						},
+					});
+
+					// Lấy tất cả log của người dùng
+					const logsRef = db.collection("logs");
+					const querySnapshot = await logsRef.where("user", "==", auth.currentUser.email).orderBy("timestamp", "desc").get();
+
+					// Chuẩn bị dữ liệu
+					const logs = [];
+					querySnapshot.forEach((doc) => {
+						const data = doc.data();
+						logs.push({
+							timestamp: data.timestamp,
+							message: data.message,
+							text: data.text,
+							webhookName: data.webhookName,
+							webhookUrl: data.webhookUrl,
+							isError: data.isError,
+						});
+					});
+
+					// Tạo file CSV
+					const csvContent = [
+						"timestamp,message,text,webhookName,webhookUrl,isError",
+						...logs.map(
+							(log) => `
+							"${log.timestamp}",
+							"${log.message.replace(/"/g, '""')}",
+							"${log.text ? log.text.replace(/"/g, '""') : ""}",
+							"${log.webhookName.replace(/"/g, '""')}",
+							"${log.webhookUrl.replace(/"/g, '""')}",
+							"${log.isError}"
+						`
+						),
+					].join("\n");
+
+					// Tạo file
+					const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement("a");
+					a.setAttribute("href", url);
+					a.setAttribute("download", `logs_${new Date().toISOString().split("T")[0]}.csv`);
+					a.click();
+					window.URL.revokeObjectURL(url);
+
+					// Hiển thị thông báo thành công
+					Swal.fire({
+						title: "Thành công!",
+						text: "File log đã được tải xuống",
+						icon: "success",
+						confirmButtonText: "OK",
+					});
+				} catch (error) {
+					console.error("Lỗi khi tải log:", error);
+					addLog(`❌ Lỗi: ${error.message}`, "", "", "", true);
+					Swal.fire({
+						title: "Lỗi!",
+						text: error.message,
+						icon: "error",
+						confirmButtonText: "OK",
+					});
+				}
+			}
+
+			// Hàm xóa log
+			async function deleteLogs() {
+				const { value: confirmDelete } = await Swal.fire({
+					title: "Xác nhận xóa",
+					text: "Bạn có chắc chắn muốn xóa tất cả log?",
+					icon: "warning",
+					showCancelButton: true,
+					confirmButtonText: "Xóa",
+					cancelButtonText: "Hủy",
+				});
+
+				if (confirmDelete) {
+					try {
+						// Xóa tất cả log trong Firebase
+						const batch = db.batch();
+						const querySnapshot = await db.collection("logs").get();
+
+						querySnapshot.forEach((doc) => {
+							batch.delete(doc.ref);
+						});
+
+						await batch.commit();
+
+						// Xóa log khỏi giao diện
+						const logArea = document.getElementById("logArea");
+						if (logArea) {
+							logArea.innerHTML = "<div>Hệ thống đã sẵn sàng. Chọn các tùy chọn và gửi tin nhắn.</div>";
+						}
+
+						// Hiển thị thông báo thành công
+						Swal.fire({
+							title: "Thành công!",
+							text: "Tất cả log đã được xóa.",
+							icon: "success",
+						});
+
+						// Load lại log sau 1 giây để đảm bảo cập nhật
+						setTimeout(() => {
+							loadLogs();
+						}, 1000);
+					} catch (error) {
+						console.error("Lỗi khi xóa log:", error);
+						addLog(`❌ Lỗi: ${error.message}`, "", "", "", true);
+						Swal.fire({
+							title: "Lỗi!",
+							text: error.message,
+							icon: "error",
+						});
+					}
+				}
 			}
 		</script>
 	</body>
