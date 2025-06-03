@@ -86,7 +86,11 @@
 			.nav-tabs .nav-link.active {
 				border-bottom-color: #dee2e6;
 			}
-
+			/* Ẩn thanh cuộn dọc của vùng chứa tab */
+			.nav-tabs,
+			.tab-content {
+				overflow-y: hidden !important;
+			}
 			/* Responsive adjustments */
 			@media (max-width: 768px) {
 				.nav-tabs {
@@ -213,6 +217,28 @@
 			.dark-mode .logArea .text-danger {
 				color: #dc3545;
 			}
+
+			.title-container {
+				animation: fadeInDown 0.8s ease-out;
+			}
+
+			.text-gradient {
+				background: linear-gradient(45deg, #4361ee, #3f37c9, #4895ef);
+				-webkit-background-clip: text;
+				background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+
+			@keyframes fadeInDown {
+				from {
+					opacity: 0;
+					transform: translateY(-20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -226,8 +252,8 @@
 					<div class="modal-body">
 						<div id="loginAlert" class="alert alert-danger d-none"></div>
 						<div class="mb-3">
-							<label for="email" class="form-label">Email</label>
-							<input type="email" class="form-control" id="email" required />
+							<label for="username" class="form-label">Email</label>
+							<input type="email" class="form-control" id="username" required />
 						</div>
 						<div class="mb-3">
 							<label for="password" class="form-label">Mật khẩu</label>
@@ -243,8 +269,10 @@
 
 		<div class="container d-none">
 			<div class="text-center mb-4">
-				<h1 class="display-5">Gửi Tin Nhắn Discord</h1>
-				<p class="text-muted">Công cụ gửi tin nhắn qua Webhook Discord</p>
+				<div class="title-container">
+					<h1 class="display-5 fw-bold text-gradient mb-3">Gửi Tin Nhắn Discord</h1>
+					<p class="text-muted fs-5">Công cụ gửi tin nhắn qua Webhook Discord</p>
+				</div>
 			</div>
 
 			<div class="card mb-4">
@@ -266,7 +294,7 @@
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Tùy chỉnh tên người gửi (tùy chọn):</label>
-						<input type="text" id="username" class="form-control" placeholder="Để trống để sử dụng tên mặc định" />
+						<input type="text" id="customUsername" class="form-control" placeholder="Để trống để sử dụng tên mặc định" />
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Avatar URL (tùy chọn):</label>
@@ -305,7 +333,7 @@
 										<option value="bao_tri">Bảo Trì</option>
 									</select>
 								</div>
-								<textarea class="form-control" id="messageText" rows="8" placeholder="Nhập nội dung tin nhắn..."></textarea>
+								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..."></textarea>
 								<div class="mt-2 emoji-btn-container">
 									<span class="emoji-btn" title="In đậm" onclick="insertText('**', '**')">B</span>
 									<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*')">I</span>
@@ -318,7 +346,10 @@
 								<input class="form-check-input" type="checkbox" id="tts" />
 								<label class="form-check-label" for="tts">Đọc to (Text-to-Speech)</label>
 							</div>
-							<button class="btn btn-primary" onclick="sendTextMessage()">Gửi Tin Nhắn</button>
+							<div class="d-flex gap-2">
+								<button class="btn btn-primary" onclick="sendTextMessage()">Gửi Tin Nhắn</button>
+								<button class="btn btn-primary" onclick="scheduleMessage('text')">Hẹn giờ</button>
+							</div>
 						</div>
 
 						<!-- Tab File Đính Kèm -->
@@ -331,7 +362,10 @@
 								<label class="form-label">Nội dung kèm theo (tùy chọn):</label>
 								<textarea class="form-control" id="fileMessage" rows="3" placeholder="Nhập nội dung kèm theo file..."></textarea>
 							</div>
-							<button class="btn btn-primary" onclick="sendFileMessage()">Gửi File</button>
+							<div class="d-flex gap-2">
+								<button class="btn btn-primary" onclick="sendFileMessage()">Gửi File</button>
+								<button class="btn btn-primary" onclick="scheduleMessage('file')">Hẹn giờ</button>
+							</div>
 						</div>
 
 						<!-- Tab Tin Nhúng -->
@@ -370,7 +404,10 @@
 								<label class="form-label">Chân trang:</label>
 								<input type="text" class="form-control" id="embedFooter" placeholder="Nhập chân trang" />
 							</div>
-							<button class="btn btn-primary" onclick="sendEmbedMessage()">Gửi Tin Nhúng</button>
+							<div class="d-flex gap-2">
+								<button class="btn btn-primary" onclick="sendEmbedMessage()">Gửi Tin Nhúng</button>
+								<button class="btn btn-primary" onclick="scheduleMessage('embed')">Hẹn giờ</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -440,7 +477,7 @@
 
 			// Hàm đăng nhập
 			async function loginUser() {
-				const email = document.getElementById("email").value;
+				const email = document.getElementById("username").value;
 				const password = document.getElementById("password").value;
 
 				try {
@@ -471,7 +508,7 @@
 					});
 
 					// Focus lại vào trường email
-					document.getElementById("email").focus();
+					document.getElementById("username").focus();
 				}
 			}
 
@@ -566,7 +603,7 @@
 				const selectedWebhookId = document.getElementById("webhookSelect").value;
 				const webhookUrl = webhooks[selectedWebhookId];
 				const message = document.getElementById("messageText").value;
-				const username = document.getElementById("username").value;
+				const username = document.getElementById("customUsername").value;
 				const avatarUrl = document.getElementById("avatarUrl").value;
 				const tts = document.getElementById("tts").checked;
 
@@ -629,7 +666,7 @@
 					const fileInput = document.getElementById("fileInput");
 					const files = fileInput.files;
 					const message = document.getElementById("fileMessage").value;
-					const username = document.getElementById("username").value;
+					const username = document.getElementById("customUsername").value;
 					const avatarUrl = document.getElementById("avatarUrl").value;
 
 					if (files.length === 0) {
@@ -720,12 +757,14 @@
 
 			// Gửi tin nhắn nhúng
 			async function sendEmbedMessage() {
-				const webhookUrl = webhookUrls[document.getElementById("webhookSelect").value];
+				const webhooks = await getWebhookUrls();
+				const selectedWebhookId = document.getElementById("webhookSelect").value;
+				const webhookUrl = webhooks[selectedWebhookId];
 				const title = document.getElementById("embedTitle").value;
 				const description = document.getElementById("embedDescription").value;
 				const color = document.getElementById("embedColorPicker").value;
 				const footer = document.getElementById("embedFooter").value;
-				const username = document.getElementById("username").value;
+				const username = document.getElementById("customUsername").value;
 				const avatarUrl = document.getElementById("avatarUrl").value;
 
 				if (!title && !description) {
@@ -913,6 +952,133 @@
 					document.getElementById("embedColor").value = color.toUpperCase();
 				});
 			});
+
+			async function scheduleMessage(type = "text") {
+				const { value: minutes } = await Swal.fire({
+					title: "Hẹn giờ gửi tin nhắn",
+					input: "number",
+					inputLabel: "Nhập số phút hẹn giờ",
+					inputPlaceholder: "Nhập số phút (tối thiểu 1 phút)",
+					inputValue: "5",
+					inputAttributes: {
+						min: "1",
+						step: "1",
+					},
+					showCancelButton: true,
+					cancelButtonText: "Hủy",
+					confirmButtonText: "Xác nhận",
+					inputValidator: (value) => {
+						if (!value || parseInt(value) < 1) {
+							return "Vui lòng nhập số phút hợp lệ (từ 1 phút trở lên)";
+						}
+					},
+				});
+
+				if (!minutes) return;
+
+				const minutesNum = parseInt(minutes);
+				const now = new Date();
+				const scheduledTime = new Date(now.getTime() + minutesNum * 60000);
+
+				// Xác định loại tin nhắn
+				let messageType = "tin nhắn";
+				if (type === "file") messageType = "file đính kèm";
+				else if (type === "embed") messageType = "tin nhúng";
+
+				const { isConfirmed } = await Swal.fire({
+					title: "Xác nhận hẹn giờ",
+					html: `Bạn có chắc muốn gửi ${messageType} sau <b>${minutesNum} phút</b>?<br>(Lúc ${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")})`,
+					icon: "question",
+					showCancelButton: true,
+					cancelButtonText: "Hủy",
+					confirmButtonText: "Xác nhận",
+					confirmButtonColor: "#3085d6",
+					cancelButtonColor: "#d33",
+				});
+
+				if (isConfirmed) {
+					let timeLeft = minutesNum * 60; // Chuyển đổi sang giây
+					let timerInterval;
+					let isCancelled = false;
+
+					// Hàm cập nhật giao diện đếm ngược
+					const updateTimer = () => {
+						timeLeft--;
+						const minutesLeft = Math.floor(timeLeft / 60);
+						const secondsLeft = timeLeft % 60;
+
+						swal.update({
+							html: `
+								<div class="text-center">
+									<h4>Đang đếm ngược để gửi ${messageType}</h4>
+									<div class="my-3">
+										<strong>${minutesLeft}:${secondsLeft.toString().padStart(2, "0")}</strong>
+									</div>
+									<progress value="${timeLeft}" max="${minutesNum * 60}" style="width: 100%; height: 20px;"></progress>
+									<div class="mt-2">
+										<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}</b></small>
+									</div>
+								</div>
+							`,
+						});
+
+						if (timeLeft <= 0) {
+							clearInterval(timerInterval);
+							if (!isCancelled) {
+								swal.close();
+								// Gọi hàm gửi tin nhắn tương ứng với loại
+								if (type === "file") {
+									sendFileMessage();
+								} else if (type === "embed") {
+									sendEmbedMessage();
+								} else {
+									sendTextMessage();
+								}
+								showSuccessMessage(`Đã gửi ${messageType} theo lịch hẹn`);
+							}
+						}
+					};
+
+					// Hiển thị hộp thoại đếm ngược
+					swal.fire({
+						title: `Đã đặt lịch gửi ${messageType}`,
+						html: `
+							<div class="text-center">
+								<h4>Đang đếm ngược để gửi ${messageType}</h4>
+								<div class="my-3">
+									<strong>${minutesNum}:00</strong>
+								</div>
+								<progress value="${minutesNum * 60}" max="${minutesNum * 60}" style="width: 100%; height: 20px;"></progress>
+								<div class="mt-2">
+									<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}</b></small>
+								</div>
+							</div>
+						`,
+						showConfirmButton: true,
+						confirmButtonText: "Hủy bỏ",
+						allowOutsideClick: false,
+						didOpen: () => {
+							timerInterval = setInterval(updateTimer, 1000);
+						},
+						willClose: () => {
+							isCancelled = true;
+							clearInterval(timerInterval);
+						},
+					});
+				}
+			}
+
+			// Hàm hiển thị thông báo thành công
+			function showSuccessMessage(message) {
+				swal.fire({
+					title: "Thành công!",
+					text: message,
+					icon: "success",
+					timer: 3000,
+					timerProgressBar: true,
+					showConfirmButton: false,
+				});
+			}
 		</script>
 	</body>
 </html>
