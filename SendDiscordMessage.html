@@ -567,7 +567,7 @@
 			async function loadLogs() {
 				try {
 					const logsRef = db.collection("logs");
-					const querySnapshot = await logsRef.orderBy("timestamp", "desc").limit(50).get();
+					const querySnapshot = await logsRef.orderBy("timestamp", "asc").limit(50).get();
 					const logArea = document.getElementById("logArea");
 
 					querySnapshot.forEach((doc) => {
@@ -635,7 +635,9 @@
 							</div>
 						</div>
 					`;
-					addLogToFirebase(message, text, webhookName, webhookUrl, isError);
+					if (webhookName !== "TEST") {
+						addLogToFirebase(message, text, webhookName, webhookUrl, isError);
+					}
 				}
 
 				logArea.prepend(logEntry);
@@ -1184,40 +1186,27 @@
 					const querySnapshot = await logsRef.where("user", "==", auth.currentUser.email).orderBy("timestamp", "desc").get();
 
 					// Chuẩn bị dữ liệu
-					const logs = [];
+					let logContent = "";
 					querySnapshot.forEach((doc) => {
 						const data = doc.data();
-						logs.push({
-							timestamp: data.timestamp,
-							message: data.message,
-							text: data.text,
-							webhookName: data.webhookName,
-							webhookUrl: data.webhookUrl,
-							isError: data.isError,
-						});
+						logContent += `========================\n`;
+						logContent += `Thời gian: ${data.timestamp}\n`;
+						logContent += `Tin nhắn: ${data.message}\n`;
+						logContent += `Nội dung: ${data.text || ""}\n`;
+						logContent += `Webhook: ${data.webhookName}\n`;
+						logContent += `URL: ${data.webhookUrl}\n`;
+						logContent += `Trạng thái: ${data.isError ? "Lỗi" : "Thành công"}\n`;
 					});
 
-					// Tạo file CSV
-					const csvContent = [
-						"timestamp,message,text,webhookName,webhookUrl,isError",
-						...logs.map(
-							(log) => `
-							"${log.timestamp}",
-							"${log.message.replace(/"/g, '""')}",
-							"${log.text ? log.text.replace(/"/g, '""') : ""}",
-							"${log.webhookName.replace(/"/g, '""')}",
-							"${log.webhookUrl.replace(/"/g, '""')}",
-							"${log.isError}"
-						`
-						),
-					].join("\n");
-
 					// Tạo file
-					const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+					const blob = new Blob([logContent], { type: "text/plain;charset=utf-8;" });
 					const url = window.URL.createObjectURL(blob);
 					const a = document.createElement("a");
 					a.setAttribute("href", url);
-					a.setAttribute("download", `logs_${new Date().toISOString().split("T")[0]}.csv`);
+					// Định dạng tên file bao gồm ngày giờ phút giây
+					const now = new Date();
+					const formattedDate = now.toISOString().replace(/[:.]/g, "-");
+					a.setAttribute("download", `logs_${formattedDate}.txt`);
 					a.click();
 					window.URL.revokeObjectURL(url);
 
