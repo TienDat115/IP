@@ -249,20 +249,22 @@
 					<div class="modal-header">
 						<h5 class="modal-title">Đăng nhập hệ thống</h5>
 					</div>
-					<div class="modal-body">
-						<div id="loginAlert" class="alert alert-danger d-none"></div>
-						<div class="mb-3">
-							<label for="username" class="form-label">Email</label>
-							<input type="email" class="form-control" id="username" required />
+					<form id="loginForm" onsubmit="event.preventDefault(); document.getElementById('btnLogin').click();">
+						<div class="modal-body">
+							<div id="loginAlert" class="alert alert-danger d-none"></div>
+							<div class="mb-3">
+								<label for="username" class="form-label">Email</label>
+								<input type="email" class="form-control" id="username" name="username" required autocomplete="username" />
+							</div>
+							<div class="mb-3">
+								<label for="password" class="form-label">Mật khẩu</label>
+								<input type="password" class="form-control" id="password" name="password" required autocomplete="current-password" />
+							</div>
 						</div>
-						<div class="mb-3">
-							<label for="password" class="form-label">Mật khẩu</label>
-							<input type="password" class="form-control" id="password" required />
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" id="btnLogin">Đăng nhập</button>
 						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" id="btnLogin">Đăng nhập</button>
-					</div>
+					</form>
 				</div>
 			</div>
 		</div>
