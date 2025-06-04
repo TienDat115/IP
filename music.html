@@ -9,6 +9,12 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 		<link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet" />
+		<!-- Firebase Compatibility SDKs -->
+		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+		<!-- Firebase configuration -->
+		<script src="js/firebase-config.js"></script>
 		<style>
 			/* Tùy chỉnh màu nền của SweetAlert */
 			.swal2-popup {
@@ -139,20 +145,6 @@
 				transition: all 0.3s ease;
 			}
 
-			/* Hiệu ứng nút yêu thích đang bật */
-			.active-favorite {
-				box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
-				transform: translateY(-2px);
-				transition: all 0.3s ease;
-			}
-
-			/* Hiệu ứng nút ngẫu nhiên yêu thích đang bật */
-			.active-favorite-random {
-				box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
-				transform: translateY(-2px);
-				transition: all 0.3s ease;
-			}
-
 			/* Tạo viền cho khung bọc */
 			.player-wrapper {
 				border: 2px solid #4b5563;
@@ -234,6 +226,50 @@
 			</div>
 
 			<script>
+				// Initialize Firebase
+				firebase.initializeApp(firebaseConfig);
+				const auth = firebase.auth();
+				const db = firebase.firestore();
+
+				// Kiểm tra đăng nhập
+				auth.onAuthStateChanged((user) => {
+					if (!user) {
+						// Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
+						window.location.href = "login.html";
+					} else {
+						// Đã đăng nhập, tải danh sách yêu thích từ Firebase
+						loadFavoritesFromFirebase(user.uid);
+					}
+				});
+
+				// Hàm tải danh sách yêu thích từ Firebase
+				async function loadFavoritesFromFirebase(userId) {
+					try {
+						const doc = await db.collection("userFavorites").doc(userId).get();
+						if (doc.exists) {
+							favorites = doc.data().favorites || [];
+							localStorage.setItem("favorites", JSON.stringify(favorites));
+						}
+					} catch (error) {
+						console.error("Lỗi khi tải danh sách yêu thích:", error);
+					}
+				}
+
+				// Hàm lưu danh sách yêu thích lên Firebase
+				async function saveFavoritesToFirebase(userId, favorites) {
+					try {
+						await db.collection("userFavorites").doc(userId).set(
+							{
+								favorites: favorites,
+								lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+							},
+							{ merge: true }
+						);
+					} catch (error) {
+						console.error("Lỗi khi lưu danh sách yêu thích:", error);
+					}
+				}
+
 				// Load playlists from JSON file
 				fetch("asset/playlists.json")
 					.then((response) => response.json())
@@ -568,6 +604,12 @@
 						}
 
 						function toggleFavorite(url) {
+							const user = auth.currentUser;
+							if (!user) {
+								window.location.href = "login.html";
+								return;
+							}
+
 							const isFavorite = favorites.includes(url);
 							if (isFavorite) {
 								favorites = favorites.filter((song) => song !== url);
@@ -587,37 +629,14 @@
 									playlists["Danh Sách Yêu Thích"].songs.push(currentList.songs[songIndex]);
 								}
 							}
+
+							// Lưu vào localStorage
 							localStorage.setItem("favorites", JSON.stringify(favorites));
+
+							// Lưu lên Firebase
+							saveFavoritesToFirebase(user.uid, favorites);
+
 							renderPlaylist();
-							updateFavoritesList();
-						}
-
-						function toggleFavorites() {
-							const modal = document.getElementById("favoritesModal");
-							modal.classList.toggle("hidden");
-							updateFavoritesList();
-						}
-
-						function closeFavorites() {
-							document.getElementById("favoritesModal").classList.add("hidden");
-						}
-
-						function updateFavoritesList() {
-							const favoritesList = document.getElementById("favoritesList");
-							favoritesList.innerHTML = "";
-							favorites.forEach((url) => {
-								for (const [playlistName, list] of Object.entries(playlists)) {
-									const index = list.music.indexOf(url);
-									if (index !== -1) {
-										const li = document.createElement("li");
-										li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition";
-										li.innerHTML = `<span>${list.songs[index]}</span>
-										<button onclick="play(${index})" class="text-xl sm:text-lg hover:text-blue-500 transition">▶️</button>`;
-										favoritesList.appendChild(li);
-										break;
-									}
-								}
-							});
 						}
 
 						// Volume control
@@ -810,7 +829,6 @@
 							favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 							favorites = Array.isArray(favorites) ? favorites : [];
 							renderPlaylist();
-							updateFavoritesList();
 						});
 						window.playNext = playNext;
 						window.toggleRepeat = toggleRepeat;
