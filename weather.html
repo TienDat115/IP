@@ -54,6 +54,7 @@
 				display: flex;
 				flex-direction: column;
 				overflow: hidden;
+				animation: slideIn 0.3s ease-out;
 			}
 
 			.city-btn {
@@ -172,19 +173,6 @@
 				margin: 0.25rem 0;
 			}
 
-			/* Animation for loading dots */
-			@keyframes bounce {
-				0%,
-				100% {
-					opacity: 0.3;
-					transform: translateY(0);
-				}
-				50% {
-					opacity: 1;
-					transform: translateY(-8px);
-				}
-			}
-
 			@keyframes slideIn {
 				from {
 					transform: translateY(15px);
@@ -194,10 +182,6 @@
 					transform: translateY(0);
 					opacity: 1;
 				}
-			}
-
-			.weather-card {
-				animation: slideIn 0.3s ease-out;
 			}
 		</style>
 		<script src="asset/tab-navigation.js"></script>
@@ -288,62 +272,46 @@
 				if (!container || !weatherData) return;
 
 				container.innerHTML = `
-					<div class="weather-card">
-						<div class="flex justify-between items-start mb-3">
-							<div>
-								<h3 class="text-lg font-bold text-white mb-1">${city.name}</h3>
-								<p class="text-gray-300 text-xs">${new Date().toLocaleDateString("vi-VN", {
-									weekday: "short",
-									day: "numeric",
-									month: "short",
-								})}</p>
-							</div>
-							<div class="text-right">
-								<p class="text-gray-300 text-xs">Cập nhật: ${new Date().toLocaleTimeString("vi-VN", {
-									hour: "2-digit",
-									minute: "2-digit",
-								})}</p>
-							</div>
-						</div>
-						<div class="flex items-center justify-between mb-4">
-							<div class="flex items-center gap-4">
+					<div class="weather-card p-4 sm:p-6">
+						<div class="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+							<div class="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
 								<img src="http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png" 
 									alt="${weatherData.weather[0].description}" 
-									class="weather-icon">
-								<div>
-									<p class="text-3xl font-bold text-white">${Math.round(weatherData.main.temp)}<span class="text-xl text-gray-300">°C</span></p>
-									<p class="text-sm text-gray-300 capitalize">${weatherData.weather[0].description}</p>
+									class="weather-icon w-16 h-16 sm:w-20 sm:h-20">
+								<div class="text-center sm:text-left">
+									<p class="text-2xl sm:text-3xl font-bold text-white">${Math.round(weatherData.main.temp)}<span class="text-lg sm:text-xl text-gray-300">°C</span></p>
+									<p class="text-xs sm:text-sm text-gray-300 capitalize">${weatherData.weather[0].description}</p>
 									<p class="text-gray-400 text-xs">Cảm giác: ${Math.round(weatherData.main.feels_like)}°C</p>
 								</div>
 							</div>
 						</div>
-						<div class="grid grid-cols-2 gap-2">
-							<div class="weather-detail">
+						<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
+							<div class="weather-detail p-2">
 								<div class="weather-detail-icon">
-									<span class="material-icons">air</span>
+									<span class="material-icons text-base sm:text-lg">air</span>
 								</div>
-								<p class="weather-detail-label">Tốc độ gió</p>
+								<p class="weather-detail-label truncate">Tốc độ gió</p>
 								<p class="weather-detail-value">${weatherData.wind.speed} <span class="weather-detail-unit">m/s</span></p>
 							</div>
-							<div class="weather-detail">
+							<div class="weather-detail p-2">
 								<div class="weather-detail-icon">
-									<span class="material-icons">water_drop</span>
+									<span class="material-icons text-base sm:text-lg">water_drop</span>
 								</div>
-								<p class="weather-detail-label">Độ ẩm</p>
+								<p class="weather-detail-label truncate">Độ ẩm</p>
 								<p class="weather-detail-value">${weatherData.main.humidity}<span class="weather-detail-unit">%</span></p>
 							</div>
-							<div class="weather-detail">
+							<div class="weather-detail p-2">
 								<div class="weather-detail-icon">
-									<span class="material-icons">speed</span>
+									<span class="material-icons text-base sm:text-lg">speed</span>
 								</div>
-								<p class="weather-detail-label">Áp suất</p>
+								<p class="weather-detail-label truncate">Áp suất</p>
 								<p class="weather-detail-value">${weatherData.main.pressure} <span class="weather-detail-unit">hPa</span></p>
 							</div>
-							<div class="weather-detail">
+							<div class="weather-detail p-2">
 								<div class="weather-detail-icon">
-									<span class="material-icons">visibility</span>
+									<span class="material-icons text-base sm:text-lg">visibility</span>
 								</div>
-								<p class="weather-detail-label">Tầm nhìn</p>
+								<p class="weather-detail-label truncate">Tầm nhìn</p>
 								<p class="weather-detail-value">${(weatherData.visibility / 1000).toFixed(1)} <span class="weather-detail-unit">km</span></p>
 							</div>
 						</div>
@@ -358,7 +326,7 @@
 				const hourlyData = forecastData.list.slice(0, 4);
 
 				container.innerHTML = `
-        <div class="grid grid-cols-2 gap-2 p-2">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
             ${hourlyData
 				.map((hour, index) => {
 					const time = new Date(hour.dt * 1000);
