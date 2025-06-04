@@ -591,13 +591,27 @@
 					return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 				}
 
+				// Hàm thực thi các biểu thức JavaScript trong chuỗi
+				function evaluateExpressions(text) {
+					// Tìm tất cả các biểu thức ${...} trong chuỗi
+					return text.replace(/\$\{([^}]+)\}/g, (match, expression) => {
+						try {
+							// Đánh giá biểu thức và trả về kết quả
+							return new Function(`return ${expression}`)();
+						} catch (e) {
+							console.error("Lỗi khi thực thi biểu thức:", e);
+							return match; // Giữ nguyên nếu có lỗi
+						}
+					});
+				}
+
 				// Gửi tin nhắn văn bản
 				async function sendTextMessage() {
 					const webhooks = await getWebhookUrls();
 					const selectedWebhookId = document.getElementById("webhookSelect").value;
 					const webhookUrl = webhooks[selectedWebhookId];
 					const webhookName = document.getElementById("webhookSelect").options[selectedWebhookId - 1].text;
-					const message = document.getElementById("messageText").value;
+					let message = document.getElementById("messageText").value;
 					const username = document.getElementById("customUsername").value;
 					const avatarUrl = document.getElementById("avatarUrl").value;
 					const tts = document.getElementById("tts").checked;
@@ -607,15 +621,18 @@
 						return;
 					}
 
-					const payload = {
-						content: message,
-						tts: tts,
-					};
-
-					if (username) payload.username = username;
-					if (avatarUrl) payload.avatar_url = avatarUrl;
-
 					try {
+						// Thực thi các biểu thức JavaScript trong tin nhắn
+						message = evaluateExpressions(message);
+
+						const payload = {
+							content: message,
+							tts: tts,
+						};
+
+						if (username) payload.username = username;
+						if (avatarUrl) payload.avatar_url = avatarUrl;
+
 						const response = await fetch(webhookUrl, {
 							method: "POST",
 							headers: {
@@ -626,7 +643,9 @@
 
 						if (response.ok) {
 							addLog("✅ Đã gửi tin nhắn thành công!", message, webhookName, webhookUrl);
-							// Hiển thị thông báo thành công
+							// Cập nhật textarea với thởi gian mới
+							document.getElementById("messageText").value = message;
+
 							await Swal.fire({
 								icon: "success",
 								title: "Thành công!",
@@ -671,7 +690,7 @@
 						}
 
 						const formData = new FormData();
-						if (message) formData.append("content", message);
+						if (message) formData.append("content", evaluateExpressions(message));
 						if (username) formData.append("username", username);
 						if (avatarUrl) formData.append("avatar_url", avatarUrl);
 
@@ -862,7 +881,7 @@
 		👤 ID Nhân Vật: 
 		🖥️ Máy Chủ: Võ Lâm Tây Vực - 
 		⚠️ Lý Do: 
-		🕙 Thời gian: ${getCurrentTime()}
+		🕙 Thời gian: \${getCurrentTime()}
 		Vui lòng kiểm tra và trả lại Account cho khách hàng!
 		@everyone`,
 					},
@@ -871,21 +890,21 @@
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ 
 		⚠️ __**Lý Do:**__
-		🕙 __**Thời gian:**__ ${getCurrentTime()}
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 					},
 
 					bao_tri: {
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Bảo trì hoàn tất
-		🕙 __**Thời gian:**__ ${getCurrentTime()}
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 					},
 
 					ip: {
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Bỏ giới hạn cho IP  hoàn tất
-		🕙 __**Thời gian:**__ ${getCurrentTime()}
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 					},
 
@@ -893,7 +912,7 @@
 						content: `❓ **THÔNG BÁO** ❓
 		📢 __**Nội Dung:**__ 
 		⚠️ __**Lý Do:**__
-		🕙 __**Thời gian:**__ ${getCurrentTime()}
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 					},
 				};
