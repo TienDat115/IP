@@ -1,21 +1,36 @@
 function createTabNavigation(activeTab) {
-    const navigation = `
-        <div class="mb-4">
-            <div class="flex justify-center space-x-1">
-                <button id="networkTab" class="tab-button ${activeTab === "network" ? "active" : ""}" onclick="window.location.href='network.html'">
-                    <span class="material-icons text-sm sm:text-base">network_check</span>
-                </button>
-                <button id="clockTab" class="tab-button ${activeTab === "clock" ? "active" : ""}" onclick="window.location.href='clock.html'">
-                    <span class="material-icons text-sm sm:text-base">access_time</span>
-                </button>
-                <button id="calendarTab" class="tab-button ${activeTab === "calendar" ? "active" : ""}" onclick="window.location.href='calendar.html'">
-                    <span class="material-icons text-sm sm:text-base">calendar_today</span>
-                </button>
-                <button id="weatherTab" class="tab-button ${activeTab === "weather" ? "active" : ""}" onclick="window.location.href='weather.html'">
-                    <span class="material-icons text-sm sm:text-base">wb_sunny</span>
-                </button>
-            </div>
-        </div>
-    `;
-    return navigation;
+	// Thêm link đến file CSS nếu chưa tồn tại
+	if (!document.querySelector('link[href*="tabs.css"]')) {
+		const link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.href = 'css/tabs.css';
+		document.head.appendChild(link);
+	}
+
+	const tabs = [
+		{ id: 'network', icon: 'network_check', label: 'Mạng' },
+		{ id: 'clock', icon: 'access_time', label: 'Đồng hồ' },
+		{ id: 'calendar', icon: 'calendar_today', label: 'Lịch' },
+		{ id: 'weather', icon: 'wb_sunny', label: 'Thời tiết' }
+	];
+
+	const navigation = `
+		<div class="tab-navigation-container">
+			<div class="flex justify-center space-x-1">
+				${tabs.map(tab => `
+					<button 
+						id="${tab.id}Tab" 
+						class="tab-button ${activeTab === tab.id ? 'active' : ''}" 
+						onclick="window.location.href='${tab.id}.html'"
+						aria-label="${tab.label}"
+					>
+						<span class="material-icons">${tab.icon}</span>
+						<span class="sr-only">${tab.label}</span>
+					</button>
+				`).join('')}
+			</div>
+		</div>
+	`;
+	
+	return navigation;
 }

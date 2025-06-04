@@ -6,130 +6,79 @@
 		<title>Dự báo thời tiết</title>
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link href="css/tabs.css" rel="stylesheet" />
 		<style>
 			body {
 				font-family: "Inter", sans-serif;
-				background: linear-gradient(135deg, #1f2937, #111827);
-				min-height: 100vh;
+				background: #111827; /* Màu tương đương với bg-gray-900 */
+				height: 100vh;
 				margin: 0;
 				padding: 0;
 				color: #e5e7eb;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 			}
 
 			.container {
-				max-width: 400px;
-				margin: 1rem auto;
-				padding: 1rem;
-				height: auto;
-				min-height: 400px;
-				overflow-y: auto;
+				width: 100%;
+				max-width: 100%;
+				height: 475px;
+				overflow: hidden;
+				padding: 10px;
 			}
 
 			.weather-container {
 				background: rgba(255, 255, 255, 0.05);
-				backdrop-filter: blur(10px);
-				border: 1px solid rgba(59, 130, 246, 0.3);
-				border-radius: 1.5rem;
-				padding: 1.5rem;
-				box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-				height: 100%;
-			}
-
-			.tab-button {
-				padding: 0.3rem 0.8rem;
-				border-radius: 0.5rem;
-				color: #9ca3af;
-				transition: all 0.2s ease;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				cursor: pointer;
-				background: rgba(31, 41, 55, 0.6);
+				backdrop-filter: blur(8px);
 				border: 1px solid rgba(59, 130, 246, 0.2);
-				font-weight: 500;
-				backdrop-filter: blur(3px);
-				font-size: 0.8rem;
-			}
-
-			.tab-button:hover {
-				transform: translateY(-1px);
-				box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
-			}
-
-			.tab-button.active {
-				background: linear-gradient(135deg, #3b82f6, #06b6d4);
-				color: white;
-				box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
-				border: 1px solid rgba(59, 130, 246, 0.3);
-				font-size: 0.8rem;
+				border-radius: 1.5rem;
+				padding: 1.25rem;
+				height: 100%;
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+				box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 			}
 
 			.weather-card {
-				background: rgba(31, 41, 55, 0.4);
+				background: rgba(31, 41, 55, 0.3);
 				border-radius: 1rem;
-				padding: 1.25rem;
+				padding: 1rem;
 				transition: all 0.2s ease;
 				border: 1px solid rgba(59, 130, 246, 0.1);
-				margin-bottom: 1.25rem;
-				backdrop-filter: blur(3px);
-			}
-
-			.weather-card:hover {
-				transform: translateY(-1px);
-				box-shadow: 0 3px 10px rgba(59, 130, 246, 0.1);
+				margin-bottom: 0.75rem;
+				backdrop-filter: blur(4px);
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
 			}
 
 			.city-btn {
-				padding: 0.5rem 1rem;
-				border-radius: 1rem;
-				background: rgba(31, 41, 55, 0.6);
+				padding: 0.3rem 0.7rem;
+				border-radius: 0.5rem;
+				font-size: 0.75rem;
 				color: #9ca3af;
-				border: 1px solid rgba(59, 130, 246, 0.2);
 				transition: all 0.2s ease;
+				background: rgba(31, 41, 55, 0.6);
+				border: 1px solid rgba(59, 130, 246, 0.2);
 				font-weight: 500;
-				font-size: 0.875rem;
 				backdrop-filter: blur(3px);
+				margin: 0.1rem;
 			}
 
 			.city-btn:hover {
 				transform: translateY(-1px);
-				box-shadow: 0 3px 10px rgba(59, 130, 246, 0.1);
+				box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
 			}
 
 			.city-btn.active {
 				background: linear-gradient(135deg, #3b82f6, #06b6d4);
 				color: white;
-				box-shadow: 0 3px 10px rgba(59, 130, 246, 0.2);
+				box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 				border: 1px solid rgba(59, 130, 246, 0.3);
-			}
-
-			.hourly-forecast-item {
-				background: rgba(31, 41, 55, 0.4);
-				border: 1px solid rgba(59, 130, 246, 0.1);
-				border-radius: 0.75rem;
-				padding: 0.75rem;
-				transition: all 0.2s ease;
-				backdrop-filter: blur(3px);
-				width: 150px;
-			}
-
-			.hourly-forecast-item:hover {
-				transform: translateY(-1px);
-				box-shadow: 0 3px 10px rgba(59, 130, 246, 0.1);
-				background: rgba(55, 65, 81, 0.6);
-			}
-
-			.error-message {
-				background: rgba(239, 68, 68, 0.1);
-				border-left: 2px solid #ef4444;
-				padding: 0.75rem 1rem;
-				border-radius: 0.5rem;
-				color: #fecaca;
-				margin: 0.75rem 0;
-				font-size: 0.875rem;
-				display: none;
-				backdrop-filter: blur(3px);
 			}
 
 			.weather-icon {
@@ -180,6 +129,49 @@
 				margin-left: 0.25rem;
 			}
 
+			.hourly-forecast-item {
+				background: rgba(31, 41, 55, 0.4);
+				border: 1px solid rgba(59, 130, 246, 0.1);
+				border-radius: 0.75rem;
+				padding: 0.75rem;
+				transition: all 0.2s ease;
+				backdrop-filter: blur(3px);
+				width: 150px;
+			}
+
+			.hourly-forecast-item:hover {
+				transform: translateY(-1px);
+				box-shadow: 0 3px 10px rgba(59, 130, 246, 0.1);
+				background: rgba(55, 65, 81, 0.6);
+			}
+
+			.error-message {
+				background: rgba(239, 68, 68, 0.1);
+				border-left: 2px solid #ef4444;
+				padding: 0.75rem 1rem;
+				border-radius: 0.5rem;
+				color: #fecaca;
+				margin: 0.75rem 0;
+				font-size: 0.875rem;
+				display: none;
+				backdrop-filter: blur(3px);
+			}
+
+			#hourly-forecast .weather-detail {
+				background: rgba(31, 41, 55, 0.5);
+				border-radius: 0.75rem;
+				padding: 0.75rem;
+				text-align: center;
+				transition: all 0.2s ease;
+				border: 1px solid rgba(59, 130, 246, 0.1);
+			}
+
+			#hourly-forecast .weather-icon {
+				width: 2.5rem;
+				height: 2.5rem;
+				margin: 0.25rem 0;
+			}
+
 			/* Animation for loading dots */
 			@keyframes bounce {
 				0%,
@@ -214,44 +206,47 @@
 		<div class="container">
 			<div class="weather-container">
 				<!-- Tab Navigation -->
-				<div id="tabNavigation" class="mb-6"></div>
+				<div id="tabNavigation" class="mb-2"></div>
 				<script>
 					document.getElementById("tabNavigation").innerHTML = createTabNavigation("weather");
 				</script>
 
 				<!-- City Selector -->
-				<div class="flex flex-wrap justify-center gap-3 mb-6">
-					<div id="citySelector" class="flex flex-wrap justify-center gap-3"></div>
+				<div class="flex flex-wrap justify-center gap-2 mb-2">
+					<div id="citySelector" class="flex flex-wrap justify-center gap-1"></div>
 				</div>
-
-				<!-- Tab Buttons -->
-				<div class="flex justify-center mb-6 gap-3">
-					<button onclick="switchTab('current')" data-tab="current" class="tab-button active">
-						<span class="material-icons text-sm mr-2">today</span>
-						Hiện tại
-					</button>
-					<button onclick="switchTab('hourly')" data-tab="hourly" class="tab-button inactive">
-						<span class="material-icons text-sm mr-2">schedule</span>
-						Theo giờ
-					</button>
-				</div>
-
-				<!-- Loading Indicator -->
-				<div id="loading" class="text-center py-8 hidden">
-					<div class="inline-flex items-center justify-center space-x-3">
-						<div class="w-3 h-3 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0s"></div>
-						<div class="w-3 h-3 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0.2s"></div>
-						<div class="w-3 h-3 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0.4s"></div>
-					</div>
-					<p class="mt-4 text-gray-400">Đang tải dữ liệu...</p>
-				</div>
-
-				<!-- Error Message -->
-				<div id="error-message" class="error-message hidden"></div>
 
 				<!-- Weather Content -->
-				<div id="current-weather" class="mb-6"></div>
-				<div id="hourly-forecast" class="hidden mb-6"></div>
+				<div class="weather-card">
+					<!-- Tab Buttons -->
+					<div class="flex justify-center gap-2 mb-2">
+						<button onclick="switchTab('current')" data-tab="current" class="tab-button active">
+							<span class="material-icons text-xs">today</span>
+							Hiện tại
+						</button>
+						<button onclick="switchTab('hourly')" data-tab="hourly" class="tab-button inactive">
+							<span class="material-icons text-xs">schedule</span>
+							Theo giờ
+						</button>
+					</div>
+
+					<!-- Loading Indicator -->
+					<div id="loading" class="text-center py-4 hidden">
+						<div class="inline-flex items-center justify-center space-x-2">
+							<div class="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0s"></div>
+							<div class="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0.2s"></div>
+							<div class="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style="animation-delay: 0.4s"></div>
+						</div>
+						<p class="mt-2 text-gray-400 text-xs">Đang tải dữ liệu...</p>
+					</div>
+
+					<!-- Error Message -->
+					<div id="error-message" class="error-message hidden text-xs p-2 mb-2"></div>
+
+					<!-- Weather Info -->
+					<div id="current-weather" class="flex-1 overflow-auto"></div>
+					<div id="hourly-forecast" class="hidden flex-1 overflow-auto"></div>
+				</div>
 			</div>
 		</div>
 
@@ -357,35 +352,36 @@
 
 			function updateHourlyForecast(city, forecastData) {
 				const container = document.getElementById("hourly-forecast");
-				if (!container || !forecastData) return;
+				if (!container || !forecastData || !forecastData.list) return;
 
-				let forecastHTML = `
-					<div class="weather-card">
-						<h3 class="text-lg font-bold text-white mb-3">Dự báo theo giờ - ${city.name}</h3>
-						<div id="hourly-forecast-container" class="flex overflow-x-auto pb-3 gap-2">`;
+				// Chỉ lấy 4 khung giờ đầu tiên
+				const hourlyData = forecastData.list.slice(0, 4);
 
-				forecastData.list.forEach((hour) => {
-					const date = new Date(hour.dt * 1000);
-					const time = date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+				container.innerHTML = `
+        <div class="grid grid-cols-2 gap-2 p-2">
+            ${hourlyData
+				.map((hour, index) => {
+					const time = new Date(hour.dt * 1000);
+					const temp = Math.round(hour.main.temp);
+					const icon = hour.weather[0].icon;
+					const description = hour.weather[0].description;
 
-					forecastHTML += `
-						<div class="hourly-forecast-item flex-shrink-0 text-center w-16">
-							<p class="text-gray-300 font-medium text-xs">${time}</p>
-							<div class="my-1 flex justify-center">
-								<img src="http://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png" 
-									alt="${hour.weather[0].description}" 
-									class="w-8 h-8">
-							</div>
-							<p class="text-lg font-bold text-white">${Math.round(hour.main.temp)}°</p>
-							<p class="text-xs text-gray-400 capitalize truncate">${hour.weather[0].description}</p>
-						</div>`;
-				});
-
-				forecastHTML += `
-						</div>
-					</div>`;
-
-				container.innerHTML = forecastHTML;
+					return `
+                    <div class="weather-detail flex flex-col items-center p-3">
+                        <span class="text-sm font-medium text-gray-300">
+                            ${index === 0 ? "Bây giờ" : time.getHours() + "h"}
+                        </span>
+                        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" 
+                             alt="${description}" 
+                             class="weather-icon w-12 h-12">
+                        <span class="text-lg font-bold text-white">${temp}°C</span>
+                        <span class="text-xs text-gray-400 text-center">${description}</span>
+                    </div>
+                `;
+				})
+				.join("")}
+        </div>
+    `;
 			}
 
 			async function updateWeather() {
