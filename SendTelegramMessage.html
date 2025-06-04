@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/768px-Telegram_2019_Logo.svg.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Gửi Tin Nhắn Telegram</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<!-- Thêm Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+		<!-- Firebase configuration -->
+		<script src="js/firebase-config.js"></script>
+		<style>
+			.btn-sm i {
+				margin-right: 4px;
+			}
+			body {
+				background-color: #f8f9fa;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				padding: 20px;
+			}
+			.container {
+				max-width: 1000px;
+				margin: 0 auto;
+			}
+			.card {
+				border-radius: 10px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				margin-bottom: 20px;
+				border: none;
+			}
+			.card-header {
+				background-color: #0088cc;
+				color: white;
+				font-weight: bold;
+				padding: 12px 20px;
+				border-radius: 10px 10px 0 0 !important;
+			}
+			.btn-primary {
+				background-color: #0088cc;
+				border: none;
+				padding: 8px 20px;
+				font-weight: 500;
+			}
+			.btn-primary:hover {
+				background-color: #006699;
+			}
+			.form-label {
+				font-weight: 500;
+				margin-bottom: 8px;
+			}
+			.preview-area {
+				min-height: 100px;
+				border: 1px dashed #ccc;
+				padding: 15px;
+				margin-top: 10px;
+				border-radius: 5px;
+				background-color: #f8f9fa;
+				white-space: pre-wrap;
+				font-family: inherit;
+			}
+			.emoji-btn {
+				cursor: pointer;
+				font-size: 1.2em;
+				margin: 0 5px;
+				display: inline-block;
+				transition: transform 0.2s;
+			}
+			.emoji-btn:hover {
+				transform: scale(1.3);
+			}
+			.nav-tabs .nav-link {
+				color: #495057;
+				font-weight: 500;
+				border: none;
+				padding: 10px 20px;
+				margin-right: 5px;
+			}
+			.nav-tabs .nav-link.active {
+				color: #0088cc;
+				background-color: #f8f9fa;
+				border-bottom: 3px solid #0088cc;
+				font-weight: 600;
+			}
+			.tab-content {
+				padding: 20px 0;
+			}
+			.form-control:focus,
+			.form-select:focus {
+				border-color: #86b7fe;
+				box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+			}
+			.preset-btn {
+				margin-right: 5px;
+				margin-bottom: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="text-center mb-4">
+				<h1 class="display-5 fw-bold text-primary">Gửi Tin Nhắn Telegram</h1>
+				<p class="text-muted">Công cụ gửi tin nhắn qua Telegram Bot</p>
+				<div class="d-flex justify-content-end align-items-center mb-2">
+					<div id="userInfo" class="me-3 d-flex align-items-center">
+						<span id="userEmail" class="me-3"></span>
+						<a href="index.html" class="btn btn-sm btn-outline-primary me-2"> <i class="fas fa-arrow-left me-1"></i> Quay lại </a>
+						<button class="btn btn-sm btn-outline-danger" onclick="signOut()"><i class="fas fa-sign-out-alt me-1"></i> Đăng xuất</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-4">
+				<div class="card-header">Thiết lập kết nối</div>
+				<div class="card-body">
+					<div class="row mb-3">
+						<div class="col-md-6 mb-3">
+							<label class="form-label">Chọn Bot:</label>
+							<select id="botSelect" class="form-select">
+								<!-- Danh sách bot sẽ được đổ từ Firestore -->
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Chọn Nhóm/Cá nhân:</label>
+							<select id="chatSelect" class="form-select">
+								<!-- Danh sách chat sẽ được đổ từ Firestore -->
+							</select>
+						</div>
+					</div>
+
+					<div class="mb-2">
+						<label class="form-label">Mẫu tin nhắn nhanh:</label>
+						<div>
+							<button class="btn btn-sm btn-outline-primary preset-btn" data-preset="thongbao">Thông báo</button>
+							<button class="btn btn-sm btn-outline-primary preset-btn" data-preset="canhbao">Cảnh báo</button>
+							<button class="btn btn-sm btn-outline-primary preset-btn" data-preset="hoanthanh">Hoàn thành</button>
+							<button class="btn btn-sm btn-outline-primary preset-btn" data-preset="rollback">Rollback thất bại</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-4">
+				<div class="card-header">Nội dung tin nhắn</div>
+				<div class="card-body">
+					<ul class="nav nav-tabs" id="messageTabs" role="tablist">
+						<li class="nav-item" role="presentation">
+							<button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button">Tin nhắn văn bản</button>
+						</li>
+						<li class="nav-item" role="presentation">
+							<button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button">Hình ảnh</button>
+						</li>
+						<li class="nav-item" role="presentation">
+							<button class="nav-link" id="poll-tab" data-bs-toggle="tab" data-bs-target="#poll" type="button">Bỏ phiếu</button>
+						</li>
+					</ul>
+
+					<div class="tab-content" id="messageTabsContent">
+						<!-- Tab Tin nhắn văn bản -->
+						<div class="tab-pane fade show active" id="text" role="tabpanel">
+							<div class="mb-3">
+								<label class="form-label">Nội dung tin nhắn:</label>
+								<div class="mb-2">
+									<span class="emoji-btn" onclick="insertText('🔔', '')" title="Thông báo">🔔</span>
+									<span class="emoji-btn" onclick="insertText('📢', '')" title="Phát thanh">📢</span>
+									<span class="emoji-btn" onclick="insertText('❓', '')" title="Hỏi đáp">❓</span>
+									<span class="emoji-btn" onclick="insertText('⚠️', '')" title="Cảnh báo">⚠️</span>
+									<span class="emoji-btn" onclick="insertText('✅', '')" title="Hoàn thành">✅</span>
+									<span class="emoji-btn" onclick="insertText('🔑', '')" title="Bảo mật">🔑</span>
+									<span class="emoji-btn" onclick="insertText('💡', '')" title="Ý tưởng">💡</span>
+								</div>
+								<textarea class="form-control" id="messageText" rows="8" placeholder="Nhập nội dung tin nhắn..."></textarea>
+								<div class="form-text">Sử dụng HTML để định dạng: <b>chữ đậm</b>, <i>nghiêng</i>, <u>gạch chân</u></div>
+							</div>
+							<button class="btn btn-primary" onclick="sendTextMessage()">
+								<span class="spinner-border spinner-border-sm d-none" id="textSpinner" role="status" aria-hidden="true"></span>
+								Gửi tin nhắn
+							</button>
+						</div>
+
+						<!-- Tab Hình ảnh -->
+						<div class="tab-pane fade" id="image" role="tabpanel">
+							<div class="mb-3">
+								<label class="form-label">Chọn hình ảnh:</label>
+								<input type="file" class="form-control" id="imageInput" accept="image/*" multiple />
+								<div class="form-text">Có thể chọn nhiều ảnh cùng lúc (tối đa 10 ảnh)</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Chú thích (tùy chọn):</label>
+								<div class="mb-2">
+									<span class="emoji-btn" onclick="insertTextTo('imageCaption', '🔔', '')" title="Thông báo">🔔</span>
+									<span class="emoji-btn" onclick="insertTextTo('imageCaption', '📢', '')" title="Phát thanh">📢</span>
+									<span class="emoji-btn" onclick="insertTextTo('imageCaption', '❓', '')" title="Hỏi đáp">❓</span>
+								</div>
+								<textarea class="form-control" id="imageCaption" rows="3" placeholder="Nhập chú thích cho hình ảnh..."></textarea>
+							</div>
+							<button class="btn btn-primary" onclick="sendImageMessage()">
+								<span class="spinner-border spinner-border-sm d-none" id="imageSpinner" role="status" aria-hidden="true"></span>
+								Gửi hình ảnh
+							</button>
+						</div>
+
+						<!-- Tab Bỏ phiếu -->
+						<div class="tab-pane fade" id="poll" role="tabpanel">
+							<div class="mb-3">
+								<label class="form-label">Câu hỏi bỏ phiếu:</label>
+								<input type="text" class="form-control mb-2" id="pollQuestion" placeholder="Nhập câu hỏi..." />
+								<div id="pollOptions">
+									<div class="input-group mb-2">
+										<input type="text" class="form-control" placeholder="Lựa chọn 1" />
+									</div>
+									<div class="input-group mb-2">
+										<input type="text" class="form-control" placeholder="Lựa chọn 2" />
+									</div>
+								</div>
+								<button class="btn btn-sm btn-outline-secondary mt-2" onclick="addPollOption()">+ Thêm lựa chọn</button>
+								<div class="row mt-3">
+									<div class="col-md-6">
+										<div class="form-check">
+											<input class="form-check-input" type="checkbox" id="allowMultipleAnswers" />
+											<label class="form-check-label" for="allowMultipleAnswers">Cho phép chọn nhiều đáp án</label>
+										</div>
+										<div class="form-check">
+											<input class="form-check-input" type="checkbox" id="isAnonymous" checked />
+											<label class="form-check-label" for="isAnonymous">Ẩn danh</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<button class="btn btn-primary" onclick="sendPoll()">
+								<span class="spinner-border spinner-border-sm d-none" id="pollSpinner" role="status" aria-hidden="true"></span>
+								Tạo bỏ phiếu
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header">Xem trước</div>
+				<div class="card-body">
+					<div class="preview-area" id="messagePreview"></div>
+					<button class="btn btn-outline-secondary btn-sm mt-2" onclick="updatePreview()">Cập nhật xem trước</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			// Khởi tạo Firebase
+			firebase.initializeApp(firebaseConfig);
+			const db = firebase.firestore();
+			const auth = firebase.auth();
+
+			// Khởi tạo khi trang tải xong
+			document.addEventListener("DOMContentLoaded", function () {
+				// Kiểm tra trạng thái đăng nhập
+				auth.onAuthStateChanged((user) => {
+					if (!user) {
+						// Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
+						window.location.href = "login.html";
+					} else {
+						// Hiển thị thông tin người dùng
+						document.getElementById("userInfo").classList.remove("d-none");
+						document.getElementById("userEmail").textContent = user.email;
+						// Thêm class d-flex nếu chưa có
+						document.getElementById("userInfo").classList.add("d-flex", "align-items-center");
+					}
+				});
+
+				// Thêm sự kiện cho các nút preset
+				document.querySelectorAll(".preset-btn").forEach((btn) => {
+					btn.addEventListener("click", function () {
+						loadPreset(this.dataset.preset);
+					});
+				});
+
+				// Cập nhật xem trước khi nhập nội dung
+				document.getElementById("messageText").addEventListener("input", updatePreview);
+
+				// Load dữ liệu bot và chat từ Firestore
+				loadBots();
+				loadChats();
+			});
+
+			// Load danh sách bot từ Firestore
+			async function loadBots() {
+				const botSelect = document.getElementById("botSelect");
+				botSelect.innerHTML = '<option value="">Đang tải...</option>';
+
+				try {
+					const snapshot = await db.collection("bots").get();
+					botSelect.innerHTML = ""; // Xóa nội dung tạm
+					if (snapshot.empty) {
+						botSelect.innerHTML = '<option value="">Không có bot nào</option>';
+						return;
+					}
+
+					snapshot.forEach((doc) => {
+						const data = doc.data();
+						const option = document.createElement("option");
+						option.value = doc.id; // Bot token
+						option.textContent = data.name;
+						botSelect.appendChild(option);
+					});
+				} catch (error) {
+					console.error("Lỗi khi tải danh sách bot:", error);
+					botSelect.innerHTML = '<option value="">Lỗi khi tải bot</option>';
+					showAlert("Lỗi", "Không thể tải danh sách bot: " + error.message, "error");
+				}
+			}
+
+			// Load danh sách chat từ Firestore
+			async function loadChats() {
+				const chatSelect = document.getElementById("chatSelect");
+				chatSelect.innerHTML = '<option value="">Đang tải...</option>';
+
+				try {
+					const snapshot = await db.collection("chats").get();
+					chatSelect.innerHTML = ""; // Xóa nội dung tạm
+					if (snapshot.empty) {
+						chatSelect.innerHTML = '<option value="">Không có nhóm/cá nhân</option>';
+						return;
+					}
+
+					snapshot.forEach((doc) => {
+						const data = doc.data();
+						const option = document.createElement("option");
+						option.value = doc.id; // Chat ID
+						option.textContent = data.name;
+						chatSelect.appendChild(option);
+					});
+				} catch (error) {
+					console.error("Lỗi khi tải danh sách chat:", error);
+					chatSelect.innerHTML = '<option value="">Lỗi khi tải nhóm/cá nhân</option>';
+					showAlert("Lỗi", "Không thể tải danh sách nhóm/cá nhân: " + error.message, "error");
+				}
+			}
+
+			// Tải mẫu tin nhắn nhanh
+			function loadPreset(presetType) {
+				let message = "";
+
+				switch (presetType) {
+					case "thongbao":
+						message = "🔔 THÔNG BÁO 🔔\n\n";
+						message += "📢 <u>Nội Dung:</u> Thông báo mẫu\n";
+						message += "🕙 <u>Thời gian:</u> " + new Date().toLocaleString("vi-VN");
+						break;
+
+					case "canhbao":
+						message = "⚠️ CẢNH BÁO ⚠️\n\n";
+						message += "📢 <u>Nội Dung:</u> Cảnh báo mẫu\n";
+						message += "❓ <u>Lý Do:</u> Mô tả lý do\n";
+						message += "🕙 <u>Thời gian:</u> " + new Date().toLocaleString("vi-VN");
+						break;
+
+					case "hoanthanh":
+						message = "✅ HOÀN THÀNH ✅\n\n";
+						message += "📢 <u>Nội Dung:</u> Công việc đã hoàn thành\n";
+						message += "🕙 <u>Thời gian:</u> " + new Date().toLocaleString("vi-VN");
+						break;
+
+					case "rollback":
+						message = "❓ THÔNG BÁO ❓\n\n";
+						message += "📢 <u>Nội Dung:</u> Rollback thất bại\n";
+						message += "💳 <u>Tài Khoản:</u> \n";
+						message += "👤 <u>ID Nhân Vật:</u> \n";
+						message += "🖥️ <u>Máy Chủ:</u> Võ Lâm Tây Vực - \n";
+						message += "⚠️ <u>Lý Do:</u> \n";
+						message += "🕙 <u>Thời gian:</u> " + new Date().toLocaleString("vi-VN") + "\n\n";
+						message += "Vui lòng kiểm tra và trả lại Account cho khách hàng!";
+						break;
+				}
+
+				document.getElementById("messageText").value = message;
+				updatePreview();
+			}
+
+			// Cập nhật xem trước tin nhắn
+			function updatePreview() {
+				const messageText = document.getElementById("messageText").value;
+				document.getElementById("messagePreview").innerHTML = messageText.replace(/\n/g, "<br>");
+			}
+
+			// Chèn văn bản vào textarea
+			function insertText(before, after) {
+				const textarea = document.getElementById("messageText");
+				insertTextToElement(textarea, before, after);
+			}
+
+			// Chèn văn bản vào phần tử chỉ định
+			function insertTextTo(elementId, before, after) {
+				const element = document.getElementById(elementId);
+				insertTextToElement(element, before, after);
+			}
+
+			// Hàm chung để chèn văn bản
+			function insertTextToElement(element, before, after) {
+				const start = element.selectionStart;
+				const end = element.selectionEnd;
+				const text = element.value;
+				const selectedText = text.substring(start, end);
+
+				element.value = text.substring(0, start) + before + selectedText + after + text.substring(end);
+
+				// Đặt lại vị trí con trỏ
+				const newCursorPos = start + before.length;
+				element.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
+				element.focus();
+
+				updatePreview();
+			}
+
+			// Thêm lựa chọn mới vào bỏ phiếu
+			function addPollOption() {
+				const optionsContainer = document.getElementById("pollOptions");
+				const optionCount = optionsContainer.children.length + 1;
+
+				if (optionCount > 10) {
+					showAlert("Cảnh báo", "Tối đa chỉ được 10 lựa chọn", "warning");
+					return;
+				}
+
+				const newOption = document.createElement("div");
+				newOption.className = "input-group mb-2";
+				newOption.innerHTML = `
+					<input type="text" class="form-control" placeholder="Lựa chọn ${optionCount}">
+					<button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">×</button>
+				`;
+
+				optionsContainer.appendChild(newOption);
+			}
+
+			// Gửi tin nhắn văn bản
+			async function sendTextMessage() {
+				const botToken = document.getElementById("botSelect").value;
+				const chatId = document.getElementById("chatSelect").value;
+				const message = document.getElementById("messageText").value.trim();
+
+				if (!message) {
+					showAlert("Lỗi", "Vui lòng nhập nội dung tin nhắn", "error");
+					return;
+				}
+
+				const btn = document.querySelector("#text button.btn-primary");
+				const spinner = document.getElementById("textSpinner");
+				btn.disabled = true;
+				spinner.classList.remove("d-none");
+
+				try {
+					const response = await sendTelegramMessage(botToken, chatId, message);
+					addLog("Đã gửi tin nhắn văn bản", "success");
+					showAlert("Thành công", "Đã gửi tin nhắn thành công!", "success");
+
+					// Lưu message_id nếu cần
+					if (response && response.result && response.result.message_id) {
+						saveMessageLog({
+							type: "text",
+							messageId: response.result.message_id,
+							chatId: chatId,
+							content: message,
+							timestamp: new Date().toISOString(),
+						});
+					}
+				} catch (error) {
+					console.error("Lỗi khi gửi tin nhắn:", error);
+					addLog("Lỗi khi gửi tin nhắn: " + error.message, "error");
+					showAlert("Lỗi", "Không thể gửi tin nhắn: " + error.message, "error");
+				} finally {
+					btn.disabled = false;
+					spinner.classList.add("d-none");
+				}
+			}
+
+			// Gửi hình ảnh
+			async function sendImageMessage() {
+				const botToken = document.getElementById("botSelect").value;
+				const chatId = document.getElementById("chatSelect").value;
+				const caption = document.getElementById("imageCaption").value.trim();
+				const fileInput = document.getElementById("imageInput");
+
+				if (!fileInput.files || fileInput.files.length === 0) {
+					showAlert("Lỗi", "Vui lòng chọn ít nhất một hình ảnh", "error");
+					return;
+				}
+
+				// Kiểm tra số lượng file
+				if (fileInput.files.length > 10) {
+					showAlert("Lỗi", "Chỉ được chọn tối đa 10 ảnh", "error");
+					return;
+				}
+
+				// Kiểm tra định dạng file
+				for (let file of fileInput.files) {
+					if (!file.type.startsWith("image/")) {
+						showAlert("Lỗi", "Vui lòng chỉ chọn file ảnh (jpg, png, ...)", "error");
+						return;
+					}
+				}
+
+				const btn = document.querySelector("#image button.btn-primary");
+				const spinner = document.getElementById("imageSpinner");
+				btn.disabled = true;
+				spinner.classList.remove("d-none");
+
+				try {
+					const formData = new FormData();
+
+					// Nếu chỉ có 1 ảnh, dùng sendPhoto
+					if (fileInput.files.length === 1) {
+						formData.append("chat_id", chatId);
+						formData.append("photo", fileInput.files[0]);
+						if (caption) {
+							formData.append("caption", caption);
+							formData.append("parse_mode", "HTML");
+						}
+
+						const response = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+							method: "POST",
+							body: formData,
+						});
+
+						const result = await response.json();
+
+						if (result.ok) {
+							addLog("Đã gửi 1 hình ảnh", "success");
+							showAlert("Thành công", "Đã gửi hình ảnh thành công!", "success");
+
+							// Lưu message_id
+							saveMessageLog({
+								type: "photo",
+								messageId: result.result.message_id,
+								chatId: chatId,
+								caption: caption,
+								fileCount: 1,
+								timestamp: new Date().toISOString(),
+							});
+						} else {
+							throw new Error(result.description || "Lỗi không xác định");
+						}
+					}
+					// Nếu nhiều ảnh, dùng sendMediaGroup
+					else {
+						const media = [];
+
+						for (let i = 0; i < fileInput.files.length; i++) {
+							formData.append(`photo${i}`, fileInput.files[i]);
+
+							media.push({
+								type: "photo",
+								media: `attach://photo${i}`,
+								caption: i === 0 ? caption : undefined,
+								parse_mode: i === 0 ? "HTML" : undefined,
+							});
+						}
+
+						formData.append("chat_id", chatId);
+						formData.append("media", JSON.stringify(media));
+
+						const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMediaGroup`, {
+							method: "POST",
+							body: formData,
+						});
+
+						const result = await response.json();
+
+						if (result.ok) {
+							addLog(`Đã gửi ${fileInput.files.length} hình ảnh`, "success");
+							showAlert("Thành công", `Đã gửi ${fileInput.files.length} hình ảnh thành công!`, "success");
+
+							// Lưu message_id của tất cả ảnh
+							const messageIds = result.result.map((item) => item.message_id);
+							saveMessageLog({
+								type: "media_group",
+								messageIds: messageIds,
+								chatId: chatId,
+								caption: caption,
+								fileCount: fileInput.files.length,
+								timestamp: new Date().toISOString(),
+							});
+						} else {
+							throw new Error(result.description || "Lỗi không xác định");
+						}
+					}
+				} catch (error) {
+					console.error("Lỗi khi gửi hình ảnh:", error);
+					addLog("Lỗi khi gửi hình ảnh: " + error.message, "error");
+					showAlert("Lỗi", "Không thể gửi hình ảnh: " + error.message, "error");
+				} finally {
+					btn.disabled = false;
+					spinner.classList.add("d-none");
+				}
+			}
+
+			// Gửi bỏ phiếu
+			async function sendPoll() {
+				const botToken = document.getElementById("botSelect").value;
+				const chatId = document.getElementById("chatSelect").value;
+				const question = document.getElementById("pollQuestion").value.trim();
+				const options = [];
+
+				// Lấy các lựa chọn
+				document.querySelectorAll('#pollOptions input[type="text"]').forEach((input) => {
+					if (input.value.trim()) {
+						options.push(input.value.trim());
+					}
+				});
+
+				// Kiểm tra dữ liệu
+				if (!question) {
+					showAlert("Lỗi", "Vui lòng nhập câu hỏi", "error");
+					return;
+				}
+
+				if (options.length < 2) {
+					showAlert("Lỗi", "Cần ít nhất 2 lựa chọn", "error");
+					return;
+				}
+
+				const isAnonymous = document.getElementById("isAnonymous").checked;
+				const allowsMultipleAnswers = document.getElementById("allowMultipleAnswers").checked;
+
+				const btn = document.querySelector("#poll button.btn-primary");
+				const spinner = document.getElementById("pollSpinner");
+				btn.disabled = true;
+				spinner.classList.remove("d-none");
+
+				try {
+					const response = await fetch(`https://api.telegram.org/bot${botToken}/sendPoll`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							chat_id: chatId,
+							question: question,
+							options: options,
+							is_anonymous: isAnonymous,
+							allows_multiple_answers: allowsMultipleAnswers,
+						}),
+					});
+
+					const result = await response.json();
+
+					if (result.ok) {
+						addLog("Đã tạo bỏ phiếu", "success");
+						showAlert("Thành công", "Đã tạo bỏ phiếu thành công!", "success");
+
+						// Lưu thông tin bỏ phiếu
+						saveMessageLog({
+							type: "poll",
+							messageId: result.result.message_id,
+							chatId: chatId,
+							question: question,
+							options: options,
+							timestamp: new Date().toISOString(),
+						});
+					} else {
+						throw new Error(result.description || "Lỗi không xác định");
+					}
+				} catch (error) {
+					console.error("Lỗi khi tạo bỏ phiếu:", error);
+					addLog("Lỗi khi tạo bỏ phiếu: " + error.message, "error");
+					showAlert("Lỗi", "Không thể tạo bỏ phiếu: " + error.message, "error");
+				} finally {
+					btn.disabled = false;
+					spinner.classList.add("d-none");
+				}
+			}
+
+			// Hàm gửi tin nhắn Telegram
+			async function sendTelegramMessage(botToken, chatId, text) {
+				try {
+					const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							chat_id: chatId,
+							text: text,
+							parse_mode: "HTML",
+							disable_web_page_preview: true,
+						}),
+					});
+
+					const result = await response.json();
+
+					if (!result.ok) {
+						throw new Error(result.description || "Lỗi không xác định từ Telegram API");
+					}
+
+					return result;
+				} catch (error) {
+					console.error("Lỗi khi gọi Telegram API:", error);
+					throw error;
+				}
+			}
+
+			// Hàm đăng xuất
+			async function signOut() {
+				try {
+					await auth.signOut();
+					window.location.href = "login.html";
+				} catch (error) {
+					console.error("Lỗi khi đăng xuất:", error);
+					showAlert("Lỗi", "Không thể đăng xuất: " + error.message, "error");
+				}
+			}
+
+			// Hiển thị thông báo
+			function showAlert(title, message, type = "info") {
+				const Toast = Swal.mixin({
+					toast: true,
+					position: "top-end",
+					showConfirmButton: false,
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener("mouseenter", Swal.stopTimer);
+						toast.addEventListener("mouseleave", Swal.resumeTimer);
+					},
+				});
+
+				Toast.fire({
+					icon: type,
+					title: title,
+					text: message,
+				});
+			}
+		</script>
+	</body>
+</html>
