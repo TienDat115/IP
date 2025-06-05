@@ -440,11 +440,27 @@
 						logArea.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 
 						const logsRef = db.collection("logs");
-						const querySnapshot = await logsRef.orderBy("timestamp", "asc").limit(50).get();
+						const querySnapshot = await logsRef.limit(50).get(); // Bỏ orderBy ở đây
 
 						allLogs = [];
 						querySnapshot.forEach((doc) => {
 							allLogs.push(doc.data());
+						});
+
+						// Sắp xếp lại mảng sau khi lấy dữ liệu
+						allLogs.sort((a, b) => {
+							// Hàm chuyển đổi chuỗi timestamp thành số (milliseconds since epoch)
+							const parseDate = (dateStr) => {
+								// Định dạng: "10:31:03 5/6/2025" -> [time, date] -> [hh, mm, ss], [d, M, yyyy]
+								const [time, date] = dateStr.split(" ");
+								const [hours, minutes, seconds] = time.split(":").map(Number);
+								const [day, month, year] = date.split("/").map(Number);
+
+								// Tạo đối tượng Date (lưu ý: tháng trong JavaScript bắt đầu từ 0)
+								return new Date(year, month - 1, day, hours, minutes, seconds).getTime();
+							};
+
+							return parseDate(b.timestamp) - parseDate(a.timestamp);
 						});
 
 						if (allLogs.length === 0) {
