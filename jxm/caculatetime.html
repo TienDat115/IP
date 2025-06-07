@@ -187,13 +187,13 @@
 								<div class="col-md-6">
 									<div class="mb-3">
 										<label for="timeframeDays" class="form-label">Cấp Tối Đa (OpenLevelXX)</label>
-										<div class="input-group align-items-center">
-											<span class="input-group-text"><i class="bi bi-calendar-range"></i></span>
-											<input type="number" class="form-control" id="timeframeDays" min="0" placeholder="Nhập level hoặc số ngày" required />
-											<div class="input-group-append ms-2">
-												<div class="form-check form-switch mb-0">
-													<input class="form-check-input" type="checkbox" id="useLevelLookup" checked />
-												</div>
+										<div class="d-flex flex-nowrap align-items-center">
+											<div class="input-group flex-grow-1 me-2">
+												<span class="input-group-text"><i class="bi bi-calendar-range"></i></span>
+												<input type="number" class="form-control" id="timeframeDays" min="0" placeholder="Nhập level hoặc số ngày" required />
+											</div>
+											<div class="form-check form-switch mb-0">
+												<input class="form-check-input" type="checkbox" id="useLevelLookup" checked />
 											</div>
 										</div>
 									</div>
@@ -209,7 +209,7 @@
 							</div>
 
 							<div class="d-grid gap-2 mt-4">
-								<button type="button" class="btn btn-primary btn-lg" onclick="calculateTimestamp()"><i class="bi bi-calculator me-2"></i> Tính Timestamp</button>
+								<button type="button" class="btn btn-primary btn-lg" onclick="calculateTimestamp()"><i class="bi bi-calculator me-2"></i> Tính</button>
 							</div>
 						</div>
 					</div>
@@ -454,26 +454,25 @@
 					}
 
 					resultElement.innerHTML = `
-    <div class="alert alert-info p-0 overflow-hidden" role="alert">
-        <table class="table table-borderless table-hover mb-0">
-            <tbody>
-                <tr>
-                    <td class="fw-bold text-start" style="width: 40%;">Level:</td>
-                    <td class="text-start">${level}</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold text-start">Số ngày timeframe:</td>
-                    <td class="text-start">${timeframeDays}</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold text-start">Số ngày đã mở cấp:</td>
-                    <td class="text-start">
-                        ${openDays} ${level >= 139 ? `= ${calculationSteps}` : ""}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>`;
+<table class="table border shadow-sm mb-3" style="border-collapse: collapse; background-color: #e7f8ff;">
+    <tbody>
+        <tr>
+            <td class="fw-bold text-start" style="width: 40%; border: none;">Level</td>
+            <td class="text-start" style="border: none;">${level}</td>
+        </tr>
+        <tr>
+            <td class="fw-bold text-start" style="border: none;">Timeframe</td>
+            <td class="text-start" style="border: none;">${timeframeDays}</td>
+        </tr>
+        <tr>
+            <td class="fw-bold text-start" style="border: none;">Đã Mở Cấp</td>
+            <td class="text-start" style="border: none;">
+                ${openDays} ${level >= 139 ? `= ${calculationSteps}` : ""}
+            </td>
+        </tr>
+    </tbody>
+</table>
+            `;
 				} else {
 					timeframeDays = parseInt(timeframeInput);
 					if (isNaN(timeframeDays) || timeframeDays < 0) {
@@ -500,26 +499,22 @@
 
 				// Hiển thị kết quả
 				resultElement.innerHTML += `
-                <div class="alert alert-success mt-3 p-0 overflow-hidden" role="alert">
-                    <table class="table table-borderless table-hover mb-0">
-                        <tbody>
-                            <tr>
-                                <td class="fw-bold text-start" style="width: 30%;">Timestamp:</td>
-                                <td class="text-start d-flex align-items-center">
-                                    <span id="timestampValue" class="me-2">${timestamp}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold text-start">Ngày giờ:</td>
-                                <td class="text-start">${formattedDate}</td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold text-start">Tổng số ngày:</td>
-                                <td class="text-start">${totalDaysToSubtract} ngày (${timeframeDays} timeframe + ${openDays} mở cấp)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+<table class="table border shadow-sm mt-3" style="border-collapse: collapse;">
+    <tbody>
+        <tr>
+            <td class="fw-bold text-start" style="width: 30%; border: none;">Timestamp</td>
+            <td class="text-start" style="border: none;">${timestamp}</td>
+        </tr>
+        <tr>
+            <td class="fw-bold text-start" style="border: none;">Ngày giờ</td>
+            <td class="text-start" style="border: none;">${formattedDate}</td>
+        </tr>
+        <tr>
+            <td class="fw-bold text-start" style="border: none;">Tổng số ngày</td>
+            <td class="text-start" style="border: none;">${totalDaysToSubtract} ngày (${timeframeDays} timeframe + ${openDays} mở cấp)</td>
+        </tr>
+    </tbody>
+</table>
             `;
 			}
 
