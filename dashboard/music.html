@@ -14,7 +14,7 @@
 		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 		<!-- Firebase configuration -->
-		<script src="js/firebase-config.js"></script>
+		<script src="../js/firebase-config.js"></script>
 		<style>
 			/* Tùy chỉnh màu nền của SweetAlert */
 			.swal2-popup {
@@ -215,7 +215,7 @@
 				auth.onAuthStateChanged((user) => {
 					if (!user) {
 						// Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
-						window.location.href = "login.html";
+						window.location.href = "../login.html";
 					} else {
 						// Đã đăng nhập, tải danh sách yêu thích từ Firebase
 						loadFavoritesFromFirebase(user.uid);
@@ -251,7 +251,7 @@
 				}
 
 				// Load playlists from JSON file
-				fetch("asset/playlists.json")
+				fetch("../asset/playlists.json")
 					.then((response) => response.json())
 					.then((data) => {
 						const playlists = data;
@@ -586,7 +586,7 @@
 						function toggleFavorite(url) {
 							const user = auth.currentUser;
 							if (!user) {
-								window.location.href = "login.html";
+								window.location.href = "../login.html";
 								return;
 							}
 

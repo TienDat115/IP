@@ -14,7 +14,7 @@
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 
 		<!-- Firebase configuration -->
-		<script src="js/firebase-config.js"></script>
+		<script src="../js/firebase-config.js"></script>
 		<style>
 			.btn-sm i {
 				margin-right: 4px;
@@ -110,7 +110,7 @@
 					<div id="userInfo" class="d-flex flex-wrap justify-content-center justify-content-sm-end align-items-center gap-2">
 						<span id="userEmail" class="text-truncate" style="max-width: 200px"></span>
 						<div class="d-flex gap-2">
-							<a href="index.html" class="btn btn-sm btn-outline-primary">
+							<a href="../index.html" class="btn btn-sm btn-outline-primary">
 								<i class="fas fa-arrow-left d-none d-sm-inline me-1"></i>
 								<span>Quay lại</span>
 							</a>
@@ -271,7 +271,7 @@
 				auth.onAuthStateChanged((user) => {
 					if (!user) {
 						// Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
-						window.location.href = "login.html";
+						window.location.href = "../login.html";
 					} else {
 						// Hiển thị thông tin người dùng
 						document.getElementById("userInfo").classList.remove("d-none");
@@ -715,7 +715,7 @@
 			async function signOut() {
 				try {
 					await auth.signOut();
-					window.location.href = "login.html";
+					window.location.href = "../login.html";
 				} catch (error) {
 					console.error("Lỗi khi đăng xuất:", error);
 					showAlert("Lỗi", "Không thể đăng xuất: " + error.message, "error");

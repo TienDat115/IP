@@ -133,7 +133,7 @@
 					<div id="userInfo" class="d-flex flex-wrap justify-content-center justify-content-sm-end align-items-center gap-2">
 						<span id="userEmail" class="text-truncate" style="max-width: 200px"></span>
 						<div class="d-flex gap-2">
-							<a href="index.html" class="btn btn-sm btn-outline-primary">
+							<a href="../index.html" class="btn btn-sm btn-outline-primary">
 								<i class="fas fa-arrow-left d-none d-sm-inline me-1"></i>
 								<span>Quay lại</span>
 							</a>
@@ -319,7 +319,7 @@
 			<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 
 			<!-- Firebase configuration -->
-			<script src="js/firebase-config.js"></script>
+			<script src="../js/firebase-config.js"></script>
 			<script>
 				// Khởi tạo Firebase
 				firebase.initializeApp(firebaseConfig);
@@ -339,7 +339,7 @@
 							loadLogs();
 						} else {
 							// Chưa đăng nhập, chuyển hướng về trang đăng nhập
-							window.location.href = "login.html";
+							window.location.href = "../login.html";
 						}
 					});
 				});
@@ -348,7 +348,7 @@
 				async function signOut() {
 					try {
 						await auth.signOut();
-						window.location.href = "login.html";
+						window.location.href = "../login.html";
 					} catch (error) {
 						console.error("Lỗi khi đăng xuất:", error);
 						addLog("❌ Lỗi: " + error.message, "", "", "", true);

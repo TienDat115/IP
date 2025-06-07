@@ -3,7 +3,7 @@ function createTabNavigation(activeTab) {
 	if (!document.querySelector('link[href*="tabs.css"]')) {
 		const link = document.createElement('link');
 		link.rel = 'stylesheet';
-		link.href = 'css/tabs.css';
+		link.href = '../css/tabs.css';
 		document.head.appendChild(link);
 	}
 
