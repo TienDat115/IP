@@ -163,12 +163,16 @@
 								<div class="col-md-6">
 									<div class="mb-3">
 										<label for="gameSelect" class="form-label">Chọn game:</label>
-										<select class="form-select" id="gameSelect">
-											<option value="game1">Võ Lâm Xích Hỏa</option>
-											<option value="game2">Võ Lâm Tây Vực</option>
-											<option value="game3">Võ Lâm Hồng Kông</option>
-											<!-- Thêm các game khác tại đây -->
-										</select>
+										<div class="input-group">
+											<select class="form-select" id="gameSelect">
+												<option value="game1">Võ Lâm Xích Hỏa</option>
+												<option value="game2">Võ Lâm Tây Vực</option>
+												<option value="game3">Võ Lâm Hồng Kông</option>
+											</select>
+											<button class="btn btn-outline-secondary" id="viewGameInfo" title="Xem thông tin mở cấp" style="border-color: #dee2e6">
+												<i class="bi bi-info-circle"></i>
+											</button>
+										</div>
 									</div>
 
 									<div class="mb-3">
@@ -229,6 +233,36 @@
 
 		<!-- Bootstrap JS Bundle with Popper -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+		<!-- Thêm modal hiển thị thông tin game -->
+		<div class="modal fade" id="gameInfoModal" tabindex="-1" aria-labelledby="gameInfoModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="gameInfoModalLabel">Thông tin mở cấp</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="table-responsive">
+							<table class="table table-striped table-hover">
+								<thead class="table-dark">
+									<tr>
+										<th>Level</th>
+										<th>Số ngày mở cấp</th>
+									</tr>
+								</thead>
+								<tbody id="gameInfoTableBody">
+									<!-- Dữ liệu sẽ được điền bằng JavaScript -->
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<script>
 			// Bảng dữ liệu tra cứu level -> số ngày timeframe (dùng chung cho tất cả game)
@@ -485,12 +519,26 @@
 					}
 
 					resultElement.innerHTML = `
-                    <div class="alert alert-info">
-                        <p class="mb-1"><strong>Level:</strong> ${level}</p>
-                        <p class="mb-1"><strong>Số ngày timeframe:</strong> ${timeframeDays}</p>
-                        <p class="mb-0"><strong>Số ngày đã mở cấp (tính toán):</strong> ${openDays} 
-                        ${level >= 139 ? `= ${calculationSteps}` : ""}</p>
-                    </div>`;
+    <div class="alert alert-info p-0 overflow-hidden" role="alert">
+        <table class="table table-borderless table-hover mb-0">
+            <tbody>
+                <tr>
+                    <td class="fw-bold text-start" style="width: 40%;">Level:</td>
+                    <td class="text-start">${level}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start">Số ngày timeframe:</td>
+                    <td class="text-start">${timeframeDays}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start">Số ngày đã mở cấp:</td>
+                    <td class="text-start">
+                        ${openDays} ${level >= 139 ? `= ${calculationSteps}` : ""}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>`;
 				} else {
 					timeframeDays = parseInt(timeframeInput);
 					if (isNaN(timeframeDays) || timeframeDays < 0) {
@@ -517,13 +565,54 @@
 
 				// Hiển thị kết quả
 				resultElement.innerHTML += `
-                <div class="alert alert-success mt-3" role="alert">
-                    <p class="mb-1"><strong>Timestamp:</strong> ${timestamp}</p>
-                    <p class="mb-1"><strong>Ngày giờ:</strong> ${formattedDate}</p>
-                    <p class="mb-0"><strong>Tổng số ngày trừ đi:</strong> ${totalDaysToSubtract} ngày (${timeframeDays} timeframe + ${openDays} mở cấp)</p>
+                <div class="alert alert-success mt-3 p-0 overflow-hidden" role="alert">
+                    <table class="table table-borderless table-hover mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold text-start" style="width: 30%;">Timestamp:</td>
+                                <td class="text-start d-flex align-items-center">
+                                    <span id="timestampValue" class="me-2">${timestamp}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-start">Ngày giờ:</td>
+                                <td class="text-start">${formattedDate}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-start">Tổng số ngày:</td>
+                                <td class="text-start">${totalDaysToSubtract} ngày (${timeframeDays} timeframe + ${openDays} mở cấp)</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             `;
 			}
+
+			// Xử lý sự kiện click nút xem thông tin game
+			document.getElementById("viewGameInfo").addEventListener("click", function () {
+				const gameInfoTableBody = document.getElementById("gameInfoTableBody");
+				const gameName = document.getElementById("gameSelect").options[document.getElementById("gameSelect").selectedIndex].text;
+
+				// Cập nhật tiêu đề modal
+				document.getElementById("gameInfoModalLabel").textContent = `Thông tin mở cấp - ${gameName}`;
+
+				// Xóa dữ liệu cũ
+				gameInfoTableBody.innerHTML = "";
+
+				// Thêm dữ liệu mới
+				currentGameData.levelToOpenDays.forEach((item) => {
+					const row = document.createElement("tr");
+					row.innerHTML = `
+						<td><strong>${item.level}</strong></td>
+						<td>${item.days} ngày</td>
+					`;
+					gameInfoTableBody.appendChild(row);
+				});
+
+				// Hiển thị modal
+				const modal = new bootstrap.Modal(document.getElementById("gameInfoModal"));
+				modal.show();
+			});
 
 			// Đặt ngày mặc định là hôm nay
 			document.addEventListener("DOMContentLoaded", function () {
