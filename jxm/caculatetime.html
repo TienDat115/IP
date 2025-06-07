@@ -186,7 +186,7 @@
 
 								<div class="col-md-6">
 									<div class="mb-3">
-										<label for="timeframeDays" class="form-label">Cấp Tối Đa</label>
+										<label for="timeframeDays" class="form-label">Cấp Tối Đa (OpenLevelXX)</label>
 										<div class="input-group align-items-center">
 											<span class="input-group-text"><i class="bi bi-calendar-range"></i></span>
 											<input type="number" class="form-control" id="timeframeDays" min="0" placeholder="Nhập level hoặc số ngày" required />
@@ -262,6 +262,57 @@
 		</div>
 
 		<script>
+			// Biến toàn cục lưu trữ dữ liệu game
+			let gameData = {};
+			let currentGameData = null;
+
+			// Tải dữ liệu từ file JSON
+			async function loadGameData() {
+				try {
+					const response = await fetch("data/game_levels.json");
+					if (!response.ok) {
+						throw new Error("Không thể tải dữ liệu game");
+					}
+					gameData = await response.json();
+
+					// Khởi tạo dữ liệu game mặc định
+					currentGameData = gameData.game1;
+
+					// Cập nhật select box nếu cần
+					updateGameSelect();
+				} catch (error) {
+					console.error("Lỗi khi tải dữ liệu game:", error);
+					// Xử lý lỗi ở đây (ví dụ: hiển thị thông báo cho người dùng)
+				}
+			}
+
+			// Cập nhật select box với dữ liệu game
+			function updateGameSelect() {
+				const gameSelect = document.getElementById("gameSelect");
+				if (!gameSelect) return;
+
+				// Xóa các option cũ
+				gameSelect.innerHTML = "";
+
+				// Thêm các option mới
+				Object.entries(gameData).forEach(([key, game]) => {
+					const option = document.createElement("option");
+					option.value = key;
+					option.textContent = game.name;
+					gameSelect.appendChild(option);
+				});
+
+				// Thêm sự kiện change
+				gameSelect.addEventListener("change", function () {
+					const selectedGame = this.value;
+					currentGameData = gameData[selectedGame];
+					// Có thể thêm logic cập nhật giao diện hoặc reset form ở đây nếu cần
+				});
+			}
+
+			// Gọi hàm tải dữ liệu khi trang được tải
+			document.addEventListener("DOMContentLoaded", loadGameData);
+
 			// Bảng dữ liệu tra cứu level -> số ngày timeframe (dùng chung cho tất cả game)
 			const levelToTimeframe = [
 				{ level: 39, days: 1 },
@@ -275,119 +326,6 @@
 				{ level: 119, days: 339 },
 				{ level: 129, days: 429 },
 			];
-
-			// Định nghĩa dữ liệu cho từng game
-			const gameData = {
-				game1: {
-					name: "Võ Lâm Xích Hỏa",
-					levelToOpenDays: [
-						{ level: 39, days: 10 },
-						{ level: 49, days: 4 },
-						{ level: 59, days: 4 },
-						{ level: 69, days: 6 },
-						{ level: 79, days: 5 },
-						{ level: 89, days: 6 },
-						{ level: 99, days: 7 },
-						{ level: 109, days: 8 },
-						{ level: 119, days: 9 },
-						{ level: 129, days: 10 },
-						{ level: 139, days: 12 },
-						{ level: 149, days: 10 },
-						{ level: 159, days: 12 },
-						{ level: 169, days: 12 },
-						{ level: 179, days: 12 },
-						{ level: 189, days: 12 },
-						{ level: 199, days: 12 },
-						{ level: 209, days: 12 },
-						{ level: 219, days: 12 },
-						{ level: 229, days: 12 },
-						{ level: 239, days: 12 },
-						{ level: 249, days: 12 },
-						{ level: 259, days: 12 },
-						{ level: 269, days: 12 },
-						{ level: 279, days: 12 },
-						{ level: 289, days: 12 },
-						{ level: 299, days: 12 },
-						{ level: 309, days: 999 },
-					],
-				},
-				game2: {
-					name: "Võ Lâm Tây Vực",
-					levelToOpenDays: [
-						{ level: 39, days: 8 },
-						{ level: 49, days: 8 },
-						{ level: 59, days: 8 },
-						{ level: 69, days: 3 },
-						{ level: 79, days: 6 },
-						{ level: 89, days: 7 },
-						{ level: 99, days: 9 },
-						{ level: 109, days: 9 },
-						{ level: 119, days: 10 },
-						{ level: 129, days: 10 },
-						{ level: 139, days: 11 },
-						{ level: 149, days: 11 },
-						{ level: 159, days: 12 },
-						{ level: 169, days: 13 },
-						{ level: 179, days: 13 },
-						{ level: 189, days: 13 },
-						{ level: 199, days: 13 },
-						{ level: 209, days: 13 },
-						{ level: 219, days: 13 },
-						{ level: 229, days: 13 },
-						{ level: 239, days: 13 },
-						{ level: 249, days: 13 },
-						{ level: 259, days: 13 },
-						{ level: 269, days: 13 },
-						{ level: 279, days: 13 },
-						{ level: 289, days: 13 },
-						{ level: 299, days: 13 },
-						{ level: 309, days: 999 },
-					],
-				},
-				game3: {
-					name: "Võ Lâm Hồng Kông",
-					levelToOpenDays: [
-						{ level: 39, days: 8 },
-						{ level: 49, days: 8 },
-						{ level: 59, days: 8 },
-						{ level: 69, days: 3 },
-						{ level: 79, days: 6 },
-						{ level: 89, days: 7 },
-						{ level: 99, days: 9 },
-						{ level: 109, days: 9 },
-						{ level: 119, days: 10 },
-						{ level: 129, days: 10 },
-						{ level: 139, days: 11 },
-						{ level: 149, days: 11 },
-						{ level: 159, days: 12 },
-						{ level: 169, days: 13 },
-						{ level: 179, days: 13 },
-						{ level: 189, days: 13 },
-						{ level: 199, days: 13 },
-						{ level: 209, days: 13 },
-						{ level: 219, days: 13 },
-						{ level: 229, days: 13 },
-						{ level: 239, days: 13 },
-						{ level: 249, days: 13 },
-						{ level: 259, days: 13 },
-						{ level: 269, days: 13 },
-						{ level: 279, days: 13 },
-						{ level: 289, days: 13 },
-						{ level: 299, days: 13 },
-						{ level: 309, days: 999 },
-					],
-				},
-			};
-
-			// Biến toàn cục lưu trữ dữ liệu game hiện tại
-			let currentGameData = gameData.game1;
-
-			// Cập nhật dữ liệu khi chọn game
-			document.getElementById("gameSelect").addEventListener("change", function () {
-				const selectedGame = this.value;
-				currentGameData = gameData[selectedGame];
-				// Có thể thêm logic cập nhật giao diện hoặc reset form ở đây nếu cần
-			});
 
 			// Hàm tra cứu số ngày timeframe từ level
 			function getTimeframeFromLevel(level) {
@@ -480,7 +418,7 @@
 
 					// Kiểm tra level có nằm trong danh sách level hợp lệ không
 					const validLevels = currentGameData.levelToOpenDays.map((item) => item.level);
-					if (!validLevels.includes(level) && !validLevels.includes(level - 1)) {
+					if (!validLevels.includes(level)) {
 						resultElement.innerHTML = `<div class="alert alert-danger">Level phải là một trong các giá trị sau: ${validLevels.join(", ")}</div>`;
 						return;
 					}
