@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Tính Timestamp Mở Cấp</title>
+		<!-- Bootstrap 5 CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<style>
+			body {
+				background-color: #f8f9fa;
+				padding: 2rem 0;
+			}
+			.card {
+				border: none;
+				border-radius: 15px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			}
+			.card-header {
+				background-color: #0d6efd;
+				color: white;
+				border-radius: 15px 15px 0 0 !important;
+				padding: 1.5rem;
+			}
+			.btn-primary {
+				background-color: #0d6efd;
+				border: none;
+				padding: 10px 25px;
+				font-weight: 500;
+			}
+			.btn-primary:hover {
+				background-color: #0b5ed7;
+			}
+			#result {
+				font-size: 1.2rem;
+				font-weight: 500;
+				margin-top: 1rem;
+				padding: 1rem;
+				background-color: #e9ecef;
+				border-radius: 5px;
+				word-break: break-all;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container mt-4">
+			<div class="row justify-content-center">
+				<div class="col-md-8">
+					<div class="card">
+						<div class="card-header bg-primary text-white">
+							<h4 class="mb-0">Công cụ tính thời gian</h4>
+						</div>
+						<div class="card-body">
+							<div class="mb-3">
+								<label for="gameSelect" class="form-label">Chọn game:</label>
+								<select class="form-select" id="gameSelect">
+									<option value="game1">Võ Lâm Xích Hỏa</option>
+									<option value="game2">Võ Lâm Tây Vực</option>
+									<option value="game3">Võ Lâm Hồng Kông</option>
+									<!-- Thêm các game khác tại đây -->
+								</select>
+							</div>
+							<div class="mb-3">
+								<label for="inputDate" class="form-label">Ngày cần tính</label>
+								<input type="date" class="form-control form-control-lg" id="inputDate" required />
+							</div>
+							<div class="mb-3">
+								<label for="timeframeDays" class="form-label">Số ngày theo timeframe (hoặc nhập level)</label>
+								<input type="number" class="form-control form-control-lg" id="timeframeDays" min="0" required />
+								<div class="form-text">Nhập số level hoặc số ngày trực tiếp</div>
+							</div>
+							<div class="form-check mb-3">
+								<input class="form-check-input" type="checkbox" id="useLevelLookup" checked />
+								<label class="form-check-label" for="useLevelLookup"> Sử dụng tra cứu theo level </label>
+							</div>
+							<div class="mb-4">
+								<label for="openDays" class="form-label">Số ngày đã mở cấp</label>
+								<input type="number" class="form-control form-control-lg" id="openDays" min="0" required />
+							</div>
+							<div class="d-grid gap-2">
+								<button type="button" class="btn btn-primary btn-lg" onclick="calculateTimestamp()">Tính Timestamp</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="mt-4">
+				<label class="form-label">Kết quả:</label>
+				<div id="result" class="text-center">Chưa có kết quả</div>
+			</div>
+		</div>
+
+		<!-- Bootstrap JS Bundle with Popper -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+		<script>
+			// Bảng dữ liệu tra cứu level -> số ngày timeframe (dùng chung cho tất cả game)
+			const levelToTimeframe = [
+				{ level: 39, days: 1 },
+				{ level: 49, days: 6 },
+				{ level: 59, days: 15 },
+				{ level: 69, days: 33 },
+				{ level: 79, days: 69 },
+				{ level: 89, days: 114 },
+				{ level: 99, days: 174 },
+				{ level: 109, days: 249 },
+				{ level: 119, days: 339 },
+				{ level: 129, days: 429 },
+			];
+
+			// Định nghĩa dữ liệu cho từng game
+			const gameData = {
+				game1: {
+					name: "Võ Lâm Xích Hỏa",
+					levelToOpenDays: [
+						{ level: 39, days: 10 },
+						{ level: 49, days: 4 },
+						{ level: 59, days: 4 },
+						{ level: 69, days: 6 },
+						{ level: 79, days: 5 },
+						{ level: 89, days: 6 },
+						{ level: 99, days: 7 },
+						{ level: 109, days: 8 },
+						{ level: 119, days: 9 },
+						{ level: 129, days: 10 },
+						{ level: 139, days: 12 },
+						{ level: 149, days: 10 },
+						{ level: 159, days: 12 },
+						{ level: 169, days: 12 },
+						{ level: 179, days: 12 },
+						{ level: 189, days: 12 },
+						{ level: 199, days: 12 },
+						{ level: 209, days: 12 },
+						{ level: 219, days: 12 },
+						{ level: 229, days: 12 },
+						{ level: 239, days: 12 },
+						{ level: 249, days: 12 },
+						{ level: 259, days: 12 },
+						{ level: 269, days: 12 },
+						{ level: 279, days: 12 },
+						{ level: 289, days: 12 },
+						{ level: 299, days: 12 },
+						{ level: 309, days: 999 },
+					],
+				},
+				game2: {
+					name: "Võ Lâm Tây Vực",
+					levelToOpenDays: [
+						{ level: 39, days: 8 },
+						{ level: 49, days: 8 },
+						{ level: 59, days: 8 },
+						{ level: 69, days: 3 },
+						{ level: 79, days: 6 },
+						{ level: 89, days: 7 },
+						{ level: 99, days: 9 },
+						{ level: 109, days: 9 },
+						{ level: 119, days: 10 },
+						{ level: 129, days: 10 },
+						{ level: 139, days: 11 },
+						{ level: 149, days: 11 },
+						{ level: 159, days: 12 },
+						{ level: 169, days: 13 },
+						{ level: 179, days: 13 },
+						{ level: 189, days: 13 },
+						{ level: 199, days: 13 },
+						{ level: 209, days: 13 },
+						{ level: 219, days: 13 },
+						{ level: 229, days: 13 },
+						{ level: 239, days: 13 },
+						{ level: 249, days: 13 },
+						{ level: 259, days: 13 },
+						{ level: 269, days: 13 },
+						{ level: 279, days: 13 },
+						{ level: 289, days: 13 },
+						{ level: 299, days: 13 },
+						{ level: 309, days: 999 },
+					],
+				},
+				game3: {
+					name: "Võ Lâm Hồng Kông",
+					levelToOpenDays: [
+						{ level: 39, days: 8 },
+						{ level: 49, days: 8 },
+						{ level: 59, days: 8 },
+						{ level: 69, days: 3 },
+						{ level: 79, days: 6 },
+						{ level: 89, days: 7 },
+						{ level: 99, days: 9 },
+						{ level: 109, days: 9 },
+						{ level: 119, days: 10 },
+						{ level: 129, days: 10 },
+						{ level: 139, days: 11 },
+						{ level: 149, days: 11 },
+						{ level: 159, days: 12 },
+						{ level: 169, days: 13 },
+						{ level: 179, days: 13 },
+						{ level: 189, days: 13 },
+						{ level: 199, days: 13 },
+						{ level: 209, days: 13 },
+						{ level: 219, days: 13 },
+						{ level: 229, days: 13 },
+						{ level: 239, days: 13 },
+						{ level: 249, days: 13 },
+						{ level: 259, days: 13 },
+						{ level: 269, days: 13 },
+						{ level: 279, days: 13 },
+						{ level: 289, days: 13 },
+						{ level: 299, days: 13 },
+						{ level: 309, days: 999 },
+					],
+				},
+			};
+
+			// Biến toàn cục lưu trữ dữ liệu game hiện tại
+			let currentGameData = gameData.game1;
+
+			// Cập nhật dữ liệu khi chọn game
+			document.getElementById("gameSelect").addEventListener("change", function () {
+				const selectedGame = this.value;
+				currentGameData = gameData[selectedGame];
+				// Có thể thêm logic cập nhật giao diện hoặc reset form ở đây nếu cần
+			});
+
+			// Hàm tra cứu số ngày timeframe từ level
+			function getTimeframeFromLevel(level) {
+				// Sắp xếp mảng theo level tăng dần (đề phòng)
+				const sortedLevels = [...levelToTimeframe].sort((a, b) => a.level - b.level);
+
+				// Nếu level nhỏ hơn giá trị đầu tiên, trả về giá trị đầu tiên
+				if (level <= sortedLevels[0].level) {
+					return sortedLevels[0].days;
+				}
+
+				// Nếu level lớn hơn giá trị cuối cùng, trả về giá trị cuối cùng
+				if (level >= sortedLevels[sortedLevels.length - 1].level) {
+					return sortedLevels[sortedLevels.length - 1].days;
+				}
+
+				// Tìm giá trị phù hợp
+				for (let i = 0; i < sortedLevels.length - 1; i++) {
+					if (level >= sortedLevels[i].level && level < sortedLevels[i + 1].level) {
+						return sortedLevels[i].days;
+					}
+				}
+
+				return 0; // Trường hợp mặc định
+			}
+
+			// Hàm tính số ngày đã mở cấp dựa trên level
+			function getOpenDaysFromLevel(level, inputDays, timeframe) {
+				// Sắp xếp mảng theo level tăng dần
+				const sortedLevels = [...currentGameData.levelToOpenDays].sort((a, b) => a.level - b.level);
+
+				// Tìm giá trị tối đa cho phép (giá trị của level - 1)
+				const maxAllowedDays = sortedLevels.find((item) => item.level === level)?.days - 1;
+
+				// Nếu không tìm thấy level
+				if (maxAllowedDays === undefined) {
+					throw new Error(`Không tìm thấy thông tin cho level ${level}`);
+				}
+
+				// Kiểm tra giá trị nhập vào không vượt quá giới hạn
+				const inputDaysInt = parseInt(inputDays);
+				if (inputDaysInt > maxAllowedDays) {
+					throw new Error(`Giá trị nhập vào không được vượt quá ${maxAllowedDays} cho level ${level}`);
+				}
+
+				// Kiểm tra giá trị nhập vào phải là số lớn hơn 0
+				if (isNaN(inputDaysInt) || inputDaysInt <= 0) {
+					throw new Error("Giá trị nhập vào phải là số lớn hơn 0");
+				}
+
+				// Nếu timeframe < 139, trả về giá trị nhập vào
+				if (timeframe < 139) {
+					return inputDaysInt;
+				}
+
+				// Tìm tất cả các mốc level từ 129 đến level hiện tại (không vượt quá level hiện tại)
+				const milestoneLevels = sortedLevels.filter((item) => item.level >= 129 && item.level < level).sort((a, b) => a.level - b.level);
+
+				// Tính tổng số ngày của các mốc level, trừ đi 1 ngày cho mỗi mốc
+				let totalDays = milestoneLevels.reduce((sum, item) => sum + (item.days - 1), 0);
+
+				// Thêm số ngày nhập vào
+				return totalDays + inputDaysInt;
+			}
+
+			function calculateTimestamp() {
+				const inputDate = new Date(document.getElementById("inputDate").value);
+				const timeframeInput = document.getElementById("timeframeDays").value;
+				const openDaysInput = document.getElementById("openDays").value;
+				const useLevelLookup = document.getElementById("useLevelLookup").checked;
+				const resultElement = document.getElementById("result");
+
+				// Xóa kết quả cũ
+				resultElement.innerHTML = "";
+
+				if (isNaN(inputDate.getTime())) {
+					resultElement.innerHTML = '<div class="alert alert-danger">Vui lòng chọn ngày hợp lệ!</div>';
+					return;
+				}
+
+				let timeframeDays, openDays;
+
+				// Xử lý timeframe
+				if (useLevelLookup) {
+					const level = parseInt(timeframeInput);
+					if (isNaN(level) || level < 0) {
+						resultElement.innerHTML = '<div class="alert alert-danger">Level phải là số dương!</div>';
+						return;
+					}
+
+					// Kiểm tra level có nằm trong danh sách level hợp lệ không
+					const validLevels = currentGameData.levelToOpenDays.map((item) => item.level);
+					if (!validLevels.includes(level) && !validLevels.includes(level - 1)) {
+						resultElement.innerHTML = `<div class="alert alert-danger">Level phải là một trong các giá trị sau: ${validLevels.join(", ")}</div>`;
+						return;
+					}
+
+					timeframeDays = getTimeframeFromLevel(level);
+
+					// Lấy số ngày đã mở cấp từ input
+					const inputOpenDays = parseInt(openDaysInput) || 0;
+
+					// Tính toán số ngày đã mở cấp dựa trên level và số ngày nhập vào
+					try {
+						openDays = getOpenDaysFromLevel(level, inputOpenDays, timeframeDays);
+					} catch (error) {
+						resultElement.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+						return;
+					}
+
+					// Hiển thị thông tin
+					let calculationSteps = "";
+					if (level >= 139) {
+						const milestoneLevels = [...currentGameData.levelToOpenDays].filter((item) => item.level >= 129 && item.level < level).sort((a, b) => a.level - b.level);
+
+						if (milestoneLevels.length > 0) {
+							calculationSteps = milestoneLevels.map((item) => `(${item.days} - 1) (level ${item.level})`).join(" + ");
+						}
+
+						// Thêm số ngày nhập vào
+						if (calculationSteps) {
+							calculationSteps += ` + ${inputOpenDays} (nhập vào)`;
+						} else {
+							calculationSteps = `${inputOpenDays} (nhập vào)`;
+						}
+					}
+
+					resultElement.innerHTML = `
+						<div class="alert alert-info">
+							<p class="mb-1"><strong>Level:</strong> ${level}</p>
+							<p class="mb-1"><strong>Số ngày timeframe:</strong> ${timeframeDays}</p>
+							<p class="mb-0"><strong>Số ngày đã mở cấp (tính toán):</strong> ${openDays} 
+							${level >= 139 ? `= ${calculationSteps}` : ""}</p>
+						</div>`;
+				} else {
+					timeframeDays = parseInt(timeframeInput);
+					if (isNaN(timeframeDays) || timeframeDays < 0) {
+						resultElement.innerHTML = '<div class="alert alert-danger">Số ngày timeframe phải là số dương!</div>';
+						return;
+					}
+
+					// Nếu không dùng tra cứu level, lấy giá trị nhập vào
+					openDays = parseInt(openDaysInput) || 0;
+				}
+
+				// Trừ số ngày theo timeframe và số ngày đã mở cấp
+				const totalDaysToSubtract = timeframeDays + openDays;
+				const calculatedDate = new Date(inputDate);
+				calculatedDate.setDate(inputDate.getDate() - totalDaysToSubtract + 2);
+
+				// Đặt thởi gian là 4h sáng
+				calculatedDate.setHours(4, 0, 0, 0);
+
+				// Tính timestamp (milliseconds)
+				const timestamp = Math.floor(calculatedDate.getTime() / 1000);
+
+				const formattedDate = calculatedDate.toLocaleString("vi-VN");
+
+				// Hiển thị kết quả
+				resultElement.innerHTML += `
+					<div class="alert alert-success mt-3" role="alert">
+						<p class="mb-1"><strong>Timestamp:</strong> ${timestamp}</p>
+						<p class="mb-1"><strong>Ngày giờ:</strong> ${formattedDate}</p>
+						<p class="mb-0"><strong>Tổng số ngày trừ đi:</strong> ${totalDaysToSubtract} ngày (${timeframeDays} timeframe + ${openDays} mở cấp)</p>
+					</div>
+				`;
+			}
+
+			// Đặt ngày mặc định là hôm nay
+			document.addEventListener("DOMContentLoaded", function () {
+				const today = new Date().toISOString().split("T")[0];
+				document.getElementById("inputDate").value = today;
+			});
+		</script>
+	</body>
+</html>
