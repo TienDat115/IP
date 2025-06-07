@@ -210,7 +210,8 @@
 									<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*')">I</span>
 									<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__')">U̲</span>
 									<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~')">S̶</span>
-									<span class="emoji-btn" title="Thời gian" onclick="insertText('', getCurrentTime())">🕒</span>
+									<span class="emoji-btn" title="Code" onclick="insertText('`', '`')">`</span>
+									<span class="emoji-btn" title="Thời gian" onclick="insertText('', '${getCurrentTime()}')">🕒</span>
 								</div>
 							</div>
 							<div class="form-check mb-3">
@@ -659,8 +660,6 @@
 
 						if (response.ok) {
 							addLog("✅ Đã gửi tin nhắn thành công!", message, webhookName, webhookUrl);
-							// Cập nhật textarea với thởi gian mới
-							document.getElementById("messageText").value = message;
 
 							await Swal.fire({
 								icon: "success",

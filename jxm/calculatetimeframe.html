@@ -165,9 +165,7 @@
 										<label for="gameSelect" class="form-label">Chọn game:</label>
 										<div class="input-group">
 											<select class="form-select" id="gameSelect">
-												<option value="game1">Võ Lâm Xích Hỏa</option>
-												<option value="game2">Võ Lâm Tây Vực</option>
-												<option value="game3">Võ Lâm Hồng Kông</option>
+												<!-- Các option sẽ được tạo động bằng JavaScript -->
 											</select>
 											<button class="btn btn-outline-secondary" id="viewGameInfo" title="Xem thông tin mở cấp" style="border-color: #dee2e6">
 												<i class="bi bi-info-circle"></i>
@@ -548,6 +546,44 @@
 			document.addEventListener("DOMContentLoaded", function () {
 				const today = new Date().toISOString().split("T")[0];
 				document.getElementById("inputDate").value = today;
+			});
+
+			// Tải dữ liệu từ file JSON
+			document.addEventListener("DOMContentLoaded", function () {
+				fetch("data/game_levels.json")
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error("Không thể tải dữ liệu game");
+						}
+						return response.json();
+					})
+					.then((data) => {
+						const gameSelect = document.getElementById("gameSelect");
+						// Xóa tất cả các option hiện có
+						gameSelect.innerHTML = "";
+
+						// Thêm các option từ dữ liệu JSON
+						Object.entries(data).forEach(([key, game]) => {
+							const option = document.createElement("option");
+							option.value = key;
+							option.textContent = game.name;
+							gameSelect.appendChild(option);
+						});
+
+						// Kích hoạt sự kiện change sau khi tải xong
+						if (gameSelect.options.length > 0) {
+							gameSelect.dispatchEvent(new Event("change"));
+						}
+					})
+					.catch((error) => {
+						console.error("Lỗi khi tải dữ liệu game:", error);
+						const gameSelect = document.getElementById("gameSelect");
+						gameSelect.innerHTML = `
+							<option value="game1">Võ Lâm Xích Hỏa</option>
+							<option value="game2">Võ Lâm Tây Vực</option>
+							<option value="game3">Võ Lâm Hồng Kông</option>
+						`;
+					});
 			});
 		</script>
 	</body>
