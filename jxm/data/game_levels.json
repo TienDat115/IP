@@ -30,7 +30,8 @@
       { "level": 289, "days": 12 },
       { "level": 299, "days": 12 },
       { "level": 309, "days": 999 }
-    ]
+    ],
+	"lastUpdate": "2025-06-08 14:26:00"
   },
   "game2": {
     "name": "Võ Lâm Tây Vực",
@@ -63,7 +64,8 @@
       { "level": 289, "days": 13 },
       { "level": 299, "days": 13 },
       { "level": 309, "days": 999 }
-    ]
+    ],
+	"lastUpdate": "2025-06-08 14:26:00"
   },
   "game3": {
     "name": "Võ Lâm Hồng Kông",
@@ -96,6 +98,7 @@
       { "level": 289, "days": 13 },
       { "level": 299, "days": 13 },
       { "level": 309, "days": 999 }
-    ]
+    ],
+	"lastUpdate": "2025-06-08 14:26:00"
   }
 }

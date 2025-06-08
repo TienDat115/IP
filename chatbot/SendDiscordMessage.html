@@ -386,7 +386,7 @@
 							return;
 						}
 
-						// Chuyển đổi snapshot thành mảng và sắp xếp theo ID
+						// Chuyển đổi snapshot thành mảng
 						const webhooks = [];
 						snapshot.forEach((doc) => {
 							webhooks.push({
@@ -395,23 +395,62 @@
 							});
 						});
 
-						// Sắp xếp mảng webhooks theo ID tăng dần
-						webhooks.sort((a, b) => {
-							// Chuyển đổi ID sang số nếu có thể để so sánh
-							const idA = isNaN(Number(a.id)) ? a.id : Number(a.id);
-							const idB = isNaN(Number(b.id)) ? b.id : Number(b.id);
-							return idA > idB ? 1 : idA < idB ? -1 : 0;
+						// Tạo các nhóm webhook dựa trên phần tên trước dấu gạch ngang (-)
+						const groupedWebhooks = {};
+						webhooks.forEach((webhook) => {
+							let groupName = "Khác";
+							if (webhook.name && webhook.name.includes("-")) {
+								// Lấy phần tên trước dấu gạch ngang và bỏ khoảng trắng thừa
+								groupName = webhook.name.split("-")[0].trim();
+							} else if (webhook.name) {
+								// Nếu không có dấu gạch ngang, sử dụng toàn bộ tên làm nhóm
+								groupName = webhook.name.trim();
+							}
+
+							if (!groupedWebhooks[groupName]) {
+								groupedWebhooks[groupName] = [];
+							}
+							groupedWebhooks[groupName].push(webhook);
 						});
+
+						// Sắp xếp các webhook trong từng nhóm theo ID
+						Object.keys(groupedWebhooks).forEach((group) => {
+							groupedWebhooks[group].sort((a, b) => {
+								// Chuyển đổi ID sang số nếu có thể để so sánh
+								const idA = isNaN(Number(a.id)) ? a.id : Number(a.id);
+								const idB = isNaN(Number(b.id)) ? b.id : Number(b.id);
+								return idA > idB ? 1 : idA < idB ? -1 : 0;
+							});
+						});
+
+						// Sắp xếp các nhóm theo tên
+						const sortedGroups = Object.keys(groupedWebhooks).sort();
 
 						// Xóa option "Đang tải..."
 						webhookSelect.innerHTML = "";
 
-						// Thêm các webhook đã sắp xếp vào select
-						webhooks.forEach((webhook) => {
-							const option = document.createElement("option");
-							option.value = webhook.id;
-							option.textContent = webhook.name || `Webhook ${webhook.id}`;
-							webhookSelect.appendChild(option);
+						// Thêm option mặc định
+						const defaultOption = document.createElement("option");
+						defaultOption.value = "";
+						defaultOption.textContent = "Chọn webhook...";
+						webhookSelect.appendChild(defaultOption);
+
+						// Thêm các webhook đã nhóm vào select
+						sortedGroups.forEach((group) => {
+							// Thêm nhóm (optgroup)
+							const groupElement = document.createElement("optgroup");
+							groupElement.label = group;
+
+							// Thêm các webhook trong nhóm
+							groupedWebhooks[group].forEach((webhook) => {
+								const option = document.createElement("option");
+								option.value = webhook.id;
+								// Hiển thị toàn bộ tên webhook trong option
+								option.textContent = webhook.name || `Webhook ${webhook.id}`;
+								groupElement.appendChild(option);
+							});
+
+							webhookSelect.appendChild(groupElement);
 						});
 
 						// Bật select sau khi tải xong
@@ -640,9 +679,10 @@
 				// Gửi tin nhắn văn bản
 				async function sendTextMessage() {
 					const webhooks = await getWebhookUrls();
-					const selectedWebhookId = document.getElementById("webhookSelect").value;
+					const webhookSelect = document.getElementById("webhookSelect");
+					const selectedWebhookId = webhookSelect.value;
 					const webhookUrl = webhooks[selectedWebhookId];
-					const webhookName = document.getElementById("webhookSelect").options[selectedWebhookId - 1].text;
+					const webhookName = webhookSelect.options[webhookSelect.selectedIndex].text;
 					let message = document.getElementById("messageText").value;
 					const username = document.getElementById("customUsername").value;
 					const avatarUrl = document.getElementById("avatarUrl").value;
@@ -705,9 +745,10 @@
 				async function sendFileMessage() {
 					try {
 						const webhooks = await getWebhookUrls();
-						const selectedWebhookId = document.getElementById("webhookSelect").value;
+						const webhookSelect = document.getElementById("webhookSelect");
+						const selectedWebhookId = webhookSelect.value;
 						const webhookUrl = webhooks[selectedWebhookId];
-						const webhookName = document.getElementById("webhookSelect").options[selectedWebhookId - 1].text;
+						const webhookName = webhookSelect.options[webhookSelect.selectedIndex].text;
 						const fileInput = document.getElementById("fileInput");
 						const files = fileInput.files;
 						const message = document.getElementById("fileMessage").value;
@@ -803,9 +844,10 @@
 				// Gửi tin nhắn nhúng
 				async function sendEmbedMessage() {
 					const webhooks = await getWebhookUrls();
-					const selectedWebhookId = document.getElementById("webhookSelect").value;
+					const webhookSelect = document.getElementById("webhookSelect");
+					const selectedWebhookId = webhookSelect.value;
 					const webhookUrl = webhooks[selectedWebhookId];
-					const webhookName = document.getElementById("webhookSelect").options[selectedWebhookId - 1].text;
+					const webhookName = webhookSelect.options[webhookSelect.selectedIndex].text;
 					const title = document.getElementById("embedTitle").value;
 					const description = document.getElementById("embedDescription").value;
 					const color = document.getElementById("embedColorPicker").value;
