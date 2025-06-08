@@ -1,0 +1,181 @@
+MainFrame	SubFrame	Name	DurationDays	OpenDay	OpenTime	NewMaxLevel	NotLockFrame
+OpenLevel39		Cấp tối đa Lv39	8		0	39	
+	OpenDay1	Lửa Trại Bang Hội		1	1000		
+	OpenDay1A	Tăng võ công Minh Chủ Võ Lâm, Chiến Trường Tống Kim		2	1900		
+	OpenDay2D	Ủy thác rời mạng, Top 10 lực chiến khi chat được ký hiệu riêng		3	0		
+	OpenDay2	Bang Hội Truyền Công, Nhiệm Vụ Thương Hội, Lăng Tuyệt Phong		4	1000		
+	OpenDay2A	Tăng võ công Minh Chủ Võ Lâm		5	1200		
+	OpenDay2B			6	1800		
+	OpenDay2C	Tăng võ công Minh Chủ Võ Lâm		7	1900		
+	OpenDay3C	Thủ Lĩnh Dã Ngoại Lv20 Bạch Mi Hầu Vương, Đại Địa Lang Vương, Hàn Ngọc Lộc Vương		7	0		
+	OpenDay3	Bạch Hổ Đường, Khiêu Chiến Anh Hùng		7	1000		
+	OpenDay3A	Tăng võ công Minh Chủ Võ Lâm		7	1200		
+	OpenDay3B	Tăng võ công Minh Chủ Võ Lâm		7	1900		
+	OpenDay4A	EXP cộng thêm bậc 1		7	400		
+	OpenDay4	Thi Đấu Môn Phái, Thí Luyện Bang Hội, Thông Thiên Tháp		7	1000		
+	OpenDay5A	EXP cộng thêm bậc 2		7	400		
+	OpenDay5	Bang Hội Chiến, Vận Tiêu Bang Hội		7	1000		
+OpenLevel49		Cấp tối đa Lv49	8		400	49	
+	OpenDay6	Quần Anh Hội, Thủ Lĩnh Dã Ngoại Lv40 Song Thủ Dị Thú, Bôn Diệm Báo Vương, Cửu Vĩ Hồ Vương, Cấp Gia Viên (Lv1, Lv2), Tạo gia cụ (Lv1, Lv2)		1	1000		
+	OpenDay7	Danh Tướng Lv40 Ngao Bái, Viên Thừa Chí, Hàn Thế Trung, Triết Biệt, Cao Trường Cung, Tần Lương Ngọc		2	1000		
+	OpenDay8			3	1000		
+	OpenDay10			4	400		
+	OpenDay12			5	1000		
+OpenLevel59		Cấp tối đa Lv59	8		400	59	
+	OpenDay15			1	1000		
+	OpenDomainBattle	Mở Công Thành Chiến		2	400		
+	OpenDay16			3	1000		
+	OpenDay20	Quà Mỗi Ngày 1		4	400		
+OpenLevel69		Cấp tối đa Lv69	3		400	69	
+	OpenDay33			1	1000		
+	HuaShanLunJian	Mở Hoa Sơn Luận Kiếm		1	400		1
+	OpenDay35	Thủ Lĩnh Dã Ngoại Lv60 Định Hải Kim Cang, Kim Sí Bằng Hoàng, Ngân Giác Tê Hoàng		1	1000		
+	OpenDay36			1	1000		
+	OpenDay118	Tâm Ma Ảo Cảnh		1	1000		1
+	OpenDay39			1	1000		
+	OpenDay42	Thay đổi phần thưởng Minh Chủ Võ Lâm		1	1000		
+	OpenDay45			1	1000		
+	OpenDay52	Danh Tướng Lv60 Kinh Kha, Ngu Cơ, Nhạc Phi		1	1000		
+OpenLevel79		Cấp tối đa Lv79	6		400	79	
+	OpenDay67	Quà Mỗi Ngày 2		1	400		
+	OpenDay69	Cấp Gia Viên (Lv3)		1	1000		1
+	OpenDay70			1	400		
+	OpenDay72			1	400		
+	OpenDay90			1	400		
+	OpenDay89	Tần Lăng		1	1000		
+	OpenDay99	Cấp Chế Tạo (Lv3)		1	1000		1
+	OpenDay100			1	400		
+OpenLevel89		Cấp tối đa Lv89	7		400	89	
+	OpenDay114	Cấp Gia Viên (Lv4)		1	1000		1
+	OpenDay116	Thủ Lĩnh Dã Ngoại Lv80 Hám Thiên Hùng Hoàng, Xích Tinh Hổ Hoàng, Tử Bối Ngạc Hoàng		1	1000		
+	OpenDay128	Danh Tướng Lv80 Lý Quảng , Triệu Vân, Lý Nguyên Bá		1	1000		
+	OpenDay130			1	400		
+	OpenDay141			1	1000		
+	OpenDay143			1	400		
+	OpenDay145			1	400		
+	OpenImperialTomb	Mở Tần Lăng		1	1000		
+	OpenDay153	Tăng phần thưởng Tần Lăng		1	400		
+	OpenDay180			1	400		
+	OpenDay159	Mở Thức Tỉnh Đồng Hành		1	1000		
+	OpenDay160			1	400		
+OpenLevel99		Cấp tối đa Lv99	9		400	99	
+	OpenLevel99Add1	Quà Mỗi Ngày mở Đá Hồn Dương Tẫn Thầm		1	400		1
+	OpenCrossDomainBattle	Mở Công Thành Liên SV		1	400		
+	OpenDay174	Cấp Gia Viên (Lv5)		1	1000		1
+	OpenKeyQuestFuben	Mở Di Tích Tầm Bảo		1	400		
+	OpenDay188	Mở quân hàm Vô Song		1	400		
+	OpenDay204	Tần Lăng rơi Đồng Hành SSS Tần Thủy Hoàng		1	400		
+	OpenDay208			1	400		
+	OpenDay221			1	400		
+	OpenDay224	Cấp Chế Tạo (Lv4)		1	1000		1
+	OpenDay234	Tần Lăng rơi Vũ Khí Bổn Mạng		1	400		
+OpenLevel109		Lv109, Minh Chủ Võ Lâm Đường Giản, Môn Khách, khu vực 1 Tuyệt Học mở	9		400	109	
+	OpenLevel109Add1	Quà Mỗi Ngày mở Đá Hồn Hoàn Nhan Tuyết Y		1	400		1
+	OpenDay249	Cấp Gia Viên (Lv6)		1	1000		1
+	OpenDay251	Thủ Lĩnh Dã Ngoại Lv100 Băng Lân Tích Hoàng, Ngân Câu Hạt Hoàng, Cuồng Tông Ngao Hoàng		1	1000		
+	OpenDay279	Mở Đồng Hành SSS Hoàn Nhan Hồng Liệt		1	1000		
+	OpenDay285			1	1000		
+	OpenDay290	Mở Môn Khách 2, Môn Khách 3 Sao		1	1000		
+	OpenLevel109Add45	Mở giới hạn Lv109 45 ngày		1	400		
+	OpenDay309			1	400		
+	OpenDay360			1	400		
+OpenLevel119		Lv119, Môn Khách 3, Lãnh Thổ Chiến Liên SV	10		400	119	
+	OpenLevel119Add1	Quà Mỗi Ngày mở Đá Hồn Diệp Vô Tâm		1	400		1
+	OpenDay353	Danh Tướng Lv110 Hạng Vũ		1	1000		
+	OpenDay369	Mở Tuyệt Học Khu 2		1	1000		
+	OpenLevel119Add45	Mở giới hạn Lv119 45 ngày		1	400		
+	OpenDay399	Tạo gia cụ (Lv5)		1	1000		1
+	OpenLevel119Add70	Mở bày bán Đà Hồn Dương Tẫn Thầm		1	400		
+OpenLevel129		Cấp tối đa Lv129, Môn Khách 4, Cấp Gia Viên (Lv7)	10		400	129	
+	OpenLevel129Add1	Quà Mỗi Ngày mở Đá Hồn Vân Hạo Nhiên		1	400		1
+	OpenLevel129Add10	Mở Võ Tắc Thiên		1	400		
+	OpenLevel129Add30	Trang bị Hoàng Kim do Võ Tắc Thiên tạo ra		1	400		
+	OpenLevel129Add45			1	400		
+	OpenLevel129Add49	Mở bày bán Đá Hồn Hoàn Nhan Tuyết Y		1	400		
+	OpenLevel129Add50	Mở giới hạn Lv129 50 ngày		1	400		
+	OpenDay489			1	400		
+	OpenDay492	Quà Mỗi Ngày mở Đá Hồn Bản Tướng		1	400		1
+OpenLevel139		Giới hạn Lv139	11		400	139	
+	OpenLevel139Add30	Mở giới hạn Lv139 30 ngày		1	400		
+	OpenLevel139Add39	Mở bán Đá Hồn Diệp Vô Tâm		1	400		
+	OpenLevel139Add45	Mở giới hạn Lv139 45 ngày		1	400		
+	OpenLevel139Add55	Mở giới hạn Lv139 55 ngày		1	400		
+	OpenLevel139Add60	Mở tối đa Lv139 được 60 ngày		1	400		
+	OpenLevel139Add80	Mở giới hạn Lv139 80 ngày		1	400		
+	OpenLevel139Add86	Quà Mỗi Ngày mở Đá Hồn Trương Thừa Tố		1	400		1
+	OpenLevel139Add90	Mở giới hạn Lv139 90 ngày		1	400		
+OpenLevel149		Cấp tối đa 149	11		400	149	
+	OpenLevel149Add9	Mở bán Đá Hồn Vân Hạo Nhiên		1	400		
+	OpenLevel149Add45	Mở giới hạn Lv149 45 ngày		1	400		
+	OpenLevel149Add55	Mở giới hạn Lv149 55 ngày		1	400		
+	OpenLevel149Add65	Quà Mỗi Ngày mở Đá Hồn Dương Kế Chu		1	400		1
+	OpenLevel149Add90	Mở cấp tối đa Lv149 90 ngày		1	400		
+OpenLevel159		Cấp tối đa Lv159, mở chế tạo Gia Cụ (Lv6)	12		400	159	
+	OpenDay617	Mở bán Đá Hồn Bản Tướng		1	400		
+	OpenLevel159Add36	Mở giới hạn Lv159 36 ngày		1	400		
+	OpenLevel159Add45	Mở giới hạn Lv159 45 ngày		1	400		
+	OpenLevel159Add55	Mở giới hạn Lv159 55 ngày		1	400		
+	OpenLevel159Add44	Quà Mỗi Ngày mở Đá Hồn Lý Minh Vân		1	400		1
+	OpenLevel159Add90	Mở cấp tối đa Lv159 90 ngày		1	400		
+OpenLevel169		Tối đa Lv169	13		400	169	
+	OpenLevel159Add89	Mở bán Đá Hồn Trương Thừa Tố		1	400		
+	OpenLevel169Add45	Mở giới hạn Lv169 45 ngày		1	400		
+	OpenLevel169Add55	Mở giới hạn Lv169 55 ngày		1	400		
+	OpenLevel169Add23	Quà Mỗi Ngày mở Đá Hồn Công Tôn Khải Dương		1	400		1
+	OpenLevel169Add90	Mở giới hạn Lv169 90 ngày		1	400		
+OpenLevel179		Cấp tối đa Lv179	13		400	179	
+	OpenLevel169Add68	Mở Bày Bán Đá Hồn Dương Kế Chu		1	400		
+	OpenLevel179Add45	Mở giới hạn Lv179 45 ngày		1	400		
+	OpenLevel179Add55	Mở giới hạn Lv179 55 ngày		1	400		
+	OpenLevel179Add26	Quà Mỗi Ngày mở Đá Hồn Nguyên Thiên Xu		1	400		1
+	OpenLevel179Add90	Mở tối đa Lv179 được 90 ngày		1	400		
+OpenLevel189		Cấp tối đa Lv189, mở chế tạo Gia Cụ (Lv7)	13		400	189	
+	OpenLevel179Add47	Mở bày bán Đá Hồn Lý Minh Vân		1	400		
+	OpenLevel189Add50	Mở giới hạn Lv189 50 ngày		1	400		
+	OpenLevel189Add55	Mở giới hạn Lv189 55 ngày		1	400		
+	OpenLevel189Add17	Quà Mỗi Ngày mở Đá Hồn Phong Chính Nam		1	400		1
+	OpenLevel189Add90	Mở tối đa Lv189 được 90 ngày		1	400		
+OpenLevel199		Cấp tối đa 199	13		400	199	
+	OpenLevel189Add26	Mở Đá Hồn Công Tôn Khai Dương bày bán		1	400		
+	OpenLevel199Add50_1	Mở giới hạn Lv199 50 ngày		1	400		
+	OpenLevel199Add50	Quà Mỗi Ngày mở Đá Hồn Trần Đại Thông		1	400		1
+	OpenLevel199Add60	Mở giới hạn Lv199 60 ngày		1	400		
+	OpenLevel199Add90	Mở giới hạn Lv199 90 ngày		1	400		
+OpenLevel209		Giới hạn Lv209 (Tông Sư Lv9)	13		400	209	
+	OpenLevel199Add39	Mở bán Đá Hồn Nguyên Thiên Xu		1	400		
+	OpenLevel209Add44	Quà Mỗi Ngày mở Đá Hồn Lâm Phong Đường		1	400		1
+	OpenLevel209Add50	Mở giới hạn Lv209 50 ngày		1	400		
+	OpenLevel209Add60	Mở giới hạn Lv209 60 ngày		1	400		
+	OpenLevel209Add32	Mở bày bán Đá Hồn Phong Chính Nam		1	400		
+OpenLevel219		Giới hạn Lv219 (Tông Sư Lv19)	13		400	219	
+	OpenLevel219Add35	Quà Mỗi Ngàymở Đá Hồn Đoàn Chính Hưng		1	400		1
+	OpenLevel219Add50	Mở giới hạn Lv219 50 ngày		1	400		
+	OpenLevel219Add60	Mở giới hạn Lv219 60 ngày		1	400		
+	OpenLevel219Add71	Mở bày bán Đá Hồn Trần Đại Thông		1	400		
+OpenLevel229		Giới hạn Lv229 (Tông Sư Lv29)	13		400	229	
+	OpenLevel229Add26	Quà Mỗi Ngày mở Đá Hồn Chu Chấn Uy		1	400		1
+	OpenLevel229Add55	Mở giới hạn Lv229 55 ngày		1	400		
+	OpenLevel229Add59	Mở bán Đá Hồn Lâm Phong Đường		1	400		
+	OpenLevel229Add60	Mở giới hạn Lv229 60 ngày		1	400		
+OpenLevel239		Giới Hạn (Tông Sư Lv39) Lv239	13		400	239	
+	OpenLevel239Add11	Quà Mỗi Ngày mở Đá Hồn Ngô Chính Vượng		1	400		1
+	OpenLevel239Add56	Mở bày bán Đá Hồn Ân Chính Hưng		1	400		
+	OpenLevel239Add60	Mở giới hạn Lv239 60 ngày		1	400		
+OpenLevel249		Giới Hạn (Tông Sư Lv49) Lv249	13		400	249	
+	OpenLevel249Add31	Mở bày bán Đá Hồn Chu Chấn Uy		1	400		
+	OpenLevel249Add60	Mở Lv249 giới hạn 60 ngày		1	400		
+OpenLevel259		Giới hạn Lv259 (Tông Sư Lv59)	13		400	259	
+	OpenLevel259Add60	Mở giới hạn Lv259 60 ngày		1	400		
+OpenLevel269		Giới Hạn (Tông Sư Lv69) Lv269	13		400	269	
+	OpenLevel269Add60	Mở giới hạn Lv269 60 ngày		1	400		
+OpenLevel279		Giới Hạn (Tông Sư Lv79) Lv279	13		400	279	
+	OpenLevel279Add34	Mở sạp Đá Hồn Thương Lân Cù Long		1	400		
+	OpenLevel279Add60	Mở giới hạn Lv269 60 ngày		1	400		
+OpenLevel289		Giới Hạn (Tông Sư Lv89) Lv289	13		400	289	
+	OpenLevel289Add60	Giới hạn Lv289 (Tông Sư Lv89)		1	400		
+OpenLevel299		Giới Hạn (Tông Sư Lv99) Lv299	13		400	299	
+	OpenLevel299Add60	Mở giới hạn Lv299 60 ngày		1	400		
+OpenLevel309		Giới Hạn (Thái Đẩu Lv9) Lv309	999		400	309	
+	OpenDay720	Tạm không có tác dụng, chỉ dùng để ẩn quân hàm không cho người chơi tiếp cận		999	400		
+	OpenSecretFuben			1	400		
+	OpenLiuJun	Linh Sơn Chiến		1	400		1

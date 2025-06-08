@@ -148,6 +148,11 @@
 					width: 100%;
 				}
 			}
+
+			.spinner-border {
+				width: 2rem;
+				height: 2rem;
+			}
 		</style>
 	</head>
 	<body>
@@ -229,7 +234,7 @@
 		<!-- Bootstrap JS Bundle with Popper -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-		<!-- Thêm modal hiển thị thông tin game -->
+		<!-- Modal hiển thị thông tin game -->
 		<div class="modal fade" id="gameInfoModal" tabindex="-1" aria-labelledby="gameInfoModalLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
 				<div class="modal-content">
@@ -258,24 +263,112 @@
 			let gameData = {};
 			let currentGameData = null;
 
+			// Hàm hiển thị thông báo lỗi
+			function showError(message) {
+				document.getElementById("result").innerHTML = `<div class="alert alert-danger">${message}</div>`;
+			}
+
 			// Tải dữ liệu từ file JSON
 			async function loadGameData() {
+				const resultElement = document.getElementById("result");
+				resultElement.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
 				try {
 					const response = await fetch("data/game_levels.json");
-					if (!response.ok) {
-						throw new Error("Không thể tải dữ liệu game");
-					}
+					if (!response.ok) throw new Error("Không thể tải dữ liệu game");
 					gameData = await response.json();
-
-					// Khởi tạo dữ liệu game mặc định
-					currentGameData = gameData.game1;
-
-					// Cập nhật select box nếu cần
+					if (!gameData || typeof gameData !== "object" || !Object.keys(gameData).length) {
+						throw new Error("Dữ liệu game không hợp lệ");
+					}
+					currentGameData = gameData[Object.keys(gameData)[0]];
 					updateGameSelect();
+					resultElement.innerHTML = '<p class="text-muted mb-0">Kết quả sẽ hiển thị tại đây sau khi tính toán</p>';
 				} catch (error) {
 					console.error("Lỗi khi tải dữ liệu game:", error);
-					// Xử lý lỗi ở đây (ví dụ: hiển thị thông báo cho người dùng)
+					showError("Không thể tải dữ liệu game. Vui lòng thử lại sau.");
 				}
+			}
+
+			// Cập nhật dữ liệu từ file tab
+			async function updateLevelsFromTabFiles() {
+				try {
+					const response = await fetch("data/game_levels.json");
+					if (!response.ok) throw new Error("Không thể tải dữ liệu game");
+					let gameData = await response.json();
+
+					await Promise.all(
+						Object.entries(gameData).map(async ([gameId, gameInfo]) => {
+							if (!gameInfo.url) return;
+							const tabUrl = `data/time/${gameInfo.url}/timeframe_New.tab`;
+
+							try {
+								// Lấy thông tin last-modified
+								const headResponse = await fetch(tabUrl, { method: "HEAD" });
+								if (!headResponse.ok) {
+									console.warn(`Không tìm thấy file tab cho ${gameInfo.name} (${tabUrl})`);
+									return;
+								}
+
+								const lastModified = headResponse.headers.get("last-modified");
+								const lastUpdate = lastModified ? new Date(lastModified) : new Date();
+
+								// Lấy nội dung file
+								const tabResponse = await fetch(tabUrl);
+								if (!tabResponse.ok) throw new Error(`Lỗi khi tải file tab: ${tabUrl}`);
+
+								const tabContent = await tabResponse.text();
+								gameData[gameId].levelToOpenDays = parseTabData(tabContent);
+								gameData[gameId].lastUpdate = lastUpdate.toISOString().replace("T", " ").substring(0, 19);
+							} catch (error) {
+								console.error(`Lỗi khi xử lý ${gameInfo.name}:`, error);
+								throw error;
+							}
+						})
+					);
+					return gameData;
+				} catch (error) {
+					console.error("Lỗi khi cập nhật dữ liệu:", error);
+					showError("Không thể cập nhật dữ liệu game. Vui lòng thử lại sau.");
+					throw error;
+				}
+			}
+
+			// Phân tích dữ liệu từ file tab
+			function parseTabData(tabContent) {
+				const lines = tabContent.split("\n");
+				const levels = [];
+				const levelMap = new Map();
+				let lineCount = 0;
+
+				for (let i = 1; i < lines.length; i++) {
+					lineCount++;
+					const line = lines[i].trim();
+					if (!line) continue;
+
+					const columns = line.split("\t");
+					if (columns.length < 7) {
+						console.warn(`[Dòng ${lineCount}] Dữ liệu không đủ cột:`, line);
+						continue;
+					}
+
+					if (columns[0] && columns[0].startsWith("OpenLevel")) {
+						try {
+							const level = parseInt(columns[6]);
+							const days = parseInt(columns[3]);
+							if (!isNaN(level) && !isNaN(days) && days > 0 && level > 1) {
+								if (!levelMap.has(level)) {
+									levelMap.set(level, days);
+								}
+							}
+						} catch (e) {
+							console.error(`[Dòng ${lineCount}] Lỗi khi xử lý dòng:`, e);
+						}
+					}
+				}
+
+				for (const [level, days] of levelMap.entries()) {
+					levels.push({ level, days });
+				}
+				return levels.sort((a, b) => a.level - b.level);
 			}
 
 			// Cập nhật select box với dữ liệu game
@@ -283,10 +376,7 @@
 				const gameSelect = document.getElementById("gameSelect");
 				if (!gameSelect) return;
 
-				// Xóa các option cũ
 				gameSelect.innerHTML = "";
-
-				// Thêm các option mới
 				Object.entries(gameData).forEach(([key, game]) => {
 					const option = document.createElement("option");
 					option.value = key;
@@ -294,18 +384,17 @@
 					gameSelect.appendChild(option);
 				});
 
-				// Thêm sự kiện change
 				gameSelect.addEventListener("change", function () {
 					const selectedGame = this.value;
 					currentGameData = gameData[selectedGame];
-					// Có thể thêm logic cập nhật giao diện hoặc reset form ở đây nếu cần
 				});
+
+				if (gameSelect.options.length > 0) {
+					gameSelect.dispatchEvent(new Event("change"));
+				}
 			}
 
-			// Gọi hàm tải dữ liệu khi trang được tải
-			document.addEventListener("DOMContentLoaded", loadGameData);
-
-			// Bảng dữ liệu tra cứu level -> số ngày timeframe (dùng chung cho tất cả game)
+			// Bảng dữ liệu tra cứu level -> số ngày timeframe
 			const levelToTimeframe = [
 				{ level: 39, days: 1 },
 				{ level: 49, days: 6 },
@@ -321,68 +410,44 @@
 
 			// Hàm tra cứu số ngày timeframe từ level
 			function getTimeframeFromLevel(level) {
-				// Sắp xếp mảng theo level tăng dần (đề phòng)
 				const sortedLevels = [...levelToTimeframe].sort((a, b) => a.level - b.level);
+				if (level <= sortedLevels[0].level) return sortedLevels[0].days;
+				if (level >= sortedLevels[sortedLevels.length - 1].level) return sortedLevels[sortedLevels.length - 1].days;
 
-				// Nếu level nhỏ hơn giá trị đầu tiên, trả về giá trị đầu tiên
-				if (level <= sortedLevels[0].level) {
-					return sortedLevels[0].days;
-				}
-
-				// Nếu level lớn hơn giá trị cuối cùng, trả về giá trị cuối cùng
-				if (level >= sortedLevels[sortedLevels.length - 1].level) {
-					return sortedLevels[sortedLevels.length - 1].days;
-				}
-
-				// Tìm giá trị phù hợp
 				for (let i = 0; i < sortedLevels.length - 1; i++) {
 					if (level >= sortedLevels[i].level && level < sortedLevels[i + 1].level) {
 						return sortedLevels[i].days;
 					}
 				}
-
-				return 0; // Trường hợp mặc định
+				return 0;
 			}
 
 			// Hàm tính số ngày đã mở cấp dựa trên level
 			function getOpenDaysFromLevel(level, inputDays, timeframe) {
-				// Sắp xếp mảng theo level tăng dần
 				const sortedLevels = [...currentGameData.levelToOpenDays].sort((a, b) => a.level - b.level);
-
-				// Tìm giá trị tối đa cho phép (giá trị của level - 1)
 				const maxAllowedDays = sortedLevels.find((item) => item.level === level)?.days - 1;
 
-				// Nếu không tìm thấy level
 				if (maxAllowedDays === undefined) {
 					throw new Error(`Không tìm thấy thông tin cho level ${level}`);
 				}
 
-				// Kiểm tra giá trị nhập vào không vượt quá giới hạn
 				const inputDaysInt = parseInt(inputDays);
+				if (isNaN(inputDaysInt) || inputDaysInt <= 0) {
+					throw new Error("Giá trị ngày đã mở cấp phải là số lớn hơn 0");
+				}
 				if (inputDaysInt > maxAllowedDays) {
 					throw new Error(`Giá trị nhập vào không được vượt quá ${maxAllowedDays} cho level ${level}`);
 				}
 
-				// Kiểm tra giá trị nhập vào phải là số lớn hơn 0
-				if (isNaN(inputDaysInt) || inputDaysInt <= 0) {
-					throw new Error("Giá trị nhập vào phải là số lớn hơn 0");
-				}
-
-				// Nếu timeframe < 139, trả về giá trị nhập vào
 				if (timeframe < 139) {
 					return inputDaysInt;
 				}
 
-				// Tìm tất cả các mốc level từ 129 đến level hiện tại (không vượt quá level hiện tại)
 				const milestoneLevels = sortedLevels.filter((item) => item.level >= 129 && item.level < level).sort((a, b) => a.level - b.level);
-
-				// Tính tổng số ngày của các mốc level, trừ đi 1 ngày cho mỗi mốc
-				let totalDays = milestoneLevels.reduce((sum, item) => sum + (item.days - 1), 0);
-
-				// Thêm số ngày nhập vào
-				return totalDays + inputDaysInt;
+				return milestoneLevels.reduce((sum, item) => sum + (item.days - 1), 0) + inputDaysInt;
 			}
 
+			// Hàm tính timestamp
 			function calculateTimestamp() {
 				const inputDate = new Date(document.getElementById("inputDate").value);
 				const timeframeInput = document.getElementById("timeframeDays").value;
@@ -390,232 +455,182 @@
 				const useLevelLookup = document.getElementById("useLevelLookup").checked;
 				const resultElement = document.getElementById("result");
 
-				// Xóa kết quả cũ
 				resultElement.innerHTML = "";
 
 				if (isNaN(inputDate.getTime())) {
-					resultElement.innerHTML = '<div class="alert alert-danger">Vui lòng chọn ngày hợp lệ!</div>';
+					showError("Vui lòng chọn ngày hợp lệ!");
+					return;
+				}
+
+				if (!currentGameData) {
+					showError("Dữ liệu game chưa được tải. Vui lòng thử lại sau.");
 					return;
 				}
 
 				let timeframeDays, openDays;
-
-				// Xử lý timeframe
 				if (useLevelLookup) {
 					const level = parseInt(timeframeInput);
 					if (isNaN(level) || level < 0) {
-						resultElement.innerHTML = '<div class="alert alert-danger">Level phải là số dương!</div>';
+						showError("Level phải là số dương!");
 						return;
 					}
 
-					// Kiểm tra level có nằm trong danh sách level hợp lệ không
 					const validLevels = currentGameData.levelToOpenDays.map((item) => item.level);
 					if (!validLevels.includes(level)) {
-						resultElement.innerHTML = `<div class="alert alert-danger">Level phải là một trong các giá trị sau: ${validLevels.join(", ")}</div>`;
+						showError(`Level phải là một trong các giá trị sau: ${validLevels.join(", ")}`);
+						return;
+					}
+
+					if (isNaN(parseInt(openDaysInput)) || openDaysInput === "") {
+						showError("Vui lòng nhập số ngày đã mở cấp!");
 						return;
 					}
 
 					timeframeDays = getTimeframeFromLevel(level);
-
-					// Lấy số ngày đã mở cấp từ input
-					const inputOpenDays = parseInt(openDaysInput) || 0;
-
-					// Tính toán số ngày đã mở cấp dựa trên level và số ngày nhập vào
 					try {
-						openDays = getOpenDaysFromLevel(level, inputOpenDays, timeframeDays);
+						openDays = getOpenDaysFromLevel(level, openDaysInput, timeframeDays);
 					} catch (error) {
-						resultElement.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+						showError(error.message);
 						return;
 					}
 
-					// Hiển thị thông tin
 					let calculationSteps = "";
 					if (level >= 139) {
 						const milestoneLevels = [...currentGameData.levelToOpenDays].filter((item) => item.level >= 129 && item.level < level).sort((a, b) => a.level - b.level);
-
 						if (milestoneLevels.length > 0) {
 							calculationSteps = milestoneLevels.map((item) => `(${item.days} - 1) (level ${item.level})`).join(" + ");
-						}
-
-						// Thêm số ngày nhập vào
-						if (calculationSteps) {
-							calculationSteps += ` + ${inputOpenDays} (nhập vào)`;
+							calculationSteps += ` + ${openDaysInput} (nhập vào)`;
 						} else {
-							calculationSteps = `${inputOpenDays} (nhập vào)`;
+							calculationSteps = `${openDaysInput} (nhập vào)`;
 						}
 					}
 
 					resultElement.innerHTML = `
-<table class="table border shadow-sm mb-3" style="border-collapse: collapse; background-color: #e7f8ff;">
-    <tbody>
-        <tr>
-            <td class="fw-bold text-start" style="width: 40%; border: none;">Level</td>
-            <td class="text-start" style="border: none;">${level}</td>
-        </tr>
-        <tr>
-            <td class="fw-bold text-start" style="border: none;">Timeframe</td>
-            <td class="text-start" style="border: none;">${timeframeDays}</td>
-        </tr>
-        <tr>
-            <td class="fw-bold text-start" style="border: none;">Đã Mở Cấp</td>
-            <td class="text-start" style="border: none;">
-                ${openDays} ${level >= 139 ? `= ${calculationSteps}` : ""}
-            </td>
-        </tr>
-    </tbody>
-</table>
-            `;
+						<table class="table border shadow-sm mb-3" style="border-collapse: collapse; background-color: #e7f8ff;">
+							<tbody>
+								<tr>
+									<td class="fw-bold text-start" style="width: 40%; border: none;">Level</td>
+									<td class="text-start" style="border: none;">${level}</td>
+								</tr>
+								<tr>
+									<td class="fw-bold text-start" style="border: none;">Timeframe</td>
+									<td class="text-start" style="border: none;">${timeframeDays}</td>
+								</tr>
+								<tr>
+									<td class="fw-bold text-start" style="border: none;">Đã Mở Cấp</td>
+									<td class="text-start" style="border: none;">
+										${openDays} ${level >= 139 ? `= ${calculationSteps}` : ""}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					`;
 				} else {
 					timeframeDays = parseInt(timeframeInput);
 					if (isNaN(timeframeDays) || timeframeDays < 0) {
-						resultElement.innerHTML = '<div class="alert alert-danger">Số ngày timeframe phải là số dương!</div>';
+						showError("Số ngày timeframe phải là số dương!");
 						return;
 					}
-
-					// Nếu không dùng tra cứu level, lấy giá trị nhập vào
-					openDays = parseInt(openDaysInput) || 0;
+					openDays = parseInt(openDaysInput);
+					if (isNaN(openDays) || openDays < 0) {
+						showError("Số ngày đã mở cấp phải là số dương!");
+						return;
+					}
 				}
 
-				// Trừ số ngày theo timeframe và số ngày đã mở cấp
 				const totalDaysToSubtract = timeframeDays + openDays;
 				const calculatedDate = new Date(inputDate);
 				calculatedDate.setDate(inputDate.getDate() - totalDaysToSubtract + 2);
+				calculatedDate.setHours(4, 0, 0, 0); // Sử dụng UTC để đảm bảo múi giờ
 
-				// Đặt thởi gian là 4h sáng
-				calculatedDate.setHours(4, 0, 0, 0);
-
-				// Tính timestamp (milliseconds)
 				const timestamp = Math.floor(calculatedDate.getTime() / 1000);
-
 				const formattedDate = calculatedDate.toLocaleString("vi-VN");
 
-				// Hiển thị kết quả
 				resultElement.innerHTML += `
-<table class="table border shadow-sm mt-3" style="border-collapse: collapse;">
-    <tbody>
-        <tr>
-            <td class="fw-bold text-start" style="width: 30%; border: none;">Timestamp</td>
-            <td class="text-start" style="border: none;">${timestamp}</td>
-        </tr>
-        <tr>
-            <td class="fw-bold text-start" style="border: none;">Ngày giờ</td>
-            <td class="text-start" style="border: none;">${formattedDate}</td>
-        </tr>
-        <tr>
-            <td class="fw-bold text-start" style="border: none;">Tổng số ngày</td>
-            <td class="text-start" style="border: none;">${totalDaysToSubtract} ngày (${timeframeDays} timeframe + ${openDays} mở cấp)</td>
-        </tr>
-    </tbody>
-</table>
-            `;
+					<table class="table border shadow-sm mt-3" style="border-collapse: collapse;">
+						<tbody>
+							<tr>
+								<td class="fw-bold text-start" style="width: 30%; border: none;">Timestamp</td>
+								<td class="text-start" style="border: none;">${timestamp}</td>
+							</tr>
+							<tr>
+								<td class="fw-bold text-start" style="border: none;">Ngày giờ</td>
+								<td class="text-start" style="border: none;">${formattedDate}</td>
+							</tr>
+							<tr>
+								<td class="fw-bold text-start" style="border: none;">Tổng số ngày</td>
+								<td class="text-start" style="border: none;">${totalDaysToSubtract} ngày (${timeframeDays} timeframe + ${openDays} mở cấp)</td>
+							</tr>
+						</tbody>
+					</table>
+				`;
 			}
 
 			// Xử lý sự kiện click nút xem thông tin game
-			document.getElementById("viewGameInfo").addEventListener("click", async function () {
-				try {
-					const gameInfoTableBody = document.getElementById("gameInfoTableBody");
-					const gameSelect = document.getElementById("gameSelect");
-					const gameId = gameSelect.value;
+			document.getElementById("viewGameInfo").addEventListener("click", function () {
+				const gameInfoTableBody = document.getElementById("gameInfoTableBody");
+				const gameSelect = document.getElementById("gameSelect");
+				const gameId = gameSelect.value;
 
-					// Lấy dữ liệu từ file JSON
-					const response = await fetch("data/game_levels.json");
-					if (!response.ok) {
-						throw new Error("Không thể tải dữ liệu mở cấp");
+				try {
+					// Kiểm tra xem gameData đã được tải chưa
+					if (!gameData || Object.keys(gameData).length === 0) {
+						throw new Error("Dữ liệu game chưa được tải");
 					}
 
-					const gameData = await response.json();
 					const selectedGame = gameData[gameId];
-
 					if (!selectedGame) {
 						throw new Error("Không tìm thấy thông tin game");
 					}
 
-					// Lấy thông tin ngày cập nhật từ trường lastUpdate trong JSON
-					const updateDate = gameData[gameId].lastUpdate || "Không xác định";
+					if (!selectedGame.levelToOpenDays || selectedGame.levelToOpenDays.length === 0) {
+						gameInfoTableBody.innerHTML = '<tr><td colspan="2" class="text-center">Không có dữ liệu mở cấp</td></tr>';
+						return;
+					}
 
-					// Cập nhật tiêu đề modal
+					const updateDate = selectedGame.lastUpdate || "Không xác định";
 					document.getElementById("gameInfoModalLabel").textContent = `Thông tin mở cấp - ${selectedGame.name}`;
 
-					// Xóa dữ liệu cũ
-					gameInfoTableBody.innerHTML = "";
+					gameInfoTableBody.innerHTML = `
+            <tr>
+                <td colspan="2" class="text-muted small">Cập nhật lần cuối: ${updateDate}</td>
+            </tr>
+            <tr class="table-active">
+                <th>Cấp độ</th>
+                <th>Thời gian mở</th>
+            </tr>
+        `;
 
-					// Thêm thông tin cập nhật
-					const updateRow = document.createElement("tr");
-					updateRow.innerHTML = `
-						<td colspan="2" class="text-muted small">Cập nhật lần cuối: ${updateDate}</td>
-					`;
-					gameInfoTableBody.appendChild(updateRow);
-
-					// Thêm tiêu đề cột
-					const headerRow = document.createElement("tr");
-					headerRow.innerHTML = `
-						<th>Cấp độ</th>
-						<th>Thời gian mở</th>
-					`;
-					headerRow.classList.add("table-active");
-					gameInfoTableBody.appendChild(headerRow);
-
-					// Thêm dữ liệu mới
 					selectedGame.levelToOpenDays.forEach((item) => {
 						const row = document.createElement("tr");
 						row.innerHTML = `
-							<td><strong>${item.level}</strong></td>
-							<td>${item.days} ngày</td>
-						`;
+                <td><strong>${item.level}</strong></td>
+                <td>${item.days} ngày</td>
+            `;
 						gameInfoTableBody.appendChild(row);
 					});
 
-					// Hiển thị modal
 					const modal = new bootstrap.Modal(document.getElementById("gameInfoModal"));
 					modal.show();
 				} catch (error) {
-					console.error("Lỗi khi tải thông tin game:", error);
-					alert("Đã xảy ra lỗi khi tải thông tin mở cấp. Vui lòng thử lại sau.");
+					console.error("Lỗi khi hiển thị thông tin game:", error);
+					showError("Đã xảy ra lỗi khi hiển thị thông tin mở cấp. Vui lòng thử lại sau.");
 				}
 			});
 
-			// Tải dữ liệu từ file JSON
-			document.addEventListener("DOMContentLoaded", function () {
-				fetch("data/game_levels.json")
-					.then((response) => {
-						if (!response.ok) {
-							throw new Error("Không thể tải dữ liệu game");
-						}
-						return response.json();
-					})
-					.then((data) => {
-						const gameSelect = document.getElementById("gameSelect");
-						// Xóa tất cả các option hiện có
-						gameSelect.innerHTML = "";
-
-						// Thêm các option từ dữ liệu JSON
-						Object.entries(data).forEach(([key, game]) => {
-							const option = document.createElement("option");
-							option.value = key;
-							option.textContent = game.name;
-							gameSelect.appendChild(option);
-						});
-
-						// Kích hoạt sự kiện change sau khi tải xong
-						if (gameSelect.options.length > 0) {
-							gameSelect.dispatchEvent(new Event("change"));
-						}
-					})
-					.catch((error) => {
-						console.error("Lỗi khi tải dữ liệu game:", error);
-						const gameSelect = document.getElementById("gameSelect");
-						gameSelect.innerHTML = `
-							<option value="game1">Võ Lâm Xích Hỏa</option>
-							<option value="game2">Võ Lâm Tây Vực</option>
-							<option value="game3">Võ Lâm Hồng Kông</option>
-						`;
-					});
-			});
-
-			// Đặt ngày mặc định là hôm nay
-			document.addEventListener("DOMContentLoaded", function () {
+			// Khởi tạo khi trang tải
+			document.addEventListener("DOMContentLoaded", async function () {
 				const today = new Date().toISOString().split("T")[0];
 				document.getElementById("inputDate").value = today;
+
+				try {
+					// Tải và cập nhật dữ liệu
+					gameData = await updateLevelsFromTabFiles();
+					currentGameData = gameData[Object.keys(gameData)[0]];
+					updateGameSelect();
+				} catch (error) {
+					await loadGameData(); // Fallback nếu cập nhật thất bại
+				}
 			});
 		</script>
 	</body>

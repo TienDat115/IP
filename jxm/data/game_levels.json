@@ -1,104 +1,23 @@
 {
-  "game1": {
-    "name": "Võ Lâm Xích Hỏa",
-    "levelToOpenDays": [
-      { "level": 39, "days": 10 },
-      { "level": 49, "days": 4 },
-      { "level": 59, "days": 4 },
-      { "level": 69, "days": 6 },
-      { "level": 79, "days": 5 },
-      { "level": 89, "days": 6 },
-      { "level": 99, "days": 7 },
-      { "level": 109, "days": 8 },
-      { "level": 119, "days": 9 },
-      { "level": 129, "days": 10 },
-      { "level": 139, "days": 12 },
-      { "level": 149, "days": 10 },
-      { "level": 159, "days": 12 },
-      { "level": 169, "days": 12 },
-      { "level": 179, "days": 12 },
-      { "level": 189, "days": 12 },
-      { "level": 199, "days": 12 },
-      { "level": 209, "days": 12 },
-      { "level": 219, "days": 12 },
-      { "level": 229, "days": 12 },
-      { "level": 239, "days": 12 },
-      { "level": 249, "days": 12 },
-      { "level": 259, "days": 12 },
-      { "level": 269, "days": 12 },
-      { "level": 279, "days": 12 },
-      { "level": 289, "days": 12 },
-      { "level": 299, "days": 12 },
-      { "level": 309, "days": 999 }
-    ],
-	"lastUpdate": "2025-06-08 14:26:00"
-  },
-  "game2": {
-    "name": "Võ Lâm Tây Vực",
-    "levelToOpenDays": [
-      { "level": 39, "days": 8 },
-      { "level": 49, "days": 8 },
-      { "level": 59, "days": 8 },
-      { "level": 69, "days": 3 },
-      { "level": 79, "days": 6 },
-      { "level": 89, "days": 7 },
-      { "level": 99, "days": 9 },
-      { "level": 109, "days": 9 },
-      { "level": 119, "days": 10 },
-      { "level": 129, "days": 10 },
-      { "level": 139, "days": 11 },
-      { "level": 149, "days": 11 },
-      { "level": 159, "days": 12 },
-      { "level": 169, "days": 13 },
-      { "level": 179, "days": 13 },
-      { "level": 189, "days": 13 },
-      { "level": 199, "days": 13 },
-      { "level": 209, "days": 13 },
-      { "level": 219, "days": 13 },
-      { "level": 229, "days": 13 },
-      { "level": 239, "days": 13 },
-      { "level": 249, "days": 13 },
-      { "level": 259, "days": 13 },
-      { "level": 269, "days": 13 },
-      { "level": 279, "days": 13 },
-      { "level": 289, "days": 13 },
-      { "level": 299, "days": 13 },
-      { "level": 309, "days": 999 }
-    ],
-	"lastUpdate": "2025-06-08 14:26:00"
-  },
-  "game3": {
-    "name": "Võ Lâm Hồng Kông",
-    "levelToOpenDays": [
-      { "level": 39, "days": 8 },
-      { "level": 49, "days": 8 },
-      { "level": 59, "days": 8 },
-      { "level": 69, "days": 3 },
-      { "level": 79, "days": 6 },
-      { "level": 89, "days": 7 },
-      { "level": 99, "days": 9 },
-      { "level": 109, "days": 9 },
-      { "level": 119, "days": 10 },
-      { "level": 129, "days": 10 },
-      { "level": 139, "days": 11 },
-      { "level": 149, "days": 11 },
-      { "level": 159, "days": 12 },
-      { "level": 169, "days": 13 },
-      { "level": 179, "days": 13 },
-      { "level": 189, "days": 13 },
-      { "level": 199, "days": 13 },
-      { "level": 209, "days": 13 },
-      { "level": 219, "days": 13 },
-      { "level": 229, "days": 13 },
-      { "level": 239, "days": 13 },
-      { "level": 249, "days": 13 },
-      { "level": 259, "days": 13 },
-      { "level": 269, "days": 13 },
-      { "level": 279, "days": 13 },
-      { "level": 289, "days": 13 },
-      { "level": 299, "days": 13 },
-      { "level": 309, "days": 999 }
-    ],
-	"lastUpdate": "2025-06-08 14:26:00"
-  }
+	"game1": {
+		"name": "Võ Lâm Xích Hỏa",
+		"url": "VoLamXichHoa",
+		"levelToOpenDays": [
+
+		]
+	},
+	"game2": {
+		"name": "Võ Lâm Tây Vực",
+		"url": "VoLamTayVuc",
+		"levelToOpenDays": [
+
+		]
+	},
+	"game3": {
+		"name": "Võ Lâm Hồng Kông",
+		"url": "VoLamHongKong",
+		"levelToOpenDays": [
+
+		]
+	}
 }
