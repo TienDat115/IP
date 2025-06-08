@@ -305,7 +305,8 @@
 				<div class="card-body">
 					<!-- Thêm nút tải log và xóa log -->
 					<button class="btn btn-primary download-btn" onclick="downloadLogs()"><i class="fas fa-download"></i> Tải log</button>
-					<button class="btn btn-danger download-btn" onclick="deleteLogs()"><i class="fas fa-trash"></i> Xóa log</button>
+					<button class="btn btn-warning download-btn" onclick="deleteCurrentLog()"><i class="fas fa-trash-alt"></i> Xóa log hiện tại</button>
+					<button class="btn btn-danger download-btn" onclick="deleteLogs()"><i class="fas fa-trash"></i> Xóa tất cả log</button>
 
 					<!-- Thêm CSS cho nút -->
 					<style>
@@ -463,11 +464,6 @@
 					}
 				}
 
-				// Hàm cập nhật giao diện với danh sách webhooks
-				function updateWebhookUI(webhooks) {
-					// Thêm code cập nhật giao diện ở đây
-				}
-
 				// Hàm lấy webhook URLs từ Firebase
 				async function getWebhookUrls() {
 					try {
@@ -499,7 +495,9 @@
 
 						allLogs = [];
 						querySnapshot.forEach((doc) => {
-							allLogs.push(doc.data());
+							const logData = doc.data();
+							logData.id = doc.id; // Thêm ID vào đối tượng log
+							allLogs.push(logData);
 						});
 
 						// Sắp xếp lại mảng sau khi lấy dữ liệu
@@ -1266,6 +1264,79 @@
 						}
 					}
 				}
+
+				// Hàm xóa log hiện tại
+				async function deleteCurrentLog() {
+					if (allLogs.length === 0) {
+						Swal.fire({
+							title: "Không có log nào để xóa",
+							text: "Không tìm thấy log hiện tại để xóa.",
+							icon: "info",
+						});
+						return;
+					}
+
+					const currentLog = allLogs[currentLogIndex];
+					if (!currentLog || !currentLog.id) {
+						Swal.fire({
+							title: "Lỗi",
+							text: "Không tìm thấy thông tin log hiện tại.",
+							icon: "error",
+						});
+						return;
+					}
+
+					try {
+						const result = await Swal.fire({
+							title: "Xác nhận xóa",
+							text: "Bạn có chắc chắn muốn xóa log hiện tại?",
+							icon: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#d33",
+							cancelButtonColor: "#3085d6",
+							confirmButtonText: "Có, xóa ngay!",
+							cancelButtonText: "Hủy bỏ",
+						});
+
+						if (result.isConfirmed) {
+							// Xóa log hiện tại khỏi Firestore
+							await db.collection("logs").doc(currentLog.id).delete();
+
+							// Xóa log khỏi mảng allLogs
+							allLogs.splice(currentLogIndex, 1);
+
+							// Nếu đây là log cuối cùng, giảm currentLogIndex
+							if (currentLogIndex >= allLogs.length && allLogs.length > 0) {
+								currentLogIndex = allLogs.length - 1;
+							}
+
+							// Cập nhật hiển thị
+							if (allLogs.length === 0) {
+								document.getElementById("logArea").innerHTML = "<div>Không còn log nào.</div>";
+								document.getElementById("logPaginationInfo").textContent = "0/0";
+								document.getElementById("prevLog").disabled = true;
+								document.getElementById("nextLog").disabled = true;
+							} else {
+								displayCurrentLog();
+							}
+
+							Swal.fire({
+								title: "Đã xóa!",
+								text: "Log hiện tại đã được xóa thành công.",
+								icon: "success",
+							});
+						}
+					} catch (error) {
+						console.error("Lỗi khi xóa log hiện tại:", error);
+						addLog(`❌ Lỗi khi xóa log hiện tại: ${error.message}`, "", "", "", true);
+						Swal.fire({
+							title: "Lỗi!",
+							text: error.message,
+							icon: "error",
+						});
+					}
+				}
+
 				// Hàm xem trước ảnh đại diện
 				function previewAvatar() {
 					const avatarUrl = document.getElementById("avatarUrl").value.trim();
