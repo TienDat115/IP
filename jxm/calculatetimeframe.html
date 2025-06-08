@@ -301,23 +301,12 @@
 							const tabUrl = `data/time/${gameInfo.url}/timeframe_New.tab`;
 
 							try {
-								// Lấy thông tin last-modified
-								const headResponse = await fetch(tabUrl, { method: "HEAD" });
-								if (!headResponse.ok) {
-									console.warn(`Không tìm thấy file tab cho ${gameInfo.name} (${tabUrl})`);
-									return;
-								}
-
-								const lastModified = headResponse.headers.get("last-modified");
-								const lastUpdate = lastModified ? new Date(lastModified) : new Date();
-
 								// Lấy nội dung file
 								const tabResponse = await fetch(tabUrl);
 								if (!tabResponse.ok) throw new Error(`Lỗi khi tải file tab: ${tabUrl}`);
 
 								const tabContent = await tabResponse.text();
 								gameData[gameId].levelToOpenDays = parseTabData(tabContent);
-								gameData[gameId].lastUpdate = lastUpdate.toISOString().replace("T", " ").substring(0, 19);
 							} catch (error) {
 								console.error(`Lỗi khi xử lý ${gameInfo.name}:`, error);
 								throw error;
@@ -346,7 +335,6 @@
 
 					const columns = line.split("\t");
 					if (columns.length < 7) {
-						console.warn(`[Dòng ${lineCount}] Dữ liệu không đủ cột:`, line);
 						continue;
 					}
 

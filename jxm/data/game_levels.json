@@ -4,20 +4,23 @@
 		"url": "VoLamXichHoa",
 		"levelToOpenDays": [
 
-		]
+		],
+		"lastUpdate": "2025-06-08 15:00:00"
 	},
 	"game2": {
 		"name": "Võ Lâm Tây Vực",
 		"url": "VoLamTayVuc",
 		"levelToOpenDays": [
 
-		]
+		],
+		"lastUpdate": "2025-06-08 15:00:00"
 	},
 	"game3": {
 		"name": "Võ Lâm Hồng Kông",
 		"url": "VoLamHongKong",
 		"levelToOpenDays": [
 
-		]
+		],
+		"lastUpdate": "2025-06-08 15:00:00"
 	}
 }
