@@ -12,6 +12,21 @@
 			.btn-sm i {
 				margin-right: 4px;
 			}
+			#logContainer {
+				transition: all 0.3s ease;
+				overflow: hidden;
+			}
+			#logContainer.hidden {
+				height: 0 !important;
+				padding: 0 !important;
+				margin: 0 !important;
+				border: none !important;
+			}
+			#toggleLogBtn {
+				padding: 0.25rem 0.5rem;
+				font-size: 0.75rem;
+				margin-left: 0.5rem;
+			}
 			body {
 				background-color: #f8f9fa;
 				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -211,6 +226,8 @@
 									<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__')">U̲</span>
 									<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~')">S̶</span>
 									<span class="emoji-btn" title="Code" onclick="insertText('`', '`')">`</span>
+									<span class="emoji-btn" title="Tiêu Đề" onclick="insertText('## ', '')">##</span>
+									<span class="emoji-btn" title="In đậm + Gạch Dưới" onclick="insertText('__**', '**__')">B + U̲</span>
 									<span class="emoji-btn" title="Thời gian" onclick="insertText('', '${getCurrentTime()}')">🕒</span>
 								</div>
 								<div class="mt-2 emoji-btn-container">
@@ -301,8 +318,11 @@
 			</div>
 
 			<div class="card">
-				<div class="card-header">Nhật Ký Hoạt Động</div>
-				<div class="card-body">
+				<div class="card-header d-flex justify-content-between align-items-center">
+					<span>Nhật Ký Hoạt Động</span>
+					<button id="toggleLogBtn" class="btn btn-sm btn-outline-light"><i class="fas fa-eye-slash"></i> Ẩn</button>
+				</div>
+				<div id="logContainer" class="card-body hidden">
 					<!-- Thêm nút tải log và xóa log -->
 					<button class="btn btn-primary download-btn" onclick="downloadLogs()"><i class="fas fa-download"></i> Tải log</button>
 					<button class="btn btn-warning download-btn" onclick="deleteCurrentLog()"><i class="fas fa-trash-alt"></i> Xóa log hiện tại</button>
@@ -315,7 +335,7 @@
 							margin-right: 1rem;
 						}
 					</style>
-					<div id="logArea" class="bg-light p-3" style="min-height: 100px; max-height: 200px; overflow-y: auto; border-radius: 5px; font-family: monospace">
+					<div id="logArea" class="bg-light p-3" style="min-height: 100px; max-height: 400px; overflow-y: auto; border-radius: 5px; font-family: monospace">
 						<div>Hệ thống đã sẵn sàng. Chọn các tùy chọn và gửi tin nhắn.</div>
 					</div>
 					<!-- Thêm nút điều hướng và thông tin phân trang -->
@@ -1374,6 +1394,28 @@
 						});
 					}
 				}
+
+				// Thêm sự kiện cho nút ẩn/hiện nhật ký
+				document.addEventListener("DOMContentLoaded", function () {
+					const toggleLogBtn = document.getElementById("toggleLogBtn");
+					const logContainer = document.getElementById("logContainer");
+					const toggleIcon = toggleLogBtn.querySelector("i");
+
+					toggleLogBtn.addEventListener("click", function () {
+						logContainer.classList.toggle("hidden");
+						if (logContainer.classList.contains("hidden")) {
+							toggleIcon.className = "fas fa-eye";
+							toggleLogBtn.innerHTML = '<i class="fas fa-eye"></i>';
+						} else {
+							toggleIcon.className = "fas fa-eye-slash";
+							toggleLogBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+						}
+					});
+
+					// Ẩn log container mặc định
+					logContainer.classList.add("hidden");
+					toggleLogBtn.innerHTML = '<i class="fas fa-eye"></i>';
+				});
 			</script>
 		</div>
 	</body>
