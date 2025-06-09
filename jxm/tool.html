@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1581/1581908.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Công Cụ Chuyển Đổi</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<!-- Thêm CSS của Toastify -->
+		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+		<style>
+			body {
+				background-color: #f8f9fa;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			}
+			.card {
+				border-radius: 10px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				margin-bottom: 20px;
+				transition: transform 0.3s;
+			}
+			.card:hover {
+				transform: translateY(-5px);
+			}
+			.card-header {
+				background-color: #0d6efd;
+				color: white;
+				font-weight: 600;
+				border-radius: 10px 10px 0 0 !important;
+			}
+			.btn-primary {
+				background-color: #0d6efd;
+				border: none;
+				padding: 8px 20px;
+			}
+			.btn-primary:hover {
+				background-color: #0b5ed7;
+			}
+			.form-control:focus {
+				border-color: #86b7fe;
+				box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+			}
+			.result-box {
+				background-color: #f8f9fa;
+				border-radius: 5px;
+				min-height: 100px;
+				padding: 10px;
+				border: 1px solid #dee2e6;
+				overflow-y: auto;
+			}
+			.nav-tabs .nav-link {
+				color: #495057;
+				font-weight: 500;
+			}
+			.nav-tabs .nav-link.active {
+				color: #0d6efd;
+				font-weight: 600;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container py-4">
+			<ul class="nav nav-tabs mb-4" id="toolTabs" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="time-tab" data-bs-toggle="tab" data-bs-target="#time" type="button" role="tab" aria-controls="time" aria-selected="true"><i class="bi bi-clock"></i> Chuyển Đổi Thời Gian</button>
+				</li>
+			</ul>
+
+			<div class="tab-content" id="toolTabsContent">
+				<!-- Tab Chuyển Đổi Thời Gian -->
+				<div class="tab-pane fade show active" id="time" role="tabpanel" aria-labelledby="time-tab">
+					<div class="row">
+						<div class="col-md-4 mb-4">
+							<div class="card h-100">
+								<div class="card-header">Ngày → Giây</div>
+								<div class="card-body">
+									<div class="mb-3">
+										<label class="form-label">Nhập số ngày:</label>
+										<input type="number" class="form-control" id="daysInput" placeholder="Ví dụ: 1" />
+									</div>
+									<button class="btn btn-primary w-100" onclick="convertDaysToSeconds()">Chuyển đổi</button>
+									<div class="mt-3">
+										<label class="form-label">Kết quả:</label>
+										<div class="result-box" id="daysToSecondsResult"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-4 mb-4">
+							<div class="card h-100">
+								<div class="card-header">Giờ → Giây</div>
+								<div class="card-body">
+									<div class="mb-3">
+										<label class="form-label">Nhập số giờ:</label>
+										<input type="number" class="form-control" id="hoursInput" placeholder="Ví dụ: 2" />
+									</div>
+									<button class="btn btn-primary w-100" onclick="convertHoursToSeconds()">Chuyển đổi</button>
+									<div class="mt-3">
+										<label class="form-label">Kết quả:</label>
+										<div class="result-box" id="hoursToSecondsResult"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-4 mb-4">
+							<div class="card h-100">
+								<div class="card-header">Phút → Giây</div>
+								<div class="card-body">
+									<div class="mb-3">
+										<label class="form-label">Nhập số phút:</label>
+										<input type="number" class="form-control" id="minutesInput" placeholder="Ví dụ: 30" />
+									</div>
+									<button class="btn btn-primary w-100" onclick="convertMinutesToSeconds()">Chuyển đổi</button>
+									<div class="mt-3">
+										<label class="form-label">Kết quả:</label>
+										<div class="result-box" id="minutesToSecondsResult"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-6 mb-4">
+							<div class="card h-100">
+								<div class="card-header">Giây → Giờ:Phút:Giây</div>
+								<div class="card-body">
+									<div class="mb-3">
+										<label class="form-label">Nhập số giây:</label>
+										<input type="number" class="form-control" id="totalSecondsInput" placeholder="Ví dụ: 3665" />
+									</div>
+									<button class="btn btn-primary w-100" onclick="convertSecondsToHMS()">Chuyển đổi</button>
+									<div class="mt-3">
+										<label class="form-label">Kết quả:</label>
+										<div class="result-box" id="secondsToHMSResult"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-6 mb-4">
+							<div class="card h-100">
+								<div class="card-header">Chuyển đổi tùy chỉnh</div>
+								<div class="card-body">
+									<div class="mb-3">
+										<label class="form-label">Nhập thời gian (giờ:phút:giây):</label>
+										<input type="text" class="form-control" id="customTimeInput" placeholder="VD: 1:30:45" />
+									</div>
+									<div class="row g-2 mb-3">
+										<div class="col">
+											<button class="btn btn-outline-primary w-100" onclick="convertToSeconds()">→ Giây</button>
+										</div>
+										<div class="col">
+											<button class="btn btn-outline-primary w-100" onclick="convertToMinutes()">→ Phút</button>
+										</div>
+										<div class="col">
+											<button class="btn btn-outline-primary w-100" onclick="convertToHours()">→ Giờ</button>
+										</div>
+									</div>
+									<div class="mt-3">
+										<label class="form-label">Kết quả:</label>
+										<div class="result-box" id="customTimeResult"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<!-- Thêm thư viện Toastify -->
+		<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+		<script>
+			// Hàm hiển thị thông báo
+			function showToast(message, type = "info") {
+				let backgroundColor = "";
+
+				switch (type) {
+					case "success":
+						backgroundColor = "#28a745";
+						break;
+					case "error":
+						backgroundColor = "#dc3545";
+						break;
+					case "warning":
+						backgroundColor = "#ffc107";
+						break;
+					case "info":
+					default:
+						backgroundColor = "#17a2b8";
+				}
+
+				Toastify({
+					text: message,
+					duration: 3000,
+					gravity: "top",
+					position: "right",
+					backgroundColor: backgroundColor,
+					stopOnFocus: true,
+					close: true,
+				}).showToast();
+			}
+
+			// Hàm chuyển đổi thời gian
+			function convertDaysToSeconds() {
+				const days = parseFloat(document.getElementById("daysInput").value);
+				if (isNaN(days)) {
+					showToast("Vui lòng nhập số ngày hợp lệ", "error");
+					return;
+				}
+				const seconds = days * 24 * 60 * 60;
+				document.getElementById("daysToSecondsResult").innerHTML = `<strong>${days}</strong> ngày = <strong>${seconds}</strong> giây`;
+				showToast("Đã chuyển đổi thành công!", "success");
+			}
+
+			function convertHoursToSeconds() {
+				const hours = parseFloat(document.getElementById("hoursInput").value);
+				if (isNaN(hours)) {
+					showToast("Vui lòng nhập số giờ hợp lệ", "error");
+					return;
+				}
+				const seconds = hours * 60 * 60;
+				document.getElementById("hoursToSecondsResult").innerHTML = `<strong>${hours}</strong> giờ = <strong>${seconds}</strong> giây`;
+				showToast("Đã chuyển đổi thành công!", "success");
+			}
+
+			function convertMinutesToSeconds() {
+				const minutes = parseFloat(document.getElementById("minutesInput").value);
+				if (isNaN(minutes)) {
+					showToast("Vui lòng nhập số phút hợp lệ", "error");
+					return;
+				}
+				const seconds = minutes * 60;
+				document.getElementById("minutesToSecondsResult").innerHTML = `<strong>${minutes}</strong> phút = <strong>${seconds}</strong> giây`;
+				showToast("Đã chuyển đổi thành công!", "success");
+			}
+
+			function convertSecondsToHMS() {
+				const totalSeconds = parseInt(document.getElementById("totalSecondsInput").value);
+				if (isNaN(totalSeconds)) {
+					showToast("Vui lòng nhập số giây hợp lệ", "error");
+					return;
+				}
+
+				const hours = Math.floor(totalSeconds / 3600);
+				const minutes = Math.floor((totalSeconds % 3600) / 60);
+				const seconds = totalSeconds % 60;
+
+				let result = `${totalSeconds} giây = `;
+				if (hours > 0) result += `${hours} giờ `;
+				if (minutes > 0 || hours > 0) result += `${minutes} phút `;
+				result += `${seconds} giây`;
+
+				document.getElementById("secondsToHMSResult").innerHTML = `<strong>${result}</strong>`;
+				showToast("Đã chuyển đổi thành công!", "success");
+			}
+
+			function convertToSeconds() {
+				const timeString = document.getElementById("customTimeInput").value.trim();
+				if (!timeString) {
+					showToast("Vui lòng nhập thời gian", "warning");
+					return;
+				}
+
+				const parts = timeString.split(":");
+				if (parts.length !== 3) {
+					showToast("Định dạng thời gian không hợp lệ. Vui lòng nhập theo định dạng HH:MM:SS", "error");
+					return;
+				}
+
+				const hours = parseInt(parts[0]) || 0;
+				const minutes = parseInt(parts[1]) || 0;
+				const seconds = parseInt(parts[2]) || 0;
+
+				const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+				document.getElementById("customTimeResult").innerHTML = `<strong>${timeString}</strong> = <strong>${totalSeconds}</strong> giây`;
+				showToast("Đã chuyển đổi thành công!", "success");
+			}
+
+			function convertToMinutes() {
+				const timeString = document.getElementById("customTimeInput").value.trim();
+				if (!timeString) {
+					showToast("Vui lòng nhập thời gian", "warning");
+					return;
+				}
+
+				const parts = timeString.split(":");
+				if (parts.length !== 3) {
+					showToast("Định dạng thời gian không hợp lệ. Vui lòng nhập theo định dạng HH:MM:SS", "error");
+					return;
+				}
+
+				const hours = parseInt(parts[0]) || 0;
+				const minutes = parseInt(parts[1]) || 0;
+				const seconds = parseInt(parts[2]) || 0;
+
+				const totalMinutes = hours * 60 + minutes + seconds / 60;
+				document.getElementById("customTimeResult").innerHTML = `<strong>${timeString}</strong> = <strong>${totalMinutes.toFixed(2).replace(/\.?0+$/, "")}</strong> phút`;
+				showToast("Đã chuyển đổi thành công!", "success");
+			}
+
+			function convertToHours() {
+				const timeString = document.getElementById("customTimeInput").value.trim();
+				if (!timeString) {
+					showToast("Vui lòng nhập thời gian", "warning");
+					return;
+				}
+
+				const parts = timeString.split(":");
+				if (parts.length !== 3) {
+					showToast("Định dạng thời gian không hợp lệ. Vui lòng nhập theo định dạng HH:MM:SS", "error");
+					return;
+				}
+
+				const hours = parseInt(parts[0]) || 0;
+				const minutes = parseInt(parts[1]) || 0;
+				const seconds = parseInt(parts[2]) || 0;
+
+				const totalHours = hours + minutes / 60 + seconds / 3600;
+				document.getElementById("customTimeResult").innerHTML = `<strong>${timeString}</strong> = <strong>${totalHours.toFixed(4).replace(/\.?0+$/, "")}</strong> giờ`;
+				showToast("Đã chuyển đổi thành công!", "success");
+			}
+
+			function copyToClipboard(elementId) {
+				const element = document.getElementById(elementId);
+				const textToCopy = element.innerText;
+
+				navigator.clipboard
+					.writeText(textToCopy)
+					.then(() => {
+						showToast("Đã sao chép vào clipboard!", "success");
+					})
+					.catch((err) => {
+						console.error("Lỗi khi sao chép: ", err);
+						showToast("Lỗi khi sao chép: " + err, "error");
+					});
+			}
+		</script>
+	</body>
+</html>
