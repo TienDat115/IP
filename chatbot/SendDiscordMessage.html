@@ -212,11 +212,6 @@
 								<div class="mb-2">
 									<select id="templateSelect" class="form-select form-select-sm" style="width: 200px; display: inline-block" onchange="applyTemplate(this.value)">
 										<option value="">-- Chọn mẫu tin nhắn --</option>
-										<option value="rollback_thất_bại">Rollback Thất Bại</option>
-										<option value="thong_bao">Thông báo</option>
-										<option value="canh_bao">Thắc Mắc</option>
-										<option value="ip">Bỏ Giới Hạn IP</option>
-										<option value="bao_tri">Bảo Trì</option>
 									</select>
 								</div>
 								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..."></textarea>
@@ -965,6 +960,7 @@
 				// Định nghĩa các mẫu tin nhắn
 				const messageTemplates = {
 					rollback_thất_bại: {
+						name: "Rollback Thất Bại",
 						content: `❓ THÔNG BÁO ❓
 		🆎 Nội Dung: Rollback thất bại
 		💳 Tài Khoản: 
@@ -977,6 +973,7 @@
 					},
 
 					thong_bao: {
+						name: "Thông báo",
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ 
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
@@ -984,20 +981,39 @@
 					},
 
 					bao_tri: {
+						name: "Bảo Trì",
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Bảo trì hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 					},
 
-					ip: {
+					bao_tri_gop: {
+						name: "Bảo Trì Gộp",
 						content: `🔔 **THÔNG BÁO** 🔔
-		📢 __**Nội Dung:**__ Bỏ giới hạn cho IP **** hoàn tất
+		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+					},
+
+					tieu_phi: {
+						name: "Reset Tiêu Phí Tháng",
+						content: `🔔 **THÔNG BÁO** 🔔
+		📢 __**Nội Dung:**__ Reset tiêu phí tháng tk ** ** hoàn tất
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+					},
+
+					ip: {
+						name: "Bỏ Giới Hạn IP",
+						content: `🔔 **THÔNG BÁO** 🔔
+		📢 __**Nội Dung:**__ Bỏ giới hạn cho IP ** ** hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 					},
 
 					canh_bao: {
+						name: "Thắc Mắc",
 						content: `❓ **THÔNG BÁO** ❓
 		📢 __**Nội Dung:**__ 
 		⚠️ __**Lý Do:**__
@@ -1416,6 +1432,32 @@
 					logContainer.classList.add("hidden");
 					toggleLogBtn.innerHTML = '<i class="fas fa-eye"></i>';
 				});
+			</script>
+			<script>
+				// Hàm khởi tạo dropdown template
+				function initTemplateDropdown() {
+					const select = document.getElementById("templateSelect");
+					if (!select) return;
+
+					// Xóa các option cũ (giữ lại option đầu tiên)
+					while (select.options.length > 1) {
+						select.remove(1);
+					}
+
+					// Thêm các option từ messageTemplates
+					if (typeof messageTemplates === "object") {
+						Object.entries(messageTemplates).forEach(([value, template]) => {
+							if (template.name) {
+								// Chỉ thêm nếu có tên hiển thị
+								const option = new Option(template.name, value);
+								select.add(option);
+							}
+						});
+					}
+				}
+
+				// Gọi hàm khởi tạo khi DOM đã tải xong
+				document.addEventListener("DOMContentLoaded", initTemplateDropdown);
 			</script>
 		</div>
 	</body>
