@@ -210,12 +210,18 @@
 							<div class="mb-3">
 								<label class="form-label">Nội dung tin nhắn:</label>
 								<div class="d-flex justify-content-between align-items-center mb-2">
-									<select id="templateSelect" class="form-select form-select-sm" style="width: 220px; display: inline-block; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; background-color: #fff; color: #495057; font-size: 14px; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); cursor: pointer; outline: none" onchange="applyTemplate(this.value)">
+									<select id="templateSelect" class="form-select form-select-sm flex-grow-1" style="max-width: 220px; min-width: 150px; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; background-color: #fff; color: #495057; font-size: 14px; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); cursor: pointer; outline: none" onchange="applyTemplate(this.value)">
 										<option value="">-- Chọn mẫu tin nhắn --</option>
 									</select>
-									<div>
-										<button type="button" class="btn btn-sm btn-outline-secondary me-2" onclick="loadDraft()" title="Tải bản nháp gần nhất"><i class="fas fa-upload"></i> Tải bản nháp</button>
-										<button type="button" class="btn btn-sm btn-outline-primary" onclick="saveDraft()" title="Lưu bản nháp"><i class="far fa-save"></i> Lưu bản nháp</button>
+									<div class="d-flex flex-nowrap gap-2">
+										<button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadDraft()" title="Tải bản nháp gần nhất">
+											<i class="fas fa-upload"></i>
+											<span class="d-none d-sm-inline ms-1">Tải bản nháp</span>
+										</button>
+										<button type="button" class="btn btn-sm btn-outline-primary" onclick="saveDraft()" title="Lưu bản nháp">
+											<i class="far fa-save"></i>
+											<span class="d-none d-sm-inline ms-1">Lưu bản nháp</span>
+										</button>
 									</div>
 								</div>
 								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..."></textarea>
