@@ -209,10 +209,14 @@
 						<div class="tab-pane fade show active" id="text" role="tabpanel">
 							<div class="mb-3">
 								<label class="form-label">Nội dung tin nhắn:</label>
-								<div class="mb-2">
-									<select id="templateSelect" class="form-select form-select-sm" style="width: 200px; display: inline-block" onchange="applyTemplate(this.value)">
+								<div class="d-flex justify-content-between align-items-center mb-2">
+									<select id="templateSelect" class="form-select form-select-sm" style="width: 220px; display: inline-block; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; background-color: #fff; color: #495057; font-size: 14px; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); cursor: pointer; outline: none" onchange="applyTemplate(this.value)">
 										<option value="">-- Chọn mẫu tin nhắn --</option>
 									</select>
+									<div>
+										<button type="button" class="btn btn-sm btn-outline-secondary me-2" onclick="loadDraft()" title="Tải bản nháp gần nhất"><i class="fas fa-upload"></i> Tải bản nháp</button>
+										<button type="button" class="btn btn-sm btn-outline-primary" onclick="saveDraft()" title="Lưu bản nháp"><i class="far fa-save"></i> Lưu bản nháp</button>
+									</div>
 								</div>
 								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..."></textarea>
 								<div class="mt-2 emoji-btn-container">
@@ -1195,9 +1199,8 @@
 						title: "Thành công!",
 						text: message,
 						icon: "success",
-						timer: 3000,
-						timerProgressBar: true,
-						showConfirmButton: false,
+						showConfirmButton: true,
+						confirmButtonText: "OK",
 					});
 				}
 
@@ -1458,6 +1461,67 @@
 
 				// Gọi hàm khởi tạo khi DOM đã tải xong
 				document.addEventListener("DOMContentLoaded", initTemplateDropdown);
+			</script>
+			<script>
+				// Hàm lưu bản nháp lên Firebase
+				async function saveDraft() {
+					try {
+						const messageText = document.getElementById("messageText").value;
+						if (!messageText.trim()) {
+							showSuccessMessage("Không có nội dung để lưu");
+							return;
+						}
+
+						const user = firebase.auth().currentUser;
+						if (!user) {
+							throw new Error("Vui lòng đăng nhập để sử dụng tính năng lưu bản nháp");
+						}
+
+						const draftData = {
+							content: messageText,
+							lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+							userId: user.uid,
+						};
+
+						await firebase.firestore().collection("drafts").doc(user.uid).set(draftData);
+						showSuccessMessage("Đã lưu bản nháp thành công");
+					} catch (error) {
+						console.error("Lỗi khi lưu bản nháp:", error);
+						Swal.fire({
+							icon: "error",
+							title: "Lỗi",
+							text: "Không thể lưu bản nháp: " + error.message,
+						});
+					}
+				}
+
+				// Hàm tải bản nháp từ Firebase
+				async function loadDraft() {
+					try {
+						const user = firebase.auth().currentUser;
+						if (!user) {
+							throw new Error("Vui lòng đăng nhập để tải bản nháp");
+						}
+
+						const doc = await firebase.firestore().collection("drafts").doc(user.uid).get();
+
+						if (!doc.exists) {
+							showSuccessMessage("Không tìm thấy bản nháp nào");
+							return;
+						}
+
+						const draftData = doc.data();
+						document.getElementById("messageText").value = draftData.content;
+						showSuccessMessage("Đã tải bản nháp thành công");
+					} catch (error) {
+						console.error("Lỗi khi tải bản nháp:", error);
+						Swal.fire({
+							icon: "error",
+							title: "Lỗi",
+							text: "Không thể tải bản nháp: " + error.message,
+						});
+					}
+				}
 			</script>
 		</div>
 	</body>
