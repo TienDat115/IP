@@ -214,6 +214,25 @@
 							<div class="d-grid gap-2 mt-4">
 								<button type="button" class="btn btn-primary btn-lg" onclick="calculateTimestamp()"><i class="bi bi-calculator me-2"></i> Tính</button>
 							</div>
+
+							<!-- Thêm khung timeframe mẫu -->
+							<div class="mt-4">
+								<h6 class="fw-bold mb-3"><i class="bi bi-collection-play"></i> Timeline Mở Cấp</h6>
+								<div class="list-group">
+									<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="79" data-day-type="1" data-game-index="0">
+										Võ Lâm Xích Hỏa
+										<span class="badge bg-primary rounded-pill">79 ngày thứ 1</span>
+									</a>
+									<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="69" data-day-type="1" data-game-index="1">
+										Võ Lâm Tây Vực
+										<span class="badge bg-primary rounded-pill">69 ngày thứ 1</span>
+									</a>
+									<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="79" data-day-type="1" data-game-index="2">
+										Võ Lâm Hồng Kông
+										<span class="badge bg-primary rounded-pill"></span>
+									</a>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -604,6 +623,37 @@
 					console.error("Lỗi khi hiển thị thông tin game:", error);
 					showError("Đã xảy ra lỗi khi hiển thị thông tin mở cấp. Vui lòng thử lại sau.");
 				}
+			});
+
+			// Xử lý sự kiện click vào timeline mẫu
+			document.querySelectorAll("[data-days]").forEach((item) => {
+				item.addEventListener("click", function (e) {
+					e.preventDefault();
+					const days = this.getAttribute("data-days");
+					const dayType = this.getAttribute("data-day-type");
+					const gameIndex = this.getAttribute("data-game-index");
+
+					// Cập nhật giá trị các trường
+					document.getElementById("timeframeDays").value = days;
+					document.getElementById("openDays").value = dayType;
+
+					// Chọn game tương ứng nếu có chỉ định gameIndex
+					if (gameIndex !== null) {
+						const gameSelect = document.getElementById("gameSelect");
+						if (gameSelect && gameSelect.options[gameIndex]) {
+							gameSelect.selectedIndex = gameIndex;
+							// Kích hoạt sự kiện change để cập nhật dữ liệu game
+							const event = new Event("change");
+							gameSelect.dispatchEvent(event);
+						}
+					}
+
+					// Kích hoạt sự kiện input để cập nhật giao diện
+					document.getElementById("timeframeDays").dispatchEvent(new Event("input"));
+					document.getElementById("openDays").dispatchEvent(new Event("change"));
+
+					calculateTimestamp();
+				});
 			});
 
 			// Khởi tạo khi trang tải
