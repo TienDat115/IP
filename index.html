@@ -53,6 +53,19 @@
 			.btn-service:hover {
 				background-color: #006699;
 			}
+			.service-group {
+				padding: 15px;
+				margin-bottom: 20px;
+				background-color: #f8f9fa;
+				border-radius: 8px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+			}
+			.group-title {
+				color: #495057;
+				margin-bottom: 15px;
+				padding-bottom: 8px;
+				border-bottom: 2px solid #dee2e6;
+			}
 			.btn-logout {
 				background-color: #dc3545;
 				border: none;
@@ -74,9 +87,31 @@
 				</div>
 				<div class="card-body">
 					<p class="text-center mb-4">Chọn nền tảng để gửi tin nhắn:</p>
-					<a href="chatbot/SendDiscordMessage.html" class="btn btn-service">Gửi Tin Nhắn Discord</a>
-					<a href="chatbot/SendTelegramMessage.html" class="btn btn-service">Gửi Tin Nhắn Telegram</a>
-					<a href="dashboard/music.html" class="btn btn-service">Trình Nghe Nhạc</a>
+					<div class="service-buttons">
+						<!-- Nhóm Chatbot -->
+						<div class="service-group">
+							<h5 class="group-title">Công Cụ Chatbot</h5>
+							<a href="chatbot/SendDiscordMessage.html" class="btn btn-service">Gửi Tin Nhắn Discord</a>
+							<a href="chatbot/SendTelegramMessage.html" class="btn btn-service">Gửi Tin Nhắn Telegram</a>
+						</div>
+
+						<!-- Nhóm Bảng Điều Khiển -->
+						<div class="service-group">
+							<h5 class="group-title">Bảng Điều Khiển</h5>
+							<a href="dashboard/music.html" class="btn btn-service">Trình Nghe Nhạc</a>
+							<a href="dashboard/weather.html" class="btn btn-service">Thời Tiết</a>
+							<a href="dashboard/calendar.html" class="btn btn-service">Lịch</a>
+							<a href="dashboard/clock.html" class="btn btn-service">Đồng Hồ</a>
+							<a href="dashboard/network.html" class="btn btn-service">Mạng</a>
+						</div>
+
+						<!-- Nhóm Công Cụ JXM -->
+						<div class="service-group">
+							<h5 class="group-title">Công Cụ JXM</h5>
+							<a href="jxm/calculatetimeframe.html" class="btn btn-service">Tính Thời Gian Mở Cấp</a>
+							<a href="jxm/tool.html" class="btn btn-service">Công Cụ JXM</a>
+						</div>
+					</div>
 					<button class="btn btn-logout" onclick="logout()">Đăng Xuất</button>
 				</div>
 			</div>
