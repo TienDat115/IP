@@ -49,6 +49,14 @@
 			"Sứ Thanh Hoa"
 		]
 	},
+	"Nhạc Tâm Trạng": {
+		"music": [
+			"../music/68.mp3"
+		],
+		"songs": [
+			"Khó Sinh Hận - Lễ Việt"
+		]
+	},
 	"OST Phim": {
 		"music": [
 			"../music/30.mp3",
@@ -73,7 +81,8 @@
 			"../music/59.mp3",
 			"../music/60.mp3",
 			"../music/61.mp3",
-			"../music/64.mp3"
+			"../music/64.mp3",
+			"../music/69.mp3"
 		],
 		"songs": [
 			"Bích Thương Chiến Ca - Dữ Phượng Hành",
@@ -98,7 +107,8 @@
 			"Phá Kén - Trương Thiều Hàm (OST Đấu La Đại Lục)",
 			"Hibiki no Shirabe (OST Hyakujuu Sentai Gaoranger)",
 			"Tay Trái Chỉ Trăng (OST Hương Mật Tựa Khói Sương)",
-			"Bất Nhiễm (OST Hương Mật Tựa Khói Sương)"
+			"Bất Nhiễm (OST Hương Mật Tựa Khói Sương)",
+			"Khách mời (嘉宾) - Trương Viễn (OST Hôn Lễ Của Em)"
 		]
 	},
 	"Nhạc Việt": {
@@ -161,14 +171,16 @@
 			"../music/34.mp3",
 			"../music/35.mp3",
 			"../music/36.mp3",
-			"../music/66.mp3"
+			"../music/66.mp3",
+			"../music/67.mp3"
 		],
 		"songs": [
 			"ANIMA POWER - QWER",
 			"Warriors - Worlds 2014",
 			"Legends Never Die - Worlds 2017",
 			"K/DA - (G)I-DLE",
-			"GODS ft. NewJeans"
+			"GODS ft. NewJeans",
+			"Silver Scrapes"
 		]
 	},
 	"YouTube Videos": {

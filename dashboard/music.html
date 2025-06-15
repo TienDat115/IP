@@ -7,7 +7,6 @@
 		<title>Lofi Music</title>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 		<link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet" />
 		<!-- Firebase Compatibility SDKs -->
@@ -17,113 +16,21 @@
 		<!-- Firebase configuration -->
 		<script src="../js/firebase-config.js"></script>
 		<style>
-			/* Tùy chỉnh màu nền của SweetAlert */
-			.swal2-popup {
-				background-color: #1f2937 !important;
-				color: #f3f4f6;
-			}
-			.swal2-title,
-			.swal2-content,
-			.swal2-confirm {
-				color: #f3f4f6 !important;
-			}
-
-			/* Màu nền chính */
-			.bg-gray-800 {
-				background-color: #1f2937 !important;
-			}
-
-			/* Màu nền playlist và modal */
-			.bg-gray-700 {
-				background-color: #374151 !important;
-			}
-
-			/* Màu nền nút điều khiển */
-			.bg-gray-300 {
-				background-color: #4b5563 !important;
-			}
-
-			/* Màu nền nút hover */
-			.hover:bg-gray-400 {
-				background-color: #6b7280 !important;
-			}
-
-			/* Màu nền nút playlist */
-			.bg-gray-500 {
-				background-color: #6b7280 !important;
-			}
-
-			/* Màu nền nút hover playlist */
-			.hover:bg-gray-600 {
-				background-color: #4b5563 !important;
-			}
-
-			/* Màu chữ chính */
-			.text-white {
-				color: #f3f4f6 !important;
-			}
-
-			/* Màu chữ tiêu đề */
-			.text-gray-100 {
-				color: #f3f4f6 !important;
-			}
-
-			/* Màu chữ playlist */
-			.text-gray-300 {
-				color: #d1d5db !important;
-			}
-
-			/* Màu chữ nút điều khiển */
-			.text-gray-800 {
-				color: #f3f4f6 !important;
-			}
-
-			/* Màu chữ nút hover */
-			.hover:text-white {
-				color: #f3f4f6 !important;
-			}
-
-			/* Màu chữ nút playlist */
-			.text-gray-500 {
-				color: #e5e7eb !important;
-			}
-
-			/* Màu chữ nút hover playlist */
-			.hover:text-gray-300 {
-				color: #d1d5db !important;
-			}
-
-			/* Màu chữ nút yêu thích */
-			.text-pink-500 {
-				color: #ec4899 !important;
-			}
-
-			/* Màu chữ nút hover yêu thích */
-			.hover:text-pink-600 {
-				color: #db2777 !important;
-			}
-
-			/* Màu chữ nút ngẫu nhiên yêu thích */
-			.text-purple-500 {
-				color: #a855f7 !important;
-			}
-
-			/* Màu chữ nút hover ngẫu nhiên yêu thích */
-			.hover:text-purple-600 {
-				color: #9333ea !important;
-			}
-
 			/* Hiệu ứng nút đang bật */
 			.active {
-				box-shadow: 0 0 15px rgba(17, 24, 39, 0.5);
-				transform: translateY(-2px);
-				transition: all 0.3s ease;
+				box-shadow: 0 0 20px rgba(99, 102, 241, 0.7);
+				transform: translateY(-3px);
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				border-color: #818cf8;
+				z-index: 10;
 			}
 
 			/* Hiệu ứng nút đang tắt */
 			.inactive {
-				opacity: 0.7;
-				transition: all 0.3s ease;
+				opacity: 0.6;
+				transform: scale(0.98);
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				filter: grayscale(30%);
 			}
 
 			/* Tạo viền cho khung bọc */
@@ -153,33 +60,33 @@
 				<!-- Nút điều khiển -->
 				<div class="mb-3 sm:mb-4 flex justify-center items-center space-x-2 sm:space-x-3 md:space-x-4">
 					<!-- Nút Tiếp -->
-					<button onclick="playNext()" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="material-icons text-base sm:text-lg md:text-xl">skip_next</span>
-						<span class="hidden sm:block text-sm sm:text-base">Tiếp</span>
+					<button onclick="playNext()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded-lg transition flex flex-col items-center justify-center border border-gray-600 shadow-sm">
+						<span class="material-icons text-base sm:text-lg md:text-xl text-blue-400">skip_next</span>
+						<span class="hidden sm:block text-sm sm:text-base text-gray-200">Tiếp</span>
 					</button>
 
-					<!-- Nút Lặp lại -->
-					<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="material-icons text-base sm:text-lg md:text-xl">repeat</span>
-						<span class="hidden sm:block text-sm sm:text-base">Lặp lại</span>
+					<!-- Nút Lặp lại bài hát -->
+					<button onclick="toggleRepeat()" id="repeatBtn" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded-lg transition flex flex-col items-center justify-center border border-gray-600 shadow-sm">
+						<span class="material-icons text-base sm:text-lg md:text-xl text-purple-400">repeat_one</span>
+						<span class="hidden sm:block text-sm sm:text-base text-gray-200">Lặp lại bài</span>
 					</button>
 
 					<!-- Nút Ngẫu nhiên -->
-					<button onclick="toggleRandom()" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="material-icons text-base sm:text-lg md:text-xl">shuffle</span>
-						<span class="hidden sm:block text-sm sm:text-base">Ngẫu nhiên</span>
+					<button onclick="toggleRandom()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded-lg transition flex flex-col items-center justify-center border border-gray-600 shadow-sm">
+						<span class="material-icons text-base sm:text-lg md:text-xl text-green-400">shuffle</span>
+						<span class="hidden sm:block text-sm sm:text-base text-gray-200">Ngẫu nhiên</span>
 					</button>
 
-					<!-- Nút Không lặp lại -->
-					<button onclick="toggleNoRepeat()" id="noRepeatBtn" class="bg-gray-300 text-gray-800 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded hover:bg-gray-400 transition flex flex-col items-center justify-center">
-						<span class="material-icons text-base sm:text-lg md:text-xl">not_interested</span>
-						<span class="hidden sm:block text-sm sm:text-base">Không lặp lại</span>
+					<!-- Nút Tắt phát lại -->
+					<button onclick="toggleNoRepeat()" id="noRepeatBtn" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded-lg transition flex flex-col items-center justify-center border border-gray-600 shadow-sm">
+						<span class="material-icons text-base sm:text-lg md:text-xl text-red-400">repeat_on</span>
+						<span class="hidden sm:block text-sm sm:text-base text-gray-200">Tắt phát lại</span>
 					</button>
 
 					<!-- Nút Playlist -->
-					<button id="togglePlaylistBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded transition flex flex-col items-center justify-center">
-						<span class="material-icons text-base sm:text-lg md:text-xl">queue_music</span>
-						<span class="hidden sm:block text-sm sm:text-base">Playlist</span>
+					<button id="togglePlaylistBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-2 sm:px-3 md:px-4 py-2 sm:py-3 rounded-lg transition flex flex-col items-center justify-center border border-blue-700 shadow-sm">
+						<span class="material-icons">queue_music</span>
+						<span class="hidden sm:block text-sm sm:text-base text-gray-200">Playlist</span>
 					</button>
 				</div>
 
@@ -252,7 +159,7 @@
 				}
 
 				// Load playlists from JSON file
-				fetch("../asset/playlists.json")
+				fetch("asset/playlists.json")
 					.then((response) => response.json())
 					.then((data) => {
 						const playlists = data;
@@ -471,21 +378,21 @@
 									repeatBtn.classList.remove("active");
 								}
 							}
-							Swal.fire({
-								title: isRepeat ? "Lặp lại bài hát" : "Chơi tiếp bài tiếp theo",
-								toast: true,
-								position: "top-right",
-								showConfirmButton: false,
-								timer: 1000,
-								timerProgressBar: true,
-								background: "#1f2937",
-								color: "#f3f4f6",
-								customClass: {
-									popup: "swal2-toast",
-									title: "swal2-title",
-									content: "swal2-content",
+							// Sử dụng Toastify thay vì Swal.fire
+							Toastify({
+								text: isRepeat ? "🔁 Đã bật lặp lại bài" : "⏭️ Đã tắt lặp lại bài",
+								duration: 2000,
+								gravity: "top",
+								position: "right",
+								stopOnFocus: true,
+								style: {
+									background: isRepeat ? "#4f46e5" : "#1f2937",
+									color: "#f3f4f6",
+									borderRadius: "8px",
+									padding: "10px 15px",
+									boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
 								},
-							});
+							}).showToast();
 						}
 
 						function playNext() {
@@ -533,21 +440,21 @@
 									noRepeatBtn.classList.remove("active");
 								}
 							}
-							Swal.fire({
-								title: isNoRepeat ? "Không lặp lại bài hát" : "Có thể lặp lại bài hát",
-								toast: true,
-								position: "top-right",
-								showConfirmButton: false,
-								timer: 1000,
-								timerProgressBar: true,
-								background: "#1f2937",
-								color: "#f3f4f6",
-								customClass: {
-									popup: "swal2-toast",
-									title: "swal2-title",
-									content: "swal2-content",
+							// Sử dụng Toastify thay vì Swal.fire
+							Toastify({
+								text: isNoRepeat ? "🔄 Đã bật tắt phát lại" : "🔄 Đã tắt chức năng tắt phát lại",
+								duration: 2000,
+								gravity: "top",
+								position: "right",
+								stopOnFocus: true,
+								style: {
+									background: isNoRepeat ? "#4f46e5" : "#1f2937",
+									color: "#f3f4f6",
+									borderRadius: "8px",
+									padding: "10px 15px",
+									boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
 								},
-							});
+							}).showToast();
 						}
 
 						function toggleRandom() {
@@ -564,24 +471,21 @@
 									icon.textContent = isRandom ? "shuffle" : "queue_play_next";
 								}
 							}
-							Swal.fire({
-								title: isRandom ? "Chế độ ngẫu nhiên" : "Chế độ tuần tự",
-								toast: true,
-								position: "top-end",
-								showConfirmButton: false,
-								timer: 1000,
-								timerProgressBar: true,
-								didOpen: (toast) => {
-									toast.addEventListener("mouseenter", Swal.stopTimer);
-									toast.addEventListener("mouseleave", Swal.resumeTimer);
+							// Sử dụng Toastify thay vì Swal.fire
+							Toastify({
+								text: isRandom ? "🔀 Đã bật chế độ ngẫu nhiên" : "⏭️ Đã tắt chế độ ngẫu nhiên",
+								duration: 2000,
+								gravity: "top",
+								position: "right",
+								stopOnFocus: true,
+								style: {
+									background: isRandom ? "#4f46e5" : "#1f2937",
+									color: "#f3f4f6",
+									borderRadius: "8px",
+									padding: "10px 15px",
+									boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
 								},
-								customClass: {
-									popup: "bg-gray-800 text-white",
-									title: "text-xl font-bold",
-									content: "text-lg",
-									icon: "text-2xl",
-								},
-							});
+							}).showToast();
 						}
 
 						function toggleFavorite(url) {
@@ -782,42 +686,61 @@
 
 						// Ẩn/hiện playlist
 						let isPlaylistVisible = true;
-						playlistWrapper.style.display = "block";
-						togglePlaylistBtn.innerHTML = `<span class="material-icons text-lg sm:text-xl">queue_music</span><span class="hidden sm:inline"> Playlist</span>`;
-						togglePlaylistBtn.onclick = function () {
+
+						togglePlaylistBtn.onclick = () => {
 							isPlaylistVisible = !isPlaylistVisible;
 							playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
-							this.innerHTML = `<span class="material-icons text-lg sm:text-xl">queue_music</span><span class="hidden sm:inline"> ${isPlaylistVisible ? "Playlist" : "Playlist"}</span>`;
 						};
 
-						// Đặt trạng thái mặc định cho nút Không lặp lại
-						const noRepeatBtn = document.getElementById("noRepeatBtn");
-						if (noRepeatBtn) {
-							noRepeatBtn.classList.add("inactive");
-						}
+						// Khởi tạo trạng thái mặc định cho các nút
+						const initButtonState = (btnId, isActive = false) => {
+							const btn = document.getElementById(btnId);
+							if (btn) {
+								btn.classList.toggle("inactive", !isActive);
+								btn.classList.toggle("active", isActive);
+							}
+						};
 
-						// Đặt trạng thái mặc định cho nút Lặp lại
-						const repeatBtn = document.getElementById("repeatBtn");
-						if (repeatBtn) {
-							repeatBtn.classList.add("inactive");
-						}
+						// Thiết lập trạng thái mặc định cho các nút
+						initButtonState("noRepeatBtn");
+						initButtonState("repeatBtn");
 
 						// Khởi động trang
 						renderPlaylist();
 
-						// Đảm bảo cập nhật lại danh sách yêu thích khi load lại trang
-						window.addEventListener("storage", function () {
+						// Đồng bộ danh sách yêu thích giữa các tab
+						const handleStorageChange = () => {
 							favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-							favorites = Array.isArray(favorites) ? favorites : [];
 							renderPlaylist();
+						};
+
+						window.addEventListener("storage", handleStorageChange);
+
+						// Xuất các hàm cần thiết ra global scope
+						Object.assign(window, {
+							playNext,
+							toggleRepeat,
+							toggleRandom,
+							toggleNoRepeat,
 						});
-						window.playNext = playNext;
-						window.toggleRepeat = toggleRepeat;
-						window.toggleRandom = toggleRandom;
-						window.toggleNoRepeat = toggleNoRepeat;
 					})
 					.catch((error) => {
-						console.error("Error loading playlists:", error);
+						console.error("Lỗi khi tải danh sách phát:", error);
+						// Sử dụng Toastify thay vì Swal.fire
+						Toastify({
+							text: "Lỗi khi tải danh sách phát",
+							duration: 2000,
+							gravity: "top",
+							position: "right",
+							stopOnFocus: true,
+							style: {
+								background: "#1f2937",
+								color: "#f3f4f6",
+								borderRadius: "8px",
+								padding: "10px 15px",
+								boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+							},
+						}).showToast();
 					});
 			</script>
 		</div>
