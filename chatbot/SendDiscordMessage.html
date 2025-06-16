@@ -433,7 +433,12 @@
 						window.location.href = "../login.html";
 					} catch (error) {
 						console.error("Lỗi khi đăng xuất:", error);
-						addLog("❌ Lỗi: " + error.message, "", "", "", true);
+						Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: error.message,
+							confirmButtonText: "OK",
+						});
 					}
 				}
 
@@ -525,7 +530,12 @@
 						console.error("Lỗi khi tải danh sách webhook:", error);
 						const webhookSelect = document.getElementById("webhookSelect");
 						webhookSelect.innerHTML = '<option value="">Lỗi khi tải danh sách webhook</option>';
-						addLog("❌ Lỗi khi tải danh sách webhook: " + error.message, "", "", "", true);
+						Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: "Lỗi khi tải danh sách webhook: " + error.message,
+							confirmButtonText: "OK",
+						});
 					}
 				}
 
@@ -752,7 +762,12 @@
 					const tts = document.getElementById("tts").checked;
 
 					if (!message.trim()) {
-						addLog("❌ Vui lòng nhập nội dung tin nhắn", "", webhookName, webhookUrl, true);
+						Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: "Vui lòng nhập nội dung tin nhắn",
+							confirmButtonText: "OK",
+						});
 						return;
 					}
 
@@ -819,7 +834,12 @@
 						const avatarUrl = document.getElementById("avatarUrl").value;
 
 						if (files.length === 0) {
-							addLog("❌ Vui lòng chọn ít nhất một file", "", webhookName, webhookUrl, true);
+							Swal.fire({
+								icon: "error",
+								title: "Lỗi!",
+								text: "Vui lòng chọn ít nhất một file",
+								confirmButtonText: "OK",
+							});
 							return;
 						}
 
@@ -895,11 +915,49 @@
 
 				// Xóa trường tin nhúng
 				function removeEmbedField(button) {
-					if (document.querySelectorAll(".embed-field").length > 1) {
-						button.closest(".embed-field").remove();
-					} else {
-						addLog("❌ Phải có ít nhất một trường", "", webhookName, webhookUrl, true);
+					const fields = document.querySelectorAll(".embed-field");
+
+					if (fields.length <= 1) {
+						Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: "Phải có ít nhất một trường",
+							confirmButtonText: "OK",
+						});
+						return;
 					}
+
+					// Hiển thị xác nhận trước khi xóa
+					Swal.fire({
+						title: "Xác nhận xóa",
+						text: "Bạn có chắc chắn muốn xóa trường này không?",
+						icon: "warning",
+						showCancelButton: true,
+						confirmButtonColor: "#d33",
+						cancelButtonColor: "#3085d6",
+						confirmButtonText: "Xóa",
+						cancelButtonText: "Hủy",
+					}).then((result) => {
+						if (result.isConfirmed) {
+							// Thêm hiệu ứng mờ dần trước khi xóa
+							const fieldToRemove = button.closest(".embed-field");
+							fieldToRemove.style.opacity = "0";
+							fieldToRemove.style.transition = "opacity 0.3s ease";
+
+							setTimeout(() => {
+								fieldToRemove.remove();
+
+								// Cập nhật lại số thứ tự các trường
+								const remainingFields = document.querySelectorAll(".embed-field");
+								remainingFields.forEach((field, index) => {
+									const fieldTitle = field.querySelector("h6");
+									if (fieldTitle) {
+										fieldTitle.textContent = `Trường ${index + 1}`;
+									}
+								});
+							}, 300);
+						}
+					});
 				}
 
 				// Gửi tin nhắn nhúng
@@ -917,7 +975,12 @@
 					const avatarUrl = document.getElementById("avatarUrl").value;
 
 					if (!title && !description) {
-						addLog("❌ Vui lòng nhập tiêu đề hoặc mô tả", "", webhookName, webhookUrl, true);
+						Swal.fire({
+							icon: "error",
+							title: "Lỗi!",
+							text: "Vui lòng nhập tiêu đề hoặc mô tả",
+							confirmButtonText: "OK",
+						});
 						return;
 					}
 
@@ -1252,7 +1315,12 @@
 				async function downloadLogs() {
 					try {
 						if (!auth.currentUser) {
-							addLog("❌ Bạn cần đăng nhập để tải log", "", "", "", true);
+							Swal.fire({
+								icon: "error",
+								title: "Lỗi!",
+								text: "Bạn cần đăng nhập để tải log",
+								confirmButtonText: "OK",
+							});
 							return;
 						}
 
@@ -1286,11 +1354,10 @@
 						window.URL.revokeObjectURL(url);
 					} catch (error) {
 						console.error("Lỗi khi tải log:", error);
-						addLog(`❌ Lỗi: ${error.message}`, "", "", "", true);
 						Swal.fire({
+							icon: "error",
 							title: "Lỗi!",
 							text: error.message,
-							icon: "error",
 							confirmButtonText: "OK",
 						});
 					}
@@ -1338,11 +1405,10 @@
 							}, 1000);
 						} catch (error) {
 							console.error("Lỗi khi xóa log:", error);
-							addLog(`❌ Lỗi: ${error.message}`, "", "", "", true);
 							Swal.fire({
+								icon: "error",
 								title: "Lỗi!",
 								text: error.message,
-								icon: "error",
 							});
 						}
 					}
@@ -1411,11 +1477,10 @@
 						}
 					} catch (error) {
 						console.error("Lỗi khi xóa log hiện tại:", error);
-						addLog(`❌ Lỗi khi xóa log hiện tại: ${error.message}`, "", "", "", true);
 						Swal.fire({
+							icon: "error",
 							title: "Lỗi!",
 							text: error.message,
-							icon: "error",
 						});
 					}
 				}
