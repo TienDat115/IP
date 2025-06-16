@@ -1088,7 +1088,7 @@
 
 				// Định nghĩa các mẫu tin nhắn
 				const messageTemplates = {
-					rollback_thất_bại: {
+					1: {
 						name: "Rollback Thất Bại",
 						content: `❓ THÔNG BÁO ❓
 		🆎 Nội Dung: Rollback thất bại
@@ -1101,7 +1101,7 @@
 		@everyone`,
 					},
 
-					thong_bao: {
+					2: {
 						name: "Thông báo",
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ 
@@ -1109,7 +1109,7 @@
 		@everyone`,
 					},
 
-					bao_tri: {
+					3: {
 						name: "Bảo Trì Thường Ngày",
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Bảo trì hoàn tất
@@ -1117,7 +1117,7 @@
 		@everyone`,
 					},
 
-					bao_tri_gop: {
+					4: {
 						name: "Bảo Trì Gộp SV",
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
@@ -1125,7 +1125,7 @@
 		@everyone`,
 					},
 
-					tieu_phi: {
+					5: {
 						name: "Reset Tiêu Phí Tháng",
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Reset tiêu phí tháng tk **** hoàn tất
@@ -1133,7 +1133,7 @@
 		@everyone`,
 					},
 
-					ip: {
+					6: {
 						name: "Bỏ Giới Hạn IP",
 						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Bỏ giới hạn cho IP **** hoàn tất
@@ -1141,11 +1141,45 @@
 		@everyone`,
 					},
 
-					canh_bao: {
+					7: {
 						name: "Thắc Mắc",
 						content: `❓ **THÔNG BÁO** ❓
 		📢 __**Nội Dung:**__ 
 		⚠️ __**Lý Do:**__
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+					},
+
+					8: {
+						name: "Reset Huyền Thông",
+						content: `🔔 **THÔNG BÁO** 🔔
+		📢 __**Nội Dung:**__ Reset điểm Huyền Thông về 0 ID **** (tk ****) hoàn tất
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+					},
+
+					9: {
+						name: "Sửa lỗi Phi Phong",
+						content: `🔔 **THÔNG BÁO** 🔔
+		📢 __**Nội Dung:**__ Sửa lỗi xác nhận kết quả phi phong ID **** (tk ****) hoàn tất
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+					},
+
+					10: {
+						name: "Chặn IP",
+						content: `🔔 **THÔNG BÁO** 🔔
+		📢 __**Nội Dung:**__ Chặn IP tk **** (Lúc **** đăng nhập S5: ****) hoàn tất
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+					},
+
+					11: {
+						name: "Nội Dung File Bảo Trì",
+						content: `❓ **THÔNG BÁO** ❓
+		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
+		⚠️ __**Lý Do:**__
+
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 					},
