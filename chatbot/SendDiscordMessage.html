@@ -268,8 +268,48 @@
 								<input type="file" class="form-control" id="fileInput" multiple />
 							</div>
 							<div class="mb-3">
-								<label class="form-label">Nội dung kèm theo (tùy chọn):</label>
-								<textarea class="form-control" id="fileMessage" rows="3" placeholder="Nhập nội dung kèm theo file..."></textarea>
+								<label class="form-label">Nội dung tin nhắn kèm file (tuỳ chọn):</label>
+								<div class="d-flex justify-content-between align-items-center mb-2">
+									<select id="templateSelectFile" class="form-select form-select-sm flex-grow-1" style="max-width: 220px; min-width: 150px; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; background-color: #fff; color: #495057; font-size: 14px; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); cursor: pointer; outline: none" onchange="applyTemplate(this.value, 'fileMessageText')">
+										<option value="">-- Chọn mẫu tin nhắn --</option>
+									</select>
+									<div class="d-flex flex-nowrap gap-2">
+										<button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadDraft('fileMessageText')" title="Tải bản nháp gần nhất">
+											<i class="fas fa-upload"></i>
+											<span class="d-none d-sm-inline ms-1">Tải bản nháp</span>
+										</button>
+										<button type="button" class="btn btn-sm btn-outline-primary" onclick="saveDraft('fileMessageText')" title="Lưu bản nháp">
+											<i class="far fa-save"></i>
+											<span class="d-none d-sm-inline ms-1">Lưu bản nháp</span>
+										</button>
+									</div>
+								</div>
+								<textarea class="form-control" id="fileMessageText" rows="5" placeholder="Nhập nội dung tin nhắn kèm file..."></textarea>
+								<div class="mt-2 emoji-btn-container">
+									<span class="emoji-btn" title="In đậm" onclick="insertText('**', '**', 'fileMessageText')">B</span>
+									<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*', 'fileMessageText')">I</span>
+									<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__', 'fileMessageText')">U̲</span>
+									<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~', 'fileMessageText')">S̶</span>
+									<span class="emoji-btn" title="Code" onclick="insertText('`', '`', 'fileMessageText')">`</span>
+									<span class="emoji-btn" title="Tiêu Đề" onclick="insertText('## ', '', 'fileMessageText')">##</span>
+									<span class="emoji-btn" title="In đậm + Gạch Dưới" onclick="insertText('__**', '**__', 'fileMessageText')">B + U̲</span>
+									<span class="emoji-btn" title="Thời gian" onclick="insertText('', '${getCurrentTime()}', 'fileMessageText')">🕒</span>
+								</div>
+								<div class="mt-2 emoji-btn-container">
+									<span class="emoji-btn" title="Khóa, bảo mật" onclick="insertText('', '🔑', 'fileMessageText')">🔑</span>
+									<span class="emoji-btn" title="Ý tưởng, sáng kiến" onclick="insertText('', '💡', 'fileMessageText')">💡</span>
+									<span class="emoji-btn" title="Hoa, đẹp đẽ" onclick="insertText('', '🌸', 'fileMessageText')">🌸</span>
+									<span class="emoji-btn" title="Tin nhắn, chat" onclick="insertText('', '💬', 'fileMessageText')">💬</span>
+									<span class="emoji-btn" title="Loa, thông báo" onclick="insertText('', '📢', 'fileMessageText')">📢</span>
+									<span class="emoji-btn" title="Hỏi, nghi vấn" onclick="insertText('', '❓', 'fileMessageText')">❓</span>
+									<span class="emoji-btn" title="Trạng thái, thông tin" onclick="insertText('', '🟢', 'fileMessageText')">🟢</span>
+									<span class="emoji-btn" title="Ký hiệu, biểu tượng" onclick="insertText('', '🔢', 'fileMessageText')">🔢</span>
+									<span class="emoji-btn" title="Đánh dấu, chấp nhận" onclick="insertText('', '✅', 'fileMessageText')">✅</span>
+									<span class="emoji-btn" title="Vị trí, địa điểm" onclick="insertText('', '📍', 'fileMessageText')">📍</span>
+									<span class="emoji-btn" title="Lỗi, cảnh báo" onclick="insertText('', '⚠️', 'fileMessageText')">⚠️</span>
+									<span class="emoji-btn" title="Lý do, giải thích" onclick="insertText('', '🤔', 'fileMessageText')">🤔</span>
+									<span class="emoji-btn" title="Di chuyển, chuyển hướng" onclick="insertText('', '➡️', 'fileMessageText')">➡️</span>
+								</div>
 							</div>
 							<div class="d-flex gap-2">
 								<button class="btn btn-primary" onclick="sendFileMessage()">Gửi File</button>
@@ -657,8 +697,8 @@
 				}
 
 				// Chèn văn bản vào textarea
-				function insertText(before, after) {
-					const textarea = document.getElementById("messageText");
+				function insertText(before, after, textareaId = "messageText") {
+					const textarea = document.getElementById(textareaId);
 					const start = textarea.selectionStart;
 					const end = textarea.selectionEnd;
 					const text = textarea.value;
@@ -774,7 +814,7 @@
 						const webhookName = webhookSelect.options[webhookSelect.selectedIndex].text;
 						const fileInput = document.getElementById("fileInput");
 						const files = fileInput.files;
-						const message = document.getElementById("fileMessage").value;
+						const message = document.getElementById("fileMessageText").value;
 						const username = document.getElementById("customUsername").value;
 						const avatarUrl = document.getElementById("avatarUrl").value;
 
@@ -800,9 +840,7 @@
 
 						if (response.ok) {
 							const sentFilesCount = files.length;
-							addLog(`✅ Đã gửi ${sentFilesCount} file thành công!`, document.getElementById("fileMessage").value, webhookName, webhookUrl);
-							fileInput.value = ""; // Xóa file đã chọn
-							document.getElementById("fileMessage").value = ""; // Xóa nội dung tin nhắn
+							addLog(`✅ Đã gửi ${sentFilesCount} file thành công!`, document.getElementById("fileMessageText").value, webhookName, webhookUrl);
 
 							await Swal.fire({
 								icon: "success",
@@ -1033,9 +1071,9 @@
 				};
 
 				// Áp dụng mẫu tin nhắn đã chọn
-				function applyTemplate(templateId) {
+				function applyTemplate(templateId, textareaId = "messageText") {
 					const templateSelect = document.getElementById("templateSelect");
-					const messageText = document.getElementById("messageText");
+					const messageText = document.getElementById(textareaId);
 
 					if (!templateId) {
 						// Khi chọn "-- Chọn mẫu tin nhắn --"
@@ -1445,24 +1483,35 @@
 			<script>
 				// Hàm khởi tạo dropdown template
 				function initTemplateDropdown() {
-					const select = document.getElementById("templateSelect");
-					if (!select) return;
+					// Khởi tạo cho tab văn bản
+					const selectText = document.getElementById("templateSelect");
+					// Khởi tạo cho tab file
+					const selectFile = document.getElementById("templateSelectFile");
 
-					// Xóa các option cũ (giữ lại option đầu tiên)
-					while (select.options.length > 1) {
-						select.remove(1);
+					// Hàm khởi tạo cho một select cụ thể
+					function initSelect(select) {
+						if (!select) return;
+
+						// Xóa các option cũ (giữ lại option đầu tiên)
+						while (select.options.length > 1) {
+							select.remove(1);
+						}
+
+						// Thêm các option từ messageTemplates
+						if (typeof messageTemplates === "object") {
+							Object.entries(messageTemplates).forEach(([value, template]) => {
+								if (template.name) {
+									// Chỉ thêm nếu có tên hiển thị
+									const option = new Option(template.name, value);
+									select.add(option);
+								}
+							});
+						}
 					}
 
-					// Thêm các option từ messageTemplates
-					if (typeof messageTemplates === "object") {
-						Object.entries(messageTemplates).forEach(([value, template]) => {
-							if (template.name) {
-								// Chỉ thêm nếu có tên hiển thị
-								const option = new Option(template.name, value);
-								select.add(option);
-							}
-						});
-					}
+					// Khởi tạo cho cả hai select
+					initSelect(selectText);
+					initSelect(selectFile);
 				}
 
 				// Gọi hàm khởi tạo khi DOM đã tải xong
@@ -1470,9 +1519,9 @@
 			</script>
 			<script>
 				// Hàm lưu bản nháp lên Firebase
-				async function saveDraft() {
+				async function saveDraft(textareaId = "messageText") {
 					try {
-						const messageText = document.getElementById("messageText").value;
+						const messageText = document.getElementById(textareaId).value;
 						if (!messageText.trim()) {
 							showSuccessMessage("Không có nội dung để lưu");
 							return;
@@ -1502,7 +1551,7 @@
 				}
 
 				// Hàm tải bản nháp từ Firebase
-				async function loadDraft() {
+				async function loadDraft(textareaId = "messageText") {
 					try {
 						const user = firebase.auth().currentUser;
 						if (!user) {
@@ -1517,7 +1566,7 @@
 						}
 
 						const draftData = doc.data();
-						document.getElementById("messageText").value = draftData.content;
+						document.getElementById(textareaId).value = draftData.content;
 						showSuccessMessage("Đã tải bản nháp thành công");
 					} catch (error) {
 						console.error("Lỗi khi tải bản nháp:", error);
