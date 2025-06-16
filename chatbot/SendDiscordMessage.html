@@ -860,7 +860,7 @@
 
 						if (response.ok) {
 							const sentFilesCount = files.length;
-							addLog(`✅ Đã gửi ${sentFilesCount} file thành công!`, document.getElementById("fileMessageText").value, webhookName, webhookUrl);
+							addLog(`✅ Đã gửi ${sentFilesCount} file thành công!`, message, webhookName, webhookUrl);
 
 							await Swal.fire({
 								icon: "success",
