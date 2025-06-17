@@ -225,40 +225,7 @@
 									</div>
 								</div>
 								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..."></textarea>
-								<div class="mt-2 emoji-btn-container">
-									<span class="emoji-btn" title="In đậm" onclick="insertText('**', '**')">B</span>
-									<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*')">I</span>
-									<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__')">U̲</span>
-									<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~')">S̶</span>
-									<span class="emoji-btn" title="Code" onclick="insertText('`', '`')">`</span>
-									<span class="emoji-btn" title="Tiêu Đề" onclick="insertText('## ', '')">##</span>
-									<span class="emoji-btn" title="In đậm + Gạch Dưới" onclick="insertText('__**', '**__')">B + U̲</span>
-									<span class="emoji-btn" title="Thời gian" onclick="insertText('', '${getCurrentTime()}')">🕒</span>
-								</div>
-								<div class="mt-2 emoji-btn-container">
-									<span class="emoji-btn" title="Khóa, bảo mật" onclick="insertText('', '🔑')">🔑</span>
-									<span class="emoji-btn" title="Ý tưởng, sáng kiến" onclick="insertText('', '💡')">💡</span>
-									<span class="emoji-btn" title="Hoa, đẹp đẽ" onclick="insertText('', '🌸')">🌸</span>
-									<span class="emoji-btn" title="Tin nhắn, chat" onclick="insertText('', '💬')">💬</span>
-									<span class="emoji-btn" title="Loa, thông báo" onclick="insertText('', '📢')">📢</span>
-									<span class="emoji-btn" title="Hỏi, nghi vấn" onclick="insertText('', '❓')">❓</span>
-									<span class="emoji-btn" title="Trạng thái, thông tin" onclick="insertText('', '🟢')">🟢</span>
-									<span class="emoji-btn" title="Ký hiệu, biểu tượng" onclick="insertText('', '🔢')">🔢</span>
-									<span class="emoji-btn" title="Đánh dấu, chấp nhận" onclick="insertText('', '✅')">✅</span>
-									<span class="emoji-btn" title="Vị trí, địa điểm" onclick="insertText('', '📍')">📍</span>
-									<span class="emoji-btn" title="Lỗi, cảnh báo" onclick="insertText('', '⚠️')">⚠️</span>
-									<span class="emoji-btn" title="Lý do, giải thích" onclick="insertText('', '🤔')">🤔</span>
-									<span class="emoji-btn" title="Di chuyển, chuyển hướng" onclick="insertText('', '➡️')">➡️</span>
-								</div>
-								<div class="mt-2 emoji-btn-container">
-									<span class="emoji-btn" title="Tag mọi người" onclick="insertText('', '@everyone')">@everyone</span>
-									<span class="emoji-btn" title="Zz_NHD_zZ" onclick="insertText('', '<@352800692362149889>')">@Zz_NHD_zZ</span>
-									<span class="emoji-btn" title="Manh" onclick="insertText('', '<@419760576806518784>')">@Manh</span>
-									<span class="emoji-btn" title="Vu" onclick="insertText('', '<@468411054616084490>')">@Vu</span>
-									<span class="emoji-btn" title="VNxWrist" onclick="insertText('', '<@1123545230143148113>')">@VNxWrist</span>
-									<span class="emoji-btn" title="Ozin" onclick="insertText('', '<@739346682835370094>')">@Ozin</span>
-									<span class="emoji-btn" title="Hương" onclick="insertText('', '<@1085871904348438548>')">@Hương</span>
-								</div>
+								<div id="formattingButtons"></div>
 							</div>
 							<div class="form-check mb-3">
 								<input class="form-check-input" type="checkbox" id="tts" />
@@ -294,40 +261,7 @@
 									</div>
 								</div>
 								<textarea class="form-control" id="fileMessageText" rows="5" placeholder="Nhập nội dung tin nhắn kèm file..."></textarea>
-								<div class="mt-2 emoji-btn-container">
-									<span class="emoji-btn" title="In đậm" onclick="insertText('**', '**', 'fileMessageText')">B</span>
-									<span class="emoji-btn" title="In nghiêng" onclick="insertText('*', '*', 'fileMessageText')">I</span>
-									<span class="emoji-btn" title="Gạch dưới" onclick="insertText('__', '__', 'fileMessageText')">U̲</span>
-									<span class="emoji-btn" title="Gạch ngang" onclick="insertText('~~', '~~', 'fileMessageText')">S̶</span>
-									<span class="emoji-btn" title="Code" onclick="insertText('`', '`', 'fileMessageText')">`</span>
-									<span class="emoji-btn" title="Tiêu Đề" onclick="insertText('## ', '', 'fileMessageText')">##</span>
-									<span class="emoji-btn" title="In đậm + Gạch Dưới" onclick="insertText('__**', '**__', 'fileMessageText')">B + U̲</span>
-									<span class="emoji-btn" title="Thời gian" onclick="insertText('', '${getCurrentTime()}', 'fileMessageText')">🕒</span>
-								</div>
-								<div class="mt-2 emoji-btn-container">
-									<span class="emoji-btn" title="Khóa, bảo mật" onclick="insertText('', '🔑', 'fileMessageText')">🔑</span>
-									<span class="emoji-btn" title="Ý tưởng, sáng kiến" onclick="insertText('', '💡', 'fileMessageText')">💡</span>
-									<span class="emoji-btn" title="Hoa, đẹp đẽ" onclick="insertText('', '🌸', 'fileMessageText')">🌸</span>
-									<span class="emoji-btn" title="Tin nhắn, chat" onclick="insertText('', '💬', 'fileMessageText')">💬</span>
-									<span class="emoji-btn" title="Loa, thông báo" onclick="insertText('', '📢', 'fileMessageText')">📢</span>
-									<span class="emoji-btn" title="Hỏi, nghi vấn" onclick="insertText('', '❓', 'fileMessageText')">❓</span>
-									<span class="emoji-btn" title="Trạng thái, thông tin" onclick="insertText('', '🟢', 'fileMessageText')">🟢</span>
-									<span class="emoji-btn" title="Ký hiệu, biểu tượng" onclick="insertText('', '🔢', 'fileMessageText')">🔢</span>
-									<span class="emoji-btn" title="Đánh dấu, chấp nhận" onclick="insertText('', '✅', 'fileMessageText')">✅</span>
-									<span class="emoji-btn" title="Vị trí, địa điểm" onclick="insertText('', '📍', 'fileMessageText')">📍</span>
-									<span class="emoji-btn" title="Lỗi, cảnh báo" onclick="insertText('', '⚠️', 'fileMessageText')">⚠️</span>
-									<span class="emoji-btn" title="Lý do, giải thích" onclick="insertText('', '🤔', 'fileMessageText')">🤔</span>
-									<span class="emoji-btn" title="Di chuyển, chuyển hướng" onclick="insertText('', '➡️', 'fileMessageText')">➡️</span>
-								</div>
-								<div class="mt-2 emoji-btn-container">
-									<span class="emoji-btn" title="Tag mọi người" onclick="insertText('', '@everyone')">@everyone</span>
-									<span class="emoji-btn" title="Zz_NHD_zZ" onclick="insertText('', '<@352800692362149889>')">@Zz_NHD_zZ</span>
-									<span class="emoji-btn" title="Manh" onclick="insertText('', '<@419760576806518784>')">@Manh</span>
-									<span class="emoji-btn" title="Vu" onclick="insertText('', '<@468411054616084490>')">@Vu</span>
-									<span class="emoji-btn" title="VNxWrist" onclick="insertText('', '<@1123545230143148113>')">@VNxWrist</span>
-									<span class="emoji-btn" title="Ozin" onclick="insertText('', '<@739346682835370094>')">@Ozin</span>
-									<span class="emoji-btn" title="Hương" onclick="insertText('', '<@1085871904348438548>')">@Hương</span>
-								</div>
+								<div id="fileFormattingButtons"></div>
 							</div>
 							<div class="d-flex gap-2">
 								<button class="btn btn-primary" onclick="sendFileMessage()">Gửi File</button>
@@ -1631,8 +1565,74 @@
 					initSelect(selectFile);
 				}
 
+				function createFormattingButtons(textareaId = "messageText") {
+					const formatButtons = [
+						// Hàng 1: Các nút định dạng cơ bản
+						[
+							{ title: "In đậm", content: "B", prefix: "**", suffix: "**" },
+							{ title: "In nghiêng", content: "I", prefix: "*", suffix: "*" },
+							{ title: "Gạch dưới", content: "U̲", prefix: "__", suffix: "__" },
+							{ title: "Gạch ngang", content: "S̶", prefix: "~~", suffix: "~~" },
+							{ title: "Code", content: "`", prefix: "`", suffix: "`" },
+							{ title: "Tiêu Đề", content: "##", prefix: "## ", suffix: "" },
+							{ title: "In đậm + Gạch Dưới", content: "B + U̲", prefix: "__**", suffix: "**__" },
+							{ title: "Thời gian", content: "🕒", prefix: "", suffix: "${getCurrentTime()}" },
+						],
+						// Hàng 2: Các emoji thông dụng
+						[
+							{ title: "Khóa, bảo mật", content: "🔑", prefix: "", suffix: "🔑" },
+							{ title: "Ý tưởng, sáng kiến", content: "💡", prefix: "", suffix: "💡" },
+							{ title: "Hoa, đẹp đẽ", content: "🌸", prefix: "", suffix: "🌸" },
+							{ title: "Tin nhắn, chat", content: "💬", prefix: "", suffix: "💬" },
+							{ title: "Loa, thông báo", content: "📢", prefix: "", suffix: "📢" },
+							{ title: "Hỏi, nghi vấn", content: "❓", prefix: "", suffix: "❓" },
+							{ title: "Trạng thái, thông tin", content: "🟢", prefix: "", suffix: "🟢" },
+							{ title: "Ký hiệu, biểu tượng", content: "🔢", prefix: "", suffix: "🔢" },
+							{ title: "Đánh dấu, chấp nhận", content: "✅", prefix: "", suffix: "✅" },
+							{ title: "Vị trí, địa điểm", content: "📍", prefix: "", suffix: "📍" },
+							{ title: "Lỗi, cảnh báo", content: "⚠️", prefix: "", suffix: "⚠️" },
+							{ title: "Lý do, giải thích", content: "🤔", prefix: "", suffix: "🤔" },
+							{ title: "Di chuyển, chuyển hướng", content: "➡️", prefix: "", suffix: "➡️" },
+						],
+						// Hàng 3: Các tag người dùng
+						[
+							{ title: "Tag mọi người", content: "@everyone", prefix: "", suffix: "@everyone" },
+							{ title: "Zz_NHD_zZ", content: "@Zz_NHD_zZ", prefix: "", suffix: "<@352800692362149889>" },
+							{ title: "Manh", content: "@Manh", prefix: "", suffix: "<@419760576806518784>" },
+							{ title: "Vu", content: "@Vu", prefix: "", suffix: "<@468411054616084490>" },
+							{ title: "VNxWrist", content: "@VNxWrist", prefix: "", suffix: "<@1123545230143148113>" },
+							{ title: "Ozin", content: "@Ozin", prefix: "", suffix: "<@739346682835370094>" },
+							{ title: "Hương", content: "@Hương", prefix: "", suffix: "<@1085871904348438548>" },
+						],
+					];
+
+					let html = "";
+
+					formatButtons.forEach((row, rowIndex) => {
+						html += `<div class="mt-2 emoji-btn-container">`;
+						row.forEach((btn) => {
+							html += `
+                <span 
+                    class="emoji-btn" 
+                    title="${btn.title}" 
+                    onclick="insertText('${btn.prefix}', '${btn.suffix}', '${textareaId}')"
+                >
+                    ${btn.content}
+                </span>`;
+						});
+						html += `</div>`;
+					});
+
+					return html;
+				}
+
 				// Gọi hàm khởi tạo khi DOM đã tải xong
-				document.addEventListener("DOMContentLoaded", initTemplateDropdown);
+				document.addEventListener("DOMContentLoaded", function () {
+					initTemplateDropdown();
+					// Tạo các nút định dạng cho cả hai tab
+					document.getElementById("formattingButtons").innerHTML = createFormattingButtons("messageText");
+					document.getElementById("fileFormattingButtons").innerHTML = createFormattingButtons("fileMessageText");
+				});
 			</script>
 			<script>
 				// Hàm lưu bản nháp lên Firebase
