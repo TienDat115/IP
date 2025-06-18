@@ -2,7 +2,7 @@
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<title>Dự báo thời tiết</title>
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -11,20 +11,22 @@
 		<style>
 			body {
 				font-family: "Inter", sans-serif;
-				background: #111827; /* Màu tương đương với bg-gray-900 */
-				height: 100vh;
+				background: #111827;
+				min-height: 100vh;
 				margin: 0;
-				padding: 0;
+				padding: 10px;
 				color: #e5e7eb;
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				overflow-x: hidden;
 			}
 
 			.container {
 				width: 100%;
-				max-width: 100%;
-				height: 475px;
+				max-width: 1200px;
+				height: auto;
+				min-height: 475px;
 				overflow: hidden;
 				padding: 10px;
 			}
@@ -34,7 +36,7 @@
 				backdrop-filter: blur(8px);
 				border: 1px solid rgba(59, 130, 246, 0.2);
 				border-radius: 1.5rem;
-				padding: 1.25rem;
+				padding: 1rem;
 				height: 100%;
 				overflow: hidden;
 				display: flex;
@@ -183,6 +185,96 @@
 					opacity: 1;
 				}
 			}
+
+			/* Điều chỉnh kích thước cho các màn hình nhỏ */
+			@media (max-width: 640px) {
+				.weather-container {
+					padding: 0.75rem;
+					border-radius: 1.25rem;
+				}
+
+				.weather-card {
+					padding: 0.75rem;
+					border-radius: 0.75rem;
+				}
+
+				.weather-detail {
+					padding: 0.5rem;
+					font-size: 0.7rem;
+				}
+
+				.weather-detail-value {
+					font-size: 0.9rem;
+				}
+
+				.weather-icon {
+					width: 3rem;
+					height: 3rem;
+				}
+
+				#hourly-forecast .weather-icon {
+					width: 2rem;
+					height: 2rem;
+				}
+			}
+
+			/* Điều chỉnh cho màn hình rất nhỏ */
+			@media (max-width: 400px) {
+				.container {
+					padding: 5px;
+				}
+
+				.weather-container {
+					padding: 0.5rem;
+					border-radius: 1rem;
+				}
+
+				.weather-detail {
+					padding: 0.4rem 0.2rem;
+				}
+
+				.weather-detail-label {
+					font-size: 0.65rem;
+				}
+
+				.weather-detail-value {
+					font-size: 0.8rem;
+				}
+
+				.city-btn {
+					padding: 0.2rem 0.5rem;
+					font-size: 0.7rem;
+				}
+			}
+
+			/* Cập nhật grid layout cho các kích thước màn hình khác nhau */
+			.grid-cols-2 {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			@media (min-width: 640px) {
+				.grid-cols-4 {
+					grid-template-columns: repeat(4, minmax(0, 1fr));
+				}
+
+				.weather-detail {
+					padding: 0.75rem;
+				}
+
+				.weather-detail-value {
+					font-size: 1rem;
+				}
+
+				.weather-icon {
+					width: 4rem;
+					height: 4rem;
+				}
+
+				#hourly-forecast .weather-icon {
+					width: 2.5rem;
+					height: 2.5rem;
+				}
+			}
 		</style>
 		<script src="../js/tab-navigation.js"></script>
 	</head>
@@ -286,28 +378,28 @@
 							</div>
 						</div>
 						<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
-							<div class="weather-detail p-2">
+							<div class="weather-detail p-2 flex flex-col items-center">
 								<div class="weather-detail-icon">
 									<span class="material-icons text-base sm:text-lg">air</span>
 								</div>
 								<p class="weather-detail-label truncate">Tốc độ gió</p>
 								<p class="weather-detail-value">${weatherData.wind.speed} <span class="weather-detail-unit">m/s</span></p>
 							</div>
-							<div class="weather-detail p-2">
+							<div class="weather-detail p-2 flex flex-col items-center">
 								<div class="weather-detail-icon">
 									<span class="material-icons text-base sm:text-lg">water_drop</span>
 								</div>
 								<p class="weather-detail-label truncate">Độ ẩm</p>
 								<p class="weather-detail-value">${weatherData.main.humidity}<span class="weather-detail-unit">%</span></p>
 							</div>
-							<div class="weather-detail p-2">
+							<div class="weather-detail p-2 flex flex-col items-center">
 								<div class="weather-detail-icon">
 									<span class="material-icons text-base sm:text-lg">speed</span>
 								</div>
 								<p class="weather-detail-label truncate">Áp suất</p>
 								<p class="weather-detail-value">${weatherData.main.pressure} <span class="weather-detail-unit">hPa</span></p>
 							</div>
-							<div class="weather-detail p-2">
+							<div class="weather-detail p-2 flex flex-col items-center">
 								<div class="weather-detail-icon">
 									<span class="material-icons text-base sm:text-lg">visibility</span>
 								</div>
