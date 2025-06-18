@@ -1,0 +1,224 @@
+.btn-sm i {
+	margin-right: 4px;
+}
+
+#logContainer {
+	transition: all 0.3s ease;
+	overflow: hidden;
+}
+
+#logContainer.hidden {
+	height: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	border: none !important;
+}
+
+#toggleLogBtn {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.75rem;
+	margin-left: 0.5rem;
+}
+
+body {
+	background-color: #f8f9fa;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+	max-width: 800px;
+	margin-top: 30px;
+}
+
+.card {
+	border-radius: 10px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+.card-header {
+	background-color: #5865f2;
+	color: white;
+	font-weight: bold;
+	border-radius: 10px 10px 0 0 !important;
+}
+
+.btn-primary {
+	background-color: #5865f2;
+	border: none;
+}
+
+.btn-primary:hover {
+	background-color: #4752c4;
+}
+
+.webhook-item {
+	cursor: pointer;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 5px;
+	transition: all 0.2s;
+}
+
+.webhook-item:hover {
+	background-color: #f1f1f1;
+}
+
+.divider {
+	border-top: 2px solid #e0e0e0;
+	margin: 10px 0;
+}
+
+.emoji-btn {
+	font-size: 1.2em;
+	cursor: pointer;
+	margin: 0 5px;
+	transition: transform 0.2s;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	font-size: 14px;
+}
+
+.emoji-btn:hover {
+	transform: scale(1.2);
+}
+
+.emoji-btn .emoji-content {
+	font-size: 1.1em;
+	line-height: 1;
+	font-family: inherit;
+}
+
+.emoji-btn-container {
+	margin-top: 10px;
+	background-color: #f8f9fa;
+	padding: 5px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+/* CSS cho tab navigation */
+.nav-tabs {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	-ms-overflow-style: -ms-autohiding-scrollbar;
+	scrollbar-width: none;
+	white-space: nowrap;
+	padding-bottom: 2px;
+	margin-bottom: 0;
+}
+
+.nav-tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.nav-item {
+	flex: 0 0 auto;
+	display: inline-block;
+	float: none;
+}
+
+.nav-link {
+	white-space: nowrap;
+	display: flex;
+	align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.nav-tabs {
+		overflow-x: auto;
+		white-space: nowrap;
+		padding: 0 5px;
+	}
+
+	.nav-tabs .nav-link {
+		padding: 0.3rem 0.8rem;
+		margin-right: 0.3rem;
+		font-size: 0.9rem;
+	}
+}
+
+.text-gradient {
+	background: linear-gradient(45deg, #4361ee, #3f37c9, #4895ef);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+@keyframes fadeInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Ẩn chữ trong tab khi màn hình nhỏ */
+@media (max-width: 767.98px) {
+	.emoji-tabs-container .nav-link .tab-title {
+		display: none;
+	}
+
+	.emoji-tabs-container .nav-link {
+		padding: 0.5rem;
+	}
+}
+
+.emoji-tabs-container {
+	background: #fff;
+	border-radius: 0.5rem;
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.emoji-btn {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	font-size: 14px;
+}
+
+.emoji-btn .emoji-content {
+	font-size: 1.2em;
+	line-height: 1;
+	font-family: inherit;
+}
+
+.nav-tabs .nav-link {
+	color: #6c757d;
+	padding: 0.75rem 1rem;
+	border: none;
+	border-bottom: 3px solid transparent;
+}
+
+.nav-tabs .nav-link:hover {
+	border-color: #e9ecef #e9ecef #dee2e6;
+	color: #0d6efd;
+}
+
+.nav-tabs .nav-link.active {
+	color: #0d6efd;
+	background: transparent;
+	border-color: #0d6efd #dee2e6 #fff;
+}
+
+.tab-icon {
+	margin-right: 0.25rem;
+}
+
+.download-btn {
+	margin-bottom: 1rem;
+	margin-right: 1rem;
+}
+
+#fileList .list-group-item {
+	padding: 0.375rem 0.75rem;
+	font-size: 0.875rem;
+}
+
+#fileList .list-group-item .badge {
+	font-size: 0.75rem;
+}
