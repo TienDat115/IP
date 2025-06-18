@@ -72,9 +72,16 @@
 				cursor: pointer;
 				margin: 0 5px;
 				transition: transform 0.2s;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+				font-size: 14px;
 			}
 			.emoji-btn:hover {
 				transform: scale(1.2);
+			}
+			.emoji-btn .emoji-content {
+				font-size: 1.1em;
+				line-height: 1;
+				font-family: inherit;
 			}
 			.emoji-btn-container {
 				margin-top: 10px;
@@ -1574,119 +1581,215 @@
 				}
 
 				function createFormattingButtons(textareaId = "messageText") {
-					const formatButtons = [
-						[
-							{ title: "In đậm", content: "B", prefix: "**", suffix: "**" },
-							{ title: "In nghiêng", content: "I", prefix: "*", suffix: "*" },
-							{ title: "Gạch dưới", content: "U̲", prefix: "__", suffix: "__" },
-							{ title: "Gạch ngang", content: "S̶", prefix: "~~", suffix: "~~" },
-							{ title: "Code", content: "`", prefix: "`", suffix: "`" },
-							{ title: "Code Block", content: "```", prefix: "```", suffix: "```" },
-							{ title: "Tiêu Đề", content: "##", prefix: "## ", suffix: "" },
-							{ title: "In đậm + Gạch Dưới", content: "B + U̲", prefix: "__**", suffix: "**__" },
-							{ title: "Thời gian", content: "Time", prefix: "", suffix: "${getCurrentTime()}" },
-						],
-						[
-							{ title: "Thông báo", content: "🔔", prefix: "🔔", suffix: "" },
-							{ title: "Hỏi, nghi vấn", content: "❓", prefix: "❓", suffix: "" },
-							{ title: "Lỗi, cảnh báo", content: "⚠️", prefix: "⚠️", suffix: "" },
-							{ title: "Nội Dung", content: "🆎", prefix: "🆎", suffix: "" },
-							{ title: "ID Nhân Vật", content: "👤", prefix: "👤", suffix: "" },
-							{ title: "Phân Tách", content: "===", prefix: "==========================================", suffix: "" },
-							{ title: "Máy Chủ", content: "🖥️", prefix: "🖥️", suffix: "" },
-							{ title: "Game", content: "🎮", prefix: "🎮", suffix: "" },
-							{ title: "IP", content: "🌐 ", prefix: "🌐 ", suffix: "" },
-							{ title: "Ý tưởng, sáng kiến", content: "💡", prefix: "💡", suffix: "" },
-							{ title: "Tin nhắn, chat", content: "💬", prefix: "💬", suffix: "" },
-							{ title: "Loa, thông báo", content: "📢", prefix: "📢", suffix: "" },
-							{ title: "Trạng thái, thông tin", content: "🟢", prefix: "🟢", suffix: "" },
-							{ title: "Đánh dấu, chấp nhận", content: "✅", prefix: "✅", suffix: "" },
-							{ title: "Đánh dấu, không chấp nhận", content: "⛔️ ", prefix: "⛔️ ", suffix: "" },
-							{ title: "Lý do, giải thích", content: "🤔", prefix: "🤔", suffix: "" },
-							{ title: "Di chuyển, chuyển hướng", content: "➡️", prefix: "➡️", suffix: "" },
-							{ title: "Thời gian", content: "🕒", prefix: "🕒", suffix: "" },
-						],
-						[
-							{ title: "Số 1", content: "1️⃣", prefix: "1️⃣", suffix: "" },
-							{ title: "Số 2", content: "2️⃣", prefix: "2️⃣", suffix: "" },
-							{ title: "Số 3", content: "3️⃣", prefix: "3️⃣", suffix: "" },
-							{ title: "Số 4", content: "4️⃣", prefix: "4️⃣", suffix: "" },
-							{ title: "Số 5", content: "5️⃣", prefix: "5️⃣", suffix: "" },
-							{ title: "Số 6", content: "6️⃣", prefix: "6️⃣", suffix: "" },
-							{ title: "Số 7", content: "7️⃣", prefix: "7️⃣", suffix: "" },
-							{ title: "Số 8", content: "8️⃣", prefix: "8️⃣", suffix: "" },
-							{ title: "Số 9", content: "9️⃣", prefix: "9️⃣", suffix: "" },
-						],
-						[
-							{ title: "Tag mọi người", content: "@everyone", prefix: "@everyone", suffix: "" },
-							{ title: "Zz_NHD_zZ", content: "@Zz_NHD_zZ", prefix: "<@352800692362149889>", suffix: "" },
-							{ title: "Manh", content: "@Manh", prefix: "<@419760576806518784>", suffix: "" },
-							{ title: "Vu", content: "@Vu", prefix: "<@468411054616084490>", suffix: "" },
-							{ title: "VNxWrist", content: "@VNxWrist", prefix: "<@1123545230143148113>", suffix: "" },
-							{ title: "Ozin", content: "@Ozin", prefix: "<@739346682835370094>", suffix: "" },
-							{ title: "Hương", content: "@Hương", prefix: "<@1085871904348438548>", suffix: "" },
-						],
+					const tabs = [
+						{
+							id: "format-tab",
+							title: "Định dạng",
+							buttons: [
+								{ title: "In đậm", content: "B", prefix: "**", suffix: "**" },
+								{ title: "In nghiêng", content: "I", prefix: "*", suffix: "*" },
+								{ title: "Gạch dưới", content: "U̲", prefix: "__", suffix: "__" },
+								{ title: "Gạch ngang", content: "S̶", prefix: "~~", suffix: "~~" },
+								{ title: "Code", content: "`", prefix: "`", suffix: "`" },
+								{ title: "Code Block", content: "```", prefix: "```", suffix: "```" },
+								{ title: "Tiêu Đề", content: "##", prefix: "## ", suffix: "" },
+								{ title: "In đậm + Gạch Dưới", content: "B + U̲", prefix: "__**", suffix: "**__" },
+								{ title: "Thời gian", content: "Time", prefix: "", suffix: "${getCurrentTime()}" },
+							],
+						},
+						{
+							id: "emoji-tab",
+							title: "Emoji",
+							buttons: [
+								{ title: "Thông báo", content: "🔔", prefix: "🔔", suffix: "" },
+								{ title: "Hỏi, nghi vấn", content: "❓", prefix: "❓", suffix: "" },
+								{ title: "Lỗi, cảnh báo", content: "⚠️", prefix: "⚠️", suffix: "" },
+								{ title: "Nội Dung", content: "🆎", prefix: "🆎", suffix: "" },
+								{ title: "ID Nhân Vật", content: "👤", prefix: "👤", suffix: "" },
+								{ title: "Máy Chủ", content: "🖥️", prefix: "🖥️", suffix: "" },
+								{ title: "Game", content: "🎮", prefix: "🎮", suffix: "" },
+								{ title: "IP", content: "🌐", prefix: "🌐", suffix: "" },
+								{ title: "Ý tưởng", content: "💡", prefix: "💡", suffix: "" },
+								{ title: "Tin nhắn", content: "💬", prefix: "💬", suffix: "" },
+								{ title: "Thông báo", content: "📢", prefix: "📢", suffix: "" },
+								{ title: "Trạng thái", content: "🟢", prefix: "🟢", suffix: "" },
+								{ title: "Đồng ý", content: "✅", prefix: "✅", suffix: "" },
+								{ title: "Từ chối", content: "⛔️", prefix: "⛔️", suffix: "" },
+								{ title: "Lý do", content: "🤔", prefix: "🤔", suffix: "" },
+								{ title: "Chuyển hướng", content: "➡️", prefix: "➡️", suffix: "" },
+								{ title: "Thời gian", content: "🕒", prefix: "🕒", suffix: "" },
+							],
+						},
+						{
+							id: "number-tab",
+							title: "Số",
+							buttons: [
+								{ title: "Số 1", content: "1️⃣", prefix: "1️⃣", suffix: "" },
+								{ title: "Số 2", content: "2️⃣", prefix: "2️⃣", suffix: "" },
+								{ title: "Số 3", content: "3️⃣", prefix: "3️⃣", suffix: "" },
+								{ title: "Số 4", content: "4️⃣", prefix: "4️⃣", suffix: "" },
+								{ title: "Số 5", content: "5️⃣", prefix: "5️⃣", suffix: "" },
+								{ title: "Số 6", content: "6️⃣", prefix: "6️⃣", suffix: "" },
+								{ title: "Số 7", content: "7️⃣", prefix: "7️⃣", suffix: "" },
+								{ title: "Số 8", content: "8️⃣", prefix: "8️⃣", suffix: "" },
+								{ title: "Số 9", content: "9️⃣", prefix: "9️⃣", suffix: "" },
+							],
+						},
+						{
+							id: "mention-tab",
+							title: "Tag",
+							buttons: [
+								{ title: "Tag mọi người", content: "@everyone", prefix: "@everyone", suffix: "" },
+								{ title: "Zz_NHD_zZ", content: "@Zz_NHD_zZ", prefix: "<@352800692362149889>", suffix: "" },
+								{ title: "Manh", content: "@Manh", prefix: "<@419760576806518784>", suffix: "" },
+								{ title: "Vu", content: "@Vu", prefix: "<@468411054616084490>", suffix: "" },
+								{ title: "VNxWrist", content: "@VNxWrist", prefix: "<@1123545230143148113>", suffix: "" },
+								{ title: "Ozin", content: "@Ozin", prefix: "<@739346682835370094>", suffix: "" },
+								{ title: "Hương", content: "@Hương", prefix: "<@1085871904348438548>", suffix: "" },
+							],
+						},
 					];
 
-					let html = "";
+					// Tạo HTML cho các tab với Bootstrap
+					let html = `
+    <div class="emoji-tabs-container mb-3">
+        <ul class="nav nav-tabs nav-fill" id="emojiTabs" role="tablist">
+`;
 
-					const maxVisibleEmojis = 9;
+					// Thêm các nút tab với Bootstrap
+					tabs.forEach((tab, index) => {
+						const activeClass = index === 0 ? "active" : "";
+						const selected = index === 0 ? "true" : "false";
+						html += `
+            <li class="nav-item" role="presentation">
+                <button 
+                    class="nav-link ${activeClass} fw-bold" 
+                    id="${tab.id}-tab" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#${tab.id}" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="${tab.id}" 
+                    aria-selected="${selected}"
+                >
+                    <span class="tab-icon">${getTabIcon(tab.id)}</span>
+                    <span class="tab-title">${tab.title}</span>
+                </button>
+            </li>
+`;
+					});
 
-					formatButtons.forEach((row, rowIndex) => {
-						html += `<div class="mt-2 emoji-btn-container flex items-center">`;
+					html += `
+        </ul>
+        <div class="tab-content p-2 border border-top-0 rounded-bottom" id="emojiTabsContent">
+`;
 
-						// Kiểm tra nếu là dòng emoji thứ 2 (index 1) và có nhiều hơn maxVisibleEmojis emoji
-						if (rowIndex === 1 && row.length > maxVisibleEmojis) {
-							// Hiển thị maxVisibleEmojis emoji đầu tiên
-							for (let i = 0; i < maxVisibleEmojis; i++) {
-								const btn = row[i];
-								html += createEmojiButton(btn, textareaId);
-							}
-
-							// Thêm nút "Xem thêm"
-							html += `
-								<span 
-									class="emoji-btn more-btn ml-auto" 
-									title="Xem thêm"
-									onclick="this.classList.toggle('expanded');
-											const container = this.closest('.emoji-btn-container');
-											container.querySelectorAll('.extra-emoji').forEach(el => el.style.display = 
-												this.classList.contains('expanded') ? 'inline-block' : 'none');
-											this.innerHTML = this.classList.contains('expanded') ? '&laquo;' : '&raquo;';">
-									&raquo;
-								</span>`;
-
-							// Thêm các emoji còn lại với class extra-emoji
-							for (let i = maxVisibleEmojis; i < row.length; i++) {
-								const btn = row[i];
-								html += createEmojiButton(btn, textareaId, true);
-							}
-						} else {
-							// Hiển thị tất cả các nút cho các dòng khác
-							row.forEach((btn) => {
+					// Thêm nội dung cho từng tab
+					tabs.forEach((tab, index) => {
+						const activeClass = index === 0 ? "show active" : "";
+						html += `
+            <div 
+                class="tab-pane fade ${activeClass}" 
+                id="${tab.id}" 
+                role="tabpanel" 
+                aria-labelledby="${tab.id}-tab"
+            >
+`;
+						// Chia các nút thành các dòng, mỗi dòng tối đa 10 nút
+						const buttonsPerRow = 10;
+						for (let i = 0; i < tab.buttons.length; i += buttonsPerRow) {
+							const rowButtons = tab.buttons.slice(i, i + buttonsPerRow);
+							html += `<div class="d-flex flex-wrap justify-content-center mb-1">`;
+							rowButtons.forEach((btn) => {
 								html += createEmojiButton(btn, textareaId);
 							});
+							html += `</div>`;
 						}
 
 						html += `</div>`;
 					});
 
+					html += `</div></div>`;
 					return html;
 				}
 
-				// Hàm tạo HTML cho nút emoji
-				function createEmojiButton(btn, textareaId, isExtra = false) {
-					return `
-						<span 
-							class="emoji-btn ${isExtra ? "extra-emoji" : ""}" 
-							title="${btn.title}" 
-							onclick="insertText('${btn.prefix}', '${btn.suffix}', '${textareaId}')"
-							style="${isExtra ? "display: none;" : ""}"
-						>
-							${btn.content}
-						</span>`;
+				// Hàm lấy icon cho từng tab
+				function getTabIcon(tabId) {
+					const icons = {
+						"format-tab": '<i class="fas fa-font me-1"></i>',
+						"emoji-tab": '<i class="far fa-smile me-1"></i>',
+						"number-tab": '<i class="fas fa-list-ol me-1"></i>',
+						"mention-tab": '<i class="fas fa-at me-1"></i>',
+					};
+					return icons[tabId] || "";
 				}
 
+				// Hàm tạo nút emoji với Bootstrap
+				function createEmojiButton(btn, textareaId) {
+					return `
+            <button 
+                type="button" 
+                class="emoji-btn btn btn-sm m-1" 
+                title="${btn.title}" 
+                onclick="insertText('${btn.prefix}', '${btn.suffix}', '${textareaId}')"
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top"
+            >
+                <span class="emoji-content">${btn.content}</span>
+            </button>`;
+				}
+
+				// Thêm style CSS
+				const style = document.createElement("style");
+				style.textContent = `
+    .emoji-tabs-container {
+        background: #fff;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .emoji-btn {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 14px;
+    }
+    
+    .emoji-btn .emoji-content {
+        font-size: 1.2em;
+        line-height: 1;
+        font-family: inherit;
+    }
+    
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-bottom: 3px solid transparent;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        color: #0d6efd;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        background: transparent;
+        border-color: #0d6efd #dee2e6 #fff;
+    }
+    
+    .tab-icon {
+        margin-right: 0.25rem;
+    }
+`;
+				document.head.appendChild(style);
+
+				// Khởi tạo tooltip
+				document.addEventListener("DOMContentLoaded", function () {
+					var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+					var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+						return new bootstrap.Tooltip(tooltipTriggerEl);
+					});
+				});
 				// Gọi hàm khởi tạo khi DOM đã tải xong
 				document.addEventListener("DOMContentLoaded", function () {
 					initTemplateDropdown();
