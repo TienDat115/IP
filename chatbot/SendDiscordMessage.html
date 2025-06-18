@@ -1120,7 +1120,7 @@
 
 					12: {
 						name: "Cập Nhật File Hoàn Tất",
-						content: `❓ **THÔNG BÁO** ❓
+						content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ Cập nhật hoàn tất nội dung file **___**. Vui lòng kiểm tra lại
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
@@ -1587,18 +1587,24 @@
 							{ title: "Thời gian", content: "Time", prefix: "", suffix: "${getCurrentTime()}" },
 						],
 						[
-							{ title: "Khóa, bảo mật", content: "🔑", prefix: "🔑", suffix: "" },
+							{ title: "Thông báo", content: "🔔", prefix: "🔔", suffix: "" },
+							{ title: "Hỏi, nghi vấn", content: "❓", prefix: "❓", suffix: "" },
+							{ title: "Lỗi, cảnh báo", content: "⚠️", prefix: "⚠️", suffix: "" },
+							{ title: "Nội Dung", content: "🆎", prefix: "🆎", suffix: "" },
+							{ title: "ID Nhân Vật", content: "👤", prefix: "👤", suffix: "" },
+							{ title: "Phân Tách", content: "===", prefix: "==========================================", suffix: "" },
+							{ title: "Máy Chủ", content: "🖥️", prefix: "🖥️", suffix: "" },
+							{ title: "Game", content: "🎮", prefix: "🎮", suffix: "" },
+							{ title: "IP", content: "🌐 ", prefix: "🌐 ", suffix: "" },
 							{ title: "Ý tưởng, sáng kiến", content: "💡", prefix: "💡", suffix: "" },
 							{ title: "Tin nhắn, chat", content: "💬", prefix: "💬", suffix: "" },
 							{ title: "Loa, thông báo", content: "📢", prefix: "📢", suffix: "" },
-							{ title: "Hỏi, nghi vấn", content: "❓", prefix: "❓", suffix: "" },
 							{ title: "Trạng thái, thông tin", content: "🟢", prefix: "🟢", suffix: "" },
 							{ title: "Đánh dấu, chấp nhận", content: "✅", prefix: "✅", suffix: "" },
-							{ title: "Lỗi, cảnh báo", content: "⚠️", prefix: "⚠️", suffix: "" },
+							{ title: "Đánh dấu, không chấp nhận", content: "⛔️ ", prefix: "⛔️ ", suffix: "" },
 							{ title: "Lý do, giải thích", content: "🤔", prefix: "🤔", suffix: "" },
 							{ title: "Di chuyển, chuyển hướng", content: "➡️", prefix: "➡️", suffix: "" },
 							{ title: "Thời gian", content: "🕒", prefix: "🕒", suffix: "" },
-							{ title: "Phân Tách", content: "===", prefix: "==========================================", suffix: "" },
 						],
 						[
 							{ title: "Số 1", content: "1️⃣", prefix: "1️⃣", suffix: "" },
@@ -1624,22 +1630,61 @@
 
 					let html = "";
 
+					const maxVisibleEmojis = 9;
+
 					formatButtons.forEach((row, rowIndex) => {
-						html += `<div class="mt-2 emoji-btn-container">`;
-						row.forEach((btn) => {
+						html += `<div class="mt-2 emoji-btn-container flex items-center">`;
+
+						// Kiểm tra nếu là dòng emoji thứ 2 (index 1) và có nhiều hơn maxVisibleEmojis emoji
+						if (rowIndex === 1 && row.length > maxVisibleEmojis) {
+							// Hiển thị maxVisibleEmojis emoji đầu tiên
+							for (let i = 0; i < maxVisibleEmojis; i++) {
+								const btn = row[i];
+								html += createEmojiButton(btn, textareaId);
+							}
+
+							// Thêm nút "Xem thêm"
 							html += `
-                <span 
-                    class="emoji-btn" 
-                    title="${btn.title}" 
-                    onclick="insertText('${btn.prefix}', '${btn.suffix}', '${textareaId}')"
-                >
-                    ${btn.content}
-                </span>`;
-						});
+								<span 
+									class="emoji-btn more-btn ml-auto" 
+									title="Xem thêm"
+									onclick="this.classList.toggle('expanded');
+											const container = this.closest('.emoji-btn-container');
+											container.querySelectorAll('.extra-emoji').forEach(el => el.style.display = 
+												this.classList.contains('expanded') ? 'inline-block' : 'none');
+											this.innerHTML = this.classList.contains('expanded') ? '&laquo;' : '&raquo;';">
+									&raquo;
+								</span>`;
+
+							// Thêm các emoji còn lại với class extra-emoji
+							for (let i = maxVisibleEmojis; i < row.length; i++) {
+								const btn = row[i];
+								html += createEmojiButton(btn, textareaId, true);
+							}
+						} else {
+							// Hiển thị tất cả các nút cho các dòng khác
+							row.forEach((btn) => {
+								html += createEmojiButton(btn, textareaId);
+							});
+						}
+
 						html += `</div>`;
 					});
 
 					return html;
+				}
+
+				// Hàm tạo HTML cho nút emoji
+				function createEmojiButton(btn, textareaId, isExtra = false) {
+					return `
+						<span 
+							class="emoji-btn ${isExtra ? "extra-emoji" : ""}" 
+							title="${btn.title}" 
+							onclick="insertText('${btn.prefix}', '${btn.suffix}', '${textareaId}')"
+							style="${isExtra ? "display: none;" : ""}"
+						>
+							${btn.content}
+						</span>`;
 				}
 
 				// Gọi hàm khởi tạo khi DOM đã tải xong
