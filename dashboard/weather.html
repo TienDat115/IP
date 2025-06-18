@@ -7,7 +7,16 @@
 		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-		<link href="../css/tabs.css" rel="stylesheet" />
+		<script>
+			const VERSION = new Date().getTime();
+			// Thêm CSS với version
+			document.write(`<link rel="stylesheet" href="../css/tabs.css?v=${VERSION}" />`);
+
+			// Thêm các script
+			document.write(`
+				<script src="../js/tab-navigation.js?v=${VERSION}"><\/script>
+			`);
+		</script>
 		<style>
 			body {
 				font-family: "Inter", sans-serif;
@@ -276,7 +285,6 @@
 				}
 			}
 		</style>
-		<script src="../js/tab-navigation.js"></script>
 	</head>
 	<body>
 		<div class="container">
