@@ -771,6 +771,14 @@ const messageTemplates = {
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 	},
+
+	13: {
+		name: "Cảnh Báo",
+		content: `⚠️ **CẢNH BÁO** ⚠️
+		📢 __**Nội Dung:**__ 
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+	},
 };
 
 // Áp dụng mẫu tin nhắn đã chọn
