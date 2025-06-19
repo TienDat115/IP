@@ -57,7 +57,7 @@
 
 				<div class="space-y-4 sm:space-y-5">
 					<div class="flex items-center justify-center w-full">
-						<span id="time" class="text-gray-200 font-medium text-6xl sm:text-8xl md:text-9xl transition hover:text-blue-400 hover:scale-105">00:00:00</span>
+						<span id="time" class="text-gray-200 font-medium text-5xl sm:text-8xl md:text-9xl transition hover:text-blue-400 hover:scale-105">00:00:00</span>
 					</div>
 
 					<div class="flex flex-col items-center space-y-2 w-full">
@@ -119,13 +119,41 @@
 				}
 			}
 
+			// Function to adjust font size based on container width
+			function adjustFontSize() {
+				const timeElement = document.getElementById("time");
+				const container = timeElement.closest(".tab-content");
+				const containerWidth = container.offsetWidth;
+
+				// Calculate font size based on container width
+				let fontSize = containerWidth / 7; // Adjust this value to change scaling
+
+				// Set minimum and maximum font sizes
+				fontSize = Math.min(Math.max(fontSize, 24), 160); // min: 24px, max: 160px
+
+				// Apply the calculated font size
+				timeElement.style.fontSize = `${fontSize}px`;
+			}
+
+			// Create a ResizeObserver to detect container size changes
+			const observer = new ResizeObserver((entries) => {
+				for (let entry of entries) {
+					adjustFontSize();
+				}
+			});
+
+			// Start observing the container
+			const container = document.querySelector(".tab-content");
+			if (container) {
+				observer.observe(container);
+			}
+
 			// Update time every second
 			setInterval(updateTime, 1000);
 
-			// Initialize time on page load
-			document.addEventListener("DOMContentLoaded", () => {
-				updateTime();
-			});
+			// Initialize time and adjust font size on page load
+			updateTime();
+			adjustFontSize();
 		</script>
 	</body>
 </html>
