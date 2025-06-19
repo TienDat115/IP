@@ -684,6 +684,7 @@ const messageTemplates = {
 		name: "Thông báo",
 		content: `🔔 **THÔNG BÁO** 🔔
 		📢 __**Nội Dung:**__ 
+		💡 __**Phản Hồi:**__
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 	},
@@ -724,7 +725,7 @@ const messageTemplates = {
 		name: "Thắc Mắc",
 		content: `❓ **THÔNG BÁO** ❓
 		📢 __**Nội Dung:**__ 
-		⚠️ __**Lý Do:**__
+		⚠️ __**Phản Hồi:**__
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 	},
