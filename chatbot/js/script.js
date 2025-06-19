@@ -1264,6 +1264,9 @@ function createFormattingButtons(textareaId = "messageText") {
 				{ title: "Lý do", content: "🤔", prefix: "🤔", suffix: "" },
 				{ title: "Chuyển hướng", content: "➡️", prefix: "➡️", suffix: "" },
 				{ title: "Thời gian", content: "🕒", prefix: "🕒", suffix: "" },
+				{ title: "Hỗ trợ", content: "🆘", prefix: "🆘", suffix: "" },
+				{ title: "Hỏa", content: "🔥", prefix: "🔥", suffix: "" },
+				{ title: "OK", content: "👌🏾", prefix: "👌🏾", suffix: "" },
 			],
 		},
 		{
@@ -1280,6 +1283,7 @@ function createFormattingButtons(textareaId = "messageText") {
 				{ title: "Số 7", content: "7️⃣", prefix: "7️⃣", suffix: "" },
 				{ title: "Số 8", content: "8️⃣", prefix: "8️⃣", suffix: "" },
 				{ title: "Số 9", content: "9️⃣", prefix: "9️⃣", suffix: "" },
+				{ title: "Số 10", content: "🔟", prefix: "🔟", suffix: "" },
 			],
 		},
 		{
