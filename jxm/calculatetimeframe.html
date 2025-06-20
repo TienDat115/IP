@@ -558,7 +558,14 @@
 						<tbody>
 							<tr>
 								<td class="fw-bold text-start" style="width: 30%; border: none;">Timestamp</td>
-								<td class="text-start" style="border: none;">${timestamp}</td>
+								<td class="text-start align-middle" style="border: none;">
+									<div class="d-flex align-items-center">
+										<span>${timestamp}</span>
+										<button class="btn btn-sm btn-outline-primary ms-2 py-0 px-2 border-0" style="opacity: 0.7; transition: all 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" onclick="const btn = this; navigator.clipboard.writeText('${timestamp}').then(() => { const icon = btn.querySelector('i'); const originalIcon = icon.className; icon.className = 'bi bi-check text-success'; setTimeout(() => { icon.className = originalIcon; }, 1000); }); return false;">
+											<i class="bi bi-clipboard"></i>
+										</button>
+									</div>
+								</td>
 							</tr>
 							<tr>
 								<td class="fw-bold text-start" style="border: none;">Ngày giờ</td>
