@@ -774,7 +774,7 @@ const messageTemplates = {
 
 	13: {
 		name: "Cảnh Báo",
-		content: `⚠️ **CẢNH BÁO** ⚠️
+		content: `## ⚠️ CẢNH BÁO ⚠️
 		📢 __**Nội Dung:**__ 
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
