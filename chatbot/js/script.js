@@ -1247,6 +1247,8 @@ function createFormattingButtons(textareaId = "messageText") {
 			id: "emoji-tab",
 			title: "Emoji",
 			buttons: [
+				{ title: "-", content: "--", prefix: "-----------------------------------------------------------------", suffix: "" },
+				{ title: "=", content: "==", prefix: "==========================================", suffix: "" },
 				{ title: "Thông báo", content: "🔔", prefix: "🔔", suffix: "" },
 				{ title: "Hỏi, nghi vấn", content: "❓", prefix: "❓", suffix: "" },
 				{ title: "Lỗi, cảnh báo", content: "⚠️", prefix: "⚠️", suffix: "" },
