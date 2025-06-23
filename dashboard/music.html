@@ -2,7 +2,16 @@
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
+		<!-- Thẻ favicon cơ bản (đã có) -->
 		<link rel="icon" type="image/x-icon" href="https://images.macrumors.com/t/MKlRm9rIBpfcGnjTpf6ZxgpFTUg=/1600x1200/smart/article-new/2018/05/apple-music-note.jpg" />
+
+		<!-- Thêm các thẻ sau cho Android -->
+		<link rel="manifest" href="site.webmanifest" />
+		<link rel="apple-touch-icon" sizes="192x192" href="https://images.macrumors.com/t/MKlRm9rIBpfcGnjTpf6ZxgpFTUg=/1600x1200/smart/article-new/2018/05/apple-music-note.jpg" />
+		<meta name="theme-color" content="#000000" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Lofi Music</title>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -103,7 +112,7 @@
 				<div id="playerContainer" class="w-full sm:max-w-3xl mx-auto rounded-lg bg-black overflow-hidden mb-3 sm:mb-4"></div>
 
 				<!-- Hiển thị bài hát hiện tại -->
-				<div id="currentSong" class="mt-2 sm:mt-3 mb-3 sm:mb-4 flex items-center justify-center space-x-2 text-sm sm:text-base md:text-lg bg-gray-700 p-2 sm:p-2.5 md:p-3 rounded-lg shadow-lg sm:max-w-3xl mx-auto"></div>
+				<div id="currentSong" class="hidden mt-2 sm:mt-3 mb-3 sm:mb-4 flex items-center justify-center space-x-2 text-sm sm:text-base md:text-lg bg-gray-700 p-2 sm:p-2.5 md:p-3 rounded-lg shadow-lg sm:max-w-3xl mx-auto"></div>
 
 				<!-- Playlist Wrapper -->
 				<div id="playlistWrapper" style="display: block">
@@ -360,6 +369,9 @@
 							else if (url.endsWith(".mp3")) icon = "🎶";
 							else if (url.endsWith(".mp4")) icon = "🎬";
 							currentSongDisplay.innerHTML = `<span class="text-xl">${icon}</span> <span>${currentList.songs[index]}</span>`;
+
+							// Hiển thị thông tin bài hát hiện tại
+							document.getElementById("currentSong").classList.remove("hidden");
 
 							renderPlaylist();
 						}
@@ -723,6 +735,15 @@
 							toggleRandom,
 							toggleNoRepeat,
 						});
+
+						// Ẩn thông tin bài hát khi dừng phát
+						document.addEventListener(
+							"ended",
+							function () {
+								document.getElementById("currentSong").classList.add("hidden");
+							},
+							true
+						);
 					})
 					.catch((error) => {
 						console.error("Lỗi khi tải danh sách phát:", error);
