@@ -1241,14 +1241,14 @@ function createFormattingButtons(textareaId = "messageText") {
 				{ title: "Tiêu Đề", content: "##", prefix: "## ", suffix: "" },
 				{ title: "In đậm + Gạch Dưới", content: "B + U̲", prefix: "__**", suffix: "**__" },
 				{ title: "Thời gian", content: "Time", prefix: "", suffix: "${getCurrentTime()}" },
+				{ title: "-", content: "--", prefix: "-----------------------------------------------------------------", suffix: "" },
+				{ title: "=", content: "==", prefix: "==========================================", suffix: "" },
 			],
 		},
 		{
 			id: "emoji-tab",
 			title: "Emoji",
 			buttons: [
-				{ title: "-", content: "--", prefix: "-----------------------------------------------------------------", suffix: "" },
-				{ title: "=", content: "==", prefix: "==========================================", suffix: "" },
 				{ title: "Thông báo", content: "🔔", prefix: "🔔", suffix: "" },
 				{ title: "Hỏi, nghi vấn", content: "❓", prefix: "❓", suffix: "" },
 				{ title: "Lỗi, cảnh báo", content: "⚠️", prefix: "⚠️", suffix: "" },
