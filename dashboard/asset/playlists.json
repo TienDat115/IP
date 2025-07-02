@@ -51,10 +51,12 @@
 	},
 	"Nhạc Tâm Trạng": {
 		"music": [
-			"music/68.mp3"
+			"music/68.mp3",
+			"music/72.mp3"
 		],
 		"songs": [
-			"Khó Sinh Hận - Lễ Việt"
+			"Khó Sinh Hận - Lễ Việt",
+			"Tam Bái Hồng Trần Lương – Doãn Tích Miên"
 		]
 	},
 	"OST Phim": {
