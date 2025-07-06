@@ -281,6 +281,23 @@ async function addLogToFirebase(message, text, webhookName, webhookUrl, isError 
 
 // Hàm thêm log vào khung nhật ký
 function addLog(message, text, webhookName, webhookUrl, isError = false) {
+	// Nếu là webhook TEST thì chỉ hiển thị không lưu vào Firebase
+	if (webhookName === "TEST") {
+		const newLog = {
+			message: message,
+			text: text,
+			webhookName: webhookName,
+			webhookUrl: webhookUrl,
+			timestamp: new Date(), // Sử dụng timestamp thông thường
+			isError: isError,
+			user: auth.currentUser?.email || "unknown"
+		};
+		allLogs.unshift(newLog);
+		currentLogIndex = 0;
+		displayCurrentLog();
+		return;
+	}
+
 	// Sử dụng timestamp từ Firestore
 	const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
