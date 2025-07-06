@@ -162,30 +162,14 @@ async function loadLogs() {
 		const logArea = document.getElementById("logArea");
 		logArea.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 
-		const logsRef = db.collection("logs");
-		const querySnapshot = await logsRef.limit(50).get(); // Bỏ orderBy ở đây
+		const logsRef = db.collection("logs").orderBy("timestamp", "desc").limit(50);
+		const querySnapshot = await logsRef.get();
 
 		allLogs = [];
 		querySnapshot.forEach((doc) => {
 			const logData = doc.data();
-			logData.id = doc.id; // Thêm ID vào đối tượng log
+			logData.id = doc.id;
 			allLogs.push(logData);
-		});
-
-		// Sắp xếp lại mảng sau khi lấy dữ liệu
-		allLogs.sort((a, b) => {
-			// Hàm chuyển đổi chuỗi timestamp thành số (milliseconds since epoch)
-			const parseDate = (dateStr) => {
-				// Định dạng: "10:31:03 5/6/2025" -> [time, date] -> [hh, mm, ss], [d, M, yyyy]
-				const [time, date] = dateStr.split(" ");
-				const [hours, minutes, seconds] = time.split(":").map(Number);
-				const [day, month, year] = date.split("/").map(Number);
-
-				// Tạo đối tượng Date (lưu ý: tháng trong JavaScript bắt đầu từ 0)
-				return new Date(year, month - 1, day, hours, minutes, seconds).getTime();
-			};
-
-			return parseDate(b.timestamp) - parseDate(a.timestamp);
 		});
 
 		if (allLogs.length === 0) {
@@ -207,18 +191,46 @@ function displayCurrentLog() {
 	const logArea = document.getElementById("logArea");
 	const data = allLogs[currentLogIndex];
 
+	// Chuyển đổi timestamp từ Firestore thành string dễ đọc
+	const formatDate = (timestamp) => {
+		let date;
+		if (timestamp && typeof timestamp.toDate === 'function') {
+			// Trường hợp timestamp là đối tượng Firestore Timestamp
+			date = timestamp.toDate();
+		} else if (timestamp instanceof Date) {
+			// Trường hợp timestamp đã là Date object
+			date = timestamp;
+		} else if (typeof timestamp === 'number') {
+			// Trường hợp timestamp là số (timestamp Unix)
+			date = new Date(timestamp);
+		} else {
+			// Trường hợp không xác định, sử dụng Date.now()
+			date = new Date();
+		}
+		return date.toLocaleString('vi-VN', {
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			day: '2-digit',
+			month: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+			hour12: false
+		});
+	};
+
 	let logHTML = `
-						<div class="log-item ${data.isError ? "text-danger" : ""}">
-							<div class="d-flex justify-content-between align-items-center mb-2">
-								<span><strong>${data.isError ? "❌ Lỗi: " : ""}${data.message}</strong></span>
-								<span class="text-muted small">${data.timestamp}</span>
-							</div>
-							<div class="log-content">
-								<div class="log-field"><strong>Webhook:</strong> ${data.webhookName || "Không có"}</div>
-								${data.text ? `<div class="log-field"><strong>Nội dung:</strong><br>${data.text.replace(/\n/g, "<br>")}</div>` : ""}
-							</div>
-						</div>
-					`;
+				<div class="log-item ${data.isError ? "text-danger" : ""}">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<span><strong>${data.isError ? "❌ Lỗi: " : ""}${data.message}</strong></span>
+						<span class="text-muted small">${formatDate(data.timestamp)}</span>
+					</div>
+					<div class="log-content">
+						<div class="log-field"><strong>Webhook:</strong> ${data.webhookName || "Không có"}</div>
+						${data.text ? `<div class="log-field"><strong>Nội dung:</strong><br>${data.text.replace(/\n/g, "<br>")}</div>` : ""}
+					</div>
+				</div>
+			`;
 
 	logArea.innerHTML = logHTML;
 
@@ -250,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Hàm thêm log vào Firebase
 async function addLogToFirebase(message, text, webhookName, webhookUrl, isError = false) {
 	try {
-		const timestamp = new Date().toLocaleString();
+		const timestamp = firebase.firestore.Timestamp.now();
 		const logData = {
 			message,
 			text,
@@ -269,38 +281,27 @@ async function addLogToFirebase(message, text, webhookName, webhookUrl, isError 
 
 // Hàm thêm log vào khung nhật ký
 function addLog(message, text, webhookName, webhookUrl, isError = false) {
-	const timestamp = new Date().toLocaleString();
+	// Sử dụng timestamp từ Firestore
+	const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
 	// Tạo đối tượng log mới
 	const newLog = {
 		message: message,
 		text: text,
 		webhookName: webhookName,
+		webhookUrl: webhookUrl,
 		timestamp: timestamp,
 		isError: isError,
+		user: auth.currentUser?.email || "unknown"
 	};
 
-	// Thêm vào đầu mảng allLogs
-	allLogs.unshift(newLog);
-
-	// Nếu đang ở trang đầu tiên, cập nhật hiển thị
-	if (currentLogIndex === 0) {
-		displayCurrentLog();
-	} else {
-		// Nếu không ở trang đầu, đặt lại về trang đầu
-		currentLogIndex = 0;
-		displayCurrentLog();
-	}
-
-	// Giới hạn số lượng log lưu trữ
-	if (allLogs.length > 50) {
-		allLogs.pop();
-	}
-
-	// Không lưu vào Firebase nếu là log TEST
-	if (webhookName !== "TEST") {
-		addLogToFirebase(message, text, webhookName, webhookUrl, isError);
-	}
+	// Lưu vào Firebase và hiển thị ngay
+	addLogToFirebase(message, text, webhookName, webhookUrl, isError)
+		.then(() => {
+			allLogs.unshift(newLog);
+			currentLogIndex = 0;
+			displayCurrentLog();
+		});
 }
 
 // Chèn văn bản vào textarea
