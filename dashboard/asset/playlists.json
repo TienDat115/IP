@@ -25,7 +25,10 @@
 			"music/44.mp3",
 			"music/45.mp3",
 			"music/48.mp3",
-			"music/75.mp3"
+			"music/75.mp3",
+			"music/77.mp3",
+			"music/78.mp3",
+			"music/79.mp3"
 		],
 		"songs": [
 			"Tháp Rơi Tự Do - LBI Lợi Bỉ",
@@ -48,7 +51,10 @@
 			"Đều Trách Tại Em - Hồ 66",
 			"Ta Tên Trường An, Chàng Tên Cố Lý",
 			"Sứ Thanh Hoa",
-			"Xuân phong nhiễu《春风绕》|| Vương Thu Thực"
+			"Xuân phong nhiễu《春风绕》|| Vương Thu Thực",
+			"Bye Bye - Thiên Thiên Lũng",
+			"Da Da Da - Đao Tương",
+			"5:20AM - Đao Tương"
 		]
 	},
 	"Nhạc Tâm Trạng": {
@@ -87,7 +93,8 @@
 			"music/61.mp3",
 			"music/64.mp3",
 			"music/69.mp3",
-			"music/71.mp3"
+			"music/71.mp3",
+			"music/81.mp3"
 		],
 		"songs": [
 			"Bích Thương Chiến Ca - Dữ Phượng Hành",
@@ -114,7 +121,8 @@
 			"Tay Trái Chỉ Trăng (OST Hương Mật Tựa Khói Sương)",
 			"Bất Nhiễm (OST Hương Mật Tựa Khói Sương)",
 			"Khách mời (嘉宾) - Trương Viễn (OST Hôn Lễ Của Em)",
-			"Thán Vân Hề - Cúc Tịnh Y ( OST Vân Tịch Truyện)"
+			"Thán Vân Hề - Cúc Tịnh Y ( OST Vân Tịch Truyện)",
+			"OST Liên Hoa Lâu"
 		]
 	},
 	"Nhạc Việt": {
@@ -127,7 +135,9 @@
 			"music/63.mp3",
 			"music/70.mp3",
 			"music/73.mp3",
-			"music/74.mp3"
+			"music/74.mp3",
+			"music/76.mp3",
+			"music/80.mp3"
 		],
 		"songs": [
 			"Mình Cùng Nhau Đóng Băng - Thùy Chi",
@@ -138,7 +148,9 @@
 			"Quang Hùng MasterD - Dễ Đến Dễ Đi",
 			"HIEUTHUHAI - TRÌNH (prod. by Kewtiie)",
 			"Anh Vui",
-			"Phép Màu (Đàn Cá Gỗ OST) - Mounter x MAYDAYs, Minh Tốc"
+			"Phép Màu (Đàn Cá Gỗ OST) - Mounter x MAYDAYs, Minh Tốc",
+			"PUPPY & DANGRANGTO - WRONG TIMES",
+			"VINHTRAN - Gửi em"
 		]
 	},
 	"Nhạc Âu Mỹ": {
