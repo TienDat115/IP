@@ -173,11 +173,11 @@
 					.then((data) => {
 						const playlists = data;
 						// Tạo danh sách "Tất cả bài hát"
-						Object.values(playlists).forEach((list, index) => {
+						Object.entries(playlists).forEach(([playlistName, list], index) => {
 							if (index === 0) return; // Bỏ qua chính nó
-							playlists["Tất cả bài hát"].music.push(...list.music);
-							playlists["Tất cả bài hát"].songs.push(...list.songs);
+							playlists["Tất cả bài hát"] = [...playlists["Tất cả bài hát"], ...list];
 						});
+
 						// Cập nhật danh sách yêu thích từ local storage
 						let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 						favorites = Array.isArray(favorites) ? favorites : [];
@@ -185,10 +185,9 @@
 						// Cập nhật danh sách yêu thích
 						favorites.forEach((favoriteUrl) => {
 							for (const [playlistName, list] of Object.entries(playlists)) {
-								const index = list.music.indexOf(favoriteUrl);
-								if (index !== -1) {
-									playlists["Danh Sách Yêu Thích"].music.push(favoriteUrl);
-									playlists["Danh Sách Yêu Thích"].songs.push(`${list.songs[index]}`);
+								const song = list.find((song) => song.path === favoriteUrl);
+								if (song) {
+									playlists["Danh Sách Yêu Thích"].push(song);
 									break;
 								}
 							}
@@ -221,7 +220,7 @@
 						categorySelect.onchange = function () {
 							currentPlaylist = this.value;
 							currentIndex = 0;
-							currentPage = 1;
+							page = 1;
 							renderPlaylist();
 						};
 
@@ -229,11 +228,11 @@
 							playlist.innerHTML = "";
 							const currentList = playlists[currentPlaylist];
 							const start = (currentPage - 1) * pageSize;
-							const end = Math.min(start + pageSize, currentList.songs.length);
+							const end = Math.min(start + pageSize, currentList.length);
 
 							for (let idx = start; idx < end; idx++) {
-								const name = currentList.songs[idx];
-								const url = currentList.music[idx];
+								const song = currentList[idx];
+								const url = song.path;
 								const isFavorite = favorites.includes(url);
 
 								const li = document.createElement("li");
@@ -245,7 +244,7 @@
 								if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
 								else if (url.endsWith(".mp3")) icon = "🎶";
 								else if (url.endsWith(".mp4")) icon = "🎬";
-								songContainer.innerHTML = `<span class="text-xl">${icon}</span><span>${name}</span>`;
+								songContainer.innerHTML = `<span class="text-xl">${icon}</span><span>${song.title}</span>`;
 								li.appendChild(songContainer);
 
 								const favoriteBtn = document.createElement("button");
@@ -272,7 +271,7 @@
 						function renderPagination() {
 							const pagination = document.getElementById("pagination");
 							pagination.innerHTML = "";
-							const totalPages = Math.ceil(playlists[currentPlaylist].songs.length / pageSize);
+							const totalPages = Math.ceil(playlists[currentPlaylist].length / pageSize);
 
 							const prevBtn = document.createElement("button");
 							prevBtn.textContent = "«";
@@ -312,67 +311,50 @@
 
 						function play(index) {
 							const currentList = playlists[currentPlaylist];
-							const url = currentList.music[index];
-							currentPage = Math.floor(index / pageSize) + 1;
-							playerContainer.innerHTML = "";
+							const song = currentList[index];
+							let audio = document.getElementById("audioPlayer");
+							const titleElement = document.getElementById("title");
+							const artistElement = document.getElementById("artist");
+							const albumArt = document.getElementById("albumArt");
 
-							if (url.includes("youtube.com") || url.includes("youtu.be")) {
-								const iframe = document.createElement("iframe");
-								iframe.src = url + "?autoplay=1";
-								iframe.width = "100%";
-								iframe.height = "200";
-								iframe.frameBorder = "0";
-								iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-								iframe.allowFullscreen = true;
-								playerContainer.appendChild(iframe);
+							let icon = "🎵";
+							if (song.path.includes("youtube.com") || song.path.includes("youtu.be")) icon = "▶️";
+							else if (song.path.endsWith(".mp3")) icon = "🎶";
+							else if (song.path.endsWith(".mp4")) icon = "🎬";
 
-								// Set volume for YouTube iframe
-								if (isMuted) {
-									iframe.contentWindow.postMessage(
-										JSON.stringify({
-											event: "command",
-											func: "setVolume",
-											args: [0],
-										}),
-										"*"
-									);
-								}
-							} else if (url.endsWith(".mp3")) {
-								const audio = document.createElement("audio");
-								audio.src = url;
+							// Tạo audio player nếu chưa tồn tại
+							if (!audio) {
+								audio = document.createElement("audio");
+								audio.id = "audioPlayer";
 								audio.controls = true;
-								audio.autoplay = true;
 								audio.className = "w-full";
-								audio.volume = isMuted ? 0 : volumeSlider.value / 100;
+								audio.volume = volumeSlider.value / 100;
 								audio.addEventListener("ended", function () {
 									if (isRepeat) play(currentIndex);
 									else playNext();
 								});
 								playerContainer.appendChild(audio);
-							} else {
-								const video = document.createElement("video");
-								video.src = url;
-								video.controls = true;
-								video.playsInline = true;
-								video.autoplay = true;
-								video.className = "w-full";
-								video.volume = isMuted ? 0 : volumeSlider.value / 100;
-								video.addEventListener("ended", function () {
-									if (isRepeat) play(currentIndex);
-									else playNext();
-								});
-								playerContainer.appendChild(video);
 							}
 
-							let icon = "🎵";
-							if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
-							else if (url.endsWith(".mp3")) icon = "🎶";
-							else if (url.endsWith(".mp4")) icon = "🎬";
-							currentSongDisplay.innerHTML = `<span class="text-xl">${icon}</span> <span>${currentList.songs[index]}</span>`;
+							// Cập nhật title của trang
+							document.title = `${song.title} - Lofi Music`;
+
+							// Cập nhật thông tin bài hát
+							if (titleElement) {
+								titleElement.textContent = song.title;
+							}
+							if (artistElement) {
+								artistElement.textContent = song.title;
+							}
 
 							// Hiển thị thông tin bài hát hiện tại
+							currentSongDisplay.innerHTML = `<span class="text-xl">${icon}</span> <span>${song.title}</span>`;
 							document.getElementById("currentSong").classList.remove("hidden");
 
+							// Cập nhật player
+							audio.src = song.path;
+							audio.play();
+							playedSongs.add(song.path);
 							renderPlaylist();
 						}
 
@@ -411,7 +393,7 @@
 							const currentList = playlists[currentPlaylist];
 							if (isRandom) {
 								let nextIndex;
-								const nonYoutubeIndexes = currentList.music.map((item, idx) => (!item.includes("youtube.com") && !item.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
+								const nonYoutubeIndexes = currentList.map((item, idx) => (!item.path.includes("youtube.com") && !item.path.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
 
 								if (isNoRepeat) {
 									// Lọc các bài hát chưa được phát
@@ -432,10 +414,15 @@
 									nextIndex = nonYoutubeIndexes[Math.floor(Math.random() * nonYoutubeIndexes.length)];
 								}
 								currentIndex = nextIndex;
+								// Cập nhật currentPage dựa trên bài hát mới
+								currentPage = Math.floor(nextIndex / pageSize) + 1;
 							} else {
-								currentIndex = (currentIndex + 1) % currentList.music.length;
+								currentIndex = (currentIndex + 1) % currentList.length;
+								// Cập nhật currentPage dựa trên bài hát mới
+								currentPage = Math.floor(currentIndex / pageSize) + 1;
 							}
 							play(currentIndex);
+							renderPagination();
 						}
 
 						function toggleNoRepeat() {
@@ -454,7 +441,7 @@
 							}
 							// Sử dụng Toastify thay vì Swal.fire
 							Toastify({
-								text: isNoRepeat ? "🔄 Đã bật tắt phát lại" : "🔄 Đã tắt chức năng tắt phát lại",
+								text: isNoRepeat ? "🔄 Đã tắt phát lại" : "🔄 Đã bật phát lại",
 								duration: 2000,
 								gravity: "top",
 								position: "right",
@@ -511,19 +498,17 @@
 							if (isFavorite) {
 								favorites = favorites.filter((song) => song !== url);
 								// Xóa bài hát khỏi danh sách yêu thích
-								const index = playlists["Danh Sách Yêu Thích"].music.indexOf(url);
+								const index = playlists["Danh Sách Yêu Thích"].findIndex((song) => song.path === url);
 								if (index !== -1) {
-									playlists["Danh Sách Yêu Thích"].music.splice(index, 1);
-									playlists["Danh Sách Yêu Thích"].songs.splice(index, 1);
+									playlists["Danh Sách Yêu Thích"].splice(index, 1);
 								}
 							} else {
 								favorites.push(url);
 								// Thêm bài hát vào danh sách yêu thích
 								const currentList = playlists[currentPlaylist];
-								const songIndex = currentList.music.indexOf(url);
+								const songIndex = currentList.findIndex((song) => song.path === url);
 								if (songIndex !== -1) {
-									playlists["Danh Sách Yêu Thích"].music.push(url);
-									playlists["Danh Sách Yêu Thích"].songs.push(currentList.songs[songIndex]);
+									playlists["Danh Sách Yêu Thích"].push(currentList[songIndex]);
 								}
 							}
 
