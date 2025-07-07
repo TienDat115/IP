@@ -30,10 +30,6 @@
 			"title": "COCO - Aioz, Young 7"
 		},
 		{
-			"path": "music/12.mp3",
-			"title": "Có, Không Có - h3R3/Đinh Tứ Dicey"
-		},
-		{
 			"path": "music/13.mp3",
 			"title": "Đối Diện - Sasablue"
 		},
@@ -46,36 +42,12 @@
 			"title": "TA - Bàn Hổ"
 		},
 		{
-			"path": "music/20.mp3",
-			"title": "Đông Miên"
-		},
-		{
 			"path": "music/22.mp3",
 			"title": "For ya – Tưởng Tiểu Ni"
 		},
 		{
-			"path": "music/25.mp3",
-			"title": "Chờ Đến Tháng 13 - Trần Tiểu Mãn"
-		},
-		{
-			"path": "music/27.mp3",
-			"title": "Trang Giấy Cuối Cùng"
-		},
-		{
 			"path": "music/33.mp3",
 			"title": "Chưa Chắc - Ngô Cẩn Ngôn"
-		},
-		{
-			"path": "music/38.mp3",
-			"title": "Renai Circulation - Anime"
-		},
-		{
-			"path": "music/44.mp3",
-			"title": "Đều Trách Tại Em - Hồ 66"
-		},
-		{
-			"path": "music/45.mp3",
-			"title": "Ta Tên Trường An, Chàng Tên Cố Lý"
 		},
 		{
 			"path": "music/48.mp3",
@@ -100,9 +72,49 @@
 		{
 			"path": "music/82.mp3",
 			"title": "Yêu Anh (爱你) - Vương Tâm Lăng"
+		},
+		{
+			"path": "music/84.mp3",
+			"title": "Nuông chiều đến hư hỏng - Lý Tuấn Hữu & Tiểu Phan Phan"
+		},
+		{
+			"path": "music/85.mp3",
+			"title": "Lover Boy 88 - CLAM Khương Băng X Ngận Mỹ Vị"
+		},
+		{
+			"path": "music/86.mp3",
+			"title": "Nghiện thức khuya - Lưu Diệc Tâm"
+		},
+		{
+			"path": "music/87.mp3",
+			"title": "Bagaikan Langit - Relax-chill"
 		}
 	],
 	"Nhạc Tâm Trạng": [
+		{
+			"path": "music/20.mp3",
+			"title": "Đông Miên"
+		},
+		{
+			"path": "music/27.mp3",
+			"title": "Trang Giấy Cuối Cùng"
+		},
+		{
+			"path": "music/25.mp3",
+			"title": "Chờ Đến Tháng 13 - Trần Tiểu Mãn"
+		},
+		{
+			"path": "music/12.mp3",
+			"title": "Có, Không Có - h3R3/Đinh Tứ Dicey"
+		},
+		{
+			"path": "music/44.mp3",
+			"title": "Đều Trách Tại Em - Hồ 66"
+		},
+		{
+			"path": "music/45.mp3",
+			"title": "Ta Tên Trường An, Chàng Tên Cố Lý"
+		},
 		{
 			"path": "music/68.mp3",
 			"title": "Khó Sinh Hận - Lễ Việt"
@@ -216,6 +228,10 @@
 		{
 			"path": "music/81.mp3",
 			"title": "OST Liên Hoa Lâu"
+		},
+		{
+			"path": "music/89.mp3",
+			"title": "Ba Lần Gả Trêu Ghẹo Lòng Quân OST"
 		}
 	],
 	"Nhạc Việt": [
@@ -280,6 +296,10 @@
 		{
 			"path": "music/58.mp3",
 			"title": "Westlife - My Love"
+		},
+		{
+			"path": "music/83.mp3",
+			"title": "One Direction - What Makes You Beautiful"
 		}
 	],
 	"Nhạc Hàn": [
@@ -316,7 +336,15 @@
 			"title": "Henry Young - One More Last Time"
 		}
 	],
-	"Nhạc Game": [
+	"Nhạc Game & Anime": [
+		{
+			"path": "music/65.mp3",
+			"title": "Summertime - Cinnamons x Evening Cinema"
+		},
+		{
+			"path": "music/38.mp3",
+			"title": "Renai Circulation - Anime"
+		},
 		{
 			"path": "music/23.mp3",
 			"title": "ANIMA POWER - QWER"
