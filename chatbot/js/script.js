@@ -998,8 +998,16 @@ async function downloadLogs() {
 		let logContent = "";
 		querySnapshot.forEach((doc) => {
 			const data = doc.data();
+			const timestamp = new Date(data.timestamp.seconds * 1000 + data.timestamp.nanoseconds / 1000000);
 			logContent += `========================\n`;
-			logContent += `Thời gian: ${data.timestamp}\n`;
+			logContent += `Thời gian: ${timestamp.toLocaleString('vi-VN', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            })}\n`;
 			logContent += `Tin nhắn: ${data.message}\n`;
 			logContent += `Nội dung: ${data.text || ""}\n`;
 			logContent += `Webhook: ${data.webhookName}\n`;
