@@ -218,12 +218,12 @@
 						const playlistWrapper = document.getElementById("playlistWrapper");
 						const togglePlaylistBtn = document.getElementById("togglePlaylistBtn");
 
-						categorySelect.onchange = function () {
+						categorySelect.addEventListener("change", function () {
 							currentPlaylist = this.value;
 							currentIndex = 0;
 							currentPage = 1;
 							renderPlaylist();
-						};
+						});
 
 						function renderPlaylist() {
 							playlist.innerHTML = "";
