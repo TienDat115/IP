@@ -88,6 +88,14 @@
 		{
 			"path": "music/87.mp3",
 			"title": "Bagaikan Langit - Relax-chill"
+		},
+		{
+			"path": "music/92.mp3",
+			"title": "Đắm Chìm - JuggShots"
+		},
+		{
+			"path": "music/93.mp3",
+			"title": "Đại Điền Hậu Sinh Tử (Tik tok) - Vương Ngọc Manh"
 		}
 	],
 	"Nhạc Tâm Trạng": [
@@ -122,6 +130,10 @@
 		{
 			"path": "music/72.mp3",
 			"title": "Tam Bái Hồng Trần Lương – Doãn Tích Miên"
+		},
+		{
+			"path": "music/91.mp3",
+			"title": "Nước Mắt Đến Từ Niềm Vui - Doãn Tích Miên"
 		}
 	],
 	"OST Phim": [
