@@ -272,7 +272,35 @@
 							const pagination = document.getElementById("pagination");
 							pagination.innerHTML = "";
 							const totalPages = Math.ceil(playlists[currentPlaylist].length / pageSize);
+							const isMobile = window.innerWidth <= 360; // 768px là breakpoint phổ biến cho mobile
+							const maxVisiblePages = isMobile ? 3 : 15; // 3 cho mobile, 15 cho desktop
+							let startPage, endPage;
 
+							// Tính toán trang bắt đầu và kết thúc để hiển thị
+							if (totalPages <= maxVisiblePages) {
+								startPage = 1;
+								endPage = totalPages;
+							} else {
+								// Tính toán để trang hiện tại luôn nằm giữa
+								const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+								const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+
+								if (currentPage <= maxPagesBeforeCurrent) {
+									// Trang hiện tại gần đầu
+									startPage = 1;
+									endPage = maxVisiblePages;
+								} else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+									// Trang hiện tại gần cuối
+									startPage = totalPages - maxVisiblePages + 1;
+									endPage = totalPages;
+								} else {
+									// Trang hiện tại ở giữa
+									startPage = currentPage - maxPagesBeforeCurrent;
+									endPage = currentPage + maxPagesAfterCurrent;
+								}
+							}
+
+							// Nút Previous
 							const prevBtn = document.createElement("button");
 							prevBtn.textContent = "«";
 							prevBtn.disabled = currentPage === 1;
@@ -285,7 +313,28 @@
 							};
 							pagination.appendChild(prevBtn);
 
-							for (let i = 1; i <= totalPages; i++) {
+							// Nút trang đầu tiên
+							if (startPage > 1) {
+								const firstPageBtn = document.createElement("button");
+								firstPageBtn.textContent = "1";
+								firstPageBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500";
+								firstPageBtn.onclick = () => {
+									currentPage = 1;
+									renderPlaylist();
+								};
+								pagination.appendChild(firstPageBtn);
+
+								// Thêm dấu "..." nếu cần
+								if (startPage > 2) {
+									const ellipsis = document.createElement("span");
+									ellipsis.textContent = "...";
+									ellipsis.className = "px-1";
+									pagination.appendChild(ellipsis);
+								}
+							}
+
+							// Các nút trang
+							for (let i = startPage; i <= endPage; i++) {
 								const pageBtn = document.createElement("button");
 								pageBtn.textContent = i;
 								pageBtn.className = "px-2 py-1 rounded " + (i === currentPage ? "bg-blue-500 text-white" : "bg-gray-600 hover:bg-gray-500");
@@ -296,6 +345,27 @@
 								pagination.appendChild(pageBtn);
 							}
 
+							// Nút trang cuối cùng
+							if (endPage < totalPages) {
+								// Thêm dấu "..." nếu cần
+								if (endPage < totalPages - 1) {
+									const ellipsis = document.createElement("span");
+									ellipsis.textContent = "...";
+									ellipsis.className = "px-1";
+									pagination.appendChild(ellipsis);
+								}
+
+								const lastPageBtn = document.createElement("button");
+								lastPageBtn.textContent = totalPages;
+								lastPageBtn.className = "px-2 py-1 rounded bg-gray-600 hover:bg-gray-500";
+								lastPageBtn.onclick = () => {
+									currentPage = totalPages;
+									renderPlaylist();
+								};
+								pagination.appendChild(lastPageBtn);
+							}
+
+							// Nút Next
 							const nextBtn = document.createElement("button");
 							nextBtn.textContent = "»";
 							nextBtn.disabled = currentPage === totalPages;
