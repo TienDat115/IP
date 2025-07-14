@@ -775,7 +775,8 @@ const messageTemplates = {
 	11: {
 		name: "Nội Dung File Bảo Trì",
 		content: `❓ **THÔNG BÁO** ❓
-		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
+		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) 
+		# [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
 		⚠️ __**Lý Do:**__
 
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
