@@ -170,24 +170,44 @@
 				// Load playlists from JSON file
 				fetch("asset/playlists.json")
 					.then((response) => response.json())
-					.then((data) => {
-						const playlists = data;
+					.then((playlists) => {
+						const MUSIC_FOLDER = "music/";
+
 						// Tạo danh sách "Tất cả bài hát"
-						Object.entries(playlists).forEach(([playlistName, list], index) => {
-							if (index === 0) return; // Bỏ qua chính nó
-							playlists["Tất cả bài hát"] = [...playlists["Tất cả bài hát"], ...list];
+						const allSongs = [];
+						Object.values(playlists).forEach((songs) => {
+							if (Array.isArray(songs)) {
+								songs.forEach((filename) => {
+									const path = MUSIC_FOLDER + filename;
+									const title = filename.replace(/\.mp3$/, "");
+									allSongs.push({
+										path: path,
+										title: title,
+									});
+								});
+							}
 						});
+						playlists["Tất cả bài hát"] = allSongs;
 
 						// Cập nhật danh sách yêu thích từ local storage
 						let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 						favorites = Array.isArray(favorites) ? favorites : [];
 
 						// Cập nhật danh sách yêu thích
+						playlists["Danh Sách Yêu Thích"] = [];
 						favorites.forEach((favoriteUrl) => {
-							for (const [playlistName, list] of Object.entries(playlists)) {
-								const song = list.find((song) => song.path === favoriteUrl);
+							for (const [playlistName, songs] of Object.entries(playlists)) {
+								if (playlistName === "Tất cả bài hát" || playlistName === "Danh Sách Yêu Thích") continue;
+
+								// Chỉ lấy tên file để so sánh
+								const favoriteFilename = favoriteUrl.replace(MUSIC_FOLDER, "");
+								const song = songs.find((songPath) => songPath === favoriteFilename);
+
 								if (song) {
-									playlists["Danh Sách Yêu Thích"].push(song);
+									playlists["Danh Sách Yêu Thích"].push({
+										path: MUSIC_FOLDER + song,
+										title: song.replace(/\.mp3$/, ""),
+									});
 									break;
 								}
 							}
@@ -227,13 +247,29 @@
 						function renderPlaylist() {
 							playlist.innerHTML = "";
 							const currentList = playlists[currentPlaylist];
+
+							// Kiểm tra nếu là playlist đặc biệt (đã được xử lý sẵn)
+							const isSpecialPlaylist = currentPlaylist === "Tất cả bài hát" || currentPlaylist === "Danh Sách Yêu Thích";
+
 							const start = (currentPage - 1) * pageSize;
 							const end = Math.min(start + pageSize, currentList.length);
 
 							for (let idx = start; idx < end; idx++) {
-								const song = currentList[idx];
-								const url = song.path;
-								const isFavorite = favorites.includes(url);
+								let song, url, title;
+
+								if (isSpecialPlaylist) {
+									// Đã có đầy đủ thông tin
+									song = currentList[idx];
+									url = song.path;
+									title = song.title;
+								} else {
+									// Tạo đối tượng bài hát từ tên file
+									const filename = currentList[idx];
+									url = MUSIC_FOLDER + filename;
+									title = filename.replace(/\.mp3$/, "");
+								}
+
+								const isFavorite = favorites.some((fav) => fav === url);
 
 								const li = document.createElement("li");
 								li.className = "flex items-center justify-between px-3 sm:px-4 py-2 hover:bg-gray-600 transition " + (idx === currentIndex ? "bg-gray-500 font-bold" : "");
@@ -244,7 +280,7 @@
 								if (url.includes("youtube.com") || url.includes("youtu.be")) icon = "▶️";
 								else if (url.endsWith(".mp3")) icon = "🎶";
 								else if (url.endsWith(".mp4")) icon = "🎬";
-								songContainer.innerHTML = `<span class="text-xl">${icon}</span><span>${song.title}</span>`;
+								songContainer.innerHTML = `<span class="text-xl">${icon}</span><span>${title}</span>`;
 								li.appendChild(songContainer);
 
 								const favoriteBtn = document.createElement("button");
@@ -381,7 +417,18 @@
 
 						function play(index) {
 							const currentList = playlists[currentPlaylist];
-							const song = currentList[index];
+							const isSpecialPlaylist = currentPlaylist === "Tất cả bài hát" || currentPlaylist === "Danh Sách Yêu Thích";
+
+							let song = currentList[index];
+
+							// Nếu là playlist thông thường, tạo đối tượng song từ tên file
+							if (!isSpecialPlaylist) {
+								song = {
+									path: MUSIC_FOLDER + song,
+									title: typeof song === "string" ? song.replace(/\.mp3$/, "") : song.title,
+								};
+							}
+
 							let audio = document.getElementById("audioPlayer");
 							const titleElement = document.getElementById("title");
 							const artistElement = document.getElementById("artist");
@@ -407,12 +454,13 @@
 							}
 
 							// Cập nhật title của trang
-							document.title = `${song.title}`;
+							document.title = song.title;
 
 							// Cập nhật thông tin bài hát
 							if (titleElement) {
 								titleElement.textContent = song.title;
 							}
+
 							if (artistElement) {
 								artistElement.textContent = song.title;
 							}
@@ -424,7 +472,12 @@
 							// Cập nhật player
 							audio.src = song.path;
 							audio.play();
-							playedSongs.add(song.path);
+							if (isRandom) {
+								playedSongs.add(song.path);
+							}
+
+							// Cập nhật UI
+							currentIndex = index;
 							renderPlaylist();
 						}
 

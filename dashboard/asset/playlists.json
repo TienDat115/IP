@@ -1,390 +1,111 @@
 {
 	"Tất cả bài hát": [],
 	"Chill Music": [
-		{
-			"path": "music/1.mp3",
-			"title": "Tháp Rơi Tự Do - LBI Lợi Bỉ"
-		},
-		{
-			"path": "music/2.mp3",
-			"title": "Ghép Hình Tình Yêu - Tưởng Tư Di/Nhạc Nhiên"
-		},
-		{
-			"path": "music/3.mp3",
-			"title": "Góp Vui - Sơ Nguyệt"
-		},
-		{
-			"path": "music/4.mp3",
-			"title": "Kiss Kiss Shy Shy - Lý Yêu Hồng RedLi"
-		},
-		{
-			"path": "music/5.mp3",
-			"title": "Như - Thiện Vũ"
-		},
-		{
-			"path": "music/6.mp3",
-			"title": "Bất Công - Trần Tử Tình"
-		},
-		{
-			"path": "music/7.mp3",
-			"title": "COCO - Aioz, Young 7"
-		},
-		{
-			"path": "music/13.mp3",
-			"title": "Đối Diện - Sasablue"
-		},
-		{
-			"path": "music/15.mp3",
-			"title": "Ring Ring Ring - Bất Thị Hoa Hỏa Nha"
-		},
-		{
-			"path": "music/16.mp3",
-			"title": "TA - Bàn Hổ"
-		},
-		{
-			"path": "music/22.mp3",
-			"title": "For ya – Tưởng Tiểu Ni"
-		},
-		{
-			"path": "music/33.mp3",
-			"title": "Chưa Chắc - Ngô Cẩn Ngôn"
-		},
-		{
-			"path": "music/48.mp3",
-			"title": "Sứ Thanh Hoa"
-		},
-		{
-			"path": "music/75.mp3",
-			"title": "Xuân phong nhiễu《春风绕》|| Vương Thu Thực"
-		},
-		{
-			"path": "music/77.mp3",
-			"title": "Bye Bye - Thiên Thiên Lũng"
-		},
-		{
-			"path": "music/78.mp3",
-			"title": "Da Da Da - Đao Tương"
-		},
-		{
-			"path": "music/79.mp3",
-			"title": "5:20AM - Đao Tương"
-		},
-		{
-			"path": "music/82.mp3",
-			"title": "Yêu Anh (爱你) - Vương Tâm Lăng"
-		},
-		{
-			"path": "music/84.mp3",
-			"title": "Nuông chiều đến hư hỏng - Lý Tuấn Hữu & Tiểu Phan Phan"
-		},
-		{
-			"path": "music/85.mp3",
-			"title": "Lover Boy 88 - CLAM Khương Băng X Ngận Mỹ Vị"
-		},
-		{
-			"path": "music/86.mp3",
-			"title": "Nghiện thức khuya - Lưu Diệc Tâm"
-		},
-		{
-			"path": "music/87.mp3",
-			"title": "Bagaikan Langit - Relax-chill"
-		},
-		{
-			"path": "music/92.mp3",
-			"title": "Đắm Chìm - JuggShots"
-		},
-		{
-			"path": "music/93.mp3",
-			"title": "Đại Điền Hậu Sinh Tử (Tik tok) - Vương Ngọc Manh"
-		}
+		"Tháp Rơi Tự Do - LBI Lợi Bỉ.mp3",
+		"Ghép Hình Tình Yêu - Tưởng Tư DiNhạc Nhiên.mp3",
+		"Góp Vui - Sơ Nguyệt.mp3",
+		"Kiss Kiss Shy Shy - Lý Yêu Hồng RedLi.mp3",
+		"Như - Thiện Vũ.mp3",
+		"Bất Công - Trần Tử Tình.mp3",
+		"COCO - Aioz, Young 7.mp3",
+		"Đối Diện - Sasablue.mp3",
+		"Ring Ring Ring - Bất Thị Hoa Hỏa Nha.mp3",
+		"TA - Bàn Hổ.mp3",
+		"For ya – Tưởng Tiểu Ni.mp3",
+		"Chưa Chắc - Ngô Cẩn Ngôn.mp3",
+		"Sứ Thanh Hoa.mp3",
+		"Xuân phong nhiễu《春风绕》 Vương Thu Thực.mp3",
+		"Bye Bye - Thiên Thiên Lũng.mp3",
+		"Da Da Da - Đao Tương.mp3",
+		"520AM - Đao Tương.mp3",
+		"Yêu Anh (爱你) - Vương Tâm Lăng.mp3",
+		"Nuông chiều đến hư hỏng - Lý Tuấn Hữu & Tiểu Phan Phan.mp3",
+		"Lover Boy 88 - CLAM Khương Băng X Ngận Mỹ Vị.mp3",
+		"Nghiện thức khuya - Lưu Diệc Tâm.mp3",
+		"Bagaikan Langit - Relax-chill.mp3",
+		"Đắm Chìm - JuggShots.mp3",
+		"Đại Điền Hậu Sinh Tử (Tik tok) - Vương Ngọc Manh.mp3"
 	],
 	"Nhạc Tâm Trạng": [
-		{
-			"path": "music/20.mp3",
-			"title": "Đông Miên"
-		},
-		{
-			"path": "music/27.mp3",
-			"title": "Trang Giấy Cuối Cùng"
-		},
-		{
-			"path": "music/25.mp3",
-			"title": "Chờ Đến Tháng 13 - Trần Tiểu Mãn"
-		},
-		{
-			"path": "music/12.mp3",
-			"title": "Có, Không Có - h3R3/Đinh Tứ Dicey"
-		},
-		{
-			"path": "music/44.mp3",
-			"title": "Đều Trách Tại Em - Hồ 66"
-		},
-		{
-			"path": "music/45.mp3",
-			"title": "Ta Tên Trường An, Chàng Tên Cố Lý"
-		},
-		{
-			"path": "music/68.mp3",
-			"title": "Khó Sinh Hận - Lễ Việt"
-		},
-		{
-			"path": "music/72.mp3",
-			"title": "Tam Bái Hồng Trần Lương – Doãn Tích Miên"
-		},
-		{
-			"path": "music/91.mp3",
-			"title": "Nước Mắt Đến Từ Niềm Vui - Doãn Tích Miên"
-		}
+		"Đông Miên.mp3",
+		"Trang Giấy Cuối Cùng.mp3",
+		"Chờ Đến Tháng 13 - Trần Tiểu Mãn.mp3",
+		"Có, Không Có - h3R3Đinh Tứ Dicey.mp3",
+		"Đều Trách Tại Em - Hồ 66.mp3",
+		"Ta Tên Trường An, Chàng Tên Cố Lý.mp3",
+		"Khó Sinh Hận - Lễ Việt.mp3",
+		"Tam Bái Hồng Trần Lương – Doãn Tích Miên.mp3",
+		"Nước Mắt Đến Từ Niềm Vui - Doãn Tích Miên.mp3"
 	],
 	"OST Phim": [
-		{
-			"path": "music/30.mp3",
-			"title": "Bích Thương Chiến Ca - Dữ Phượng Hành"
-		},
-		{
-			"path": "music/29.mp3",
-			"title": "Yêu Như Thế - Thần Ẩn"
-		},
-		{
-			"path": "music/14.mp3",
-			"title": "Tham Cầu - Thần Ẩn"
-		},
-		{
-			"path": "music/17.mp3",
-			"title": "Như Ca - Liệt Hỏa Như Ca"
-		},
-		{
-			"path": "music/18.mp3",
-			"title": "Cái Đuôi Nhỏ"
-		},
-		{
-			"path": "music/19.mp3",
-			"title": "Lưu Chuyển Doanh Hồi - Ngộ Long"
-		},
-		{
-			"path": "music/31.mp3",
-			"title": "Phong - Thiếu Niên Ca Hành"
-		},
-		{
-			"path": "music/32.mp3",
-			"title": "Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh"
-		},
-		{
-			"path": "music/9.mp3",
-			"title": "Sơn Hải"
-		},
-		{
-			"path": "music/10.mp3",
-			"title": "Nhập Hoài"
-		},
-		{
-			"path": "music/11.mp3",
-			"title": "Không Nỡ - Đấu La Đại Lục"
-		},
-		{
-			"path": "music/40.mp3",
-			"title": "Như Ngày Năng Tựa Ngày Mưa - OST Khó Dỗ Dành"
-		},
-		{
-			"path": "music/41.mp3",
-			"title": "Chỉ Muốn Vụng Trộm Giấu Em Đi - OST Vụng Trộm"
-		},
-		{
-			"path": "music/42.mp3",
-			"title": "OST Làm Trái Tim Em Mỉm Cười"
-		},
-		{
-			"path": "music/43.mp3",
-			"title": "Mối Quan Hệ Kỳ Diệu"
-		},
-		{
-			"path": "music/46.mp3",
-			"title": "Futari no kimochi (OST Inuyasha)"
-		},
-		{
-			"path": "music/47.mp3",
-			"title": "Như Cố - Trường An Như Cố"
-		},
-		{
-			"path": "music/49.mp3",
-			"title": "Thanh Vân Chí"
-		},
-		{
-			"path": "music/50.mp3",
-			"title": "Phù Tru - Thanh Vân Chí"
-		},
-		{
-			"path": "music/59.mp3",
-			"title": "Phá Kén - Trương Thiều Hàm (OST Đấu La Đại Lục)"
-		},
-		{
-			"path": "music/60.mp3",
-			"title": "Hibiki no Shirabe (OST Hyakujuu Sentai Gaoranger)"
-		},
-		{
-			"path": "music/61.mp3",
-			"title": "Tay Trái Chỉ Trăng (OST Hương Mật Tựa Khói Sương)"
-		},
-		{
-			"path": "music/64.mp3",
-			"title": "Bất Nhiễm (OST Hương Mật Tựa Khói Sương)"
-		},
-		{
-			"path": "music/69.mp3",
-			"title": "Khách mời (嘉宾) - Trương Viễn (OST Hôn Lễ Của Em)"
-		},
-		{
-			"path": "music/71.mp3",
-			"title": "Thán Vân Hề - Cúc Tịnh Y ( OST Vân Tịch Truyện)"
-		},
-		{
-			"path": "music/81.mp3",
-			"title": "OST Liên Hoa Lâu"
-		},
-		{
-			"path": "music/89.mp3",
-			"title": "Ba Lần Gả Trêu Ghẹo Lòng Quân OST"
-		}
+		"Bích Thương Chiến Ca - Dữ Phượng Hành.mp3",
+		"Yêu Như Thế - Thần Ẩn.mp3",
+		"Tham Cầu - Thần Ẩn.mp3",
+		"Như Ca - Liệt Hỏa Như Ca.mp3",
+		"Cái Đuôi Nhỏ.mp3",
+		"Lưu Chuyển Doanh Hồi - Ngộ Long.mp3",
+		"Phong - Thiếu Niên Ca Hành.mp3",
+		"Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh.mp3",
+		"Sơn Hải.mp3",
+		"Nhập Hoài.mp3",
+		"Không Nỡ - Đấu La Đại Lục.mp3",
+		"Như Ngày Năng Tựa Ngày Mưa - OST Khó Dỗ Dành.mp3",
+		"Chỉ Muốn Vụng Trộm Giấu Em Đi - OST Vụng Trộm.mp3",
+		"OST Làm Trái Tim Em Mỉm Cười.mp3",
+		"Mối Quan Hệ Kỳ Diệu.mp3",
+		"Futari no kimochi (OST Inuyasha).mp3",
+		"Như Cố - Trường An Như Cố.mp3",
+		"Thanh Vân Chí.mp3",
+		"Phù Tru - Thanh Vân Chí.mp3",
+		"Phá Kén - Trương Thiều Hàm (OST Đấu La Đại Lục).mp3",
+		"Hibiki no Shirabe (OST Hyakujuu Sentai Gaoranger).mp3",
+		"Tay Trái Chỉ Trăng (OST Hương Mật Tựa Khói Sương).mp3",
+		"Bất Nhiễm (OST Hương Mật Tựa Khói Sương).mp3",
+		"Khách mời (嘉宾) - Trương Viễn (OST Hôn Lễ Của Em).mp3",
+		"Thán Vân Hề - Cúc Tịnh Y ( OST Vân Tịch Truyện).mp3",
+		"OST Liên Hoa Lâu.mp3",
+		"Ba Lần Gả Trêu Ghẹo Lòng Quân OST.mp3"
 	],
 	"Nhạc Việt": [
-		{
-			"path": "music/26.mp3",
-			"title": "Mình Cùng Nhau Đóng Băng - Thùy Chi"
-		},
-		{
-			"path": "music/55.mp3",
-			"title": "Pháo | SỰ NGHIỆP CHƯỚNG"
-		},
-		{
-			"path": "music/56.mp3",
-			"title": "LOU HOÀNG - NGÀY ĐẸP TRỜI ĐỂ NÓI CHIA TAY"
-		},
-		{
-			"path": "music/57.mp3",
-			"title": "BẮC BLING ( BẮC NINH )"
-		},
-		{
-			"path": "music/62.mp3",
-			"title": "MỘT BƯỚC YÊU VẠN DẶM ĐAU | MR. SIRO"
-		},
-		{
-			"path": "music/63.mp3",
-			"title": "Quang Hùng MasterD - Dễ Đến Dễ Đi"
-		},
-		{
-			"path": "music/70.mp3",
-			"title": "HIEUTHUHAI - TRÌNH (prod. by Kewtiie)"
-		},
-		{
-			"path": "music/73.mp3",
-			"title": "Anh Vui"
-		},
-		{
-			"path": "music/74.mp3",
-			"title": "Phép Màu (Đàn Cá Gỗ OST) - Mounter x MAYDAYs, Minh Tốc"
-		},
-		{
-			"path": "music/76.mp3",
-			"title": "PUPPY & DANGRANGTO - WRONG TIMES"
-		},
-		{
-			"path": "music/80.mp3",
-			"title": "VINHTRAN - Gửi em"
-		},
-		{
-			"path": "music/90.mp3",
-			"title": "CÔ GÁI GUCCI | SOÁI NHI"
-		}
+		"Mình Cùng Nhau Đóng Băng - Thùy Chi.mp3",
+		"Pháo - SỰ NGHIỆP CHƯỚNG.mp3",
+		"LOU HOÀNG - NGÀY ĐẸP TRỜI ĐỂ NÓI CHIA TAY.mp3",
+		"BẮC BLING ( BẮC NINH ).mp3",
+		"MỘT BƯỚC YÊU VẠN DẶM ĐAU - MR. SIRO.mp3",
+		"Quang Hùng MasterD - Dễ Đến Dễ Đi.mp3",
+		"HIEUTHUHAI - TRÌNH (prod. by Kewtiie).mp3",
+		"Anh Vui.mp3",
+		"Phép Màu (Đàn Cá Gỗ OST) - Mounter x MAYDAYs, Minh Tốc.mp3",
+		"PUPPY & DANGRANGTO - WRONG TIMES.mp3",
+		"VINHTRAN - Gửi em.mp3",
+		"CÔ GÁI GUCCI - SOÁI NHI.mp3"
 	],
 	"Nhạc Âu Mỹ": [
-		{
-			"path": "music/52.mp3",
-			"title": "Nothing's Gonna Change My Love For You"
-		},
-		{
-			"path": "music/53.mp3",
-			"title": "Everytime We Touch - Cascada"
-		},
-		{
-			"path": "music/54.mp3",
-			"title": "Cry On My Shoulder"
-		},
-		{
-			"path": "music/58.mp3",
-			"title": "Westlife - My Love"
-		},
-		{
-			"path": "music/83.mp3",
-			"title": "One Direction - What Makes You Beautiful"
-		}
+		"Nothing's Gonna Change My Love For You.mp3",
+		"Everytime We Touch - Cascada.mp3",
+		"Cry On My Shoulder.mp3",
+		"Westlife - My Love.mp3",
+		"One Direction - What Makes You Beautiful.mp3"
 	],
 	"Nhạc Hàn": [
-		{
-			"path": "music/8.mp3",
-			"title": "Magnetic"
-		},
-		{
-			"path": "music/24.mp3",
-			"title": "Say YES"
-		},
-		{
-			"path": "music/28.mp3",
-			"title": "Blueming - IU"
-		},
-		{
-			"path": "music/21.mp3",
-			"title": "Polaroid Love"
-		},
-		{
-			"path": "music/37.mp3",
-			"title": "BIGBANG - HARU HARU"
-		},
-		{
-			"path": "music/39.mp3",
-			"title": "Apink - Mr.Chu"
-		},
-		{
-			"path": "music/51.mp3",
-			"title": "Sweet Dream - JangNaRa"
-		},
-		{
-			"path": "music/65.mp3",
-			"title": "Henry Young - One More Last Time"
-		}
+		"Magnetic.mp3",
+		"Say YES.mp3",
+		"Blueming - IU.mp3",
+		"Polaroid Love.mp3",
+		"BIGBANG - HARU HARU.mp3",
+		"Apink - Mr.Chu.mp3",
+		"Sweet Dream - JangNaRa.mp3",
+		"Henry Young - One More Last Time.mp3"
 	],
 	"Nhạc Game & Anime": [
-		{
-			"path": "music/88.mp3",
-			"title": "Summertime - Cinnamons x Evening Cinema"
-		},
-		{
-			"path": "music/38.mp3",
-			"title": "Renai Circulation - Anime"
-		},
-		{
-			"path": "music/23.mp3",
-			"title": "ANIMA POWER - QWER"
-		},
-		{
-			"path": "music/34.mp3",
-			"title": "Warriors - Worlds 2014"
-		},
-		{
-			"path": "music/35.mp3",
-			"title": "Legends Never Die - Worlds 2017"
-		},
-		{
-			"path": "music/36.mp3",
-			"title": "K/DA - (G)I-DLE"
-		},
-		{
-			"path": "music/66.mp3",
-			"title": "GODS ft. NewJeans"
-		},
-		{
-			"path": "music/67.mp3",
-			"title": "Silver Scrapes"
-		}
+		"Summertime - Cinnamons x Evening Cinema.mp3",
+		"Renai Circulation - Anime.mp3",
+		"ANIMA POWER - QWER.mp3",
+		"Warriors - Worlds 2014.mp3",
+		"Legends Never Die - Worlds 2017.mp3",
+		"KDA - (G)I-DLE.mp3",
+		"GODS ft. NewJeans.mp3",
+		"Silver Scrapes.mp3"
 	],
 	"Danh Sách Yêu Thích": []
 }
