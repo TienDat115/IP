@@ -82,4 +82,4 @@ Dự án này được phát hành dưới giấy phép MIT. Xem file `LICENSE` 
 
 ---
 
-© 2025 Ứng dụng Gửi Tin Nhắn Đa Nền Tảng. Đã đăng ký bản quyền.
+© 2025 Ứng dụng Gửi Tin Nhắn Đa Nền Tảng
