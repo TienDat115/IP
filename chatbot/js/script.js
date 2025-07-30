@@ -751,7 +751,7 @@ const messageTemplates = {
 	8: {
 		name: "Reset Huyền Thông",
 		content: `🔔 **THÔNG BÁO** 🔔
-		📢 __**Nội Dung:**__ Reset điểm Huyền Thông về 0 ID **** (tk ****) hoàn tất
+		📢 __**Nội Dung:**__ Reset điểm Huyền Thông về 0 ID **** hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 	},
@@ -759,7 +759,7 @@ const messageTemplates = {
 	9: {
 		name: "Sửa lỗi Phi Phong",
 		content: `🔔 **THÔNG BÁO** 🔔
-		📢 __**Nội Dung:**__ Sửa lỗi xác nhận kết quả phi phong ID **** (tk ****) hoàn tất
+		📢 __**Nội Dung:**__ Sửa lỗi xác nhận kết quả phi phong ID **** hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 	},
@@ -774,9 +774,8 @@ const messageTemplates = {
 
 	11: {
 		name: "Nội Dung File Bảo Trì",
-		content: `❓ **THÔNG BÁO** ❓
+		content: `# [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
 		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) 
-		# [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
 		⚠️ __**Lý Do:**__
 
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
