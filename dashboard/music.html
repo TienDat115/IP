@@ -509,16 +509,15 @@
 							const currentList = playlists[currentPlaylist];
 							if (isRandom) {
 								let nextIndex;
-								const nonYoutubeIndexes = currentList.map((item, idx) => (!item.path.includes("youtube.com") && !item.path.includes("youtu.be") ? idx : -1)).filter((idx) => idx !== -1);
 
 								if (isNoRepeat) {
 									// Lọc các bài hát chưa được phát
-									const availableIndexes = nonYoutubeIndexes.filter((idx) => !playedSongs.has(idx));
+									const availableIndexes = Array.from({ length: currentList.length }, (_, i) => i).filter((idx) => !playedSongs.has(idx));
 
 									if (availableIndexes.length === 0) {
 										// Nếu tất cả bài hát đã được phát, reset set và lấy lại bài hát đầu tiên
 										playedSongs.clear();
-										nextIndex = nonYoutubeIndexes[0];
+										nextIndex = 0;
 									} else {
 										// Chọn ngẫu nhiên từ các bài hát chưa được phát
 										const randomPos = Math.floor(Math.random() * availableIndexes.length);
@@ -526,17 +525,15 @@
 									}
 									playedSongs.add(nextIndex);
 								} else {
-									// Nếu không bật "Không lặp lại", hoạt động như bình thường
-									nextIndex = nonYoutubeIndexes[Math.floor(Math.random() * nonYoutubeIndexes.length)];
+									// Nếu không bật "Không lặp lại", chọn ngẫu nhiên bất kỳ bài hát nào
+									nextIndex = Math.floor(Math.random() * currentList.length);
 								}
 								currentIndex = nextIndex;
-								// Cập nhật currentPage dựa trên bài hát mới
-								currentPage = Math.floor(nextIndex / pageSize) + 1;
 							} else {
 								currentIndex = (currentIndex + 1) % currentList.length;
-								// Cập nhật currentPage dựa trên bài hát mới
-								currentPage = Math.floor(currentIndex / pageSize) + 1;
 							}
+							// Cập nhật currentPage dựa trên bài hát mới
+							currentPage = Math.floor(currentIndex / pageSize) + 1;
 							play(currentIndex);
 							renderPagination();
 						}
