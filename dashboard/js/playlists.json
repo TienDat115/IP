@@ -47,7 +47,9 @@
 		"Nước Mắt Đến Từ Niềm Vui - Doãn Tích Miên",
 		"Đoán Không Ra - Nãi Lạc Ovo",
 		"Váy Cưới Của Em Giống Như Bông Tuyết - Lý Phát Phát",
-		"Yêu đến mức coi đó là điều hiển nhiên - Nhị ThạcThính Triều Các"
+		"Yêu đến mức coi đó là điều hiển nhiên - Nhị ThạcThính Triều Các",
+		"Thính dạ vũ - Lễ Việt",
+		"Trong Nháy Mắt - Trịnh Nhuận Trạch"
 	],
 	"OST Phim": [
 		"Niên Luân - Trương Bich Thân (OST Hoa Thiên Côt)",
@@ -59,19 +61,16 @@
 		"Lưu Chuyển Doanh Hồi - Ngộ Long",
 		"Phong - Thiếu Niên Ca Hành",
 		"Dữ Quân Quy - Rất Nhớ Rất Nhớ Anh",
-		"Sơn Hải",
-		"Nhập Hoài",
+		"Sơn Hải - Thiên Cổ Quyết Trần",
+		"Nhập Hoài - Đới Yến Ni/Cẩu Thần Hạo Vũ  Cửu Tiêu Hàn Dạ Noãn OST",
 		"Không Nỡ - Đấu La Đại Lục",
 		"Như Ngày Năng Tựa Ngày Mưa - OST Khó Dỗ Dành",
 		"Chỉ Muốn Vụng Trộm Giấu Em Đi - OST Vụng Trộm",
 		"OST Làm Trái Tim Em Mỉm Cười",
 		"Mối Quan Hệ Kỳ Diệu",
-		"Futari no kimochi (OST Inuyasha)",
 		"Như Cố - Trường An Như Cố",
-		"Thanh Vân Chí",
 		"Phù Tru - Thanh Vân Chí",
 		"Phá Kén - Trương Thiều Hàm (OST Đấu La Đại Lục)",
-		"Hibiki no Shirabe (OST Hyakujuu Sentai Gaoranger)",
 		"Tay Trái Chỉ Trăng (OST Hương Mật Tựa Khói Sương)",
 		"Bất Nhiễm (OST Hương Mật Tựa Khói Sương)",
 		"Khách mời (嘉宾) - Trương Viễn (OST Hôn Lễ Của Em)",
@@ -117,10 +116,16 @@
 		"Sweet Dream - JangNaRa",
 		"Henry Young - One More Last Time"
 	],
-	"Nhạc Game & Anime": [
+	"Nhạc Nhật Bản": [
+		"Hibiki no Shirabe (OST Hyakujuu Sentai Gaoranger)",
 		"しまも - 優しい恋人 Yasashii Koibito",
-		"Summertime - Cinnamons x Evening Cinema",
 		"Renai Circulation - Anime",
+		"Fairy Tail Theme Song",
+		"Detective Conan Main Theme",
+		"Futari no kimochi (OST Inuyasha)",
+		"Summertime - Cinnamons x Evening Cinema"
+	],
+	"Nhạc Game & Anime": [
 		"ANIMA POWER - QWER",
 		"Warriors - Worlds 2014",
 		"Legends Never Die - Worlds 2017",
