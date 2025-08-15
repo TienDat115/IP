@@ -797,6 +797,14 @@ const messageTemplates = {
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone`,
 	},
+
+	14: {
+		name: "Nhiệm Vụ Ngày",
+		content: `## 🔔 THÔNG BÁO 🔔
+		📢 __**Nội Dung:**__ Hoàn tất nhiệm vụ **** (Chuỗi Nhiệm Vụ Ngày) ID ****
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone`,
+	},
 };
 
 // Áp dụng mẫu tin nhắn đã chọn
