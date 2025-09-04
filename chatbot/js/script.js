@@ -695,7 +695,8 @@ const messageTemplates = {
 		⚠️ Lý Do: 
 		🕙 Thời gian: \${getCurrentTime()}
 		Vui lòng kiểm tra và trả lại Account cho khách hàng!
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	2: {
@@ -704,15 +705,8 @@ const messageTemplates = {
 		📢 __**Nội Dung:**__ 
 		💡 __**Phản Hồi:**__
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
-	},
-
-	3: {
-		name: "Bảo Trì Thường Ngày",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Bảo trì hoàn tất
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	4: {
@@ -720,7 +714,8 @@ const messageTemplates = {
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	5: {
@@ -728,15 +723,8 @@ const messageTemplates = {
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset tiêu phí tháng tk **** hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
-	},
-
-	6: {
-		name: "Bỏ Giới Hạn IP",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Bỏ giới hạn cho IP **** hoàn tất
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	7: {
@@ -745,7 +733,8 @@ const messageTemplates = {
 		📢 __**Nội Dung:**__ 
 		⚠️ __**Phản Hồi:**__
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	8: {
@@ -753,7 +742,8 @@ const messageTemplates = {
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset điểm Huyền Thông về 0 ID **** hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	9: {
@@ -761,7 +751,8 @@ const messageTemplates = {
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Sửa lỗi xác nhận kết quả phi phong ID **** hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	10: {
@@ -769,7 +760,8 @@ const messageTemplates = {
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Chặn IP tk **** (Lúc **** đăng nhập S5: ****) hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	11: {
@@ -779,7 +771,8 @@ const messageTemplates = {
 		⏳ __**Chi Tiết:**__
 
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	12: {
@@ -787,7 +780,8 @@ const messageTemplates = {
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Cập nhật hoàn tất nội dung file **___**. Vui lòng kiểm tra lại
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	13: {
@@ -795,7 +789,8 @@ const messageTemplates = {
 		content: `## ⚠️ CẢNH BÁO ⚠️
 		📢 __**Nội Dung:**__ 
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 
 	14: {
@@ -803,7 +798,8 @@ const messageTemplates = {
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Hoàn tất nhiệm vụ **** (Chuỗi Nhiệm Vụ Ngày) ID ****
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone`,
+		@everyone
+		-----------------------------------------------------------------`,
 	},
 };
 
