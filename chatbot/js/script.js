@@ -687,14 +687,14 @@ let currentTemplate = null;
 const messageTemplates = {
 	1: {
 		name: "Rollback Thất Bại",
-		content: `❓ THÔNG BÁO ❓
+		content: `## ❓ THÔNG BÁO ❓
 		🆎 Nội Dung: Rollback thất bại
 		💳 Tài Khoản: 
 		👤 ID Nhân Vật: 
 		🖥️ Máy Chủ: Võ Lâm Tây Vực - 
 		⚠️ Lý Do: 
 		🕙 Thời gian: \${getCurrentTime()}
-		Vui lòng kiểm tra và trả lại Account cho khách hàng!
+		Vui lòng kiểm tra lại thông tin !
 		@everyone
 		-----------------------------------------------------------------`,
 	},
@@ -709,7 +709,26 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
+	3: {
+		name: "Thắc Mắc",
+		content: `## ❓ THÔNG BÁO ❓
+		📢 __**Nội Dung:**__ 
+		⚠️ __**Phản Hồi:**__
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone
+		-----------------------------------------------------------------`,
+	},
+
 	4: {
+		name: "Cảnh Báo",
+		content: `## ⚠️ CẢNH BÁO ⚠️
+		📢 __**Nội Dung:**__ 
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone
+		-----------------------------------------------------------------`,
+	},
+
+	13: {
 		name: "Bảo Trì Gộp SV",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
@@ -722,16 +741,6 @@ const messageTemplates = {
 		name: "Reset Tiêu Phí Tháng",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset tiêu phí tháng tk **** hoàn tất
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
-	7: {
-		name: "Thắc Mắc",
-		content: `## ❓ THÔNG BÁO ❓
-		📢 __**Nội Dung:**__ 
-		⚠️ __**Phản Hồi:**__
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone
 		-----------------------------------------------------------------`,
@@ -779,15 +788,6 @@ const messageTemplates = {
 		name: "Cập Nhật File Hoàn Tất",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Cập nhật hoàn tất nội dung file **___**. Vui lòng kiểm tra lại
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
-	13: {
-		name: "Cảnh Báo",
-		content: `## ⚠️ CẢNH BÁO ⚠️
-		📢 __**Nội Dung:**__ 
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone
 		-----------------------------------------------------------------`,
@@ -842,7 +842,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	// Thêm sự kiện cho nút gửi bằng phím Enter trong textarea
 	document.getElementById("messageText").addEventListener("keydown", function (e) {
-		if (e.key === "Enter" && e.ctrlKey) {
+		// Xử lý phím tắt Ctrl + D để nhân đôi dòng hoặc văn bản được chọn
+		if (e.ctrlKey && e.key === 'd') {
+			e.preventDefault();
+			
+			const textarea = e.target;
+			let start = textarea.selectionStart;
+			let end = textarea.selectionEnd;
+			const text = textarea.value;
+			
+			// Kiểm tra xem có văn bản nào được chọn không
+			if (start !== end) {
+				// Nếu có văn bản được chọn, nhân đôi phần được chọn
+				const selectedText = text.substring(start, end);
+				const newText = text.substring(0, end) + selectedText + text.substring(end);
+				
+				textarea.value = newText;
+				
+				// Đặt lại vị trí chọn để giữ nguyên vùng được bôi đen
+				const newEnd = end + selectedText.length;
+				// Đặt vị trí bắt đầu và kết thúc của vùng chọn mới
+				setTimeout(() => {
+					textarea.setSelectionRange(end, newEnd);
+				}, 0);
+			} else {
+				// Nếu không có văn bản nào được chọn, nhân đôi dòng hiện tại
+				const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+				const lineEnd = text.indexOf('\n', end);
+				const currentLine = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
+				
+				// Chèn dòng hiện tại vào ngay sau dòng hiện tại
+				const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) + 
+							   '\n' + currentLine + 
+							   (lineEnd === -1 ? '' : text.substring(lineEnd));
+				
+				textarea.value = newText;
+				
+				// Đặt lại vị trí con trỏ
+				const newCursorPos = lineEnd === -1 ? text.length + currentLine.length + 1 : lineEnd + currentLine.length + 1;
+				textarea.setSelectionRange(newCursorPos, newCursorPos);
+			}
+		}
+		// Xử lý phím Enter + Ctrl để gửi tin nhắn (giữ nguyên)
+		else if (e.key === "Enter" && e.ctrlKey) {
 			e.preventDefault();
 			sendTextMessage();
 		}
