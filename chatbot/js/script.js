@@ -687,7 +687,7 @@ let currentTemplate = null;
 const messageTemplates = {
 	1: {
 		name: "Rollback Thất Bại",
-		content: `## ❓ THÔNG BÁO ❓
+		content: `❓ THÔNG BÁO ❓
 		🆎 Nội Dung: Rollback thất bại
 		💳 Tài Khoản: 
 		👤 ID Nhân Vật: 
