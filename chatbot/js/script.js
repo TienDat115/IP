@@ -801,6 +801,17 @@ const messageTemplates = {
 		@everyone
 		-----------------------------------------------------------------`,
 	},
+
+	15: {
+		name: "Đổi Nhân Vật Chính",
+		content: `## 🔔 THÔNG BÁO 🔔
+		📢 __**Nội Dung:**__ 
+
+		💡 __**Phản Hồi:**__ Đổi nhân vật chính và cho phép mua lại gói tuần + Reset Tiêu Phí tháng hoàn tất
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone
+		-----------------------------------------------------------------`,
+	},
 };
 
 // Áp dụng mẫu tin nhắn đã chọn
