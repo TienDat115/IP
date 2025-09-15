@@ -1401,6 +1401,17 @@ function createFormattingButtons(textareaId = "messageText") {
 				{ title: "Hương", content: "@Hương", prefix: "<@1085871904348438548>", suffix: "" },
 			],
 		},
+		{
+			id: "mention-tab-3",
+			title: "Ngạo Thế",
+			buttons: [
+				{ title: "Tag mọi người", content: "@everyone", prefix: "@everyone", suffix: "" },
+				{ title: "Zz_NHD_zZ", content: "@Zz_NHD_zZ", prefix: "<@352800692362149889>", suffix: "" },
+				{ title: "Hiên Hiên", content: "@Hiên Hiên", prefix: "<@1001068253713551361>", suffix: "" },
+				{ title: "Qìn Qìn", content: "@Qìn Qìn", prefix: "<@1263829456242475020>", suffix: "" },
+				{ title: "Diện Diện", content: "@Diện Diện", prefix: "<@1051780994203656202>", suffix: "" },
+			],
+		},
 	];
 
 	// Tạo HTML cho các tab với Bootstrap
@@ -1474,6 +1485,7 @@ function getTabIcon(tabId) {
 		"number-tab": '<i class="fas fa-list-ol me-1"></i>',
 		"mention-tab-1": '<img src="image/tayvuc.png" alt="Tây Vực" style="width: 16px; height: 16px; margin-right: 4px;">',
 		"mention-tab-2": '<img src="image/xichhoa.png" alt="Xích Hỏa" style="width: 16px; height: 16px; margin-right: 4px;">',
+		"mention-tab-3": '<img src="image/ngaothe.png" alt="Ngạo Thế" style="width: 16px; height: 16px; margin-right: 4px;">',
 	};
 	return icons[tabId] || "";
 }

@@ -22,5 +22,13 @@
 
 		],
 		"lastUpdate": "2025-06-08 15:00:00"
+	},
+	"game4": {
+		"name": "Võ Lâm Ngạo Thế",
+		"url": "VoLamNgaoThe",
+		"levelToOpenDays": [
+
+		],
+		"lastUpdate": "2025-06-08 15:00:00"
 	}
 }
