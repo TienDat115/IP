@@ -812,6 +812,15 @@ const messageTemplates = {
 		@everyone
 		-----------------------------------------------------------------`,
 	},
+
+	16: {
+		name: "Thêm Gói Quà Event",
+		content: `## 🔔 THÔNG BÁO 🔔
+		📢 __**Nội Dung:**__ Thêm gói **** hoàn tất. Vui lòng kiểm tra lại
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone
+		-----------------------------------------------------------------`,
+	},
 };
 
 // Áp dụng mẫu tin nhắn đã chọn
