@@ -1410,6 +1410,7 @@ function createFormattingButtons(textareaId = "messageText") {
 				{ title: "Hiên Hiên", content: "@Hiên Hiên", prefix: "<@1001068253713551361>", suffix: "" },
 				{ title: "Qìn Qìn", content: "@Qìn Qìn", prefix: "<@1263829456242475020>", suffix: "" },
 				{ title: "Diện Diện", content: "@Diện Diện", prefix: "<@1051780994203656202>", suffix: "" },
+				{ title: "Nhung Nhung", content: "@Nhung Nhung", prefix: "<@784708484275896320>", suffix: "" },
 			],
 		},
 	];
