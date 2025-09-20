@@ -390,40 +390,87 @@ async function sendTextMessage() {
 		// Thực thi các biểu thức JavaScript trong tin nhắn
 		message = evaluateExpressions(message);
 
-		const payload = {
-			content: message,
+		// Chia nhỏ tin nhắn nếu quá dài (1900 ký tự để đảm bảo an toàn)
+		const maxLength = 1900;
+		const messageChunks = [];
+
+		// Hàm tìm vị trí cắt phù hợp
+		const findBestSplitPoint = (str, maxPos) => {
+			// Ưu tiên cắt tại dấu xuống dòng
+			let splitPos = str.lastIndexOf('\n', maxPos);
+
+			// Nếu không tìm thấy, cắt tại dấu cách gần nhất
+			if (splitPos === -1) {
+				splitPos = str.lastIndexOf(' ', maxPos);
+			}
+
+			// Nếu vẫn không tìm thấy, cắt tại maxPos
+			return splitPos === -1 ? maxPos : splitPos;
+		};
+
+		let remainingText = message;
+		while (remainingText.length > 0) {
+			if (remainingText.length <= maxLength) {
+				messageChunks.push(remainingText);
+				break;
+			}
+
+			const splitPos = findBestSplitPoint(remainingText, maxLength);
+			const chunk = remainingText.substring(0, splitPos).trim();
+			if (chunk) {
+				messageChunks.push(chunk);
+			}
+			remainingText = remainingText.substring(splitPos).trim();
+		}
+
+		const payloadBase = {
 			tts: tts,
 		};
 
-		if (username) payload.username = username;
-		if (avatarUrl) payload.avatar_url = avatarUrl;
+		if (username) payloadBase.username = username;
+		if (avatarUrl) payloadBase.avatar_url = avatarUrl;
 
-		const response = await fetch(webhookUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(payload),
+		let successCount = 0;
+
+		// Gửi từng phần tin nhắn
+		for (const chunk of messageChunks) {
+			try {
+				const payload = { ...payloadBase, content: chunk };
+
+				const response = await fetch(webhookUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(payload),
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				successCount++;
+
+				// Thêm độ trễ nhỏ giữa các lần gửi để tránh rate limiting
+				if (messageChunks.indexOf(chunk) < messageChunks.length - 1) {
+					await new Promise(resolve => setTimeout(resolve, 1000));
+				}
+				addLog(`📤 Đang gửi phần ${messageChunks.indexOf(chunk) + 1}/${messageChunks.length}...`, chunk, webhookName, webhookUrl);
+			} catch (error) {
+				addLog(`❌ Lỗi khi gửi phần tin nhắn: ${error.message}`, "", webhookName, webhookUrl, true);
+				throw error; // Dừng việc gửi nếu có lỗi
+			}
+		}
+
+		await Swal.fire({
+			icon: "success",
+			title: "Thành công!",
+			text: messageChunks.length > 1
+				? `Đã gửi thành công ${successCount} phần tin nhắn.`
+				: "Tin nhắn đã được gửi thành công.",
+			showConfirmButton: true,
 		});
 
-		if (response.ok) {
-			addLog("✅ Đã gửi tin nhắn thành công!", message, webhookName, webhookUrl);
-
-			await Swal.fire({
-				icon: "success",
-				title: "Thành công!",
-				text: "Tin nhắn đã được gửi thành công.",
-				showConfirmButton: true,
-			});
-		} else {
-			const error = await response.text();
-			addLog(`❌ Lỗi khi gửi tin nhắn: ${error}`, "", webhookName, webhookUrl, true);
-			await Swal.fire({
-				icon: "error",
-				title: "Lỗi!",
-				text: "Đã xảy ra lỗi khi gửi tin nhắn: " + error.message,
-			});
-		}
 	} catch (error) {
 		addLog(`❌ Lỗi kết nối: ${error.message}`, "", webhookName, webhookUrl, true);
 		await Swal.fire({
@@ -865,20 +912,20 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Xử lý phím tắt Ctrl + D để nhân đôi dòng hoặc văn bản được chọn
 		if (e.ctrlKey && e.key === 'd') {
 			e.preventDefault();
-			
+
 			const textarea = e.target;
 			let start = textarea.selectionStart;
 			let end = textarea.selectionEnd;
 			const text = textarea.value;
-			
+
 			// Kiểm tra xem có văn bản nào được chọn không
 			if (start !== end) {
 				// Nếu có văn bản được chọn, nhân đôi phần được chọn
 				const selectedText = text.substring(start, end);
 				const newText = text.substring(0, end) + selectedText + text.substring(end);
-				
+
 				textarea.value = newText;
-				
+
 				// Đặt lại vị trí chọn để giữ nguyên vùng được bôi đen
 				const newEnd = end + selectedText.length;
 				// Đặt vị trí bắt đầu và kết thúc của vùng chọn mới
@@ -890,14 +937,14 @@ document.addEventListener("DOMContentLoaded", function () {
 				const lineStart = text.lastIndexOf('\n', start - 1) + 1;
 				const lineEnd = text.indexOf('\n', end);
 				const currentLine = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
-				
+
 				// Chèn dòng hiện tại vào ngay sau dòng hiện tại
-				const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) + 
-							   '\n' + currentLine + 
+				const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) +
+							   '\n' + currentLine +
 							   (lineEnd === -1 ? '' : text.substring(lineEnd));
-				
+
 				textarea.value = newText;
-				
+
 				// Đặt lại vị trí con trỏ
 				const newCursorPos = lineEnd === -1 ? text.length + currentLine.length + 1 : lineEnd + currentLine.length + 1;
 				textarea.setSelectionRange(newCursorPos, newCursorPos);
