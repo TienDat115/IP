@@ -918,42 +918,80 @@ document.addEventListener("DOMContentLoaded", function () {
 			let end = textarea.selectionEnd;
 			const text = textarea.value;
 
-			// Kiểm tra xem có văn bản nào được chọn không
-			if (start !== end) {
-				// Nếu có văn bản được chọn, nhân đôi phần được chọn
-				const selectedText = text.substring(start, end);
-				const newText = text.substring(0, end) + selectedText + text.substring(end);
+			// Lưu vị trí scroll hiện tại
+			const scrollTop = textarea.scrollTop;
 
+			// Tạm thởi focus vào textarea để đảm bảo các lệnh thực thi đúng ngữ cảnh
+			textarea.focus();
+
+			try {
+				// Kiểm tra xem có văn bản nào được chọn không
+				if (start !== end) {
+					// Nếu có văn bản được chọn, nhân đôi phần được chọn
+					const selectedText = text.substring(start, end);
+					// Sử dụng setRangeText để giữ lại lịch sử undo/redo
+					document.execCommand('insertText', false, selectedText);
+					// Đặt lại vị trí chọn
+					setTimeout(() => {
+						textarea.setSelectionRange(end, end + selectedText.length);
+					}, 0);
+				} else {
+					// Nếu không có văn bản nào được chọn, nhân đôi dòng hiện tại
+					const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+					const lineEnd = text.indexOf('\n', end);
+					const currentLine = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
+					const newLine = '\n' + currentLine;
+					// Chèn dòng mới
+					if (document.queryCommandSupported('insertText')) {
+						// Di chuyển con trỏ đến cuối dòng hiện tại
+						const insertPos = lineEnd === -1 ? text.length : lineEnd;
+						textarea.setSelectionRange(insertPos, insertPos);
+						// Chèn nội dung dòng mới
+						document.execCommand('insertText', false, newLine);
+					} else {
+						// Fallback cho các trình duyệt cũ
+						const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) +
+							newLine +
+							(lineEnd === -1 ? '' : text.substring(lineEnd));
+						// Sử dụng setRangeText nếu có
+						if (typeof textarea.setRangeText === 'function') {
+							textarea.setRangeText(newLine, lineEnd, lineEnd, 'end');
+						} else {
+							textarea.value = newText;
+						}
+					}
+				}
+			} catch (err) {
+				console.error('Lỗi khi xử lý nhân đôi dòng:', err);
+				// Fallback về cách cũ nếu có lỗi
+				const newText = start !== end
+					? text.substring(0, end) + text.substring(start, end) + text.substring(end)
+					: text.substring(0, lineEnd === -1 ? text.length : lineEnd) + '\n' + currentLine + (lineEnd === -1 ? '' : text.substring(lineEnd));
 				textarea.value = newText;
-
-				// Đặt lại vị trí chọn để giữ nguyên vùng được bôi đen
-				const newEnd = end + selectedText.length;
-				// Đặt vị trí bắt đầu và kết thúc của vùng chọn mới
-				setTimeout(() => {
-					textarea.setSelectionRange(end, newEnd);
-				}, 0);
-			} else {
-				// Nếu không có văn bản nào được chọn, nhân đôi dòng hiện tại
-				const lineStart = text.lastIndexOf('\n', start - 1) + 1;
-				const lineEnd = text.indexOf('\n', end);
-				const currentLine = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
-
-				// Chèn dòng hiện tại vào ngay sau dòng hiện tại
-				const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) +
-							   '\n' + currentLine +
-							   (lineEnd === -1 ? '' : text.substring(lineEnd));
-
-				textarea.value = newText;
-
-				// Đặt lại vị trí con trỏ
-				const newCursorPos = lineEnd === -1 ? text.length + currentLine.length + 1 : lineEnd + currentLine.length + 1;
-				textarea.setSelectionRange(newCursorPos, newCursorPos);
 			}
+
+			// Khôi phục vị trí scroll
+			textarea.scrollTop = scrollTop;
 		}
 		// Xử lý phím Enter + Ctrl để gửi tin nhắn (giữ nguyên)
 		else if (e.key === "Enter" && e.ctrlKey) {
 			e.preventDefault();
 			sendTextMessage();
+		}
+		// Xử lý phím tắt Ctrl + S để lưu bản nháp
+		else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+			e.preventDefault();
+			const textarea = e.target;
+			saveDraft(textarea.id);
+			// Hiển thị thông báo
+			Swal.fire({
+				icon: 'success',
+				title: 'Đã lưu bản nháp',
+				showConfirmButton: false,
+				timer: 1000,
+				position: 'top-end',
+				toast: true
+			});
 		}
 	});
 
