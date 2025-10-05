@@ -775,15 +775,6 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	13: {
-		name: "Bảo Trì Gộp SV",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
 	5: {
 		name: "Reset Tiêu Phí Tháng",
 		content: `## 🔔 THÔNG BÁO 🔔
@@ -793,7 +784,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	8: {
+	6: {
 		name: "Reset Huyền Thông",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset điểm Huyền Thông về 0 ID **** hoàn tất
@@ -802,7 +793,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	9: {
+	7: {
 		name: "Sửa lỗi Phi Phong",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Sửa lỗi xác nhận kết quả phi phong ID **** hoàn tất
@@ -811,7 +802,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	10: {
+	8: {
 		name: "Chặn IP",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Chặn IP tk **** (Lúc **** đăng nhập S5: ****) hoàn tất
@@ -820,7 +811,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	11: {
+	9: {
 		name: "Nội Dung File Bảo Trì",
 		content: `# [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
 		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) 
@@ -831,7 +822,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	12: {
+	10: {
 		name: "Cập Nhật File Hoàn Tất",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Cập nhật hoàn tất nội dung file **___**. Vui lòng kiểm tra lại
@@ -840,7 +831,16 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	14: {
+	11: {
+		name: "Bảo Trì Gộp SV",
+		content: `## 🔔 THÔNG BÁO 🔔
+		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone
+		-----------------------------------------------------------------`,
+	},
+
+	12: {
 		name: "Nhiệm Vụ Ngày",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Hoàn tất nhiệm vụ **** (Chuỗi Nhiệm Vụ Ngày) ID ****
@@ -849,7 +849,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	15: {
+	13: {
 		name: "Đổi Nhân Vật Chính",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ 
@@ -860,10 +860,19 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	16: {
+	14: {
 		name: "Thêm Gói Quà Event",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Thêm gói **** hoàn tất. Vui lòng kiểm tra lại
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone
+		-----------------------------------------------------------------`,
+	},
+
+	15: {
+		name: "Điều Chỉnh Quà Phúc Lợi",
+		content: `## 🔔 THÔNG BÁO 🔔
+		📢 __**Nội Dung:**__ Điều chỉnh **** () hoàn tất
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone
 		-----------------------------------------------------------------`,
