@@ -750,13 +750,22 @@ const messageTemplates = {
 		name: "Thông báo",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ 
-		💡 __**Phản Hồi:**__
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone
 		-----------------------------------------------------------------`,
 	},
 
 	3: {
+		name: "Phản Hồi Thông Tin",
+		content: `## 🔔 THÔNG BÁO 🔔
+		📢 __**Nội Dung:**__ 
+		💡 __**Phản Hồi:**__
+		🕙 __**Thời gian:**__ \${getCurrentTime()}
+		@everyone
+		-----------------------------------------------------------------`,
+	},
+
+	4: {
 		name: "Thắc Mắc",
 		content: `## ❓ THÔNG BÁO ❓
 		📢 __**Nội Dung:**__ 
@@ -766,7 +775,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	4: {
+	5: {
 		name: "Cảnh Báo",
 		content: `## ⚠️ CẢNH BÁO ⚠️
 		📢 __**Nội Dung:**__ 
@@ -775,7 +784,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	5: {
+	6: {
 		name: "Reset Tiêu Phí Tháng",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset tiêu phí tháng tk **** hoàn tất
@@ -784,7 +793,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	6: {
+	7: {
 		name: "Reset Huyền Thông",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset điểm Huyền Thông về 0 ID **** hoàn tất
@@ -793,7 +802,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	7: {
+	8: {
 		name: "Sửa lỗi Phi Phong",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Sửa lỗi xác nhận kết quả phi phong ID **** hoàn tất
@@ -802,7 +811,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	8: {
+	9: {
 		name: "Chặn IP",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Chặn IP tk **** (Lúc **** đăng nhập S5: ****) hoàn tất
@@ -811,7 +820,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	9: {
+	10: {
 		name: "Nội Dung File Bảo Trì",
 		content: `# [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
 		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) 
@@ -822,7 +831,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	10: {
+	11: {
 		name: "Cập Nhật File Hoàn Tất",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Cập nhật hoàn tất nội dung file **___**. Vui lòng kiểm tra lại
@@ -831,7 +840,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	11: {
+	12: {
 		name: "Bảo Trì Gộp SV",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
@@ -840,7 +849,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	12: {
+	13: {
 		name: "Nhiệm Vụ Ngày",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Hoàn tất nhiệm vụ **** (Chuỗi Nhiệm Vụ Ngày) ID ****
@@ -849,7 +858,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	13: {
+	14: {
 		name: "Đổi Nhân Vật Chính",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ 
@@ -860,7 +869,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	14: {
+	15: {
 		name: "Thêm Gói Quà Event",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Thêm gói **** hoàn tất. Vui lòng kiểm tra lại
@@ -869,7 +878,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	15: {
+	16: {
 		name: "Điều Chỉnh Quà Phúc Lợi",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Điều chỉnh **** () hoàn tất
@@ -919,64 +928,43 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Thêm sự kiện cho nút gửi bằng phím Enter trong textarea
 	document.getElementById("messageText").addEventListener("keydown", function (e) {
 		// Xử lý phím tắt Ctrl + D để nhân đôi dòng hoặc văn bản được chọn
-		if (e.ctrlKey && e.key === 'd') {
+		if (e.ctrlKey && e.key === "d") {
 			e.preventDefault();
 
 			const textarea = e.target;
-			let start = textarea.selectionStart;
-			let end = textarea.selectionEnd;
+			const start = textarea.selectionStart;
+			const end = textarea.selectionEnd;
 			const text = textarea.value;
-
-			// Lưu vị trí scroll hiện tại
 			const scrollTop = textarea.scrollTop;
 
-			// Tạm thởi focus vào textarea để đảm bảo các lệnh thực thi đúng ngữ cảnh
 			textarea.focus();
 
 			try {
-				// Kiểm tra xem có văn bản nào được chọn không
 				if (start !== end) {
-					// Nếu có văn bản được chọn, nhân đôi phần được chọn
+					// Lấy văn bản được chọn
 					const selectedText = text.substring(start, end);
-					// Sử dụng setRangeText để giữ lại lịch sử undo/redo
-					document.execCommand('insertText', false, selectedText);
-					// Đặt lại vị trí chọn
+
+					// Tạo nội dung mới
+					const newText = text.substring(0, end) + selectedText + text.substring(end);
+
+					// Cập nhật giá trị textarea
+					textarea.value = newText;
+
+					// Cập nhật vị trí chọn
 					setTimeout(() => {
 						textarea.setSelectionRange(end, end + selectedText.length);
 					}, 0);
 				} else {
-					// Nếu không có văn bản nào được chọn, nhân đôi dòng hiện tại
-					const lineStart = text.lastIndexOf('\n', start - 1) + 1;
-					const lineEnd = text.indexOf('\n', end);
+					// Phần xử lý nhân đôi dòng giữ nguyên
+					const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+					const lineEnd = text.indexOf("\n", end);
 					const currentLine = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
-					const newLine = '\n' + currentLine;
-					// Chèn dòng mới
-					if (document.queryCommandSupported('insertText')) {
-						// Di chuyển con trỏ đến cuối dòng hiện tại
-						const insertPos = lineEnd === -1 ? text.length : lineEnd;
-						textarea.setSelectionRange(insertPos, insertPos);
-						// Chèn nội dung dòng mới
-						document.execCommand('insertText', false, newLine);
-					} else {
-						// Fallback cho các trình duyệt cũ
-						const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) +
-							newLine +
-							(lineEnd === -1 ? '' : text.substring(lineEnd));
-						// Sử dụng setRangeText nếu có
-						if (typeof textarea.setRangeText === 'function') {
-							textarea.setRangeText(newLine, lineEnd, lineEnd, 'end');
-						} else {
-							textarea.value = newText;
-						}
-					}
+					const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) + "\n" + currentLine + (lineEnd === -1 ? "" : text.substring(lineEnd));
+
+					textarea.value = newText;
 				}
 			} catch (err) {
-				console.error('Lỗi khi xử lý nhân đôi dòng:', err);
-				// Fallback về cách cũ nếu có lỗi
-				const newText = start !== end
-					? text.substring(0, end) + text.substring(start, end) + text.substring(end)
-					: text.substring(0, lineEnd === -1 ? text.length : lineEnd) + '\n' + currentLine + (lineEnd === -1 ? '' : text.substring(lineEnd));
-				textarea.value = newText;
+				console.error("Lỗi khi xử lý nhân đôi dòng:", err);
 			}
 
 			// Khôi phục vị trí scroll
@@ -988,18 +976,18 @@ document.addEventListener("DOMContentLoaded", function () {
 			sendTextMessage();
 		}
 		// Xử lý phím tắt Ctrl + S để lưu bản nháp
-		else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+		else if ((e.ctrlKey || e.metaKey) && e.key === "s") {
 			e.preventDefault();
 			const textarea = e.target;
 			saveDraft(textarea.id);
 			// Hiển thị thông báo
 			Swal.fire({
-				icon: 'success',
-				title: 'Đã lưu bản nháp',
+				icon: "success",
+				title: "Đã lưu bản nháp",
 				showConfirmButton: false,
 				timer: 1000,
-				position: 'top-end',
-				toast: true
+				position: "top-end",
+				toast: true,
 			});
 		}
 	});
@@ -1413,14 +1401,67 @@ function initTemplateDropdown() {
 }
 
 function createFormattingButtons(textareaId = "messageText") {
+	// Hàm xử lý định dạng văn bản
+	const formatText = (prefix, suffix) => {
+		const textarea = document.getElementById(textareaId);
+		if (!textarea) return;
+
+		const start = textarea.selectionStart;
+		const end = textarea.selectionEnd;
+		const selectedText = textarea.value.substring(start, end);
+		const beforeText = textarea.value.substring(0, start);
+		const afterText = textarea.value.substring(end);
+		
+		if (selectedText) {
+			// Nếu có văn bản được chọn, bọc nó bằng prefix và suffix
+			const newText = beforeText + prefix + selectedText + suffix + afterText;
+			textarea.value = newText;
+			// Di chuyển con trỏ đến sau phần vừa chèn
+			setTimeout(() => {
+				textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+			}, 0);
+		} else {
+			// Nếu không có văn bản nào được chọn, chèn và đặt con trỏ ở giữa
+			const newText = beforeText + prefix + suffix + afterText;
+			textarea.value = newText;
+			setTimeout(() => {
+				textarea.setSelectionRange(start + prefix.length, start + prefix.length);
+			}, 0);
+		}
+		
+		// Kích hoạt sự kiện input để cập nhật giao diện
+		const event = new Event('input', { bubbles: true });
+		textarea.dispatchEvent(event);
+	};
+
+	// Thêm sự kiện bàn phím cho các phím tắt
+	document.addEventListener('keydown', function(e) {
+		if (e.ctrlKey || e.metaKey) {
+			switch(e.key.toLowerCase()) {
+				case 'b':
+					e.preventDefault();
+					formatText('**', '**');
+					break;
+				case 'i':
+					e.preventDefault();
+					formatText('*', '*');
+					break;
+				case 'u':
+					e.preventDefault();
+					formatText('__', '__');
+					break;
+			}
+		}
+	});
+
 	const tabs = [
 		{
 			id: "format-tab",
 			title: "Định dạng",
 			buttons: [
-				{ title: "In đậm", content: "B", prefix: "**", suffix: "**" },
-				{ title: "In nghiêng", content: "I", prefix: "*", suffix: "*" },
-				{ title: "Gạch dưới", content: "U̲", prefix: "__", suffix: "__" },
+				{ title: "In đậm (Ctrl+B)", content: "B", prefix: "**", suffix: "**" },
+				{ title: "In nghiêng (Ctrl+I)", content: "I", prefix: "*", suffix: "*" },
+				{ title: "Gạch dưới (Ctrl+U)", content: "U̲", prefix: "__", suffix: "__" },
 				{ title: "Gạch ngang", content: "S̶", prefix: "~~", suffix: "~~" },
 				{ title: "Code", content: "`", prefix: "`", suffix: "`" },
 				{ title: "Code Block", content: "```", prefix: "```", suffix: "```" },
