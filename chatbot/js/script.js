@@ -886,6 +886,11 @@ const messageTemplates = {
 		@everyone
 		-----------------------------------------------------------------`,
 	},
+
+	17: {
+		name: "Lệnh Không Hỗ Trợ",
+		content: `🚫 Lệnh không được hỗ trợ hoặc chưa được kích hoạt tại nhóm này.`,
+	},
 };
 
 // Áp dụng mẫu tin nhắn đã chọn
