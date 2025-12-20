@@ -95,7 +95,7 @@ OpenLevel129		Cấp tối đa Lv129, Môn Khách 4, Cấp Gia Viên (Lv7)	10		40
 	OpenLevel129Add50	Mở giới hạn Lv129 50 ngày		1	400		
 	OpenDay489			1	400		
 	OpenDay492	Quà Mỗi Ngày mở Đá Hồn Bản Tướng		1	400		1
-OpenLevel139		Giới hạn Lv139	11		400	139	
+OpenLevel139		Giới hạn Lv139	10		400	139	
 	OpenLevel139Add30	Mở giới hạn Lv139 30 ngày		1	400		
 	OpenLevel139Add39	Mở bán Đá Hồn Diệp Vô Tâm		1	400		
 	OpenLevel139Add45	Mở giới hạn Lv139 45 ngày		1	400		
@@ -104,74 +104,74 @@ OpenLevel139		Giới hạn Lv139	11		400	139
 	OpenLevel139Add80	Mở giới hạn Lv139 80 ngày		1	400		
 	OpenLevel139Add86	Quà Mỗi Ngày mở Đá Hồn Trương Thừa Tố		1	400		1
 	OpenLevel139Add90	Mở giới hạn Lv139 90 ngày		1	400		
-OpenLevel149		Cấp tối đa 149	11		400	149	
+OpenLevel149		Cấp tối đa 149	13		400	149	
 	OpenLevel149Add9	Mở bán Đá Hồn Vân Hạo Nhiên		1	400		
 	OpenLevel149Add45	Mở giới hạn Lv149 45 ngày		1	400		
 	OpenLevel149Add55	Mở giới hạn Lv149 55 ngày		1	400		
 	OpenLevel149Add65	Quà Mỗi Ngày mở Đá Hồn Dương Kế Chu		1	400		1
 	OpenLevel149Add90	Mở cấp tối đa Lv149 90 ngày		1	400		
-OpenLevel159		Cấp tối đa Lv159, mở chế tạo Gia Cụ (Lv6)	12		400	159	
+OpenLevel159		Cấp tối đa Lv159, mở chế tạo Gia Cụ (Lv6)	14		400	159	
 	OpenDay617	Mở bán Đá Hồn Bản Tướng		1	400		
 	OpenLevel159Add36	Mở giới hạn Lv159 36 ngày		1	400		
 	OpenLevel159Add45	Mở giới hạn Lv159 45 ngày		1	400		
 	OpenLevel159Add55	Mở giới hạn Lv159 55 ngày		1	400		
 	OpenLevel159Add44	Quà Mỗi Ngày mở Đá Hồn Lý Minh Vân		1	400		1
 	OpenLevel159Add90	Mở cấp tối đa Lv159 90 ngày		1	400		
-OpenLevel169		Tối đa Lv169	13		400	169	
+OpenLevel169		Tối đa Lv169	14		400	169	
 	OpenLevel159Add89	Mở bán Đá Hồn Trương Thừa Tố		1	400		
 	OpenLevel169Add45	Mở giới hạn Lv169 45 ngày		1	400		
 	OpenLevel169Add55	Mở giới hạn Lv169 55 ngày		1	400		
 	OpenLevel169Add23	Quà Mỗi Ngày mở Đá Hồn Công Tôn Khải Dương		1	400		1
 	OpenLevel169Add90	Mở giới hạn Lv169 90 ngày		1	400		
-OpenLevel179		Cấp tối đa Lv179	13		400	179	
+OpenLevel179		Cấp tối đa Lv179	14		400	179	
 	OpenLevel169Add68	Mở Bày Bán Đá Hồn Dương Kế Chu		1	400		
 	OpenLevel179Add45	Mở giới hạn Lv179 45 ngày		1	400		
 	OpenLevel179Add55	Mở giới hạn Lv179 55 ngày		1	400		
 	OpenLevel179Add26	Quà Mỗi Ngày mở Đá Hồn Nguyên Thiên Xu		1	400		1
 	OpenLevel179Add90	Mở tối đa Lv179 được 90 ngày		1	400		
-OpenLevel189		Cấp tối đa Lv189, mở chế tạo Gia Cụ (Lv7)	13		400	189	
+OpenLevel189		Cấp tối đa Lv189, mở chế tạo Gia Cụ (Lv7)	14		400	189	
 	OpenLevel179Add47	Mở bày bán Đá Hồn Lý Minh Vân		1	400		
 	OpenLevel189Add50	Mở giới hạn Lv189 50 ngày		1	400		
 	OpenLevel189Add55	Mở giới hạn Lv189 55 ngày		1	400		
 	OpenLevel189Add17	Quà Mỗi Ngày mở Đá Hồn Phong Chính Nam		1	400		1
 	OpenLevel189Add90	Mở tối đa Lv189 được 90 ngày		1	400		
-OpenLevel199		Cấp tối đa 199	13		400	199	
+OpenLevel199		Cấp tối đa 199	14		400	199	
 	OpenLevel189Add26	Mở Đá Hồn Công Tôn Khai Dương bày bán		1	400		
 	OpenLevel199Add50_1	Mở giới hạn Lv199 50 ngày		1	400		
 	OpenLevel199Add50	Quà Mỗi Ngày mở Đá Hồn Trần Đại Thông		1	400		1
 	OpenLevel199Add60	Mở giới hạn Lv199 60 ngày		1	400		
 	OpenLevel199Add90	Mở giới hạn Lv199 90 ngày		1	400		
-OpenLevel209		Giới hạn Lv209 (Tông Sư Lv9)	13		400	209	
+OpenLevel209		Giới hạn Lv209 (Tông Sư Lv9)	14		400	209	
 	OpenLevel199Add39	Mở bán Đá Hồn Nguyên Thiên Xu		1	400		
 	OpenLevel209Add44	Quà Mỗi Ngày mở Đá Hồn Lâm Phong Đường		1	400		1
 	OpenLevel209Add50	Mở giới hạn Lv209 50 ngày		1	400		
 	OpenLevel209Add60	Mở giới hạn Lv209 60 ngày		1	400		
 	OpenLevel209Add32	Mở bày bán Đá Hồn Phong Chính Nam		1	400		
-OpenLevel219		Giới hạn Lv219 (Tông Sư Lv19)	13		400	219	
+OpenLevel219		Giới hạn Lv219 (Tông Sư Lv19)	14		400	219	
 	OpenLevel219Add35	Quà Mỗi Ngàymở Đá Hồn Đoàn Chính Hưng		1	400		1
 	OpenLevel219Add50	Mở giới hạn Lv219 50 ngày		1	400		
 	OpenLevel219Add60	Mở giới hạn Lv219 60 ngày		1	400		
 	OpenLevel219Add71	Mở bày bán Đá Hồn Trần Đại Thông		1	400		
-OpenLevel229		Giới hạn Lv229 (Tông Sư Lv29)	13		400	229	
+OpenLevel229		Giới hạn Lv229 (Tông Sư Lv29)	14		400	229	
 	OpenLevel229Add26	Quà Mỗi Ngày mở Đá Hồn Chu Chấn Uy		1	400		1
 	OpenLevel229Add55	Mở giới hạn Lv229 55 ngày		1	400		
 	OpenLevel229Add59	Mở bán Đá Hồn Lâm Phong Đường		1	400		
 	OpenLevel229Add60	Mở giới hạn Lv229 60 ngày		1	400		
-OpenLevel239		Giới Hạn (Tông Sư Lv39) Lv239	13		400	239	
+OpenLevel239		Giới Hạn (Tông Sư Lv39) Lv239	14		400	239	
 	OpenLevel239Add11	Quà Mỗi Ngày mở Đá Hồn Ngô Chính Vượng		1	400		1
 	OpenLevel239Add56	Mở bày bán Đá Hồn Ân Chính Hưng		1	400		
 	OpenLevel239Add60	Mở giới hạn Lv239 60 ngày		1	400		
-OpenLevel249		Giới Hạn (Tông Sư Lv49) Lv249	13		400	249	
+OpenLevel249		Giới Hạn (Tông Sư Lv49) Lv249	14		400	249	
 	OpenLevel249Add31	Mở bày bán Đá Hồn Chu Chấn Uy		1	400		
 	OpenLevel249Add60	Mở Lv249 giới hạn 60 ngày		1	400		
-OpenLevel259		Giới hạn Lv259 (Tông Sư Lv59)	13		400	259	
+OpenLevel259		Giới hạn Lv259 (Tông Sư Lv59)	14		400	259	
 	OpenLevel259Add60	Mở giới hạn Lv259 60 ngày		1	400		
-OpenLevel269		Giới Hạn (Tông Sư Lv69) Lv269	13		400	269	
+OpenLevel269		Giới Hạn (Tông Sư Lv69) Lv269	14		400	269	
 	OpenLevel269Add60	Mở giới hạn Lv269 60 ngày		1	400		
-OpenLevel279		Giới Hạn (Tông Sư Lv79) Lv279	13		400	279	
+OpenLevel279		Giới Hạn (Tông Sư Lv79) Lv279	14		400	279	
 	OpenLevel279Add34	Mở sạp Đá Hồn Thương Lân Cù Long		1	400		
 	OpenLevel279Add60	Mở giới hạn Lv269 60 ngày		1	400		
-OpenLevel289		Giới Hạn (Tông Sư Lv89) Lv289	13		400	289	
+OpenLevel289		Giới Hạn (Tông Sư Lv89) Lv289	14		400	289	
 	OpenLevel289Add60	Giới hạn Lv289 (Tông Sư Lv89)		1	400		
 OpenLevel299		Giới Hạn (Tông Sư Lv99) Lv299	13		400	299	
 	OpenLevel299Add60	Mở giới hạn Lv299 60 ngày		1	400		
