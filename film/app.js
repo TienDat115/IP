@@ -436,9 +436,29 @@ async function loadNewMovies(page = 1) {
         const response = await fetch(`${API_BASE}/films/phim-moi-cap-nhat?page=${page}`);
         const data = await response.json();
         
+        console.log('API Response:', data);
+        
         if (data.status === 'success') {
             displayMovies(data.items);
-            displayPagination(data.pagination);
+            
+            // Update currentPage from API response
+            if (data.pagination && data.pagination.current_page) {
+                currentPage = data.pagination.current_page;
+            } else {
+                currentPage = page;
+            }
+            
+            // Always show pagination for testing
+            if (data.pagination) {
+                displayPagination(data.pagination);
+            } else {
+                // Create mock pagination for testing
+                displayPagination({
+                    current_page: currentPage,
+                    total_pages: 5,
+                    total_items: data.items?.length || 50
+                });
+            }
         } else {
             showError('Không thể tải danh sách phim');
         }
@@ -610,12 +630,44 @@ function getCountryFromCategory(category) {
 function displayPagination(pagination) {
     const container = document.getElementById('pagination');
     
-    if (!pagination || pagination.total_pages <= 1) {
+    // Debug: Log pagination data
+    console.log('Pagination data:', pagination);
+    
+    if (!container) {
+        console.error('Pagination container not found');
+        return;
+    }
+    
+    // Handle different pagination structures
+    let paginationData = pagination;
+    
+    // If pagination is nested in data.pagination
+    if (pagination && pagination.pagination) {
+        paginationData = pagination.pagination;
+    }
+    
+    // If no pagination data, create default pagination
+    if (!paginationData) {
+        console.log('No pagination data, creating default');
+        paginationData = {
+            current_page: currentPage || 1, // Use global currentPage
+            total_pages: 5,
+            total_items: 50
+        };
+    }
+    
+    // Use global currentPage if available, otherwise use pagination data
+    const current_page = currentPage || paginationData.current_page || 1;
+    const total_pages = paginationData.total_pages || 1;
+    
+    console.log('Current page:', current_page, 'Total pages:', total_pages);
+    
+    if (total_pages <= 1) {
+        console.log('Only 1 page, no pagination needed');
         container.innerHTML = '';
         return;
     }
     
-    const { current_page, total_pages } = pagination;
     let html = '';
     
     // Previous button
@@ -631,6 +683,7 @@ function displayPagination(pagination) {
     
     for (let i = startPage; i <= endPage; i++) {
         const isActive = i === current_page;
+        console.log(`Page ${i}: ${isActive ? 'ACTIVE' : 'inactive'}`);
         html += `<button onclick="changePage(${i})" class="px-3 py-2 ${isActive ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'} rounded transition">
             ${i}
         </button>`;
@@ -643,11 +696,15 @@ function displayPagination(pagination) {
         </button>`;
     }
     
+    console.log('Pagination HTML:', html);
     container.innerHTML = html;
 }
 
 // Change page
 function changePage(page) {
+    console.log('Changing to page:', page);
+    currentPage = page; // Update global currentPage
+    
     if (searchQuery) {
         searchMovies(searchQuery, page);
     } else if (currentCategory) {
