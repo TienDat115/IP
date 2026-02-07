@@ -124,7 +124,6 @@
 				}
 				header h1 {
 					font-size: 1.25rem;
-					flex-shrink: 0;
 				}
 				header .search-bar {
 					order: 2;
@@ -150,6 +149,33 @@
 				}
 				header button span {
 					display: none;
+				}
+
+				/* Next episode button mobile */
+				#videoModalInModal .absolute.bottom-4 .left-4 button,
+				#videoModalInModal .absolute.bottom-4 .right-4 button {
+					flex-direction: column !important;
+					padding: 0.5rem !important;
+					font-size: 0.75rem !important;
+					min-width: auto !important;
+				}
+
+				#videoModalInModal .absolute.bottom-4 .left-4 button .space-x-2,
+				#videoModalInModal .absolute.bottom-4 .right-4 button .space-x-2 {
+					display: flex !important;
+					flex-direction: column !important;
+					gap: 0.25rem !important;
+				}
+
+				#videoModalInModal .absolute.bottom-4 .left-4 button .text-xs,
+				#videoModalInModal .absolute.bottom-4 .right-4 button .text-xs {
+					font-size: 0.625rem !important;
+				}
+
+				#videoModalInModal .absolute.bottom-4 .flex {
+					flex-direction: column !important;
+					gap: 0.5rem !important;
+					align-items: center !important;
 				}
 
 				/* Movies grid */

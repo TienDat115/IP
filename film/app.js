@@ -948,8 +948,30 @@ function playEpisodeInModal(slug, videoUrl) {
     // Get current movie info
     const movieTitle = window.currentMovieTitle || 'Phim';
     const movieSlug = window.currentMovieSlug || slug;
+    const episodes = window.currentMovieEpisodes || [];
     
     console.log('Playing episode in modal:', { movieSlug, movieTitle, episodeSlug: slug, videoUrl });
+    
+    // Find current episode, previous episode and next episode
+    let currentEpisodeIndex = -1;
+    let prevEpisode = null;
+    let nextEpisode = null;
+    
+    if (episodes.length > 0 && episodes[0].items) {
+        const episodeList = episodes[0].items;
+        currentEpisodeIndex = episodeList.findIndex(ep => ep.slug === slug);
+        
+        if (currentEpisodeIndex !== -1) {
+            // Find previous episode
+            if (currentEpisodeIndex > 0) {
+                prevEpisode = episodeList[currentEpisodeIndex - 1];
+            }
+            // Find next episode
+            if (currentEpisodeIndex < episodeList.length - 1) {
+                nextEpisode = episodeList[currentEpisodeIndex + 1];
+            }
+        }
+    }
     
     // Add to watch history
     addToWatchHistory(movieSlug, movieTitle, slug);
@@ -977,6 +999,24 @@ function playEpisodeInModal(slug, videoUrl) {
                     <p class="text-white text-sm font-semibold">${movieTitle}</p>
                     <p class="text-gray-300 text-xs">${slug}</p>
                 </div>
+                <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                    ${prevEpisode ? `
+                        <button onclick="playPrevEpisode('${prevEpisode.slug}', '${prevEpisode.embed || prevEpisode.m3u8}')" 
+                                class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                            <i class="fas fa-backward"></i>
+                            <span>Tập trước</span>
+                            <span class="text-xs opacity-75">${prevEpisode.name || `Tập ${currentEpisodeIndex}`}</span>
+                        </button>
+                    ` : '<div></div>'}
+                    ${nextEpisode ? `
+                        <button onclick="playNextEpisode('${nextEpisode.slug}', '${nextEpisode.embed || nextEpisode.m3u8}')" 
+                                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                            <span>Tập tiếp theo</span>
+                            <span class="text-xs opacity-75">${nextEpisode.name || `Tập ${currentEpisodeIndex + 2}`}</span>
+                            <i class="fas fa-forward"></i>
+                        </button>
+                    ` : '<div></div>'}
+                </div>
             </div>
         </div>
     `;
@@ -988,6 +1028,10 @@ function playEpisodeInModal(slug, videoUrl) {
     if (videoUrl.includes('.m3u8')) {
         loadHLSPlayerInModal();
     }
+    
+    // Store current episode info for next episode functionality
+    window.currentEpisodeSlug = slug;
+    window.currentEpisodeIndex = currentEpisodeIndex;
 }
 
 // Close video in modal
@@ -996,6 +1040,28 @@ function closeVideoInModal() {
     if (videoModal) {
         videoModal.remove();
     }
+}
+
+// Play next episode
+function playNextEpisode(nextSlug, nextVideoUrl) {
+    console.log('Playing next episode:', { nextSlug, nextVideoUrl });
+    
+    // Close current video modal
+    closeVideoInModal();
+    
+    // Play next episode
+    playEpisodeInModal(nextSlug, nextVideoUrl);
+}
+
+// Play previous episode
+function playPrevEpisode(prevSlug, prevVideoUrl) {
+    console.log('Playing previous episode:', { prevSlug, prevVideoUrl });
+    
+    // Close current video modal
+    closeVideoInModal();
+    
+    // Play previous episode
+    playEpisodeInModal(prevSlug, prevVideoUrl);
 }
 
 // Load HLS.js for m3u8 streaming in modal
@@ -1039,8 +1105,30 @@ function playEpisode(slug, videoUrl) {
     // Get current movie info
     const movieTitle = window.currentMovieTitle || 'Phim';
     const movieSlug = window.currentMovieSlug || slug;
+    const episodes = window.currentMovieEpisodes || [];
     
     console.log('Playing episode:', { movieSlug, movieTitle, episodeSlug: slug, videoUrl });
+    
+    // Find current episode, previous episode and next episode
+    let currentEpisodeIndex = -1;
+    let prevEpisode = null;
+    let nextEpisode = null;
+    
+    if (episodes && episodes.length > 0 && episodes[0] && episodes[0].items) {
+        const episodeList = episodes[0].items;
+        currentEpisodeIndex = episodeList.findIndex(ep => ep.slug === slug);
+        
+        if (currentEpisodeIndex !== -1) {
+            // Find previous episode
+            if (currentEpisodeIndex > 0) {
+                prevEpisode = episodeList[currentEpisodeIndex - 1];
+            }
+            // Find next episode
+            if (currentEpisodeIndex < episodeList.length - 1) {
+                nextEpisode = episodeList[currentEpisodeIndex + 1];
+            }
+        }
+    }
     
     // Add to watch history
     addToWatchHistory(movieSlug, movieTitle, slug);
@@ -1067,6 +1155,24 @@ function playEpisode(slug, videoUrl) {
                 <div class="absolute top-4 left-4 bg-black bg-opacity-75 px-3 py-2 rounded">
                     <p class="text-white text-sm font-semibold">${movieTitle}</p>
                     <p class="text-gray-300 text-xs">${slug}</p>
+                </div>
+                <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                    ${prevEpisode ? `
+                        <button onclick="playPrevEpisodeFromHistory('${prevEpisode.slug}', '${prevEpisode.embed || prevEpisode.m3u8}')" 
+                                class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                            <i class="fas fa-backward"></i>
+                            <span>Tập trước</span>
+                            <span class="text-xs opacity-75">${prevEpisode.name || `Tập ${currentEpisodeIndex}`}</span>
+                        </button>
+                    ` : '<div></div>'}
+                    ${nextEpisode ? `
+                        <button onclick="playNextEpisodeFromHistory('${nextEpisode.slug}', '${nextEpisode.embed || nextEpisode.m3u8}')" 
+                                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                            <span>Tập tiếp theo</span>
+                            <span class="text-xs opacity-75">${nextEpisode.name || `Tập ${currentEpisodeIndex + 2}`}</span>
+                            <i class="fas fa-forward"></i>
+                        </button>
+                    ` : '<div></div>'}
                 </div>
             </div>
         </div>
@@ -1154,6 +1260,28 @@ function closeVideoModal() {
     if (videoModal) {
         videoModal.remove();
     }
+}
+
+// Play next episode from history
+function playNextEpisodeFromHistory(nextSlug, nextVideoUrl) {
+    console.log('Playing next episode from history:', { nextSlug, nextVideoUrl });
+    
+    // Close current video modal
+    closeVideoModal();
+    
+    // Play next episode using playEpisode function
+    playEpisode(nextSlug, nextVideoUrl);
+}
+
+// Play previous episode from history
+function playPrevEpisodeFromHistory(prevSlug, prevVideoUrl) {
+    console.log('Playing previous episode from history:', { prevSlug, prevVideoUrl });
+    
+    // Close current video modal
+    closeVideoModal();
+    
+    // Play previous episode using playEpisode function
+    playEpisode(prevSlug, prevVideoUrl);
 }
 
 // Show home
