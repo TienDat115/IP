@@ -801,34 +801,43 @@ async function showMovieDetail(slug) {
                     
                     ${movie.episodes && movie.episodes.length > 0 ? `
                         <div class="mb-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-xl font-semibold">Danh sách tập</h3>
-                                <button onclick="toggleWatchHistoryInModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition">
-                                    <i class="fas fa-history mr-2"></i>Lịch sử xem
-                                </button>
-                            </div>
-                            <div class="mb-4">
-                                <select id="serverSelect" class="bg-gray-700 text-white px-4 py-2 rounded-lg" onchange="updateEpisodesList()">
-                                    ${movie.episodes.map((server, index) => `
-                                        <option value="${index}">${server.server_name}</option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                            <div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
-                                ${movie.episodes[0].items.map((episode, index) => `
-                                    <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
-                                            class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug) ? 'ring-2 ring-blue-500' : ''}">
-                                        ${episode.name || `Tập ${index + 1}`}
-                                        ${isEpisodeWatched(episode.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
+                            <!-- Watch History Section - Hidden by default -->
+                            <div id="watchHistoryInModal" class="hidden mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-semibold">Lịch sử xem phim này</h3>
+                                    <button onclick="toggleWatchHistoryInModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition">
+                                        <i class="fas fa-history mr-2"></i>Lịch sử xem
                                     </button>
-                                `).join('')}
+                                </div>
+                                <div id="modalWatchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
+                                    <!-- Watch history will be loaded here -->
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div id="watchHistoryInModal" class="hidden">
-                            <h4 class="text-lg font-semibold mb-4">Lịch sử xem phim này</h4>
-                            <div id="modalWatchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
-                                <!-- Watch history will be loaded here -->
+                            
+                            <!-- Episodes Section -->
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-semibold">Danh sách tập</h3>
+                                    <button onclick="toggleWatchHistoryInModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition">
+                                        <i class="fas fa-history mr-2"></i>Lịch sử xem
+                                    </button>
+                                </div>
+                                <div class="mb-4">
+                                    <select id="serverSelect" class="bg-gray-700 text-white px-4 py-2 rounded-lg" onchange="updateEpisodesList()">
+                                        ${movie.episodes.map((server, index) => `
+                                            <option value="${index}">${server.server_name}</option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                                <div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                                    ${movie.episodes[0].items.map((episode, index) => `
+                                        <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
+                                                class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug) ? 'ring-2 ring-blue-500' : ''}">
+                                            ${episode.name || `Tập ${index + 1}`}
+                                            ${isEpisodeWatched(episode.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
+                                        </button>
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     ` : ''}
@@ -862,15 +871,17 @@ function isEpisodeWatched(episodeSlug) {
     );
 }
 
-// Toggle watch history in modal
+// Toggle watch history in modal - Show/hide toggle
 function toggleWatchHistoryInModal() {
     const modal = document.getElementById('watchHistoryInModal');
     const grid = document.getElementById('modalWatchHistoryGrid');
     
     if (modal.classList.contains('hidden')) {
+        // Show history
         modal.classList.remove('hidden');
         loadWatchHistoryInModal();
     } else {
+        // Hide history
         modal.classList.add('hidden');
     }
 }
