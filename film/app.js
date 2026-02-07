@@ -600,10 +600,6 @@ function displayMovies(movies) {
                 <p class="text-gray-400 text-xs mb-2">${movie.year || movie.time || ''}</p>
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-gray-500">${getCountryFromCategory(movie.category) || ''}</span>
-                    <div class="flex items-center text-xs text-yellow-400">
-                        <i class="fas fa-star mr-1"></i>
-                        ${movie.rating || 'N/A'}
-                    </div>
                 </div>
             </div>
         </div>
@@ -1007,24 +1003,25 @@ function playEpisodeInModal(slug, videoUrl) {
                     <p class="text-white text-sm font-semibold">${movieTitle}</p>
                     <p class="text-gray-300 text-xs">${slug}</p>
                 </div>
-                <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-                    ${prevEpisode ? `
-                        <button onclick="playPrevEpisode('${prevEpisode.slug}', '${prevEpisode.embed || prevEpisode.m3u8}')" 
-                                class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
-                            <i class="fas fa-backward"></i>
-                            <span>Tập trước</span>
-                            <span class="text-xs opacity-75">${prevEpisode.name || `Tập ${currentEpisodeIndex}`}</span>
-                        </button>
-                    ` : '<div></div>'}
-                    ${nextEpisode ? `
-                        <button onclick="playNextEpisode('${nextEpisode.slug}', '${nextEpisode.embed || nextEpisode.m3u8}')" 
-                                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
-                            <span>Tập tiếp theo</span>
-                            <span class="text-xs opacity-75">${nextEpisode.name || `Tập ${currentEpisodeIndex + 2}`}</span>
-                            <i class="fas fa-forward"></i>
-                        </button>
-                    ` : '<div></div>'}
-                </div>
+            </div>
+            <!-- Episode Navigation Buttons -->
+            <div class="bg-gray-900 p-4 flex justify-between items-center">
+                ${prevEpisode ? `
+                    <button onclick="playPrevEpisode('${prevEpisode.slug}', '${prevEpisode.embed || prevEpisode.m3u8}')" 
+                            class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                        <i class="fas fa-backward"></i>
+                        <span>Tập trước</span>
+                        <span class="text-xs opacity-75">${prevEpisode.name || `Tập ${currentEpisodeIndex}`}</span>
+                    </button>
+                ` : '<div></div>'}
+                ${nextEpisode ? `
+                    <button onclick="playNextEpisode('${nextEpisode.slug}', '${nextEpisode.embed || nextEpisode.m3u8}')" 
+                            class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                        <span>Tập tiếp theo</span>
+                        <span class="text-xs opacity-75">${nextEpisode.name || `Tập ${currentEpisodeIndex + 2}`}</span>
+                        <i class="fas fa-forward"></i>
+                    </button>
+                ` : '<div></div>'}
             </div>
         </div>
     `;
@@ -1164,24 +1161,26 @@ function playEpisode(slug, videoUrl) {
                     <p class="text-white text-sm font-semibold">${movieTitle}</p>
                     <p class="text-gray-300 text-xs">${slug}</p>
                 </div>
-                <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-                    ${prevEpisode ? `
-                        <button onclick="playPrevEpisodeFromHistory('${prevEpisode.slug}', '${prevEpisode.embed || prevEpisode.m3u8}')" 
-                                class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
-                            <i class="fas fa-backward"></i>
-                            <span>Tập trước</span>
-                            <span class="text-xs opacity-75">${prevEpisode.name || `Tập ${currentEpisodeIndex}`}</span>
-                        </button>
-                    ` : '<div></div>'}
-                    ${nextEpisode ? `
-                        <button onclick="playNextEpisodeFromHistory('${nextEpisode.slug}', '${nextEpisode.embed || nextEpisode.m3u8}')" 
-                                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
-                            <span>Tập tiếp theo</span>
-                            <span class="text-xs opacity-75">${nextEpisode.name || `Tập ${currentEpisodeIndex + 2}`}</span>
-                            <i class="fas fa-forward"></i>
-                        </button>
-                    ` : '<div></div>'}
-                </div>
+            </div>
+            <!-- Episode Navigation Buttons -->
+            <div class="bg-gray-900 p-4 flex justify-between items-center">
+                ${prevEpisode ? `
+                    <button onclick="playPrevEpisodeFromHistory('${prevEpisode.slug}', '${prevEpisode.embed || prevEpisode.m3u8}')" 
+                            class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                        <i class="fas fa-backward"></i>
+                        <span>Tập trước</span>
+                        <span class="text-xs opacity-75">${prevEpisode.name || `Tập ${currentEpisodeIndex}`}</span>
+                    </button>
+                ` : '<div></div>'}
+                ${nextEpisode ? `
+                    <button onclick="playNextEpisodeFromHistory('${nextEpisode.slug}', '${nextEpisode.embed || nextEpisode.m3u8}')" 
+                            class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white font-semibold transition flex items-center space-x-2">
+                        <span>Tập tiếp theo</span>
+                        <span class="text-xs opacity-75">${nextEpisode.name || `Tập ${currentEpisodeIndex + 2}`}</span>
+                        <i class="fas fa-forward"></i>
+                    </button>
+                ` : '<div></div>'}
+            </div>
             </div>
         </div>
     `;
