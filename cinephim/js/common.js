@@ -517,10 +517,10 @@ async function showMovieDetail(slug) {
                                         </select>
                                     </div>
                                     <div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
-                                        ${movie.episodes[0].items.map((episode, index) => `
+                                        ${[...movie.episodes[0].items].reverse().map((episode, index) => `
                                             <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
                                                     class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug, movie.slug) ? 'ring-2 ring-blue-500' : ''}">
-                                                ${episode.name || `Tập ${index + 1}`}
+                                                ${episode.name || `Tập ${movie.episodes[0].items.length - index}`}
                                                 ${isEpisodeWatched(episode.slug, movie.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
                                             </button>
                                         `).join('')}
@@ -1072,10 +1072,10 @@ function updateEpisodesList() {
     const server = window.currentMovieEpisodes[serverIndex];
     
     if (server && server.items) {
-        episodesList.innerHTML = server.items.map((episode, index) => `
+        episodesList.innerHTML = [...server.items].reverse().map((episode, index) => `
             <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
                     class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug, window.currentMovieSlug) ? 'ring-2 ring-blue-500' : ''}">
-                ${episode.name || `Tập ${index + 1}`}
+                ${episode.name || `Tập ${server.items.length - index}`}
                 ${isEpisodeWatched(episode.slug, window.currentMovieSlug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
             </button>
         `).join('');
