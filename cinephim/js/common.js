@@ -14,34 +14,6 @@ let authListener = null;
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Categories data
-const categories = [
-    { slug: 'hanh-dong', name: 'Hành động', icon: 'fa-fist-raised' },
-    { slug: 'phieu-luu', name: 'Phiêu lưu', icon: 'fa-compass' },
-    { slug: 'hai-huoc', name: 'Hài hước', icon: 'fa-laugh' },
-    { slug: 'tinh-cam', name: 'Tình cảm', icon: 'fa-heart' },
-    { slug: 'kinh-di', name: 'Kinh dị', icon: 'fa-ghost' },
-    { slug: 'vien-tuong', name: 'Viễn tưởng', icon: 'fa-rocket' },
-    { slug: 'phim-18', name: 'Phim 18+', icon: 'fa-fire' },
-    { slug: 'chien-tranh', name: 'Chiến tranh', icon: 'fa-shield-alt' },
-    { slug: 'tham-tu', name: 'Thám tử', icon: 'fa-search' },
-    { slug: 'hoat-hinh', name: 'Hoạt hình', icon: 'fa-palette' },
-    { slug: 'gia-dinh', name: 'Gia đình', icon: 'fa-home' },
-    { slug: 'su-pham', name: 'Sử phạm', icon: 'fa-gavel' }
-];
-
-// Countries data
-const countries = [
-    { slug: 'au-my', name: 'Âu Mỹ', icon: 'fa-flag-usa' },
-    { slug: 'han-quoc', name: 'Hàn Quốc', icon: 'fa-kimchi' },
-    { slug: 'trung-quoc', name: 'Trung Quốc', icon: 'fa-dragon' },
-    { slug: 'nhat-ban', name: 'Nhật Bản', icon: 'fa-torii-gate' },
-    { slug: 'thai-lan', name: 'Thái Lan', icon: 'fa-elephant' },
-    { slug: 'viet-nam', name: 'Việt Nam', icon: 'fa-flag' },
-    { slug: 'philippines', name: 'Philippines', icon: 'fa-island-tropical' },
-    { slug: 'india', name: 'Ấn Độ', icon: 'fa-om' }
-];
-
 // Initialize Firebase and common functions
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for Firebase to be ready

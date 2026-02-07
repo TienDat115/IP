@@ -2,9 +2,6 @@
 
 // Global variables for this page
 let currentPage = 1;
-let currentCategory = '';
-let currentCountry = '';
-let currentYear = '';
 let searchQuery = '';
 
 // Initialize page
@@ -224,15 +221,6 @@ function changePage(page) {
     
     if (searchQuery) {
         searchMovies(searchQuery, page);
-    } else if (currentCategory) {
-        // This would redirect to category page with page parameter
-        window.location.href = `categories.html?category=${currentCategory}&page=${page}`;
-    } else if (currentCountry) {
-        // This would redirect to country page with page parameter
-        window.location.href = `countries.html?country=${currentCountry}&page=${page}`;
-    } else if (currentYear) {
-        // This would redirect to year page with page parameter
-        window.location.href = `years.html?year=${currentYear}&page=${page}`;
     } else {
         loadNewMovies(page);
     }
