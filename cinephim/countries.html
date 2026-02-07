@@ -4,6 +4,9 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Quốc gia - CinePhim</title>
+		<!-- Favicon -->
+		<link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+		<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
 		<!-- Firebase SDK -->
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
@@ -15,7 +18,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 		<!-- Custom CSS -->
-		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/styles.css" />
 	</head>
 	<body class="bg-gray-900 text-white">
 		<!-- Header -->
@@ -86,27 +89,13 @@
 				<!-- Mobile Navigation Menu -->
 				<div id="mobileMenu" class="hidden sm:hidden mt-2 bg-gray-700 rounded-lg p-2">
 					<div class="grid grid-cols-2 gap-2">
-						<a href="index.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
-							<i class="fas fa-home mr-1"></i>Trang chủ
-						</a>
-						<a href="now-playing.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
-							<i class="fas fa-film mr-1"></i>Đang chiếu
-						</a>
-						<a href="categories.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
-							<i class="fas fa-th-large mr-1"></i>Thể loại
-						</a>
-						<a href="countries.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
-							<i class="fas fa-globe mr-1"></i>Quốc gia
-						</a>
-						<a href="years.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
-							<i class="fas fa-calendar mr-1"></i>Năm
-						</a>
-						<a href="favorites.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
-							<i class="fas fa-heart mr-1"></i>Yêu thích
-						</a>
-						<a href="watch-history.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
-							<i class="fas fa-history mr-1"></i>Lịch sử
-						</a>
+						<a href="index.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-home mr-1"></i>Trang chủ </a>
+						<a href="now-playing.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-film mr-1"></i>Đang chiếu </a>
+						<a href="categories.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-th-large mr-1"></i>Thể loại </a>
+						<a href="countries.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-globe mr-1"></i>Quốc gia </a>
+						<a href="years.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-calendar mr-1"></i>Năm </a>
+						<a href="favorites.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-heart mr-1"></i>Yêu thích </a>
+						<a href="watch-history.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-history mr-1"></i>Lịch sử </a>
 					</div>
 				</div>
 			</nav>
@@ -135,9 +124,7 @@
 			<div id="moviesSection" class="hidden">
 				<div class="flex justify-between items-center mb-6">
 					<h2 id="countryTitle" class="text-2xl font-bold">Phim theo quốc gia</h2>
-					<button onclick="backToCountries()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition">
-						<i class="fas fa-arrow-left mr-2"></i>Quay lại
-					</button>
+					<button onclick="backToCountries()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition"><i class="fas fa-arrow-left mr-2"></i>Quay lại</button>
 				</div>
 
 				<!-- Movies Grid -->
