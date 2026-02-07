@@ -519,9 +519,9 @@ async function showMovieDetail(slug) {
                                     <div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
                                         ${movie.episodes[0].items.map((episode, index) => `
                                             <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
-                                                    class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug) ? 'ring-2 ring-blue-500' : ''}">
+                                                    class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug, movie.slug) ? 'ring-2 ring-blue-500' : ''}">
                                                 ${episode.name || `Tập ${index + 1}`}
-                                                ${isEpisodeWatched(episode.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
+                                                ${isEpisodeWatched(episode.slug, movie.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
                                             </button>
                                         `).join('')}
                                     </div>
@@ -557,9 +557,10 @@ function closeMovieModal() {
 }
 
 // Check if episode is watched
-function isEpisodeWatched(episodeSlug) {
+function isEpisodeWatched(episodeSlug, movieSlug = null) {
+    const slugToCheck = movieSlug || window.currentMovieSlug;
     return watchHistory.some(item => 
-        item.movieSlug === window.currentMovieSlug && 
+        item.movieSlug === slugToCheck && 
         item.episodeName === episodeSlug
     );
 }
@@ -1073,9 +1074,9 @@ function updateEpisodesList() {
     if (server && server.items) {
         episodesList.innerHTML = server.items.map((episode, index) => `
             <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
-                    class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug) ? 'ring-2 ring-blue-500' : ''}">
+                    class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug, window.currentMovieSlug) ? 'ring-2 ring-blue-500' : ''}">
                 ${episode.name || `Tập ${index + 1}`}
-                ${isEpisodeWatched(episode.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
+                ${isEpisodeWatched(episode.slug, window.currentMovieSlug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
             </button>
         `).join('');
     }
