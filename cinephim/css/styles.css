@@ -1,0 +1,308 @@
+/* CinePhim - Common Styles */
+
+/* Film card styles */
+.film-card {
+    transition: all 0.3s ease;
+}
+
+.film-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.film-poster {
+    aspect-ratio: 2/3;
+    object-fit: cover;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Gradient backgrounds */
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><rect fill="%23667eea" width="1920" height="1080"/><polygon fill="%23764ba2" points="0,1080 1920,0 1920,1080"/></svg>');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Light mode styles */
+body:not(.dark) {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+body:not(.dark) .bg-gray-800 {
+    background-color: #ffffff;
+    color: #111827;
+}
+
+body:not(.dark) .bg-gray-700 {
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+body:not(.dark) .bg-gray-900 {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+body:not(.dark) .text-gray-400 {
+    color: #6b7280;
+}
+
+body:not(.dark) .text-gray-300 {
+    color: #4b5563;
+}
+
+body:not(.dark) .text-gray-500 {
+    color: #6b7280;
+}
+
+body:not(.dark) .border-gray-600 {
+    border-color: #d1d5db;
+}
+
+body:not(.dark) .border-gray-700 {
+    border-color: #e5e7eb;
+}
+
+body:not(.dark) .hover\:bg-gray-700:hover {
+    background-color: #f3f4f6;
+}
+
+body:not(.dark) .hover\:bg-gray-600:hover {
+    background-color: #e5e7eb;
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 640px) {
+    /* Hero section */
+    .hero-section h2 {
+        font-size: 1.5rem;
+        line-height: 1.2;
+    }
+    .hero-section p {
+        font-size: 0.875rem;
+    }
+    .hero-section .flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .hero-section button {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    /* Header - Ensure single row layout */
+    header .sm\\:hidden {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+
+    header .container {
+        padding: 0.5rem;
+    }
+    header h1 {
+        font-size: 1.25rem;
+    }
+    header .search-bar {
+        order: 2;
+        width: 100%;
+    }
+    header nav {
+        order: 3;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    header .items-center {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    header button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        min-height: 44px;
+        min-width: 44px;
+    }
+    header button span {
+        display: none;
+    }
+
+    /* Next episode button mobile */
+    #videoModalInModal .absolute.bottom-4 .left-4 button,
+    #videoModalInModal .absolute.bottom-4 .right-4 button {
+        flex-direction: column !important;
+        padding: 0.5rem !important;
+        font-size: 0.75rem !important;
+        min-width: auto !important;
+    }
+
+    #videoModalInModal .absolute.bottom-4 .left-4 button .space-x-2,
+    #videoModalInModal .absolute.bottom-4 .right-4 button .space-x-2 {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.25rem !important;
+    }
+
+    #videoModalInModal .absolute.bottom-4 .left-4 button .text-xs,
+    #videoModalInModal .absolute.bottom-4 .right-4 button .text-xs {
+        font-size: 0.625rem !important;
+    }
+
+    #videoModalInModal .absolute.bottom-4 .flex {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        align-items: center !important;
+    }
+
+    /* Movies grid */
+    .grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .grid-cols-5 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .film-card {
+        margin-bottom: 0.5rem;
+    }
+    .film-card img {
+        height: auto;
+    }
+    .film-card h3 {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+    .film-card p {
+        font-size: 0.625rem;
+    }
+
+    /* Pagination */
+    #pagination button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    /* Categories and countries grid */
+    .categories-grid,
+    .countries-grid,
+    .years-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    .categories-grid > div,
+    .countries-grid > div,
+    .years-grid > div {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    /* Modals */
+    .modal {
+        padding: 1rem;
+    }
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Tablet improvements */
+    .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .grid-cols-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .grid-cols-5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Movie modal */
+    #movieModal .max-w-4xl {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    #movieModal .p-6 {
+        padding: 1rem;
+    }
+    #movieModal h2 {
+        font-size: 1.5rem;
+    }
+    #movieModal .grid-cols-2 {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    /* Episodes grid */
+    #episodesList {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    #episodesList button {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Small mobile */
+    .grid-cols-2,
+    .grid-cols-3,
+    .grid-cols-4,
+    .grid-cols-5 {
+        grid-template-columns: 1fr;
+    }
+
+    .film-card {
+        max-width: 100%;
+    }
+
+    #episodesList {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Touch-friendly buttons */
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Search input */
+    #searchInput {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+}

@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Quốc gia - CinePhim</title>
+		<!-- Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+		<script src="../js/firebase-config.js"></script>
+		<!-- Tailwind CSS -->
+		<script src="https://cdn.tailwindcss.com"></script>
+		<!-- SweetAlert2 -->
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+		<!-- Custom CSS -->
+		<link rel="stylesheet" href="css/styles.css">
+	</head>
+	<body class="bg-gray-900 text-white">
+		<!-- Header -->
+		<header class="bg-gray-800 shadow-lg sticky top-0 z-50">
+			<nav class="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
+				<!-- Mobile Layout: Single Row -->
+				<div class="sm:hidden flex items-center justify-between w-full">
+					<!-- Mobile Menu Toggle -->
+					<button id="mobileMenuToggle" class="text-white hover:text-purple-400 transition">
+						<i class="fas fa-bars text-xl"></i>
+					</button>
+
+					<!-- Logo -->
+					<h1 class="text-lg font-bold text-purple-400"><i class="fas fa-film mr-1"></i>CinePhim</h1>
+
+					<!-- Right Side Buttons -->
+					<div class="flex items-center space-x-2">
+						<button onclick="toggleTheme()" class="text-white hover:text-purple-400 transition">
+							<i id="mobileThemeIcon" class="fas fa-moon"></i>
+						</button>
+						<button onclick="toggleLogin()" class="text-white hover:text-purple-400 transition">
+							<i id="mobileLoginIcon" class="fas fa-sign-in-alt"></i>
+						</button>
+					</div>
+				</div>
+
+				<!-- Desktop Layout -->
+				<div class="hidden sm:flex items-center justify-between">
+					<div class="flex items-center space-x-4">
+						<h1 class="text-2xl font-bold text-purple-400"><i class="fas fa-film mr-2"></i>CinePhim</h1>
+					</div>
+
+					<!-- Search Bar -->
+					<div class="flex-1 max-w-md mx-8 search-bar">
+						<div class="relative">
+							<input type="text" id="searchInput" placeholder="Tìm kiếm phim..." class="w-full px-4 py-2 pl-10 pr-4 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-purple-400 text-white" />
+							<i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+						</div>
+					</div>
+
+					<!-- Desktop Navigation -->
+					<div class="flex items-center space-x-6">
+						<a href="index.html" class="hover:text-purple-400 transition"><i class="fas fa-home mr-1"></i>Trang chủ</a>
+						<a href="now-playing.html" class="hover:text-purple-400 transition"><i class="fas fa-film mr-1"></i>Đang chiếu</a>
+						<a href="categories.html" class="hover:text-purple-400 transition"><i class="fas fa-th-large mr-1"></i>Thể loại</a>
+						<a href="countries.html" class="text-purple-400 hover:text-purple-400 transition"><i class="fas fa-globe mr-1"></i>Quốc gia</a>
+						<a href="years.html" class="hover:text-purple-400 transition"><i class="fas fa-calendar mr-1"></i>Năm</a>
+						<a href="favorites.html" class="hover:text-purple-400 transition"><i class="fas fa-heart mr-1"></i>Yêu thích</a>
+						<a href="watch-history.html" class="hover:text-purple-400 transition"><i class="fas fa-history mr-1"></i>Lịch sử</a>
+						<button onclick="toggleTheme()" class="hover:text-purple-400 transition">
+							<i id="themeIcon" class="fas fa-moon mr-1"></i>
+						</button>
+						<button onclick="toggleLogin()" class="hover:text-purple-400 transition">
+							<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
+							<span id="loginText">Đăng nhập</span>
+						</button>
+					</div>
+				</div>
+
+				<!-- Mobile Search Bar -->
+				<div class="sm:hidden mt-2">
+					<div class="relative">
+						<input type="text" id="mobileSearchInput" placeholder="Tìm kiếm phim..." class="w-full px-3 py-2 pl-8 pr-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-purple-400 text-white text-sm" />
+						<i class="fas fa-search absolute left-2 top-2.5 text-gray-400 text-sm"></i>
+					</div>
+				</div>
+
+				<!-- Mobile Navigation Menu -->
+				<div id="mobileMenu" class="hidden sm:hidden mt-2 bg-gray-700 rounded-lg p-2">
+					<div class="grid grid-cols-2 gap-2">
+						<a href="index.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
+							<i class="fas fa-home mr-1"></i>Trang chủ
+						</a>
+						<a href="now-playing.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
+							<i class="fas fa-film mr-1"></i>Đang chiếu
+						</a>
+						<a href="categories.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
+							<i class="fas fa-th-large mr-1"></i>Thể loại
+						</a>
+						<a href="countries.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
+							<i class="fas fa-globe mr-1"></i>Quốc gia
+						</a>
+						<a href="years.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
+							<i class="fas fa-calendar mr-1"></i>Năm
+						</a>
+						<a href="favorites.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
+							<i class="fas fa-heart mr-1"></i>Yêu thích
+						</a>
+						<a href="watch-history.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition">
+							<i class="fas fa-history mr-1"></i>Lịch sử
+						</a>
+					</div>
+				</div>
+			</nav>
+		</header>
+
+		<!-- Main Content -->
+		<main class="container mx-auto px-4 py-8">
+			<!-- Page Title -->
+			<div class="mb-8">
+				<h1 class="text-3xl font-bold mb-4">Quốc gia</h1>
+				<p class="text-gray-400">Khám phá phim từ các quốc gia trên khắp thế giới</p>
+			</div>
+
+			<!-- Loading -->
+			<div id="loading" class="text-center py-12 hidden">
+				<div class="loading-spinner mx-auto"></div>
+				<p class="mt-4">Đang tải...</p>
+			</div>
+
+			<!-- Countries Grid -->
+			<div id="countriesGrid" class="countries-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 mb-8">
+				<!-- Countries will be loaded here -->
+			</div>
+
+			<!-- Movies Section (Hidden by default) -->
+			<div id="moviesSection" class="hidden">
+				<div class="flex justify-between items-center mb-6">
+					<h2 id="countryTitle" class="text-2xl font-bold">Phim theo quốc gia</h2>
+					<button onclick="backToCountries()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition">
+						<i class="fas fa-arrow-left mr-2"></i>Quay lại
+					</button>
+				</div>
+
+				<!-- Movies Grid -->
+				<div id="moviesContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+					<!-- Movies will be loaded here -->
+				</div>
+
+				<!-- Pagination -->
+				<div id="pagination" class="flex justify-center mt-6 md:mt-8 space-x-1 md:space-x-2 flex-wrap gap-2">
+					<!-- Pagination will be loaded here -->
+				</div>
+			</div>
+		</main>
+
+		<!-- Movie Detail Modal -->
+		<div id="movieModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
+			<div class="flex items-center justify-center min-h-screen p-2 sm:p-4">
+				<div class="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal">
+					<div class="relative">
+						<button onclick="closeMovieModal()" class="absolute top-2 right-2 sm:top-4 sm:right-4 text-white text-xl sm:text-2xl hover:text-red-400 z-10 bg-black bg-opacity-50 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+							<i class="fas fa-times"></i>
+						</button>
+						<div id="movieDetailContent" class="modal-content">
+							<!-- Movie details will be loaded here -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Login Modal -->
+		<div id="loginModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
+			<div class="flex items-center justify-center min-h-screen p-4">
+				<div class="bg-gray-800 rounded-lg max-w-md w-full p-4 sm:p-6 modal">
+					<div class="flex justify-between items-center mb-4">
+						<h3 class="text-lg sm:text-xl font-semibold text-white">Đăng nhập</h3>
+						<button onclick="closeLoginModal()" class="text-gray-400 hover:text-white text-xl">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+					<form onsubmit="handleLogin(event)">
+						<div class="mb-4">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+							<input type="email" id="loginEmail" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400 text-sm" placeholder="nhập email của bạn" />
+						</div>
+						<div class="mb-6">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Mật khẩu</label>
+							<input type="password" id="loginPassword" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400 text-sm" placeholder="nhập mật khẩu" />
+						</div>
+						<button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition">Đăng nhập</button>
+					</form>
+					<div class="mt-4 text-center">
+						<p class="text-sm text-gray-400">
+							Chưa có tài khoản?
+							<button onclick="showRegisterModal()" class="text-purple-400 hover:text-purple-300">Đăng ký</button>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Register Modal -->
+		<div id="registerModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
+			<div class="flex items-center justify-center min-h-screen p-4">
+				<div class="bg-gray-800 rounded-lg max-w-md w-full p-6">
+					<div class="flex justify-between items-center mb-4">
+						<h3 class="text-xl font-semibold text-white">Đăng ký</h3>
+						<button onclick="closeRegisterModal()" class="text-gray-400 hover:text-white">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+					<form onsubmit="handleRegister(event)">
+						<div class="mb-4">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+							<input type="email" id="registerEmail" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400" placeholder="nhập email của bạn" />
+						</div>
+						<div class="mb-4">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Mật khẩu</label>
+							<input type="password" id="registerPassword" required minlength="6" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400" placeholder="tối thiểu 6 ký tự" />
+						</div>
+						<div class="mb-6">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Xác nhận mật khẩu</label>
+							<input type="password" id="registerConfirmPassword" required minlength="6" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400" placeholder="nhập lại mật khẩu" />
+						</div>
+						<button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition">Đăng ký</button>
+					</form>
+					<div class="mt-4 text-center">
+						<p class="text-sm text-gray-400">
+							Đã có tài khoản?
+							<button onclick="showLoginModal()" class="text-purple-400 hover:text-purple-300">Đăng nhập</button>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer class="bg-gray-800 py-8 mt-16">
+			<div class="container mx-auto px-4 text-center">
+				<p class="text-gray-400">2024 CinePhim. Xem phim online miễn phí với chất lượng HD.</p>
+			</div>
+		</footer>
+
+		<!-- Scripts -->
+		<script src="js/common.js"></script>
+		<script src="js/countries.js"></script>
+
+		<!-- Mobile Menu JavaScript -->
+		<script>
+			// Mobile menu toggle
+			const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+			const mobileMenu = document.getElementById("mobileMenu");
+			const mobileSearchInput = document.getElementById("mobileSearchInput");
+			const desktopSearchInput = document.getElementById("searchInput");
+
+			// Mobile menu toggle event
+			if (mobileMenuToggle) {
+				mobileMenuToggle.addEventListener("click", toggleMobileMenu);
+			}
+
+			// Sync mobile and desktop search
+			if (mobileSearchInput && desktopSearchInput) {
+				mobileSearchInput.addEventListener("input", function (e) {
+					desktopSearchInput.value = e.target.value;
+					// Trigger search event
+					const event = new Event("input");
+					desktopSearchInput.dispatchEvent(event);
+				});
+
+				desktopSearchInput.addEventListener("input", function (e) {
+					mobileSearchInput.value = e.target.value;
+				});
+			}
+
+			// Close mobile menu when clicking outside
+			document.addEventListener("click", function (e) {
+				if (mobileMenu && !mobileMenu.classList.contains("hidden")) {
+					if (!mobileMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+						closeMobileMenu();
+					}
+				}
+			});
+
+			// Sync theme icons
+			function syncThemeIcons() {
+				const desktopIcon = document.getElementById("themeIcon");
+				const mobileIcon = document.getElementById("mobileThemeIcon");
+
+				if (desktopIcon && mobileIcon) {
+					if (desktopIcon.classList.contains("fa-moon")) {
+						mobileIcon.className = "fas fa-moon";
+					} else {
+						mobileIcon.className = "fas fa-sun";
+					}
+				}
+			}
+
+			// Sync login icons
+			function syncLoginIcons() {
+				const desktopIcon = document.getElementById("loginIcon");
+				const mobileIcon = document.getElementById("mobileLoginIcon");
+				const desktopText = document.getElementById("loginText");
+
+				if (desktopIcon && mobileIcon) {
+					mobileIcon.className = desktopIcon.className;
+					if (desktopText && desktopText.textContent === "Đăng xuất") {
+						mobileIcon.className = "fas fa-sign-out-alt";
+					} else {
+						mobileIcon.className = "fas fa-sign-in-alt";
+					}
+				}
+			}
+
+			// Override toggleTheme to sync icons
+			const originalToggleTheme = window.toggleTheme;
+			window.toggleTheme = function () {
+				originalToggleTheme();
+				syncThemeIcons();
+			};
+
+			// Override toggleLogin to sync icons
+			const originalToggleLogin = window.toggleLogin;
+			window.toggleLogin = function () {
+				originalToggleLogin();
+				syncLoginIcons();
+			};
+
+			// Initial sync
+			setTimeout(() => {
+				syncThemeIcons();
+				syncLoginIcons();
+			}, 100);
+		</script>
+	</body>
+</html>
