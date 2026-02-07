@@ -805,9 +805,6 @@ async function showMovieDetail(slug) {
                             <div id="watchHistoryInModal" class="hidden mb-6">
                                 <div class="flex justify-between items-center mb-4">
                                     <h3 class="text-xl font-semibold">Lịch sử xem phim này</h3>
-                                    <button onclick="toggleWatchHistoryInModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition">
-                                        <i class="fas fa-history mr-2"></i>Lịch sử xem
-                                    </button>
                                 </div>
                                 <div id="modalWatchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
                                     <!-- Watch history will be loaded here -->
