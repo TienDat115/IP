@@ -1120,3 +1120,46 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Utility functions
+function getCountryFromCategory(category) {
+    if (!category || !Array.isArray(category)) return '';
+    
+    // Find country-like items in category array
+    const countryKeywords = ['Việt Nam', 'Hàn Quốc', 'Trung Quốc', 'Mỹ', 'Nhật Bản', 'Thái Lan', 'Anh', 'Pháp', 'Đức'];
+    
+    for (const item of category) {
+        if (typeof item === 'string') {
+            for (const country of countryKeywords) {
+                if (item.includes(country)) {
+                    return country;
+                }
+            }
+        }
+    }
+    
+    return '';
+}
+
+function showLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.classList.remove('hidden');
+    }
+}
+
+function hideLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.classList.add('hidden');
+    }
+}
+
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: message,
+        confirmButtonColor: '#8b5cf6'
+    });
+}
