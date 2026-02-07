@@ -1656,10 +1656,6 @@ function displayFavoriteMovies(movies) {
                 <p class="text-gray-400 text-xs mb-2">${movie.year || movie.time || ''}</p>
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-gray-500">${movie.country || getCountryFromCategory(movie.category) || ''}</span>
-                    <div class="flex items-center text-xs text-yellow-400">
-                        <i class="fas fa-star mr-1"></i>
-                        ${movie.rating || 'N/A'}
-                    </div>
                 </div>
             </div>
         </div>
