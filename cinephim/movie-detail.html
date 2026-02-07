@@ -3,22 +3,60 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>CinePhim - Xem Phim Online HD</title>
+		<title id="pageTitle">Đang tải... - CinePhim</title>
+		<meta name="description" id="pageDescription" content="Xem phim online HD miễn phí tại CinePhim" />
+		<meta name="keywords" content="xem phim, phim online, phim hd, phim bo, phim le" />
+
+		<!-- Open Graph Meta Tags -->
+		<meta property="og:title" id="ogTitle" content="CinePhim - Xem Phim Online HD" />
+		<meta property="og:description" id="ogDescription" content="Xem phim online HD miễn phí tại CinePhim" />
+		<meta property="og:type" content="video.movie" />
+		<meta property="og:image" id="ogImage" content="" />
+
 		<!-- Favicon -->
 		<link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
 		<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+
 		<!-- Firebase SDK -->
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 		<script src="../js/firebase-config.js"></script>
+
 		<!-- Tailwind CSS -->
 		<script src="https://cdn.tailwindcss.com"></script>
+
 		<!-- SweetAlert2 -->
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
+
+		<!-- Structured Data for SEO -->
+		<script type="application/ld+json" id="structuredData">
+			{
+				"@context": "https://schema.org",
+				"@type": "Movie",
+				"name": "Đang tải...",
+				"description": "Đang tải thông tin phim...",
+				"url": window.location.href,
+				"image": "",
+				"datePublished": "",
+				"director": {},
+				"actor": [],
+				"genre": [],
+				"contentRating": "",
+				"aggregateRating": {
+					"@type": "AggregateRating",
+					"ratingValue": "",
+					"ratingCount": ""
+				}
+			}
+		</script>
+
+		<!-- Video.js CSS -->
+		<link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
 	</head>
 	<body class="bg-gray-900 text-white">
 		<!-- Header -->
@@ -48,7 +86,7 @@
 				<!-- Desktop Layout -->
 				<div class="hidden sm:flex items-center justify-between">
 					<div class="flex items-center space-x-4">
-						<h1 class="text-2xl font-bold text-purple-400"><i class="fas fa-film mr-2"></i>CinePhim</h1>
+						<a href="index.html" class="text-2xl font-bold text-purple-400 hover:text-purple-300 transition"> <i class="fas fa-film mr-2"></i>CinePhim </a>
 					</div>
 
 					<!-- Search Bar -->
@@ -93,24 +131,104 @@
 			</nav>
 		</header>
 
+		<!-- Breadcrumb -->
+		<div class="container mx-auto px-4 py-4">
+			<nav class="flex items-center space-x-2 text-sm text-gray-400">
+				<a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span id="breadcrumbCategory" class="text-white">Đang tải...</span>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span id="breadcrumbMovie" class="text-white">Đang tải...</span>
+			</nav>
+		</div>
+
 		<!-- Main Content -->
 		<main class="container mx-auto px-4 py-8">
 			<!-- Loading -->
-			<div id="loading" class="text-center py-12 hidden">
+			<div id="loading" class="text-center py-12">
 				<div class="loading-spinner mx-auto"></div>
-				<p class="mt-4">Đang tải...</p>
+				<p class="mt-4">Đang tải thông tin phim...</p>
 			</div>
 
-			<!-- Movies Grid -->
-			<div id="moviesContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-				<!-- Movies will be loaded here -->
-			</div>
+			<!-- Movie Content -->
+			<div id="movieContent" class="hidden">
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+					<!-- Left Column - Movie Info -->
+					<div class="lg:col-span-1">
+						<div class="bg-gray-800 rounded-lg overflow-hidden">
+							<img id="moviePoster" src="https://via.placeholder.com/400x600/374151/ffffff?text=Loading..." alt="Movie Poster" class="w-full h-auto" />
+							<div class="p-6">
+								<h1 id="movieTitle" class="text-2xl font-bold mb-4">Đang tải...</h1>
 
-			<!-- Pagination -->
-			<div id="pagination" class="flex justify-center mt-6 md:mt-8 space-x-1 md:space-x-2 flex-wrap gap-2">
-				<!-- Pagination will be loaded here -->
+								<div class="space-y-3 mb-6">
+									<div class="flex items-center">
+										<i class="fas fa-calendar-alt w-5 text-purple-400"></i>
+										<span class="ml-3" id="movieYear">Năm</span>
+									</div>
+									<div class="flex items-center">
+										<i class="fas fa-clock w-5 text-purple-400"></i>
+										<span class="ml-3" id="movieDuration">Thời lượng</span>
+									</div>
+								</div>
+
+								<div class="space-y-3">
+									<button onclick="toggleFavorite()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-heart mr-2"></i>Thêm vào yêu thích</button>
+									<button onclick="shareMovie()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-share-alt mr-2"></i>Chia sẻ</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Right Column - Player and Episodes -->
+					<div class="lg:col-span-2">
+						<!-- Video Player -->
+						<div class="bg-gray-800 rounded-lg overflow-hidden mb-6">
+							<div class="relative" style="padding-bottom: 56.25%">
+								<iframe id="videoPlayer" class="absolute top-0 left-0 w-full h-full" src="about:blank" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" scrolling="no"></iframe>
+							</div>
+						</div>
+
+						<!-- Episodes Section -->
+						<div id="episodesSection" class="bg-gray-800 rounded-lg p-6 mb-6">
+							<div class="flex justify-between items-center mb-4">
+								<h3 class="text-xl font-semibold">Danh sách tập</h3>
+								<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition"><i class="fas fa-history mr-2"></i>Lịch sử xem</button>
+							</div>
+
+							<!-- Watch History Section - Hidden by default -->
+							<div id="watchHistorySection" class="hidden mb-6">
+								<h4 class="text-lg font-medium mb-3">Lịch sử xem phim này</h4>
+								<div id="watchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
+									<!-- Watch history will be loaded here -->
+								</div>
+							</div>
+
+							<div class="mb-4">
+								<select id="serverSelect" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full" onchange="updateEpisodesList()">
+									<!-- Server options will be loaded here -->
+								</select>
+							</div>
+							<div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+								<!-- Episodes will be loaded here -->
+							</div>
+						</div>
+
+						<!-- Movie Description -->
+						<div class="bg-gray-800 rounded-lg p-6 mb-6">
+							<h3 class="text-xl font-semibold mb-4">Nội dung phim</h3>
+							<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</main>
+
+		<!-- Footer -->
+		<footer class="bg-gray-800 py-8 mt-16">
+			<div class="container mx-auto px-4 text-center">
+				<p class="text-gray-400">2026 CinePhim. Xem phim online miễn phí với chất lượng HD.</p>
+			</div>
+		</footer>
 
 		<!-- Login Modal -->
 		<div id="loginModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
@@ -178,16 +296,9 @@
 			</div>
 		</div>
 
-		<!-- Footer -->
-		<footer class="bg-gray-800 py-8 mt-16">
-			<div class="container mx-auto px-4 text-center">
-				<p class="text-gray-400">2026 CinePhim. Xem phim online miễn phí với chất lượng HD.</p>
-			</div>
-		</footer>
-
 		<!-- Scripts -->
 		<script src="js/common.js"></script>
-		<script src="js/index.js"></script>
+		<script src="js/movie-detail.js"></script>
 
 		<!-- Mobile Menu JavaScript -->
 		<script>
