@@ -52,20 +52,20 @@ async function loadNewMovies(page = 1) {
             displayMovies(data.items);
             
             // Update currentPage from API response
-            if (data.pagination && data.pagination.current_page) {
-                currentPage = data.pagination.current_page;
+            if (data.paginate && data.paginate.current_page) {
+                currentPage = data.paginate.current_page;
             } else {
                 currentPage = page;
             }
             
             // Always show pagination for testing
-            if (data.pagination) {
-                displayPagination(data.pagination);
+            if (data.paginate) {
+                displayPagination(data.paginate);
             } else {
                 // Create mock pagination for testing
                 displayPagination({
                     current_page: currentPage,
-                    total_pages: 5,
+                    total_page: 5,
                     total_items: data.items?.length || 50
                 });
             }
@@ -86,12 +86,12 @@ async function searchMovies(keyword, page = 1) {
     searchQuery = keyword;
     
     try {
-        const response = await fetch(`${API_BASE}/films/search?keyword=${encodeURIComponent(keyword)}`);
+        const response = await fetch(`${API_BASE}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`);
         const data = await response.json();
         
         if (data.status === 'success') {
             displayMovies(data.items);
-            displayPagination(data.pagination);
+            displayPagination(data.paginate);
         } else {
             showError('Không tìm thấy phim nào');
         }
@@ -155,9 +155,9 @@ function displayPagination(pagination) {
     // Handle different pagination structures
     let paginationData = pagination;
     
-    // If pagination is nested in data.pagination
-    if (pagination && pagination.pagination) {
-        paginationData = pagination.pagination;
+    // If pagination is nested in data.paginate
+    if (pagination && pagination.paginate) {
+        paginationData = pagination.paginate;
     }
     
     // If no pagination data, create default pagination
@@ -165,18 +165,18 @@ function displayPagination(pagination) {
         console.log('No pagination data, creating default');
         paginationData = {
             current_page: currentPage || 1, // Use global currentPage
-            total_pages: 5,
+            total_page: 5,
             total_items: 50
         };
     }
     
     // Use global currentPage if available, otherwise use pagination data
     const current_page = currentPage || paginationData.current_page || 1;
-    const total_pages = paginationData.total_pages || 1;
+    const total_page = paginationData.total_page || 1;
     
-    console.log('Current page:', current_page, 'Total pages:', total_pages);
+    console.log('Current page:', current_page, 'Total pages:', total_page);
     
-    if (total_pages <= 1) {
+    if (total_page <= 1) {
         console.log('Only 1 page, no pagination needed');
         container.innerHTML = '';
         return;
@@ -193,7 +193,7 @@ function displayPagination(pagination) {
     
     // Page numbers
     const startPage = Math.max(1, current_page - 2);
-    const endPage = Math.min(total_pages, current_page + 2);
+    const endPage = Math.min(total_page, current_page + 2);
     
     for (let i = startPage; i <= endPage; i++) {
         const isActive = i === current_page;
@@ -204,7 +204,7 @@ function displayPagination(pagination) {
     }
     
     // Next button
-    if (current_page < total_pages) {
+    if (current_page < total_page) {
         html += `<button onclick="changePage(${current_page + 1})" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">
             <i class="fas fa-chevron-right"></i>
         </button>`;
