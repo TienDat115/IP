@@ -335,6 +335,7 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
     const historyItem = {
         movieSlug: movieSlug,
         movieTitle: movieTitle,
+        episodeSlug: episodeSlug,
         episodeName: episodeName,
         videoUrl: getCurrentVideoUrl(),
         watchedAt: watchedAt
@@ -445,7 +446,7 @@ function isEpisodeWatched(episodeSlug, movieSlug = null) {
     const slugToCheck = movieSlug || currentMovie.slug;
     return watchHistory.some(item => 
         item.movieSlug === slugToCheck && 
-        item.episodeName === episodeSlug
+        item.episodeSlug === episodeSlug
     );
 }
 

@@ -423,7 +423,7 @@ function isEpisodeWatched(episodeSlug, movieSlug = null) {
     const slugToCheck = movieSlug || window.currentMovieSlug;
     return watchHistory.some(item => 
         item.movieSlug === slugToCheck && 
-        item.episodeName === episodeSlug
+        item.episodeSlug === episodeSlug
     );
 }
 
