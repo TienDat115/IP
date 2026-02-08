@@ -1,7 +1,5 @@
 // CinePhim - Watch History Page JavaScript
 
-let watchHistory = [];
-
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         loadWatchHistory();
