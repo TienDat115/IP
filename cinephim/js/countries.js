@@ -1,65 +1,50 @@
-// CinePhim - Categories Page JavaScript
-
-// Global variables for this page
+// Countries Page JavaScript
 let currentPage = 1;
-let currentCategory = '';
+let currentCountry = '';
 let totalPages = 1;
 
-// Initialize page
+// Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait for common.js to initialize Firebase
-    setTimeout(() => {
-        setupEventListeners();
-        // Check if category is in URL params
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category');
-        if (category) {
-            document.getElementById('categorySelect').value = category;
-            loadMoviesByCategory(category, 1);
-        }
-    }, 1500);
+    initializePage();
 });
 
-// Setup event listeners
-function setupEventListeners() {
-    const categorySelect = document.getElementById('categorySelect');
-    
-    if (categorySelect) {
-        categorySelect.addEventListener('change', function(e) {
-            const category = e.target.value;
-            if (category) {
-                currentCategory = category;
-                currentPage = 1;
-                loadMoviesByCategory(category, 1);
-                
-                // Update URL
-                const url = new URL(window.location);
-                url.searchParams.set('category', category);
-                window.history.pushState({}, '', url);
-            } else {
-                // Clear movies if no category selected
-                document.getElementById('moviesGrid').innerHTML = '';
-                document.getElementById('pagination').innerHTML = '';
-                showNoResults();
+// Initialize the page
+async function initializePage() {
+    try {
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            updateAuthUI();
+        });
+        
+        // Check for country parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const countryParam = urlParams.get('country');
+        
+        if (countryParam) {
+            document.getElementById('countrySelect').value = countryParam;
+            await loadCountryMovies();
+        }
+        
+        // Add enter key support for country selection
+        document.getElementById('countrySelect').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadCountryMovies();
             }
         });
+        
+    } catch (error) {
+        console.error('Error initializing page:', error);
+        showError('Có lỗi xảy ra khi tải trang. Vui lòng thử lại.');
     }
-    
-    // Add enter key support
-    categorySelect.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            const category = e.target.value;
-            if (category) {
-                loadMoviesByCategory(category, 1);
-            }
-        }
-    });
 }
 
-// Load movies by category
-async function loadMoviesByCategory(category, page = 1) {
-    if (!category) {
-        showWarning('Vui lòng chọn thể loại để xem phim.');
+// Load movies by country
+async function loadCountryMovies(page = 1) {
+    const countrySelect = document.getElementById('countrySelect');
+    const selectedCountry = countrySelect.value;
+    
+    if (!selectedCountry) {
+        showWarning('Vui lòng chọn quốc gia để xem phim.');
         return;
     }
     
@@ -67,13 +52,13 @@ async function loadMoviesByCategory(category, page = 1) {
         showLoading(true);
         hideNoResults();
         
-        currentCategory = category;
+        currentCountry = selectedCountry;
         currentPage = page;
         
-        const response = await fetch(`${API_BASE}/films/the-loai/${category}?page=${page}`);
+        const response = await fetch(`${API_BASE}/films/quoc-gia/${selectedCountry}?page=${page}`);
         
         if (!response.ok) {
-            throw new Error('Failed to fetch category movies');
+            throw new Error('Failed to fetch country movies');
         }
         
         const data = await response.json();
@@ -83,11 +68,11 @@ async function loadMoviesByCategory(category, page = 1) {
             updatePagination(data.paginate);
             
             // Update page title
-            const categoryName = getCategoryDisplayName(category);
-            document.title = `Phim ${categoryName} - CinePhim`;
+            const countryName = getCountryDisplayName(selectedCountry);
+            document.title = `Phim ${countryName} - CinePhim`;
             
             // Update breadcrumb
-            updateBreadcrumb(categoryName);
+            updateBreadcrumb(countryName);
             
         } else {
             showNoResults();
@@ -96,7 +81,7 @@ async function loadMoviesByCategory(category, page = 1) {
         showLoading(false);
         
     } catch (error) {
-        console.error('Error loading category movies:', error);
+        console.error('Error loading country movies:', error);
         showError('Không thể tải danh sách phim. Vui lòng thử lại.');
         showLoading(false);
     }
@@ -152,7 +137,7 @@ function updatePagination(paginate) {
     // Previous button
     if (current > 1) {
         paginationHTML += `
-            <button onclick="loadMoviesByCategory('${currentCategory}', ${current - 1})" 
+            <button onclick="loadCountryMovies(${current - 1})" 
                     class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                 <i class="fas fa-chevron-left"></i>
             </button>
@@ -170,7 +155,7 @@ function updatePagination(paginate) {
     
     if (startPage > 1) {
         paginationHTML += `
-            <button onclick="loadMoviesByCategory('${currentCategory}', 1)" 
+            <button onclick="loadCountryMovies(1)" 
                     class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">1</button>
         `;
         if (startPage > 2) {
@@ -181,7 +166,7 @@ function updatePagination(paginate) {
     for (let i = startPage; i <= endPage; i++) {
         const isActive = i === current;
         paginationHTML += `
-            <button onclick="loadMoviesByCategory('${currentCategory}', ${i})" 
+            <button onclick="loadCountryMovies(${i})" 
                     class="px-3 py-2 ${isActive ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'} rounded-lg transition">
                 ${i}
             </button>
@@ -193,7 +178,7 @@ function updatePagination(paginate) {
             paginationHTML += `<span class="px-2">...</span>`;
         }
         paginationHTML += `
-            <button onclick="loadMoviesByCategory('${currentCategory}', ${total})" 
+            <button onclick="loadCountryMovies(${total})" 
                     class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">${total}</button>
         `;
     }
@@ -201,7 +186,7 @@ function updatePagination(paginate) {
     // Next button
     if (current < total) {
         paginationHTML += `
-            <button onclick="loadMoviesByCategory('${currentCategory}', ${current + 1})" 
+            <button onclick="loadCountryMovies(${current + 1})" 
                     class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                 <i class="fas fa-chevron-right"></i>
             </button>
@@ -211,45 +196,57 @@ function updatePagination(paginate) {
     paginationContainer.innerHTML = paginationHTML;
 }
 
-// Get category display name
-function getCategoryDisplayName(categorySlug) {
-    const categoryNames = {
-        'hanh-dong': 'Hành Động',
-        'phieu-luu': 'Phiêu Lưu',
-        'hoat-hinh': 'Hoạt Hình',
-        'phim-hai': 'Phim Hài',
-        'hinh-su': 'Hình Sự',
-        'tai-lieu': 'Tài Liệu',
-        'chinh-kich': 'Chính Kịch',
-        'gia-dinh': 'Gia Đình',
-        'gia-tuong': 'Giả Tưởng',
-        'lich-su': 'Lịch Sử',
-        'kinh-di': 'Kinh Dị',
-        'phim-nhac': 'Phim Nhạc',
-        'bi-an': 'Bí Ẩn',
-        'lang-man': 'Lãng Mạn',
-        'khoa-hoc-vien-tuong': 'Khoa Học Viễn Tưởng',
-        'gay-can': 'Gây Cấn',
-        'chien-tranh': 'Chiến Tranh',
-        'mien-tay': 'Miền Tây',
-        'co-trang': 'Cổ Trang',
-        'tam-ly': 'Tâm Lý',
-        'tinh-cam': 'Tình Cảm'
+// Get country display name
+function getCountryDisplayName(countrySlug) {
+    const countryNames = {
+        'au-my': 'Âu Mỹ',
+        'anh': 'Anh',
+        'trung-quoc': 'Trung Quốc',
+        'indonesia': 'Indonesia',
+        'viet-nam': 'Việt Nam',
+        'argentina': 'Argentina',
+        'ao': 'Áo',
+        'uc': 'Úc',
+        'bangladesh': 'Bangladesh',
+        'brazil': 'Brazil',
+        'bahamas': 'Bahamas',
+        'belarus': 'Belarus',
+        'canada': 'Canada',
+        'thuy-si': 'Thụy Sĩ',
+        'bo-bien-nga': 'Bờ Biển Ngà',
+        'chile': 'Chile',
+        'colombia': 'Colombia',
+        'costa-rica': 'Costa Rica',
+        'duc': 'Đức',
+        'dan-mach': 'Đan Mạch',
+        'tay-ban-nha': 'Tây Ban Nha',
+        'phap': 'Pháp',
+        'greenland': 'Greenland',
+        'hong-kong': 'Hồng Kông',
+        'han-quoc': 'Hàn Quốc',
+        'nhat-ban': 'Nhật Bản',
+        'thai-lan': 'Thái Lan',
+        'dai-loan': 'Đài Loan',
+        'nga': 'Nga',
+        'ha-lan': 'Hà Lan',
+        'quoc-gia-khac': 'Quốc gia khác',
+        'philippines': 'Philippines',
+        'an-do': 'Ấn Độ'
     };
     
-    return categoryNames[categorySlug] || categorySlug;
+    return countryNames[countrySlug] || countrySlug;
 }
 
 // Update breadcrumb
-function updateBreadcrumb(categoryName) {
+function updateBreadcrumb(countryName) {
     const breadcrumbContainer = document.querySelector('nav .text-gray-400');
     if (breadcrumbContainer) {
         breadcrumbContainer.innerHTML = `
             <a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-white">Phim theo thể loại</span>
+            <span class="text-white">Phim theo quốc gia</span>
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-white">${categoryName}</span>
+            <span class="text-white">${countryName}</span>
         `;
     }
 }

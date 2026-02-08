@@ -51,10 +51,51 @@
 						<h1 class="text-2xl font-bold text-purple-400"><i class="fas fa-film mr-2"></i>CinePhim</h1>
 					</div>
 
-					<!-- Category Selector -->
-					<div class="flex-1 max-w-md mx-8">
-						<select id="categorySelect" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-purple-400 text-white">
-							<option value="">Chọn thể loại</option>
+					<!-- Desktop Navigation -->
+					<div class="flex items-center space-x-6">
+						<a href="index.html" class="hover:text-purple-400 transition"><i class="fas fa-home mr-1"></i>Trang chủ</a>
+						<a href="categories.html" class="hover:text-purple-400 transition"><i class="fas fa-list mr-1"></i>Thể loại</a>
+						<a href="countries.html" class="hover:text-purple-400 transition"><i class="fas fa-globe mr-1"></i>Quốc gia</a>
+						<a href="favorites.html" class="hover:text-purple-400 transition"><i class="fas fa-heart mr-1"></i>Yêu thích</a>
+						<a href="watch-history.html" class="hover:text-purple-400 transition"><i class="fas fa-history mr-1"></i>Lịch sử</a>
+						<button onclick="toggleTheme()" class="hover:text-purple-400 transition">
+							<i id="themeIcon" class="fas fa-moon mr-1"></i>
+						</button>
+						<button onclick="toggleLogin()" class="hover:text-purple-400 transition">
+							<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
+							<span id="loginText">Đăng nhập</span>
+						</button>
+					</div>
+				</div>
+
+				<!-- Mobile Navigation Menu -->
+				<div id="mobileMenu" class="hidden sm:hidden mt-2 bg-gray-700 rounded-lg p-2">
+					<div class="grid grid-cols-2 gap-2">
+						<a href="index.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-home mr-1"></i>Trang chủ </a>
+						<a href="categories.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-list mr-1"></i>Thể loại </a>
+						<a href="countries.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-globe mr-1"></i>Quốc gia </a>
+						<a href="favorites.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-heart mr-1"></i>Yêu thích </a>
+						<a href="watch-history.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-history mr-1"></i>Lịch sử </a>
+					</div>
+				</div>
+			</nav>
+		</header>
+
+		<!-- Main Content -->
+		<main class="container mx-auto px-4 py-8">
+			<!-- Page Title -->
+			<div class="text-center mb-8">
+				<h1 class="text-3xl sm:text-4xl font-bold mb-4"><i class="fas fa-list mr-3 text-purple-400"></i>Phim theo thể loại</h1>
+				<p class="text-gray-400 max-w-2xl mx-auto">Khám phá các bộ phim theo thể loại bạn yêu thích</p>
+			</div>
+
+			<!-- Category Selection -->
+			<div class="bg-gray-800 rounded-lg p-6 mb-8">
+				<div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+					<div class="w-full sm:w-auto">
+						<label for="categorySelect" class="block text-sm font-medium text-gray-300 mb-2">Chọn thể loại:</label>
+						<select id="categorySelect" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
+							<option value="">-- Chọn thể loại --</option>
 							<option value="hanh-dong">Hành Động</option>
 							<option value="phieu-luu">Phiêu Lưu</option>
 							<option value="hoat-hinh">Hoạt Hình</option>
@@ -78,85 +119,33 @@
 							<option value="tinh-cam">Tình Cảm</option>
 						</select>
 					</div>
-
-					<!-- Desktop Navigation -->
-					<div class="flex items-center space-x-6">
-						<a href="index.html" class="hover:text-purple-400 transition"><i class="fas fa-home mr-1"></i>Trang chủ</a>
-						<a href="categories.html" class="hover:text-purple-400 transition"><i class="fas fa-list mr-1"></i>Thể loại</a>
-						<a href="favorites.html" class="hover:text-purple-400 transition"><i class="fas fa-heart mr-1"></i>Yêu thích</a>
-						<a href="watch-history.html" class="hover:text-purple-400 transition"><i class="fas fa-history mr-1"></i>Lịch sử</a>
-						<button onclick="toggleTheme()" class="hover:text-purple-400 transition">
-							<i id="themeIcon" class="fas fa-moon mr-1"></i>
-						</button>
-						<button onclick="toggleLogin()" class="hover:text-purple-400 transition">
-							<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
-							<span id="loginText">Đăng nhập</span>
-						</button>
-					</div>
+					<button onclick="loadMoviesByCategory(document.getElementById('categorySelect').value)" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg transition w-full sm:w-auto"><i class="fas fa-search mr-2"></i>Xem phim</button>
 				</div>
-
-				<!-- Mobile Category Selector -->
-				<div class="sm:hidden mt-2">
-					<select id="mobileCategorySelect" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-purple-400 text-white text-sm">
-						<option value="">Chọn thể loại</option>
-						<option value="hanh-dong">Hành Động</option>
-						<option value="phieu-luu">Phiêu Lưu</option>
-						<option value="hoat-hinh">Hoạt Hình</option>
-						<option value="phim-hai">Phim Hài</option>
-						<option value="hinh-su">Hình Sự</option>
-						<option value="tai-lieu">Tài Liệu</option>
-						<option value="chinh-kich">Chính Kịch</option>
-						<option value="gia-dinh">Gia Đình</option>
-						<option value="gia-tuong">Giả Tưởng</option>
-						<option value="lich-su">Lịch Sử</option>
-						<option value="kinh-di">Kinh Dị</option>
-						<option value="phim-nhac">Phim Nhạc</option>
-						<option value="bi-an">Bí Ẩn</option>
-						<option value="lang-man">Lãng Mạn</option>
-						<option value="khoa-hoc-vien-tuong">Khoa Học Viễn Tưởng</option>
-						<option value="gay-can">Gây Cấn</option>
-						<option value="chien-tranh">Chiến Tranh</option>
-						<option value="mien-tay">Miền Tây</option>
-						<option value="co-trang">Cổ Trang</option>
-						<option value="tam-ly">Tâm Lý</option>
-						<option value="tinh-cam">Tình Cảm</option>
-					</select>
-				</div>
-
-				<!-- Mobile Navigation Menu -->
-				<div id="mobileMenu" class="hidden sm:hidden mt-2 bg-gray-700 rounded-lg p-2">
-					<div class="grid grid-cols-2 gap-2">
-						<a href="index.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-home mr-1"></i>Trang chủ </a>
-						<a href="categories.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-list mr-1"></i>Thể loại </a>
-						<a href="favorites.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-heart mr-1"></i>Yêu thích </a>
-						<a href="watch-history.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"> <i class="fas fa-history mr-1"></i>Lịch sử </a>
-					</div>
-				</div>
-			</nav>
-		</header>
-
-		<!-- Main Content -->
-		<main class="container mx-auto px-4 py-8">
-			<!-- Page Title -->
-			<div class="mb-8">
-				<h1 class="text-3xl font-bold text-purple-400 mb-2">Phim Theo Thể Loại</h1>
-				<p class="text-gray-400">Chọn thể loại để xem phim theo sở thích của bạn</p>
 			</div>
 
 			<!-- Loading -->
 			<div id="loading" class="text-center py-12 hidden">
 				<div class="loading-spinner mx-auto"></div>
-				<p class="mt-4">Đang tải...</p>
+				<p class="mt-4">Đang tải danh sách phim...</p>
 			</div>
 
 			<!-- Movies Grid -->
-			<div id="moviesContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-				<!-- Movies will be loaded here -->
+			<div id="moviesContainer">
+				<div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+					<!-- Movies will be loaded here -->
+				</div>
+
+				<!-- Pagination -->
+				<div id="pagination" class="flex justify-center items-center space-x-2 mt-8">
+					<!-- Pagination will be loaded here -->
+				</div>
 			</div>
 
-			<!-- Pagination -->
-			<div id="pagination" class="flex justify-center mt-6 md:mt-8 space-x-1 md:space-x-2 flex-wrap gap-2">
-				<!-- Pagination will be loaded here -->
+			<!-- No Results Message -->
+			<div id="noResults" class="text-center py-12 hidden">
+				<i class="fas fa-film text-6xl text-gray-600 mb-4"></i>
+				<h3 class="text-xl font-semibold mb-2">Không có phim nào</h3>
+				<p class="text-gray-400">Vui lòng chọn thể loại khác để xem phim.</p>
 			</div>
 		</main>
 
@@ -176,26 +165,10 @@
 			// Mobile menu toggle
 			const mobileMenuToggle = document.getElementById("mobileMenuToggle");
 			const mobileMenu = document.getElementById("mobileMenu");
-			const mobileCategorySelect = document.getElementById("mobileCategorySelect");
-			const desktopCategorySelect = document.getElementById("categorySelect");
 
 			// Mobile menu toggle event
 			if (mobileMenuToggle) {
 				mobileMenuToggle.addEventListener("click", toggleMobileMenu);
-			}
-
-			// Sync mobile and desktop category select
-			if (mobileCategorySelect && desktopCategorySelect) {
-				mobileCategorySelect.addEventListener("change", function (e) {
-					desktopCategorySelect.value = e.target.value;
-					// Trigger change event
-					const event = new Event("change");
-					desktopCategorySelect.dispatchEvent(event);
-				});
-
-				desktopCategorySelect.addEventListener("change", function (e) {
-					mobileCategorySelect.value = e.target.value;
-				});
 			}
 
 			// Close mobile menu when clicking outside
