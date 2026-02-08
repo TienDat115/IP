@@ -443,6 +443,9 @@ async function toggleFavorite(slug) {
             confirmButtonColor: '#8b5cf6',
             timer: 1500,
             showConfirmButton: false
+        }).then(() => {
+            // Reload page after showing notification
+            window.location.reload();
         });
     } else {
         // Add to favorites

@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // Initialize the page
 async function initializePage() {
     try {
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            updateFavoriteButton();
+        });
+        
         // Get movie slug from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
         const movieSlug = urlParams.get('slug');
@@ -64,6 +69,9 @@ async function loadMovieDetail(slug) {
             displayMovieDetails();
             updatePageMeta();
             setupEpisodes();
+            
+            // Update favorite button status
+            updateFavoriteButton();
             
             // Store episodes data for server switching
             window.currentMovieEpisodes = currentMovie.episodes;
@@ -537,35 +545,83 @@ function toggleFavorite() {
         return;
     }
 
-    if (!currentMovie) return;
+    if (!currentMovie) {
+        showError('Không có thông tin phim');
+        return;
+    }
 
     const user = auth.currentUser;
-    const favoritesRef = db.collection('favorites').doc(user.uid);
+    const userRef = db.collection('users').doc(user.uid);
+    const favoritesRef = userRef.collection('favorites');
     
-    favoritesRef.get().then((doc) => {
-        const favorites = doc.exists ? doc.data().movies || [] : [];
-        const movieIndex = favorites.findIndex(m => m.slug === currentMovie.slug);
-        
-        if (movieIndex > -1) {
-            // Remove from favorites
-            favorites.splice(movieIndex, 1);
-            showSuccess('Đã xóa khỏi danh sách yêu thích');
-        } else {
+    // Check if movie is already in favorites
+    favoritesRef.where('slug', '==', currentMovie.slug).get().then((snapshot) => {
+        if (snapshot.empty) {
             // Add to favorites
-            favorites.push({
-                slug: currentMovie.slug,
-                name: currentMovie.name || currentMovie.title,
-                poster_url: currentMovie.poster_url,
-                year: currentMovie.year,
-                addedAt: new Date()
+            const movieData = {
+                slug: currentMovie.slug || '',
+                title: currentMovie.name || currentMovie.title || '',
+                name: currentMovie.name || currentMovie.title || '',
+                addedAt: new Date().toISOString()
+            };
+            
+            favoritesRef.add(movieData).then(() => {
+                showSuccess('Đã thêm vào danh sách yêu thích');
+                updateFavoriteButton();
+            }).catch((error) => {
+                console.error('Error adding to favorites:', error);
+                showError('Không thể thêm vào yêu thích: ' + error.message);
             });
-            showSuccess('Đã thêm vào danh sách yêu thích');
+        } else {
+            // Remove from favorites
+            const batch = db.batch();
+            snapshot.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            batch.commit().then(() => {
+                showSuccess('Đã xóa khỏi danh sách yêu thích');
+                // Reload page after successful removal
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }).catch((error) => {
+                console.error('Error removing from favorites:', error);
+                showError('Không thể xóa khỏi yêu thích: ' + error.message);
+            });
         }
-        
-        return favoritesRef.set({ movies: favorites });
     }).catch((error) => {
-        console.error('Error toggling favorite:', error);
-        showError('Có lỗi xảy ra. Vui lòng thử lại.');
+        console.error('Error querying favorites:', error);
+        showError('Lỗi khi kiểm tra danh sách yêu thích: ' + error.message);
+    });
+}
+
+// Update favorite button text
+function updateFavoriteButton() {
+    const favoriteBtn = document.querySelector('button[onclick="toggleFavorite()"]');
+    if (!favoriteBtn) return;
+    
+    if (!currentMovie) {
+        favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i>Thêm vào yêu thích';
+        return;
+    }
+    
+    if (!isUserLoggedIn()) {
+        favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i>Thêm vào yêu thích';
+        return;
+    }
+    
+    const user = auth.currentUser;
+    const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
+    
+    favoritesRef.where('slug', '==', currentMovie.slug).get().then((snapshot) => {
+        if (snapshot.empty) {
+            favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i>Thêm vào yêu thích';
+        } else {
+            favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i>Bỏ yêu thích';
+        }
+    }).catch((error) => {
+        console.error('Error checking favorite status:', error);
+        favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i>Thêm vào yêu thích';
     });
 }
 
