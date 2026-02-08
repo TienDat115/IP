@@ -276,6 +276,9 @@ function updateEpisodesList() {
                 ${isEpisodeWatched(episode.slug, currentMovie.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
             </button>
         `).join('');
+        
+        // Update navigation buttons state
+        updateNavigationButtons();
     }
 }
 
@@ -313,6 +316,12 @@ function playEpisode(episodeSlug, videoUrl) {
         
         // Update iframe src with embed URL
         iframeElement.src = videoUrl;
+        
+        // Update current episode display
+        updateCurrentEpisodeDisplay(episodeSlug);
+        
+        // Update navigation buttons state
+        updateNavigationButtons();
         
         // Save to watch history
         saveToWatchHistory(currentMovie.slug, episodeSlug);
@@ -456,6 +465,155 @@ function isEpisodeWatched(episodeSlug, movieSlug = null) {
         item.movieSlug === slugToCheck && 
         item.episodeSlug === episodeSlug
     );
+}
+
+// Play previous episode
+function playPreviousEpisode() {
+    if (!currentMovie || !currentMovie.episodes || currentMovie.episodes.length === 0) return;
+    
+    const serverSelect = document.getElementById('serverSelect');
+    const serverIndex = parseInt(serverSelect.value);
+    const server = currentMovie.episodes[serverIndex];
+    
+    if (!server || !server.items || server.items.length === 0) return;
+    
+    // Find current episode in the list
+    const currentEpisode = server.items.find(ep => ep.slug === getCurrentEpisodeSlug());
+    if (!currentEpisode) return;
+    
+    const currentIndex = server.items.indexOf(currentEpisode);
+    
+    // Check if there's a previous episode
+    if (currentIndex > 0) {
+        const previousEpisode = server.items[currentIndex - 1];
+        playEpisode(previousEpisode.slug, previousEpisode.embed || previousEpisode.m3u8);
+    } else {
+        showInfo('Đây là tập đầu tiên.');
+    }
+}
+
+// Play next episode
+function playNextEpisode() {
+    if (!currentMovie || !currentMovie.episodes || currentMovie.episodes.length === 0) return;
+    
+    const serverSelect = document.getElementById('serverSelect');
+    const serverIndex = parseInt(serverSelect.value);
+    const server = currentMovie.episodes[serverIndex];
+    
+    if (!server || !server.items || server.items.length === 0) return;
+    
+    // Find current episode in the list
+    const currentEpisode = server.items.find(ep => ep.slug === getCurrentEpisodeSlug());
+    if (!currentEpisode) {
+        // If no current episode, play the first one
+        const firstEpisode = server.items[0];
+        playEpisode(firstEpisode.slug, firstEpisode.embed || firstEpisode.m3u8);
+        return;
+    }
+    
+    const currentIndex = server.items.indexOf(currentEpisode);
+    
+    // Check if there's a next episode
+    if (currentIndex < server.items.length - 1) {
+        const nextEpisode = server.items[currentIndex + 1];
+        playEpisode(nextEpisode.slug, nextEpisode.embed || nextEpisode.m3u8);
+    } else {
+        showInfo('Đây là tập cuối cùng.');
+    }
+}
+
+// Get current episode slug
+function getCurrentEpisodeSlug() {
+    const iframeElement = document.getElementById('videoPlayer');
+    if (!iframeElement || !iframeElement.src || iframeElement.src === 'about:blank') {
+        return null;
+    }
+    
+    // Find the episode that matches the current video URL
+    for (let server of currentMovie.episodes) {
+        if (server.items) {
+            const episode = server.items.find(ep => 
+                (ep.embed && iframeElement.src.includes(ep.embed)) || 
+                (ep.m3u8 && iframeElement.src.includes(ep.m3u8))
+            );
+            if (episode) {
+                return episode.slug;
+            }
+        }
+    }
+    
+    return null;
+}
+
+// Update current episode display
+function updateCurrentEpisodeDisplay(episodeSlug) {
+    const displayElement = document.getElementById('currentEpisodeDisplay');
+    if (!displayElement) return;
+    
+    const episodeName = getEpisodeName(episodeSlug);
+    displayElement.textContent = episodeName;
+}
+
+// Update navigation buttons state
+function updateNavigationButtons() {
+    const prevButton = document.querySelector('button[onclick="playPreviousEpisode()"]');
+    const nextButton = document.querySelector('button[onclick="playNextEpisode()"]');
+    
+    if (!prevButton || !nextButton || !currentMovie || !currentMovie.episodes) return;
+    
+    const serverSelect = document.getElementById('serverSelect');
+    const serverIndex = parseInt(serverSelect.value);
+    const server = currentMovie.episodes[serverIndex];
+    
+    if (!server || !server.items || server.items.length === 0) {
+        prevButton.disabled = true;
+        nextButton.disabled = true;
+        prevButton.classList.add('opacity-50', 'cursor-not-allowed');
+        nextButton.classList.add('opacity-50', 'cursor-not-allowed');
+        return;
+    }
+    
+    const currentEpisode = server.items.find(ep => ep.slug === getCurrentEpisodeSlug());
+    if (!currentEpisode) {
+        // Enable next button if no current episode (can play first)
+        prevButton.disabled = true;
+        nextButton.disabled = false;
+        prevButton.classList.add('opacity-50', 'cursor-not-allowed');
+        nextButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        return;
+    }
+    
+    const currentIndex = server.items.indexOf(currentEpisode);
+    
+    // Update previous button state
+    if (currentIndex <= 0) {
+        prevButton.disabled = true;
+        prevButton.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+        prevButton.disabled = false;
+        prevButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+    
+    // Update next button state
+    if (currentIndex >= server.items.length - 1) {
+        nextButton.disabled = true;
+        nextButton.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+        nextButton.disabled = false;
+        nextButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+// Show info message
+function showInfo(message) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Thông báo',
+        text: message,
+        confirmButtonColor: '#8b5cf6',
+        timer: 2000,
+        showConfirmButton: false
+    });
 }
 
 // Find episode index by slug
