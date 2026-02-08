@@ -24,43 +24,68 @@ function setupEventListeners() {
     }
 }
 
-function loadFavorites() {
-    const container = document.getElementById('favoritesGrid');
-    if (!container) return;
-    
-    if (favorites.length === 0) {
-        container.innerHTML = `
-            <div class="col-span-full text-center py-8 text-gray-400">
-                <i class="fas fa-heart text-4xl mb-4"></i>
-                <p>Chưa có phim yêu thích nào</p>
-                <p class="text-sm mt-2">Hãy thêm phim yêu thích để xem lại sau!</p>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = '<div class="loading-spinner mx-auto"></div><p class="mt-4">Đang tải...</p>';
-    
-    // Load favorite movies sequentially to avoid Object in URL
-    (async function loadFavoriteMovies() {
-        const movies = [];
-        for (const fav of favorites) {
-            const slug = typeof fav.slug === 'string' ? fav.slug : String(fav.slug || '');
-            if (!slug) continue;
+async function loadFavorites() {
+    try {
+        // Load from Firebase if user is logged in
+        if (currentUser) {
+            const userRef = db.collection('users').doc(currentUser.uid);
+            const favoritesRef = userRef.collection('favorites');
+            const snapshot = await favoritesRef.get();
             
-            try {
-                const response = await fetch(`${API_BASE}/film/${slug}`);
-                const data = await response.json();
-                if (data.status === 'success') {
-                    movies.push(data.movie);
-                }
-            } catch (error) {
-                console.error('Error loading favorite movie:', error);
-            }
+            favorites = [];
+            snapshot.forEach(doc => {
+                favorites.push(doc.data());
+            });
+            
+            console.log('Loaded favorites from Firebase:', favorites);
+        } else {
+            // Fallback to localStorage if not logged in
+            favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            console.log('Loaded favorites from localStorage:', favorites);
         }
         
-        displayFavoriteMovies(movies);
-    })();
+        const container = document.getElementById('favoritesGrid');
+        if (!container) return;
+        
+        if (favorites.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-8 text-gray-400">
+                    <i class="fas fa-heart text-4xl mb-4"></i>
+                    <p>Chưa có phim yêu thích nào</p>
+                    <p class="text-sm mt-2">Hãy thêm phim yêu thích để xem lại sau!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = '<div class="loading-spinner mx-auto"></div><p class="mt-4">Đang tải...</p>';
+        
+        // Load favorite movies sequentially to avoid Object in URL
+        (async function loadFavoriteMovies() {
+            const movies = [];
+            for (const fav of favorites) {
+                const slug = typeof fav.slug === 'string' ? fav.slug : String(fav.slug || '');
+                if (!slug) continue;
+                
+                try {
+                    const response = await fetch(`${API_BASE}/film/${slug}`);
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        movies.push(data.movie);
+                    }
+                } catch (error) {
+                    console.error('Error loading favorite movie:', error);
+                }
+            }
+            
+            displayFavoriteMovies(movies);
+        })();
+    } catch (error) {
+        console.error('Error loading favorites:', error);
+        // Fallback to localStorage
+        favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        displayFavoriteMovies([]);
+    }
 }
 
 function displayFavoriteMovies(movies) {
@@ -80,7 +105,7 @@ function displayFavoriteMovies(movies) {
     
     container.innerHTML = movies.map(movie => `
         <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail('${movie.slug}')">
-            <button onclick="event.stopPropagation(); toggleFavorite('${movie.slug}')" 
+            <button onclick="event.stopPropagation(); removeFromFavorites('${movie.slug}')" 
                     class="absolute top-2 right-2 z-10 bg-red-600 hover:bg-red-700 p-2 rounded-full transition">
                 <i class="fas fa-heart text-white"></i>
             </button>
@@ -107,4 +132,36 @@ function displayFavoriteMovies(movies) {
             </div>
         </div>
     `).join('');
+}
+
+async function removeFromFavorites(movieSlug) {
+    try {
+        if (currentUser) {
+            // Remove from Firebase
+            const userRef = db.collection('users').doc(currentUser.uid);
+            const favoritesRef = userRef.collection('favorites');
+            const snapshot = await favoritesRef.where('slug', '==', movieSlug).get();
+            
+            const batch = db.batch();
+            snapshot.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            
+            await batch.commit();
+            console.log('Removed from Firebase favorites:', movieSlug);
+        } else {
+            // Remove from localStorage
+            favorites = favorites.filter(item => item.slug !== movieSlug);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+        }
+        
+        // Reload and display
+        await loadFavorites();
+    } catch (error) {
+        console.error('Error removing from favorites:', error);
+        // Fallback to localStorage
+        favorites = favorites.filter(item => item.slug !== movieSlug);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        displayFavoriteMovies([]);
+    }
 }

@@ -1,5 +1,7 @@
 // CinePhim - Watch History Page JavaScript
 
+let watchHistory = [];
+
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         loadWatchHistory();
@@ -24,34 +26,54 @@ function setupEventListeners() {
     }
 }
 
-function loadWatchHistory() {
-    // Reload from localStorage to get latest data
-    watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
-    console.log('Loaded watch history from localStorage:', watchHistory);
-    console.log('Watch history length:', watchHistory.length);
-    
-    const grid = document.getElementById('watchHistoryGrid');
-    if (!grid) return;
-    
-    if (watchHistory.length === 0) {
-        grid.innerHTML = `
-            <div class="col-span-full text-center py-8 text-gray-400">
-                <i class="fas fa-history text-4xl mb-4"></i>
-                <p>Chưa có lịch sử xem phim</p>
-                <p class="text-sm mt-2">Hãy xem một vài phim để lịch sử được hiển thị!</p>
-                <p class="text-xs mt-4 text-gray-500">Mẹo: Mở Developer Console (F12) để xem logs</p>
-            </div>
-        `;
-        return;
+async function loadWatchHistory() {
+    try {
+        // Load from Firebase if user is logged in
+        if (currentUser) {
+            const userRef = db.collection('users').doc(currentUser.uid);
+            const historyRef = userRef.collection('watchHistory');
+            const snapshot = await historyRef.get();
+            
+            watchHistory = [];
+            snapshot.forEach(doc => {
+                watchHistory.push(doc.data());
+            });
+            
+            console.log('Loaded watch history from Firebase:', watchHistory);
+        } else {
+            // Fallback to localStorage if not logged in
+            watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+            console.log('Loaded watch history from localStorage:', watchHistory);
+        }
+        
+        console.log('Watch history length:', watchHistory.length);
+        
+        const grid = document.getElementById('watchHistoryGrid');
+        if (!grid) return;
+        
+        if (watchHistory.length === 0) {
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-8 text-gray-400">
+                    <i class="fas fa-history text-4xl mb-4"></i>
+                    <p>Chưa có lịch sử xem phim</p>
+                    <p class="text-sm mt-2">Hãy xem một vài phim để lịch sử được hiển thị!</p>
+                    <p class="text-xs mt-4 text-gray-500">Mẹo: Mở Developer Console (F12) để xem logs</p>
+                </div>
+            `;
+            return;
+        }
+        
+        displayWatchHistory();
+    } catch (error) {
+        console.error('Error loading watch history:', error);
+        // Fallback to localStorage
+        watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+        displayWatchHistory();
     }
-    
-    displayWatchHistory();
 }
 
-function refreshWatchHistory() {
-    watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
-    console.log('Refreshed watch history:', watchHistory);
-    displayWatchHistory();
+async function refreshWatchHistory() {
+    await loadWatchHistory();
 }
 
 async function clearWatchHistory() {
@@ -161,8 +183,34 @@ function displayWatchHistory() {
     }, 100);
 }
 
-function removeFromWatchHistory(movieSlug) {
-    watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
-    localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
-    displayWatchHistory();
+async function removeFromWatchHistory(movieSlug) {
+    try {
+        if (currentUser) {
+            // Remove from Firebase
+            const userRef = db.collection('users').doc(currentUser.uid);
+            const historyRef = userRef.collection('watchHistory');
+            const snapshot = await historyRef.where('movieSlug', '==', movieSlug).get();
+            
+            const batch = db.batch();
+            snapshot.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            
+            await batch.commit();
+            console.log('Removed from Firebase watch history:', movieSlug);
+        } else {
+            // Remove from localStorage
+            watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
+            localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+        }
+        
+        // Reload and display
+        await loadWatchHistory();
+    } catch (error) {
+        console.error('Error removing from watch history:', error);
+        // Fallback to localStorage
+        watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
+        localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+        displayWatchHistory();
+    }
 }
