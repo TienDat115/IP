@@ -154,7 +154,7 @@ function displayWatchHistory() {
             html += '<i class="fas fa-history text-gray-300 mr-1"></i>' + formatWatchTime(item.watchedAt);
             html += '</div>';
             html += '<div class="relative">';
-            html += '<div class="aspect-video bg-gray-700 flex items-center justify-center">';
+            html += '<div class="aspect-video bg-gray-700 flex items-center justify-center" id="poster-' + item.movieSlug + '">';
             html += '<i class="fas fa-film text-4xl text-gray-500"></i>';
             html += '</div>';
             html += '<div class="absolute bottom-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">';
@@ -178,7 +178,34 @@ function displayWatchHistory() {
         console.log('Container innerHTML set successfully');
         console.log('Container display:', container.style.display);
         console.log('Container children count:', container.children.length);
+        
+        // Load posters for each movie
+        loadPosters();
     }, 100);
+}
+
+// Load posters for movies in watch history
+async function loadPosters() {
+    for (const item of watchHistory) {
+        try {
+            const response = await fetch(`${API_BASE}/film/${item.movieSlug}`);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.movie) {
+                const posterContainer = document.getElementById('poster-' + item.movieSlug);
+                if (posterContainer) {
+                    posterContainer.innerHTML = `
+                        <img src="${data.movie.poster_url || data.movie.thumb_url || 'https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'}" 
+                             alt="${data.movie.name || data.movie.title || item.movieTitle}" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading poster for', item.movieSlug, ':', error);
+        }
+    }
 }
 
 async function removeFromWatchHistory(movieSlug) {
