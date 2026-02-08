@@ -164,7 +164,6 @@ function displayWatchHistory() {
             html += '<div class="p-4">';
             html += '<h4 class="font-semibold text-sm mb-2 line-clamp-2">' + (item.movieTitle || 'Phim không xác định') + '</h4>';
             html += '<p class="text-gray-400 text-xs mb-2">' + (item.episodeName || 'Không có thông tin tập') + '</p>';
-            html += '<p class="text-gray-500 text-xs">Xem lúc: ' + formatDate(item.watchedAt) + '</p>';
             html += '</div>';
             html += '</div>';
         });

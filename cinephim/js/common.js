@@ -534,7 +534,15 @@ function formatWatchTime(watchedAt) {
 
 // Format date
 function formatDate(dateString) {
+    if (!dateString) return 'Không rõ';
+    
     const date = new Date(dateString);
+    
+    // Check if date is invalid
+    if (isNaN(date.getTime())) {
+        return 'Không rõ';
+    }
+    
     return date.toLocaleDateString('vi-VN', {
         day: '2-digit',
         month: '2-digit',
