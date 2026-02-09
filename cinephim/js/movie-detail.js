@@ -1044,3 +1044,40 @@ async function loadWatchTimeNoteFromFirebase() {
         console.error('Error loading watch time note from Firebase:', error);
     }
 }
+
+// Virtual Keyboard Functions
+function toggleVirtualKeyboard() {
+    const keyboard = document.getElementById('virtualKeyboard');
+    if (keyboard) {
+        keyboard.classList.toggle('hidden');
+    }
+}
+
+function insertToNote(character) {
+    const noteInput = document.getElementById('watchTimeNote');
+    if (noteInput) {
+        // Get current cursor position
+        const start = noteInput.selectionStart;
+        const end = noteInput.selectionEnd;
+        const currentValue = noteInput.value;
+        
+        // Insert character at cursor position
+        const newValue = currentValue.substring(0, start) + character + currentValue.substring(end);
+        noteInput.value = newValue;
+        
+        // Set cursor position after inserted character
+        const newPosition = start + character.length;
+        noteInput.setSelectionRange(newPosition, newPosition);
+        
+        // Focus back to input
+        noteInput.focus();
+    }
+}
+
+function clearNote() {
+    const noteInput = document.getElementById('watchTimeNote');
+    if (noteInput) {
+        noteInput.value = '';
+        noteInput.focus();
+    }
+}

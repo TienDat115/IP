@@ -163,11 +163,50 @@
 
 								<!-- Watch Time Note -->
 								<div class="bg-gray-700 rounded-lg p-4 mb-6">
-									<div class="flex items-center mb-2">
-										<i class="fas fa-sticky-note w-5 text-purple-400"></i>
-										<label class="ml-3 text-sm font-medium">Ghi chú thời gian xem:</label>
+									<div class="flex items-center justify-between mb-2">
+										<div class="flex items-center">
+											<i class="fas fa-sticky-note w-5 text-purple-400"></i>
+											<label class="ml-3 text-sm font-medium">Ghi chú thời gian xem:</label>
+										</div>
+										<div class="flex items-center space-x-2">
+											<button onclick="toggleVirtualKeyboard()" class="text-purple-400 hover:text-purple-300 transition" title="Mở bàn phím ảo">
+												<i class="fas fa-keyboard"></i>
+											</button>
+											<button onclick="saveWatchTimeNote()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition" title="Lưu ghi chú"><i class="fas fa-save"></i> Lưu</button>
+										</div>
 									</div>
-									<input type="text" id="watchTimeNote" placeholder="Ví dụ: 15:30 - Đã xem đến 1h23p" class="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-400 placeholder-gray-400" onchange="saveWatchTimeNote()" />
+									<input type="text" id="watchTimeNote" placeholder="Ví dụ: 15:30 - Đã xem đến 1h23p" class="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-400 placeholder-gray-400" />
+
+									<!-- Virtual Keyboard -->
+									<div id="virtualKeyboard" class="hidden mt-3 bg-gray-800 rounded-lg p-3">
+										<div class="grid grid-cols-10 gap-1 mb-2">
+											<button onclick="insertToNote('1')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">1</button>
+											<button onclick="insertToNote('2')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">2</button>
+											<button onclick="insertToNote('3')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">3</button>
+											<button onclick="insertToNote('4')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">4</button>
+											<button onclick="insertToNote('5')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">5</button>
+											<button onclick="insertToNote('6')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">6</button>
+											<button onclick="insertToNote('7')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">7</button>
+											<button onclick="insertToNote('8')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">8</button>
+											<button onclick="insertToNote('9')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">9</button>
+											<button onclick="insertToNote('0')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">0</button>
+										</div>
+										<div class="grid grid-cols-8 gap-1 mb-2">
+											<button onclick="insertToNote(':')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">:</button>
+											<button onclick="insertToNote('-')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">-</button>
+											<button onclick="insertToNote('h')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">h</button>
+											<button onclick="insertToNote('p')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">p</button>
+											<button onclick="insertToNote('m')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">m</button>
+											<button onclick="insertToNote('s')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">s</button>
+											<button onclick="insertToNote('đ')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">đ</button>
+											<button onclick="insertToNote(' ')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">space</button>
+										</div>
+										<div class="grid grid-cols-2 gap-1">
+											<button onclick="clearNote()" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Xóa hết</button>
+											<button onclick="toggleVirtualKeyboard()" class="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs">Đóng</button>
+										</div>
+									</div>
+
 									<p class="text-xs text-gray-400 mt-2">Ghi chú giúp bạn nhớ vị trí xem đã dừng lại</p>
 								</div>
 
