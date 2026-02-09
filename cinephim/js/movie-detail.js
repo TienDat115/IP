@@ -857,6 +857,27 @@ function displayWatchHistory(history) {
     `).join('');
 }
 
+// Toggle movie description visibility
+function toggleMovieDescription() {
+    const container = document.getElementById('movieDescriptionContainer');
+    const icon = document.getElementById('toggleDescIcon');
+    const text = document.getElementById('toggleDescText');
+    
+    if (container.classList.contains('hidden')) {
+        // Show description
+        container.classList.remove('hidden');
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+        text.textContent = 'Ẩn';
+    } else {
+        // Hide description
+        container.classList.add('hidden');
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+        text.textContent = 'Hiện';
+    }
+}
+
 // Show/hide loading
 function showLoading(show) {
     const loading = document.getElementById('loading');

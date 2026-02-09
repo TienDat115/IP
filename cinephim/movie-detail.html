@@ -167,8 +167,16 @@
 
 								<!-- Movie Description -->
 								<div class="mt-6 bg-gray-800 rounded-lg p-6">
-									<h3 class="text-xl font-semibold mb-4">Nội dung phim</h3>
-									<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
+									<div class="flex justify-between items-center mb-4">
+										<h3 class="text-xl font-semibold">Nội dung phim</h3>
+										<button onclick="toggleMovieDescription()" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm transition">
+											<i id="toggleDescIcon" class="fas fa-eye mr-1"></i>
+											<span id="toggleDescText">Hiện</span>
+										</button>
+									</div>
+									<div id="movieDescriptionContainer" class="hidden">
+										<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
+									</div>
 								</div>
 							</div>
 						</div>
