@@ -113,6 +113,9 @@ function displayMovieDetails() {
     document.getElementById('breadcrumbCategory').textContent = firstCategory || 'Phim';
     document.getElementById('breadcrumbMovie').textContent = currentMovie.name || currentMovie.title || 'Không có tiêu đề';
     
+    // Load watch time note for this movie
+    loadWatchTimeNote();
+    
     // Update structured data for SEO
     updateStructuredData();
 }
@@ -934,3 +937,110 @@ document.getElementById('mobileSearchInput')?.addEventListener('keypress', funct
         }
     }
 });
+
+// Watch Time Note Functions
+function saveWatchTimeNote() {
+    if (!currentMovie) return;
+    
+    const noteInput = document.getElementById('watchTimeNote');
+    const note = noteInput.value.trim();
+    
+    // Create storage key for this movie
+    const storageKey = `watchTimeNote_${currentMovie.slug}`;
+    
+    // Save to localStorage
+    if (note) {
+        localStorage.setItem(storageKey, note);
+        showSuccess('Đã lưu ghi chú thời gian xem');
+    } else {
+        localStorage.removeItem(storageKey);
+    }
+    
+    // If user is logged in, also save to Firebase
+    if (isUserLoggedIn()) {
+        saveWatchTimeNoteToFirebase(note);
+    }
+}
+
+// Load watch time note for current movie
+function loadWatchTimeNote() {
+    if (!currentMovie) return;
+    
+    const noteInput = document.getElementById('watchTimeNote');
+    const storageKey = `watchTimeNote_${currentMovie.slug}`;
+    
+    // Try to load from localStorage first
+    const savedNote = localStorage.getItem(storageKey);
+    if (savedNote) {
+        noteInput.value = savedNote;
+    }
+    
+    // If user is logged in, try to sync with Firebase
+    if (isUserLoggedIn()) {
+        loadWatchTimeNoteFromFirebase();
+    }
+}
+
+// Save watch time note to Firebase
+async function saveWatchTimeNoteToFirebase(note) {
+    if (!auth.currentUser || !currentMovie) return;
+    
+    try {
+        const userRef = db.collection('users').doc(auth.currentUser.uid);
+        const notesRef = userRef.collection('watchTimeNotes');
+        
+        // Remove existing note for this movie
+        const existingDocs = await notesRef.where('movieSlug', '==', currentMovie.slug).get();
+        const batch = db.batch();
+        
+        existingDocs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        
+        // Add new note if not empty
+        if (note) {
+            const noteData = {
+                movieSlug: currentMovie.slug,
+                movieTitle: currentMovie.name || currentMovie.title,
+                note: note,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            
+            const docRef = notesRef.doc();
+            batch.set(docRef, noteData);
+        }
+        
+        await batch.commit();
+        console.log('Watch time note saved to Firebase');
+    } catch (error) {
+        console.error('Error saving watch time note to Firebase:', error);
+    }
+}
+
+// Load watch time note from Firebase
+async function loadWatchTimeNoteFromFirebase() {
+    if (!auth.currentUser || !currentMovie) return;
+    
+    try {
+        const userRef = db.collection('users').doc(auth.currentUser.uid);
+        const notesRef = userRef.collection('watchTimeNotes');
+        
+        const snapshot = await notesRef.where('movieSlug', '==', currentMovie.slug).get();
+        
+        if (!snapshot.empty) {
+            const noteDoc = snapshot.docs[0];
+            const noteData = noteDoc.data();
+            
+            const noteInput = document.getElementById('watchTimeNote');
+            if (noteInput && noteData.note) {
+                noteInput.value = noteData.note;
+                
+                // Also save to localStorage for offline access
+                localStorage.setItem(`watchTimeNote_${currentMovie.slug}`, noteData.note);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading watch time note from Firebase:', error);
+    }
+}
