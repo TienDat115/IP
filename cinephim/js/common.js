@@ -6,7 +6,7 @@ const API_BASE = 'https://phim.nguonc.com/api';
 // Global variables
 let favorites = [];
 let isDarkMode = localStorage.getItem('darkMode') !== 'false';
-let watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+let watchHistory = [];
 let currentUser = null;
 let authListener = null;
 
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadFavoritesFromFirebase();
             } else {
                 console.log('User not logged in');
-                watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+                watchHistory = [];
                 favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
             }
             updateLoginButton();
@@ -103,6 +103,12 @@ async function saveFavoritesToFirebase() {
 async function loadWatchHistoryFromFirebase() {
     if (!currentUser) return;
     
+    // Only load if watchHistory is empty (first time login)
+    if (watchHistory.length > 0) {
+        console.log('Watch history already loaded, skipping Firebase load');
+        return;
+    }
+    
     try {
         const snapshot = await db.collection('users').doc(currentUser.uid).collection('watchHistory').orderBy('watchedAt', 'desc').get();
         watchHistory = [];
@@ -112,7 +118,7 @@ async function loadWatchHistoryFromFirebase() {
         console.log('Watch history loaded from Firebase:', watchHistory);
     } catch (error) {
         console.error('Error loading watch history:', error);
-        watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+        watchHistory = [];
     }
 }
 
@@ -124,19 +130,24 @@ async function saveWatchHistoryToFirebase() {
         const userRef = db.collection('users').doc(currentUser.uid);
         const historyRef = userRef.collection('watchHistory');
         
-        // Clear existing history
-        const existingDocs = await historyRef.get();
+        // Process each item in watchHistory array
         const batch = db.batch();
         
-        existingDocs.forEach(doc => {
-            batch.delete(doc.ref);
-        });
-        
-        // Add new history
-        watchHistory.forEach(item => {
-            const docRef = historyRef.doc();
-            batch.set(docRef, item);
-        });
+        for (const item of watchHistory) {
+            // Check if this movie already exists in Firebase
+            const existingSnapshot = await historyRef.where('movieSlug', '==', item.movieSlug).get();
+            
+            if (!existingSnapshot.empty) {
+                // Update existing document
+                existingSnapshot.forEach(doc => {
+                    batch.update(doc.ref, item);
+                });
+            } else {
+                // Add new document
+                const docRef = historyRef.doc();
+                batch.set(docRef, item);
+            }
+        }
         
         await batch.commit();
         console.log('Watch history saved to Firebase');
@@ -179,7 +190,7 @@ async function toggleLogin() {
         try {
             await auth.signOut();
             currentUser = null;
-            watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+            watchHistory = [];
             if (loginIcon) loginIcon.className = 'fas fa-sign-in-alt mr-1';
             if (loginText) loginText.textContent = 'Đăng nhập';
             console.log('User logged out');
@@ -246,9 +257,6 @@ async function handleLogin(event) {
         // Update UI
         updateLoginButton();
         closeLoginModal();
-        
-        // Load watch history from Firebase
-        await loadWatchHistoryFromFirebase();
         
         console.log('Login successful:', currentUser.email);
         Swal.fire({
@@ -691,8 +699,6 @@ function removeFromWatchHistory(movieSlug, episodeName) {
         !(item.movieSlug === movieSlug && item.episodeName === episodeName)
     );
     
-    localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
-    
     if (currentUser) {
         saveWatchHistoryToFirebase();
     }
@@ -724,9 +730,6 @@ function addToWatchHistory(movieSlug) {
         episodeName: 'Chi tiết phim',
         watchedAt: watchedAt
     });
-    
-    // Save to localStorage
-    localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
     
     // Save to Firebase if user is logged in
     if (currentUser) {
@@ -870,9 +873,6 @@ async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
     if (watchHistory.length > 50) {
         watchHistory = watchHistory.slice(0, 50);
     }
-    
-    // Save to localStorage
-    localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
     
     // Save to Firebase if user is logged in
     if (currentUser) {

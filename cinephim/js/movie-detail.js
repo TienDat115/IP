@@ -66,7 +66,7 @@ async function loadMovieDetail(slug) {
         
         if (data.status === 'success' && data.movie) {
             currentMovie = data.movie;
-            displayMovieDetails();
+            await displayMovieDetails();
             updatePageMeta();
             setupEpisodes();
             
@@ -92,7 +92,7 @@ async function loadMovieDetail(slug) {
 }
 
 // Display movie details
-function displayMovieDetails() {
+async function displayMovieDetails() {
     if (!currentMovie) return;
 
     // Update basic info
@@ -114,7 +114,7 @@ function displayMovieDetails() {
     document.getElementById('breadcrumbMovie').textContent = currentMovie.name || currentMovie.title || 'Không có tiêu đề';
     
     // Load watch time note for this movie
-    loadWatchTimeNote();
+    await loadWatchTimeNote();
     
     // Update structured data for SEO
     updateStructuredData();
@@ -374,9 +374,6 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
         watchHistory = watchHistory.slice(0, 50);
     }
     
-    // Save to localStorage
-    localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
-    
     // Save to Firebase if user is logged in
     const user = auth.currentUser;
     if (user) {
@@ -386,7 +383,7 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
     console.log('Watch history saved. Total items:', watchHistory.length);
 }
 
-// Save watch history to Firebase (same as old system)
+// Save watch history to Firebase
 async function saveWatchHistoryToFirebase() {
     if (!auth.currentUser) return;
     
@@ -394,19 +391,24 @@ async function saveWatchHistoryToFirebase() {
         const userRef = db.collection('users').doc(auth.currentUser.uid);
         const historyRef = userRef.collection('watchHistory');
         
-        // Clear existing history
-        const existingDocs = await historyRef.get();
+        // Process each item in watchHistory array
         const batch = db.batch();
         
-        existingDocs.forEach(doc => {
-            batch.delete(doc.ref);
-        });
-        
-        // Add new history
-        watchHistory.forEach(item => {
-            const docRef = historyRef.doc();
-            batch.set(docRef, item);
-        });
+        for (const item of watchHistory) {
+            // Check if this movie already exists in Firebase
+            const existingSnapshot = await historyRef.where('movieSlug', '==', item.movieSlug).get();
+            
+            if (!existingSnapshot.empty) {
+                // Update existing document
+                existingSnapshot.forEach(doc => {
+                    batch.update(doc.ref, item);
+                });
+            } else {
+                // Add new document
+                const docRef = historyRef.doc();
+                batch.set(docRef, item);
+            }
+        }
         
         await batch.commit();
         console.log('Watch history saved to Firebase');
@@ -945,39 +947,30 @@ function saveWatchTimeNote() {
     const noteInput = document.getElementById('watchTimeNote');
     const note = noteInput.value.trim();
     
-    // Create storage key for this movie
-    const storageKey = `watchTimeNote_${currentMovie.slug}`;
-    
-    // Save to localStorage
-    if (note) {
-        localStorage.setItem(storageKey, note);
-        showSuccess('Đã lưu ghi chú thời gian xem');
-    } else {
-        localStorage.removeItem(storageKey);
-    }
-    
-    // If user is logged in, also save to Firebase
-    if (isUserLoggedIn()) {
+    // If user is logged in, save to Firebase
+    if (auth.currentUser) {
         saveWatchTimeNoteToFirebase(note);
+        if (note) {
+            showSuccess('Đã lưu ghi chú thời gian xem');
+        }
+    } else {
+        showInfo('Vui lòng đăng nhập để lưu ghi chú');
     }
 }
 
 // Load watch time note for current movie
-function loadWatchTimeNote() {
+async function loadWatchTimeNote() {
     if (!currentMovie) return;
     
     const noteInput = document.getElementById('watchTimeNote');
-    const storageKey = `watchTimeNote_${currentMovie.slug}`;
+    if (!noteInput) return;
     
-    // Try to load from localStorage first
-    const savedNote = localStorage.getItem(storageKey);
-    if (savedNote) {
-        noteInput.value = savedNote;
-    }
+    // Wait a moment for Firebase to be ready
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    // If user is logged in, try to sync with Firebase
-    if (isUserLoggedIn()) {
-        loadWatchTimeNoteFromFirebase();
+    // Check directly for current user
+    if (auth.currentUser) {
+        await loadWatchTimeNoteFromFirebase();
     }
 }
 
@@ -1035,9 +1028,6 @@ async function loadWatchTimeNoteFromFirebase() {
             const noteInput = document.getElementById('watchTimeNote');
             if (noteInput && noteData.note) {
                 noteInput.value = noteData.note;
-                
-                // Also save to localStorage for offline access
-                localStorage.setItem(`watchTimeNote_${currentMovie.slug}`, noteData.note);
             }
         }
     } catch (error) {

@@ -39,9 +39,9 @@ async function loadWatchHistory() {
             
             console.log('Loaded watch history from Firebase:', watchHistory);
         } else {
-            // Fallback to localStorage if not logged in
-            watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
-            console.log('Loaded watch history from localStorage:', watchHistory);
+            // Empty array if not logged in
+            watchHistory = [];
+            console.log('User not logged in, watch history set to empty array');
         }
         
         console.log('Watch history length:', watchHistory.length);
@@ -55,7 +55,6 @@ async function loadWatchHistory() {
                     <i class="fas fa-history text-4xl mb-4"></i>
                     <p>Chưa có lịch sử xem phim</p>
                     <p class="text-sm mt-2">Hãy xem một vài phim để lịch sử được hiển thị!</p>
-                    <p class="text-xs mt-4 text-gray-500">Mẹo: Mở Developer Console (F12) để xem logs</p>
                 </div>
             `;
             return;
@@ -64,8 +63,7 @@ async function loadWatchHistory() {
         displayWatchHistory();
     } catch (error) {
         console.error('Error loading watch history:', error);
-        // Fallback to localStorage
-        watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+        watchHistory = [];
         displayWatchHistory();
     }
 }
@@ -108,8 +106,6 @@ async function clearWatchHistory() {
             }
         }
         
-        // Clear from localStorage as fallback
-        localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
         displayWatchHistory();
         
         Swal.fire({
@@ -222,19 +218,29 @@ async function removeFromWatchHistory(movieSlug) {
             
             await batch.commit();
             console.log('Removed from Firebase watch history:', movieSlug);
-        } else {
-            // Remove from localStorage
-            watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
-            localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
         }
         
         // Reload and display
         await loadWatchHistory();
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Đã xóa',
+            text: 'Đã xóa khỏi lịch sử xem',
+            confirmButtonColor: '#8b5cf6',
+            timer: 1500,
+            showConfirmButton: false
+        });
     } catch (error) {
         console.error('Error removing from watch history:', error);
-        // Fallback to localStorage
-        watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
-        localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
-        displayWatchHistory();
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Đã xóa',
+            text: 'Đã xóa khỏi lịch sử xem',
+            confirmButtonColor: '#8b5cf6',
+            timer: 1500,
+            showConfirmButton: false
+        });
     }
 }
