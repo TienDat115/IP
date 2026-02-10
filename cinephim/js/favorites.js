@@ -110,7 +110,7 @@ function displayFavoriteMovies(movies) {
                 <i class="fas fa-heart text-white"></i>
             </button>
             <div class="relative">
-                <img src="${movie.poster_url || movie.thumb_url || 'https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'}" 
+                <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                      alt="${movie.name || movie.title || movie.slug}" 
                      class="film-poster w-full"
                      onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">

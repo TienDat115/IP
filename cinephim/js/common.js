@@ -14,6 +14,101 @@ let authListener = null;
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// Image Helper Functions
+function getImageOrientation(url) {
+    if (!url) return 'unknown';
+    
+    const verticalPatterns = [
+        /poster/i,
+        /\/post\//i,
+        /\/poster-/i,
+        /-poster\./i,
+        /_poster\./i,
+        /\/images\/Post\//i,
+        /300x450/i,
+        /200x300/i,
+        /400x600/i,
+        /vertical/i
+    ];
+    
+    const horizontalPatterns = [
+        /thumb/i,
+        /thumbnail/i,
+        /\/thumb\//i,
+        /-thumb\./i,
+        /_thumb\./i,
+        /\/images\/Thumb\//i,
+        /16x9/i,
+        /1280x720/i,
+        /1920x1080/i,
+        /horizontal/i,
+        /landscape/i
+    ];
+    
+    for (const pattern of verticalPatterns) {
+        if (pattern.test(url)) {
+            return 'vertical';
+        }
+    }
+    
+    for (const pattern of horizontalPatterns) {
+        if (pattern.test(url)) {
+            return 'horizontal';
+        }
+    }
+    
+    return 'unknown';
+}
+
+function getBestImageForOrientation(posterUrl, thumbUrl, preferredOrientation = 'vertical') {
+    if (!posterUrl && !thumbUrl) return null;
+    if (posterUrl && !thumbUrl) return posterUrl;
+    if (!posterUrl && thumbUrl) return thumbUrl;
+    
+    const posterOrientation = getImageOrientation(posterUrl);
+    const thumbOrientation = getImageOrientation(thumbUrl);
+    
+    if (preferredOrientation === 'vertical') {
+        if (thumbOrientation === 'vertical') {
+            return thumbUrl;
+        } else if (posterOrientation === 'vertical') {
+            return posterUrl;
+        } else {
+            return thumbUrl;
+        }
+    }
+    
+    if (preferredOrientation === 'horizontal') {
+        if (posterOrientation === 'horizontal') {
+            return posterUrl;
+        } else if (thumbOrientation === 'horizontal') {
+            return thumbUrl;
+        } else {
+            return posterUrl;
+        }
+    }
+    
+    return posterUrl;
+}
+
+function getVerticalImage(posterUrl, thumbUrl) {
+    return getBestImageForOrientation(posterUrl, thumbUrl, 'vertical') || 
+           posterUrl || 
+           thumbUrl || 
+           'https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster';
+}
+
+function getHorizontalImage(posterUrl, thumbUrl) {
+    return getBestImageForOrientation(posterUrl, thumbUrl, 'horizontal') || 
+           posterUrl || 
+           thumbUrl || 
+           'https://via.placeholder.com/800x450/374151/ffffff?text=No+Image';
+}
+
+function getHeroImage(posterUrl, thumbUrl) {
+    return getVerticalImage(posterUrl, thumbUrl);
+}
+
 // Initialize Firebase and common functions
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for Firebase to be ready

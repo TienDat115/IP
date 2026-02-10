@@ -113,7 +113,7 @@ async function displayMovieDetails() {
 
     // Update basic info
     document.getElementById('movieTitle').textContent = currentMovie.name || currentMovie.title || 'Không có tiêu đề';
-    document.getElementById('moviePoster').src = currentMovie.poster_url || currentMovie.thumb_url || 'https://via.placeholder.com/400x600/374151/ffffff?text=No+Poster';
+    document.getElementById('moviePoster').src = getHeroImage(currentMovie.poster_url, currentMovie.thumb_url);
     document.getElementById('moviePoster').alt = currentMovie.name || currentMovie.title || '';
     
     // Update movie info
@@ -179,7 +179,7 @@ function updateStructuredData() {
         "name": currentMovie.name || currentMovie.title || 'Không có tiêu đề',
         "description": currentMovie.content || currentMovie.description || 'Không có mô tả.',
         "url": window.location.href,
-        "image": currentMovie.poster_url || currentMovie.thumb_url || '',
+        "image": getHeroImage(currentMovie.poster_url, currentMovie.thumb_url),
         "datePublished": currentMovie.year ? `${currentMovie.year}-01-01` : '',
         "director": currentMovie.director ? {
             "@type": "Person",
@@ -219,7 +219,7 @@ function updatePageMeta() {
     // Update Open Graph tags
     document.getElementById('ogTitle').content = title;
     document.getElementById('ogDescription').content = description;
-    document.getElementById('ogImage').content = currentMovie.poster_url || '';
+    document.getElementById('ogImage').content = getHeroImage(currentMovie.poster_url, currentMovie.thumb_url);
 }
 
 // Auto-play latest watched episode from history
@@ -708,10 +708,10 @@ function displayRelatedMovies(movies) {
 
     relatedMoviesContainer.innerHTML = relatedMovies.map(movie => `
         <div class="bg-gray-700 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="goToMovieDetail('${movie.slug}')">
-            <img src="${movie.poster_url || movie.thumb_url || 'https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'}" 
-                 alt="${movie.name || movie.title}" 
-                 class="w-full h-48 object-cover"
-                 onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+            <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+             alt="${movie.name || movie.title}" 
+             class="w-full h-48 object-cover"
+             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
             <div class="p-3">
                 <h4 class="font-medium text-sm truncate">${movie.name || movie.title}</h4>
                 <p class="text-xs text-gray-400 mt-1">${movie.year || ''}</p>

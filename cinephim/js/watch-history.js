@@ -190,7 +190,7 @@ async function loadPosters() {
                 const posterContainer = document.getElementById('poster-' + item.movieSlug);
                 if (posterContainer) {
                     posterContainer.innerHTML = `
-                        <img src="${data.movie.poster_url || data.movie.thumb_url || 'https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'}" 
+                        <img src="${getVerticalImage(data.movie.poster_url, data.movie.thumb_url)}" 
                              alt="${data.movie.name || data.movie.title || item.movieTitle}" 
                              class="w-full h-full object-cover"
                              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
