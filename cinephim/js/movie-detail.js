@@ -9,6 +9,19 @@ function isUserLoggedIn() {
     return auth.currentUser !== null;
 }
 
+// Wait for watch history to load from Firebase
+async function waitForWatchHistory() {
+    if (!isUserLoggedIn()) return;
+    
+    // Wait for watchHistory to be loaded from Firebase
+    let attempts = 0;
+    while (watchHistory.length === 0 && attempts < 20) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+    }
+    console.log('Watch history loaded or timeout after', attempts * 100, 'ms');
+}
+
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializePage();
@@ -36,6 +49,9 @@ async function initializePage() {
 
         // Load movie details
         await loadMovieDetail(movieSlug);
+        
+        // Wait for watch history to load from Firebase
+        await waitForWatchHistory();
         
         // Initialize video player
         initializeVideoPlayer();
@@ -216,24 +232,32 @@ function autoPlayLatestEpisode() {
     if (movieHistory.length > 0) {
         // Get the latest watched episode
         const latestEpisode = movieHistory[0]; // Most recent is at index 0
+        console.log('Found latest episode in history:', latestEpisode);
         
         // Find the episode in current movie episodes
         for (let server of currentMovie.episodes) {
             if (server.items) {
-                const episode = server.items.find(ep => ep.name === latestEpisode.episodeName);
+                // Try to find by episodeSlug first, then by episodeName
+                let episode = server.items.find(ep => ep.slug === latestEpisode.episodeSlug);
+                if (!episode) {
+                    episode = server.items.find(ep => ep.name === latestEpisode.episodeName);
+                }
+                
                 if (episode) {
-                    console.log('Auto-playing latest episode:', latestEpisode.episodeName);
+                    console.log('Auto-playing latest episode:', latestEpisode.episodeName || latestEpisode.episodeSlug);
                     playEpisode(episode.slug, episode.embed || episode.m3u8);
                     return;
                 }
             }
         }
+        
+        console.log('Latest episode not found in current episodes, playing first episode');
     }
     
-    // If no history, play first episode
+    // If no history or episode not found, play first episode
     if (currentMovie.episodes.length > 0 && currentMovie.episodes[0].items.length > 0) {
         const firstEpisode = currentMovie.episodes[0].items[0];
-        console.log('No history found, playing first episode:', firstEpisode.name || 'Tập 1');
+        console.log('Playing first episode:', firstEpisode.name || 'Tập 1');
         playEpisode(firstEpisode.slug, firstEpisode.embed || firstEpisode.m3u8);
     }
 }
