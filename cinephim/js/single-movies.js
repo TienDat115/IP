@@ -32,6 +32,9 @@ async function loadSingleMovies(page = 1) {
         
         currentPage = page;
         
+        // Scroll to top when changing page
+        window.scrollTo(0, 0);
+        
         const response = await fetch(`${API_BASE}/films/danh-sach/phim-le?page=${page}`);
         
         if (!response.ok) {
@@ -122,24 +125,9 @@ function updatePagination(paginate) {
         `;
     }
     
-    // Page numbers
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, current - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(total, startPage + maxVisiblePages - 1);
-    
-    if (endPage - startPage < maxVisiblePages - 1) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-    
-    if (startPage > 1) {
-        paginationHTML += `
-            <button onclick="loadSingleMovies(1)" 
-                    class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">1</button>
-        `;
-        if (startPage > 2) {
-            paginationHTML += `<span class="px-2">...</span>`;
-        }
-    }
+    // Page numbers - same logic as index.js
+    const startPage = Math.max(1, current - 2);
+    const endPage = Math.min(total, current + 2);
     
     for (let i = startPage; i <= endPage; i++) {
         const isActive = i === current;
@@ -148,16 +136,6 @@ function updatePagination(paginate) {
                     class="px-3 py-2 ${isActive ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'} rounded-lg transition">
                 ${i}
             </button>
-        `;
-    }
-    
-    if (endPage < total) {
-        if (endPage < total - 1) {
-            paginationHTML += `<span class="px-2">...</span>`;
-        }
-        paginationHTML += `
-            <button onclick="loadSingleMovies(${total})" 
-                    class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">${total}</button>
         `;
     }
     

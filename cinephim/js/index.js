@@ -219,6 +219,9 @@ function changePage(page) {
     console.log('Changing to page:', page);
     currentPage = page; // Update global currentPage
     
+    // Scroll to top when changing page
+    window.scrollTo(0, 0);
+    
     if (searchQuery) {
         searchMovies(searchQuery, page);
     } else {
