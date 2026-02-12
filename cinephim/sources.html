@@ -3,20 +3,27 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Thể Loại Phim - CinePhim</title>
+		<title>Nguồn Phim - CinePhim</title>
+		<meta name="description" content="Danh sách các website nguồn phim chất lượng cao" />
+		<meta name="keywords" content="nguồn phim, website phim, phim online, phim hd" />
+
 		<!-- Favicon -->
 		<link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
 		<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+
 		<!-- Firebase SDK -->
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 		<script src="../js/firebase-config.js"></script>
+
 		<!-- Tailwind CSS -->
 		<script src="https://cdn.tailwindcss.com"></script>
+
 		<!-- SweetAlert2 -->
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
 	</head>
@@ -59,7 +66,7 @@
 						<a href="single-movies.html" class="hover:text-purple-400 transition"><i class="fas fa-film mr-1"></i>Phim Lẻ</a>
 						<a href="favorites.html" class="hover:text-purple-400 transition"><i class="fas fa-heart mr-1"></i>Yêu thích</a>
 						<a href="watch-history.html" class="hover:text-purple-400 transition"><i class="fas fa-history mr-1"></i>Lịch sử</a>
-						<a href="sources.html" class="hover:text-purple-400 transition"><i class="fas fa-link mr-1"></i>Nguồn phim</a>
+						<a href="sources.html" class="hover:text-purple-400 transition text-purple-400"><i class="fas fa-link mr-1"></i>Nguồn phim</a>
 						<button onclick="toggleTheme()" class="hover:text-purple-400 transition">
 							<i id="themeIcon" class="fas fa-moon mr-1"></i>
 						</button>
@@ -85,70 +92,114 @@
 			</nav>
 		</header>
 
+		<!-- Breadcrumb -->
+		<div class="container mx-auto px-4 py-4">
+			<nav class="flex items-center space-x-2 text-sm text-gray-400">
+				<a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span class="text-white">Nguồn phim</span>
+			</nav>
+		</div>
+
 		<!-- Main Content -->
 		<main class="container mx-auto px-4 py-8">
 			<!-- Page Title -->
 			<div class="text-center mb-8">
-				<h1 class="text-3xl sm:text-4xl font-bold mb-4"><i class="fas fa-list mr-3 text-purple-400"></i>Phim theo thể loại</h1>
-				<p class="text-gray-400 max-w-2xl mx-auto">Khám phá các bộ phim theo thể loại bạn yêu thích</p>
+				<h1 class="text-3xl sm:text-4xl font-bold mb-4"><i class="fas fa-link mr-3 text-purple-400"></i>Nguồn Phim</h1>
+				<p class="text-gray-400 max-w-2xl mx-auto">Danh sách các website nguồn phim chất lượng cao mà bạn có thể tham khảo</p>
 			</div>
 
-			<!-- Category Selection -->
-			<div class="bg-gray-800 rounded-lg p-6 mb-8">
-				<div class="flex flex-col sm:flex-row items-center gap-4">
-					<div class="w-full sm:w-auto">
-						<label for="categorySelect" class="block text-sm font-medium text-gray-300 mb-2">Chọn thể loại:</label>
-						<select id="categorySelect" onchange="loadMoviesByCategory(this.value)" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
-							<option value="">-- Chọn thể loại --</option>
-							<option value="hanh-dong">Hành Động</option>
-							<option value="phieu-luu">Phiêu Lưu</option>
-							<option value="hoat-hinh">Hoạt Hình</option>
-							<option value="phim-hai">Phim Hài</option>
-							<option value="hinh-su">Hình Sự</option>
-							<option value="tai-lieu">Tài Liệu</option>
-							<option value="chinh-kich">Chính Kịch</option>
-							<option value="gia-dinh">Gia Đình</option>
-							<option value="gia-tuong">Giả Tưởng</option>
-							<option value="lich-su">Lịch Sử</option>
-							<option value="kinh-di">Kinh Dị</option>
-							<option value="phim-nhac">Phim Nhạc</option>
-							<option value="bi-an">Bí Ẩn</option>
-							<option value="lang-man">Lãng Mạn</option>
-							<option value="khoa-hoc-vien-tuong">Khoa Học Viễn Tưởng</option>
-							<option value="gay-can">Gây Cấn</option>
-							<option value="chien-tranh">Chiến Tranh</option>
-							<option value="mien-tay">Miền Tây</option>
-							<option value="co-trang">Cổ Trang</option>
-							<option value="tam-ly">Tâm Lý</option>
-							<option value="tinh-cam">Tình Cảm</option>
-						</select>
+			<!-- Sources Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<!-- Source Card 1 -->
+				<div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition">
+					<div class="flex items-center mb-4">
+						<div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+							<i class="fas fa-play text-white text-xl"></i>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-white">NguonC</h3>
+							<p class="text-gray-400 text-sm">Phim online Việt Nam</p>
+						</div>
+					</div>
+					<p class="text-gray-300 mb-4">Nền tảng xem phim online với nhiều phim mới cập nhật liên tục, chất lượng cao.</p>
+					<div class="flex items-center justify-between">
+						<span class="text-green-400 font-medium">Miễn phí</span>
+						<a href="https://phim.nguonc.com/" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition"> <i class="fas fa-external-link-alt mr-1"></i>Truy cập </a>
 					</div>
 				</div>
-			</div>
 
-			<!-- Loading -->
-			<div id="loading" class="text-center py-12 hidden">
-				<div class="loading-spinner mx-auto"></div>
-				<p class="mt-4">Đang tải danh sách phim...</p>
-			</div>
-
-			<!-- Movies Grid -->
-			<div id="moviesContainer">
-				<div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-					<!-- Movies will be loaded here -->
+				<!-- Source Card 2 -->
+				<div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition">
+					<div class="flex items-center mb-4">
+						<div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center mr-4">
+							<i class="fas fa-play text-white text-xl"></i>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-white">OPhim</h3>
+							<p class="text-gray-400 text-sm">Xem phim HD</p>
+						</div>
+					</div>
+					<p class="text-gray-300 mb-4">Website xem phim online với chất lượng HD, nhiều thể loại phim đa dạng.</p>
+					<div class="flex items-center justify-between">
+						<span class="text-green-400 font-medium">Miễn phí</span>
+						<a href="https://ophim17.cc/" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition"> <i class="fas fa-external-link-alt mr-1"></i>Truy cập </a>
+					</div>
 				</div>
 
-				<!-- Pagination -->
-				<div id="pagination" class="flex justify-center items-center space-x-2 mt-8">
-					<!-- Pagination will be loaded here -->
+				<!-- Source Card 3 -->
+				<div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition">
+					<div class="flex items-center mb-4">
+						<div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+							<i class="fas fa-play text-white text-xl"></i>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-white">KKPhim</h3>
+							<p class="text-gray-400 text-sm">Phim chất lượng cao</p>
+						</div>
+					</div>
+					<p class="text-gray-300 mb-4">Nền tảng cung cấp phim với chất lượng cao, tốc độ tải nhanh và ổn định.</p>
+					<div class="flex items-center justify-between">
+						<span class="text-green-400 font-medium">Miễn phí</span>
+						<a href="https://www.kkphim.vip/" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition"> <i class="fas fa-external-link-alt mr-1"></i>Truy cập </a>
+					</div>
 				</div>
-			</div>
 
-			<!-- No Results Message -->
-			<div id="noResults" class="text-center py-12 hidden">
-				<i class="fas fa-film text-6xl text-gray-600 mb-4"></i>
-				<h3 class="text-xl font-semibold mb-2">Không có phim nào</h3>
-				<p class="text-gray-400">Vui lòng chọn thể loại khác để xem phim.</p>
+				<!-- Source Card 4 -->
+				<div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition">
+					<div class="flex items-center mb-4">
+						<div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
+							<i class="fas fa-play text-white text-xl"></i>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-white">iQIYI</h3>
+							<p class="text-gray-400 text-sm">Phim châu Á</p>
+						</div>
+					</div>
+					<p class="text-gray-300 mb-4">Nền tảng streaming với nhiều phim châu Á, đặc biệt là phim Trung Quốc, Hàn Quốc.</p>
+					<div class="flex items-center justify-between">
+						<span class="text-purple-400 font-medium">Premium</span>
+						<a href="https://www.iq.com/" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition"> <i class="fas fa-external-link-alt mr-1"></i>Truy cập </a>
+					</div>
+				</div>
+
+				<!-- Source Card 5 -->
+				<div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition">
+					<div class="flex items-center mb-4">
+						<div class="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center mr-4">
+							<i class="fas fa-play text-white text-xl"></i>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-white">YanHH3D</h3>
+							<p class="text-gray-400 text-sm">Phim 3D HD</p>
+						</div>
+					</div>
+					<p class="text-gray-300 mb-4">Chuyên cung cấp phim 3D và HD chất lượng cao với nhiều nội dung độc đáo.</p>
+					<div class="flex items-center justify-between">
+						<span class="text-green-400 font-medium">Miễn phí</span>
+						<a href="https://yanhh3d.tv/" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition"> <i class="fas fa-external-link-alt mr-1"></i>Truy cập </a>
+					</div>
+				</div>
 			</div>
 		</main>
 
@@ -161,7 +212,6 @@
 
 		<!-- Scripts -->
 		<script src="js/common.js"></script>
-		<script src="js/categories.js"></script>
 
 		<!-- Mobile Menu JavaScript -->
 		<script>
