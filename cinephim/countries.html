@@ -109,10 +109,10 @@
 
 			<!-- Country Selection -->
 			<div class="bg-gray-800 rounded-lg p-6 mb-8">
-				<div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+				<div class="flex flex-col sm:flex-row items-center gap-4">
 					<div class="w-full sm:w-auto">
 						<label for="countrySelect" class="block text-sm font-medium text-gray-300 mb-2">Chọn quốc gia:</label>
-						<select id="countrySelect" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
+						<select id="countrySelect" onchange="loadCountryMovies()" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
 							<option value="">-- Chọn quốc gia --</option>
 							<option value="au-my">Âu Mỹ</option>
 							<option value="anh">Anh</option>
@@ -149,7 +149,6 @@
 							<option value="an-do">Ấn Độ</option>
 						</select>
 					</div>
-					<button onclick="loadCountryMovies()" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg transition w-full sm:w-auto"><i class="fas fa-search mr-2"></i>Xem phim</button>
 				</div>
 			</div>
 

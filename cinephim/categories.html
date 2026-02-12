@@ -93,10 +93,10 @@
 
 			<!-- Category Selection -->
 			<div class="bg-gray-800 rounded-lg p-6 mb-8">
-				<div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+				<div class="flex flex-col sm:flex-row items-center gap-4">
 					<div class="w-full sm:w-auto">
 						<label for="categorySelect" class="block text-sm font-medium text-gray-300 mb-2">Chọn thể loại:</label>
-						<select id="categorySelect" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
+						<select id="categorySelect" onchange="loadMoviesByCategory(this.value)" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
 							<option value="">-- Chọn thể loại --</option>
 							<option value="hanh-dong">Hành Động</option>
 							<option value="phieu-luu">Phiêu Lưu</option>
@@ -121,7 +121,6 @@
 							<option value="tinh-cam">Tình Cảm</option>
 						</select>
 					</div>
-					<button onclick="loadMoviesByCategory(document.getElementById('categorySelect').value)" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg transition w-full sm:w-auto"><i class="fas fa-search mr-2"></i>Xem phim</button>
 				</div>
 			</div>
 
