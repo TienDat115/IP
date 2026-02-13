@@ -355,15 +355,15 @@ function playEpisode(episodeSlug, videoUrl) {
 function saveToWatchHistory(movieSlug, episodeSlug) {
     if (!isUserLoggedIn()) return;
     
-    // Check if this episode is already in watch history (avoid duplicates)
-    const existingEntry = watchHistory.find(item => 
-        item.movieSlug === movieSlug && item.episodeSlug === episodeSlug
-    );
+    // // Check if this episode is already in watch history (avoid duplicates)
+    // const existingEntry = watchHistory.find(item => 
+    //     item.movieSlug === movieSlug && item.episodeSlug === episodeSlug
+    // );
     
-    if (existingEntry) {
-        console.log('Episode already in watch history, skipping save');
-        return;
-    }
+    // if (existingEntry) {
+    //     console.log('Episode already in watch history, skipping save');
+    //     return;
+    // }
     
     const movieTitle = currentMovie.name || currentMovie.title || movieSlug;
     const episodeName = getEpisodeName(episodeSlug);
