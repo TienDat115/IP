@@ -234,6 +234,17 @@ function autoPlayLatestEpisode() {
         const latestEpisode = movieHistory[0]; // Most recent is at index 0
         console.log('Found latest episode in history:', latestEpisode);
         
+        // Restore server selection if available
+        if (latestEpisode.serverIndex !== undefined && latestEpisode.serverIndex !== null) {
+            const serverSelect = document.getElementById('serverSelect');
+            if (serverSelect && currentMovie.episodes[latestEpisode.serverIndex]) {
+                serverSelect.value = latestEpisode.serverIndex;
+                console.log('Restored server selection:', latestEpisode.serverName);
+                // Update episodes list to show episodes from the restored server
+                updateEpisodesList();
+            }
+        }
+        
         // Find the episode in current movie episodes
         for (let server of currentMovie.episodes) {
             if (server.items) {
@@ -375,6 +386,12 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
     const episodeName = getEpisodeName(episodeSlug);
     const watchedAt = new Date();
     
+    // Get current server index
+    const serverSelect = document.getElementById('serverSelect');
+    const serverIndex = serverSelect ? parseInt(serverSelect.value) : 0;
+    const serverName = currentMovie.episodes && currentMovie.episodes[serverIndex] ? 
+                      currentMovie.episodes[serverIndex].server_name : 'Server 1';
+    
     // Use the same logic as the old system
     const historyItem = {
         movieSlug: movieSlug,
@@ -382,6 +399,8 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
         episodeSlug: episodeSlug,
         episodeName: episodeName,
         videoUrl: getCurrentVideoUrl(),
+        serverIndex: serverIndex,
+        serverName: serverName,
         watchedAt: watchedAt
     };
     
@@ -876,14 +895,43 @@ function displayWatchHistory(history) {
     // Since we only have latest entry per movie, no need to sort
     watchHistoryGrid.innerHTML = history.map(item => `
         <div class="bg-gray-700 rounded-lg p-3 flex justify-between items-center">
-            <div>
+            <div class="flex-1">
                 <p class="font-medium">${item.episodeName || 'Tập không xác định'}</p>
+                <p class="text-xs text-gray-400 mt-1">
+                    <i class="fas fa-server mr-1"></i>${item.serverName || 'Server 1'}
+                </p>
             </div>
-            <button onclick="playEpisode('${item.episodeSlug}', '${item.videoUrl}')" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
+            <button onclick="playEpisodeFromHistory('${item.episodeSlug}', ${item.serverIndex || 0})" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
                 <i class="fas fa-play"></i>
             </button>
         </div>
     `).join('');
+}
+
+// Play episode from history with server selection
+function playEpisodeFromHistory(episodeSlug, serverIndex) {
+    if (!currentMovie || !currentMovie.episodes) return;
+    
+    // Set server selection
+    const serverSelect = document.getElementById('serverSelect');
+    if (serverSelect && currentMovie.episodes[serverIndex]) {
+        serverSelect.value = serverIndex;
+        updateEpisodesList();
+        console.log('Switched to server:', currentMovie.episodes[serverIndex].server_name);
+    }
+    
+    // Find and play the episode
+    const server = currentMovie.episodes[serverIndex];
+    if (server && server.items) {
+        const episode = server.items.find(ep => ep.slug === episodeSlug);
+        if (episode) {
+            playEpisode(episode.slug, episode.embed || episode.m3u8);
+        } else {
+            showError('Không tìm thấy tập phim trong server này.');
+        }
+    } else {
+        showError('Không tìm thấy server.');
+    }
 }
 
 // Toggle movie description visibility

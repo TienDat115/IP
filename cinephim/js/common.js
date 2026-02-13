@@ -948,11 +948,19 @@ async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
         return;
     }
     
+    // Get current server index if available
+    const serverSelect = document.getElementById('serverSelect');
+    const serverIndex = serverSelect ? parseInt(serverSelect.value) : 0;
+    const serverName = window.currentMovieEpisodes && window.currentMovieEpisodes[serverIndex] ? 
+                      window.currentMovieEpisodes[serverIndex].server_name : 'Server 1';
+    
     const historyItem = {
         movieSlug,
         movieTitle,
         episodeName,
         episodeSlug: episodeName,
+        serverIndex: serverIndex,
+        serverName: serverName,
         watchedAt: new Date().toISOString()
     };
     
