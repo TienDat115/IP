@@ -591,6 +591,17 @@ async function addToWatchHistory(movieSlug, movieTitle, episodeName) {
         return;
     }
     
+    // Check if this episode is already in watch history (avoid duplicates)
+    const existingEntry = watchHistory.find(item => 
+        item.movieSlug === movieSlug && 
+        (item.episodeSlug === episodeName || item.episodeName === episodeName)
+    );
+    
+    if (existingEntry) {
+        console.log('Episode already in watch history, skipping save');
+        return;
+    }
+    
     const historyItem = {
         movieSlug,
         movieTitle,
@@ -945,6 +956,17 @@ function playEpisode(slug, videoUrl) {
 async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
     if (!movieSlug || !movieTitle) {
         console.log('Missing required data for watch history:', { movieSlug, movieTitle, episodeName });
+        return;
+    }
+    
+    // Check if this episode is already in watch history (avoid duplicates)
+    const existingEntry = watchHistory.find(item => 
+        item.movieSlug === movieSlug && 
+        (item.episodeSlug === episodeName || item.episodeName === episodeName)
+    );
+    
+    if (existingEntry) {
+        console.log('Episode already in watch history, skipping save');
         return;
     }
     

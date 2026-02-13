@@ -28,9 +28,7 @@ async function loadWatchHistory() {
     try {
         // Load from Firebase if user is logged in
         if (currentUser) {
-            const userRef = db.collection('users').doc(currentUser.uid);
-            const historyRef = userRef.collection('watchHistory');
-            const snapshot = await historyRef.get();
+            const snapshot = await db.collection('users').doc(currentUser.uid).collection('watchHistory').orderBy('watchedAt', 'desc').get();
             
             watchHistory = [];
             snapshot.forEach(doc => {
