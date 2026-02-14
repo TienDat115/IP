@@ -122,6 +122,7 @@ async function displayMovieDetails() {
     const dateText = createdDate ? ` (${createdDate.getDate()}/${createdDate.getMonth() + 1}/${createdDate.getFullYear()})` : '';
     document.getElementById('movieYear').textContent = yearText + dateText;
     document.getElementById('movieDuration').textContent = currentMovie.time || 'Không rõ';
+    document.getElementById("episodeProgress").textContent = (currentMovie.current_episode || "Không rõ") + " / " + (currentMovie.total_episodes || "Không rõ");
     document.getElementById('movieDescription').textContent = currentMovie.content || currentMovie.description || 'Không có mô tả.';
     
     // Update breadcrumb
