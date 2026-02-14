@@ -30,7 +30,7 @@ async function loadFavorites() {
         if (currentUser) {
             const userRef = db.collection('users').doc(currentUser.uid);
             const favoritesRef = userRef.collection('favorites');
-            const snapshot = await favoritesRef.get();
+            const snapshot = await favoritesRef.orderBy('addedAt', 'desc').get();
             
             favorites = [];
             snapshot.forEach(doc => {

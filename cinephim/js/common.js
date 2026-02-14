@@ -145,7 +145,7 @@ async function loadFavoritesFromFirebase() {
     }
     
     try {
-        const snapshot = await db.collection('users').doc(currentUser.uid).collection('favorites').get();
+        const snapshot = await db.collection('users').doc(currentUser.uid).collection('favorites').orderBy('addedAt', 'desc').get();
         favorites = [];
         snapshot.forEach(doc => {
             favorites.push(doc.data());
