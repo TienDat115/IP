@@ -364,7 +364,7 @@
 					if (columns[0] && columns[0].startsWith("OpenLevel")) {
 						try {
 							const level = parseInt(columns[6]);
-							const days = parseInt(columns[3]);
+							const days = parseInt(columns[3]) - 1;
 							if (!isNaN(level) && !isNaN(days) && days > 0 && level > 1) {
 								if (!levelMap.has(level)) {
 									levelMap.set(level, days);
@@ -436,7 +436,7 @@
 			// Hàm tính số ngày đã mở cấp dựa trên level
 			function getOpenDaysFromLevel(level, inputDays, timeframe) {
 				const sortedLevels = [...currentGameData.levelToOpenDays].sort((a, b) => a.level - b.level);
-				const maxAllowedDays = sortedLevels.find((item) => item.level === level)?.days - 1;
+				const maxAllowedDays = sortedLevels.find((item) => item.level === level)?.days;
 
 				if (maxAllowedDays === undefined) {
 					throw new Error(`Không tìm thấy thông tin cho level ${level}`);
@@ -455,7 +455,7 @@
 				}
 
 				const milestoneLevels = sortedLevels.filter((item) => item.level >= 129 && item.level < level).sort((a, b) => a.level - b.level);
-				return milestoneLevels.reduce((sum, item) => sum + (item.days - 1), 0) + inputDaysInt;
+				return milestoneLevels.reduce((sum, item) => sum + item.days, 0) + inputDaysInt;
 			}
 
 			// Hàm tính timestamp
@@ -509,7 +509,7 @@
 					if (level >= 139) {
 						const milestoneLevels = [...currentGameData.levelToOpenDays].filter((item) => item.level >= 129 && item.level < level).sort((a, b) => a.level - b.level);
 						if (milestoneLevels.length > 0) {
-							calculationSteps = milestoneLevels.map((item) => `(${item.days} - 1) (level ${item.level})`).join(" + ");
+							calculationSteps = milestoneLevels.map((item) => `${item.days} (level ${item.level})`).join(" + ");
 							calculationSteps += ` + ${openDaysInput} (nhập vào)`;
 						} else {
 							calculationSteps = `${openDaysInput} (nhập vào)`;
@@ -610,9 +610,6 @@
 					document.getElementById("gameInfoModalLabel").textContent = `Thông tin mở cấp - ${selectedGame.name}`;
 
 					gameInfoTableBody.innerHTML = `
-            <tr>
-                <td colspan="2" class="text-muted small">Cập nhật lần cuối: ${updateDate}</td>
-            </tr>
             <tr class="table-active">
                 <th>Cấp độ</th>
                 <th>Thời gian mở</th>
