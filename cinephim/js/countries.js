@@ -90,6 +90,42 @@ async function loadCountryMovies(page = 1) {
     }
 }
 
+// Format episode information
+function formatEpisodeInfo(currentEpisode, totalEpisodes) {
+    if (!currentEpisode) return '';
+    
+    // If current episode contains "full" or "hoàn tất", just return it
+    if (currentEpisode.toLowerCase().includes('full') || 
+        currentEpisode.toLowerCase().includes('hoàn tất') ||
+        currentEpisode.toLowerCase().includes('completed')) {
+        return currentEpisode;
+    }
+    
+    // Extract current episode number
+    const currentMatch = currentEpisode.match(/(\d+)/);
+    const currentNum = currentMatch ? parseInt(currentMatch[1]) : 0;
+    
+    // Extract total episodes if available
+    let totalNum = 0;
+    if (totalEpisodes) {
+        const totalMatch = totalEpisodes.toString().match(/(\d+)/);
+        totalNum = totalMatch ? parseInt(totalMatch[1]) : 0;
+    }
+    
+    // If we have both current and total, show "X/Y"
+    if (currentNum > 0 && totalNum > 0) {
+        return `${currentNum}/${totalNum}`;
+    }
+    
+    // If only current episode, show "Tập X"
+    if (currentNum > 0) {
+        return `Tập ${currentNum}`;
+    }
+    
+    // Default to current episode text
+    return currentEpisode;
+}
+
 // Display movies
 function displayMovies(movies) {
     const moviesGrid = document.getElementById('moviesGrid');
@@ -108,6 +144,11 @@ function displayMovies(movies) {
                      onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                 ${movie.quality ? `<span class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded">${movie.quality}</span>` : ''}
                 ${movie.year ? `<span class="absolute top-2 left-2 bg-gray-900 bg-opacity-75 text-white px-2 py-1 text-xs rounded">${movie.year}</span>` : ''}
+                ${movie.current_episode ? `
+                    <div class="absolute bottom-2 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">
+                        ${formatEpisodeInfo(movie.current_episode, movie.total_episodes)}
+                    </div>
+                ` : ''}
             </div>
             <div class="p-3">
                 <h3 class="font-medium text-sm truncate mb-1">${movie.name || movie.title}</h3>

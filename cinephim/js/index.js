@@ -102,6 +102,42 @@ async function searchMovies(keyword, page = 1) {
     }
 }
 
+// Format episode information
+function formatEpisodeInfo(currentEpisode, totalEpisodes) {
+    if (!currentEpisode) return '';
+    
+    // If current episode contains "full" or "hoàn tất", just return it
+    if (currentEpisode.toLowerCase().includes('full') || 
+        currentEpisode.toLowerCase().includes('hoàn tất') ||
+        currentEpisode.toLowerCase().includes('completed')) {
+        return currentEpisode;
+    }
+    
+    // Extract current episode number
+    const currentMatch = currentEpisode.match(/(\d+)/);
+    const currentNum = currentMatch ? parseInt(currentMatch[1]) : 0;
+    
+    // Extract total episodes if available
+    let totalNum = 0;
+    if (totalEpisodes) {
+        const totalMatch = totalEpisodes.toString().match(/(\d+)/);
+        totalNum = totalMatch ? parseInt(totalMatch[1]) : 0;
+    }
+    
+    // If we have both current and total, show "X/Y"
+    if (currentNum > 0 && totalNum > 0) {
+        return `${currentNum}/${totalNum}`;
+    }
+    
+    // If only current episode, show "Tập X"
+    if (currentNum > 0) {
+        return `Tập ${currentNum}`;
+    }
+    
+    // Default to current episode text
+    return currentEpisode;
+}
+
 // Display movies
 function displayMovies(movies) {
     const container = document.getElementById('moviesContainer');
@@ -125,7 +161,7 @@ function displayMovies(movies) {
                 </div>
                 ${movie.current_episode ? `
                     <div class="absolute bottom-2 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">
-                        ${movie.current_episode}
+                        ${formatEpisodeInfo(movie.current_episode, movie.total_episodes)}
                     </div>
                 ` : ''}
             </div>
