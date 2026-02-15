@@ -278,26 +278,68 @@ function setupEpisodes() {
     serverSelect.innerHTML = '';
     episodesList.innerHTML = '';
     
-    // Populate server options
+    // Populate server buttons
     currentMovie.episodes.forEach((server, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = server.server_name;
-        serverSelect.appendChild(option);
+        const button = document.createElement('button');
+        button.className = 'bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center';
+        button.textContent = server.server_name;
+        button.onclick = () => selectServer(index);
+        button.dataset.serverIndex = index;
+        
+        // Add active class for first server
+        if (index === 0) {
+            button.classList.add('bg-purple-600', 'hover:bg-purple-700');
+            button.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+        }
+        
+        serverSelect.appendChild(button);
     });
     
     // Load episodes for first server
     updateEpisodesList();
 }
 
+// Get current server index
+function getCurrentServerIndex() {
+    const serverSelect = document.getElementById('serverSelect');
+    const activeButton = serverSelect.querySelector('.bg-purple-600');
+    return activeButton ? parseInt(activeButton.dataset.serverIndex) : 0;
+}
+
+// Select server
+function selectServer(serverIndex) {
+    const serverSelect = document.getElementById('serverSelect');
+    const buttons = serverSelect.querySelectorAll('button');
+    
+    // Remove active class from all buttons
+    buttons.forEach(button => {
+        button.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+        button.classList.add('bg-gray-700', 'hover:bg-gray-600');
+    });
+    
+    // Add active class to selected button
+    const selectedButton = serverSelect.querySelector(`[data-server-index="${serverIndex}"]`);
+    if (selectedButton) {
+        selectedButton.classList.add('bg-purple-600', 'hover:bg-purple-700');
+        selectedButton.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+    }
+    
+    // Update episodes list
+    updateEpisodesListForServer(serverIndex);
+}
+
 // Update episodes list when server changes
 function updateEpisodesList() {
-    const serverSelect = document.getElementById('serverSelect');
+    const serverIndex = getCurrentServerIndex();
+    updateEpisodesListForServer(serverIndex);
+}
+
+// Update episodes list for specific server
+function updateEpisodesListForServer(serverIndex) {
     const episodesList = document.getElementById('episodesList');
     
-    if (!serverSelect || !episodesList || !currentMovie || !currentMovie.episodes) return;
+    if (!episodesList || !currentMovie || !currentMovie.episodes) return;
     
-    const serverIndex = parseInt(serverSelect.value);
     const server = currentMovie.episodes[serverIndex];
     
     if (server && server.items) {
@@ -381,8 +423,7 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
     const watchedAt = new Date();
     
     // Get current server index
-    const serverSelect = document.getElementById('serverSelect');
-    const serverIndex = serverSelect ? parseInt(serverSelect.value) : 0;
+    const serverIndex = getCurrentServerIndex();
     const serverName = currentMovie.episodes && currentMovie.episodes[serverIndex] ? 
                       currentMovie.episodes[serverIndex].server_name : 'Server 1';
     
@@ -513,8 +554,7 @@ function isEpisodeWatched(episodeSlug, movieSlug = null) {
 function playPreviousEpisode() {
     if (!currentMovie || !currentMovie.episodes || currentMovie.episodes.length === 0) return;
     
-    const serverSelect = document.getElementById('serverSelect');
-    const serverIndex = parseInt(serverSelect.value);
+    const serverIndex = getCurrentServerIndex();
     const server = currentMovie.episodes[serverIndex];
     
     if (!server || !server.items || server.items.length === 0) return;
@@ -538,8 +578,7 @@ function playPreviousEpisode() {
 function playNextEpisode() {
     if (!currentMovie || !currentMovie.episodes || currentMovie.episodes.length === 0) return;
     
-    const serverSelect = document.getElementById('serverSelect');
-    const serverIndex = parseInt(serverSelect.value);
+    const serverIndex = getCurrentServerIndex();
     const server = currentMovie.episodes[serverIndex];
     
     if (!server || !server.items || server.items.length === 0) return;
@@ -603,8 +642,7 @@ function updateNavigationButtons() {
     
     if (!prevButton || !nextButton || !currentMovie || !currentMovie.episodes) return;
     
-    const serverSelect = document.getElementById('serverSelect');
-    const serverIndex = parseInt(serverSelect.value);
+    const serverIndex = getCurrentServerIndex();
     const server = currentMovie.episodes[serverIndex];
     
     if (!server || !server.items || server.items.length === 0) {
@@ -907,10 +945,8 @@ function playEpisodeFromHistory(episodeSlug, serverIndex) {
     if (!currentMovie || !currentMovie.episodes) return;
     
     // Set server selection
-    const serverSelect = document.getElementById('serverSelect');
-    if (serverSelect && currentMovie.episodes[serverIndex]) {
-        serverSelect.value = serverIndex;
-        updateEpisodesList();
+    if (currentMovie.episodes[serverIndex]) {
+        selectServer(serverIndex);
         console.log('Switched to server:', currentMovie.episodes[serverIndex].server_name);
     }
     
