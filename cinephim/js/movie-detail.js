@@ -107,6 +107,26 @@ async function loadMovieDetail(slug) {
     }
 }
 
+// Format episode progress for movie detail
+function formatEpisodeProgress(currentEpisode, totalEpisodes) {
+    if (!currentEpisode) return 'Không rõ';
+    
+    // If current episode contains "full" or "hoàn tất", just return "Full"
+    if (currentEpisode.toLowerCase().includes('full') || 
+        currentEpisode.toLowerCase().includes('hoàn tất') ||
+        currentEpisode.toLowerCase().includes('completed')) {
+        return 'Full';
+    }
+    
+    // If we have both current and total, show "X/Y"
+    if (currentEpisode && totalEpisodes) {
+        return `${currentEpisode} / ${totalEpisodes}`;
+    }
+    
+    // Default to current episode
+    return currentEpisode;
+}
+
 // Display movie details
 async function displayMovieDetails() {
     if (!currentMovie) return;
@@ -122,7 +142,7 @@ async function displayMovieDetails() {
     const dateText = createdDate ? ` (${createdDate.getDate()}/${createdDate.getMonth() + 1}/${createdDate.getFullYear()})` : '';
     document.getElementById('movieYear').textContent = yearText + dateText;
     document.getElementById('movieDuration').textContent = currentMovie.time || 'Không rõ';
-    document.getElementById("episodeProgress").textContent = (currentMovie.current_episode || "Không rõ") + " / " + (currentMovie.total_episodes || "Không rõ");
+    document.getElementById("episodeProgress").textContent = formatEpisodeProgress(currentMovie.current_episode, currentMovie.total_episodes);
     document.getElementById('movieDescription').textContent = currentMovie.content || currentMovie.description || 'Không có mô tả.';
     
     // Update breadcrumb
