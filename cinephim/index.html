@@ -51,38 +51,23 @@
 						<a href="index.html" class="text-2xl font-bold text-purple-400 hover:text-purple-300 transition"><i class="fas fa-film mr-2"></i>CinePhim</a>
 					</div>
 
-					<!-- Search Bar -->
-					<div class="flex-1 max-w-md mx-8 search-bar">
-						<div class="relative">
-							<input type="text" id="searchInput" placeholder="Tìm kiếm phim..." class="w-full px-4 py-2 pl-10 pr-4 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-purple-400 text-white" />
-							<i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-						</div>
-					</div>
-
 					<!-- Desktop Navigation -->
 					<div class="flex items-center space-x-6">
-						<a href="index.html" class="hover:text-purple-400 transition"><i class="fas fa-home mr-1"></i>Trang chủ</a>
-						<a href="categories.html" class="hover:text-purple-400 transition"><i class="fas fa-list mr-1"></i>Thể loại</a>
-						<a href="countries.html" class="hover:text-purple-400 transition"><i class="fas fa-globe mr-1"></i>Quốc gia</a>
-						<a href="single-movies.html" class="hover:text-purple-400 transition"><i class="fas fa-film mr-1"></i>Phim Lẻ</a>
-						<a href="favorites.html" class="hover:text-purple-400 transition"><i class="fas fa-heart mr-1"></i>Yêu thích</a>
-						<a href="watch-history.html" class="hover:text-purple-400 transition"><i class="fas fa-history mr-1"></i>Lịch sử</a>
-						<a href="sources.html" class="hover:text-purple-400 transition"><i class="fas fa-link mr-1"></i>Nguồn phim</a>
+						<a href="index.html" class="hover:text-purple-400 transition"><i class="fas fa-home mr-1"></i><span class="nav-text">Trang chủ</span></a>
+						<a href="categories.html" class="hover:text-purple-400 transition"><i class="fas fa-list mr-1"></i><span class="nav-text">Thể loại</span></a>
+						<a href="countries.html" class="hover:text-purple-400 transition"><i class="fas fa-globe mr-1"></i><span class="nav-text">Quốc gia</span></a>
+						<a href="single-movies.html" class="hover:text-purple-400 transition"><i class="fas fa-film mr-1"></i><span class="nav-text">Phim Lẻ</span></a>
+						<a href="favorites.html" class="hover:text-purple-400 transition"><i class="fas fa-heart mr-1"></i><span class="nav-text">Yêu thích</span></a>
+						<a href="watch-history.html" class="hover:text-purple-400 transition"><i class="fas fa-history mr-1"></i><span class="nav-text">Lịch sử</span></a>
+						<a href="sources.html" class="hover:text-purple-400 transition"><i class="fas fa-link mr-1"></i><span class="nav-text">Nguồn phim</span></a>
 						<button onclick="toggleTheme()" class="hover:text-purple-400 transition">
 							<i id="themeIcon" class="fas fa-moon mr-1"></i>
+							<span class="nav-text">Chủ đề</span>
 						</button>
 						<button onclick="toggleLogin()" class="hover:text-purple-400 transition">
 							<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
 							<span id="loginText">Đăng nhập</span>
 						</button>
-					</div>
-				</div>
-
-				<!-- Mobile Search Bar -->
-				<div class="sm:hidden mt-2">
-					<div class="relative">
-						<input type="text" id="mobileSearchInput" placeholder="Tìm kiếm phim..." class="w-full px-3 py-2 pl-8 pr-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-purple-400 text-white text-sm" />
-						<i class="fas fa-search absolute left-2 top-2.5 text-gray-400 text-sm"></i>
 					</div>
 				</div>
 
@@ -100,6 +85,18 @@
 				</div>
 			</nav>
 		</header>
+
+		<!-- Search Bar Section -->
+		<div class="bg-gray-800 px-4 py-3">
+			<div class="container mx-auto">
+				<div class="max-w-2xl mx-auto">
+					<div class="relative">
+						<input type="text" id="searchInput" placeholder="Tìm kiếm phim..." class="w-full px-4 py-3 pl-12 pr-4 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-purple-400 text-white" />
+						<i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- Main Content -->
 		<main class="container mx-auto px-4 py-8">
