@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
@@ -64,10 +64,7 @@
 				<div class="card-body">
 					<ul class="nav nav-tabs mb-3" id="messageTabs" role="tablist">
 						<li class="nav-item" role="presentation">
-							<button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab">Văn Bản</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="file-tab" data-bs-toggle="tab" data-bs-target="#file" type="button" role="tab">Gửi File</button>
+							<button class="nav-link active" id="message-tab" data-bs-toggle="tab" data-bs-target="#message" type="button" role="tab">Tin Nhắn</button>
 						</li>
 						<li class="nav-item" role="presentation">
 							<button class="nav-link" id="embed-tab" data-bs-toggle="tab" data-bs-target="#embed" type="button" role="tab">Tin Nhúng</button>
@@ -75,8 +72,8 @@
 					</ul>
 
 					<div class="tab-content" id="messageTabsContent">
-						<!-- Tab Văn Bản -->
-						<div class="tab-pane fade show active" id="text" role="tabpanel">
+						<!-- Tab Tin Nhắn (gộp văn bản và file) -->
+						<div class="tab-pane fade show active" id="message" role="tabpanel">
 							<div class="mb-3">
 								<label class="form-label">Nội dung tin nhắn:</label>
 								<div class="d-flex justify-content-between align-items-center mb-2">
@@ -97,46 +94,20 @@
 								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..."></textarea>
 								<div id="formattingButtons"></div>
 							</div>
+
+							<div class="mb-3">
+								<label class="form-label">File đính kèm (tuỳ chọn):</label>
+								<input type="file" class="form-control" id="fileInput" multiple onchange="updateFileList(this)" />
+								<div id="fileList" class="mt-2 small text-muted" style="max-height: 150px; overflow-y: auto">Chưa có file nào được chọn</div>
+							</div>
+
 							<div class="form-check mb-3">
 								<input class="form-check-input" type="checkbox" id="tts" />
 								<label class="form-check-label" for="tts">Đọc to (Text-to-Speech)</label>
 							</div>
 							<div class="d-flex gap-2">
-								<button class="btn btn-primary" onclick="sendTextMessage()">Gửi Tin Nhắn</button>
-								<button class="btn btn-primary" onclick="scheduleMessage('text')">Hẹn giờ</button>
-							</div>
-						</div>
-
-						<!-- Tab File Đính Kèm -->
-						<div class="tab-pane fade" id="file" role="tabpanel">
-							<div class="mb-3">
-								<label class="form-label">Chọn file đính kèm:</label>
-								<input type="file" class="form-control" id="fileInput" multiple onchange="updateFileList(this)" />
-								<div id="fileList" class="mt-2 small text-muted" style="max-height: 150px; overflow-y: auto">Chưa có file nào được chọn</div>
-							</div>
-							<div class="mb-3">
-								<label class="form-label">Nội dung tin nhắn kèm file (tuỳ chọn):</label>
-								<div class="d-flex justify-content-between align-items-center mb-2">
-									<select id="templateSelectFile" class="form-select form-select-sm flex-grow-1" style="max-width: 220px; min-width: 150px; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; background-color: #fff; color: #495057; font-size: 14px; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); cursor: pointer; outline: none" onchange="applyTemplate(this.value, 'fileMessageText')">
-										<option value="">-- Chọn mẫu tin nhắn --</option>
-									</select>
-									<div class="d-flex flex-nowrap gap-2">
-										<button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadDraft('fileMessageText')" title="Tải bản nháp gần nhất">
-											<i class="fas fa-upload"></i>
-											<span class="d-none d-sm-inline ms-1">Tải bản nháp</span>
-										</button>
-										<button type="button" class="btn btn-sm btn-outline-primary" onclick="saveDraft('fileMessageText')" title="Lưu bản nháp">
-											<i class="far fa-save"></i>
-											<span class="d-none d-sm-inline ms-1">Lưu bản nháp</span>
-										</button>
-									</div>
-								</div>
-								<textarea class="form-control" id="fileMessageText" rows="5" placeholder="Nhập nội dung tin nhắn kèm file..."></textarea>
-								<div id="fileFormattingButtons"></div>
-							</div>
-							<div class="d-flex gap-2">
-								<button class="btn btn-primary" onclick="sendFileMessage()">Gửi File</button>
-								<button class="btn btn-primary" onclick="scheduleMessage('file')">Hẹn giờ</button>
+								<button class="btn btn-primary" onclick="sendMessage()">Gửi Tin Nhắn</button>
+								<button class="btn btn-primary" onclick="scheduleMessage('message')">Hẹn giờ</button>
 							</div>
 						</div>
 

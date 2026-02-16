@@ -364,78 +364,112 @@ function evaluateExpressions(text) {
 	});
 }
 
-// Gửi tin nhắn văn bản
-async function sendTextMessage() {
+// Gửi tin nhắn (văn bản và/hoặc file)
+async function sendMessage() {
 	const webhooks = await getWebhookUrls();
 	const webhookSelect = document.getElementById("webhookSelect");
 	const selectedWebhookId = webhookSelect.value;
 	const webhookUrl = webhooks[selectedWebhookId];
 	const webhookName = webhookSelect.options[webhookSelect.selectedIndex].text;
-	let message = document.getElementById("messageText").value;
+	const message = document.getElementById("messageText").value;
 	const username = document.getElementById("customUsername").value;
 	const avatarUrl = document.getElementById("avatarUrl").value;
 	const tts = document.getElementById("tts").checked;
+	const fileInput = document.getElementById("fileInput");
+	const files = fileInput.files;
 
-	if (!message.trim()) {
+	// Kiểm tra xem có nội dung nào để gửi không
+	if (!message.trim() && files.length === 0) {
 		Swal.fire({
 			icon: "error",
 			title: "Lỗi!",
-			text: "Vui lòng nhập nội dung tin nhắn",
+			text: "Vui lòng nhập nội dung tin nhắn hoặc chọn file đính kèm",
 			confirmButtonText: "OK",
 		});
 		return;
 	}
 
 	try {
-		// Thực thi các biểu thức JavaScript trong tin nhắn
-		message = evaluateExpressions(message);
+		// Nếu có file đính kèm, gửi dạng FormData
+		if (files.length > 0) {
+			const formData = new FormData();
+			if (message) formData.append("content", evaluateExpressions(message));
+			if (username) formData.append("username", username);
+			if (avatarUrl) formData.append("avatar_url", avatarUrl);
+			if (tts) formData.append("tts", "true");
 
-		// Chia nhỏ tin nhắn nếu quá dài (1900 ký tự để đảm bảo an toàn)
-		const maxLength = 1900;
-		const messageChunks = [];
-
-		// Hàm tìm vị trí cắt phù hợp
-		const findBestSplitPoint = (str, maxPos) => {
-			// Ưu tiên cắt tại dấu xuống dòng
-			let splitPos = str.lastIndexOf('\n', maxPos);
-
-			// Nếu không tìm thấy, cắt tại dấu cách gần nhất
-			if (splitPos === -1) {
-				splitPos = str.lastIndexOf(' ', maxPos);
+			// Thêm tất cả các file đã chọn
+			for (let i = 0; i < files.length; i++) {
+				formData.append(`file${i}`, files[i]);
 			}
 
-			// Nếu vẫn không tìm thấy, cắt tại maxPos
-			return splitPos === -1 ? maxPos : splitPos;
-		};
+			const response = await fetch(webhookUrl, {
+				method: "POST",
+				body: formData,
+			});
 
-		let remainingText = message;
-		while (remainingText.length > 0) {
-			if (remainingText.length <= maxLength) {
-				messageChunks.push(remainingText);
-				break;
+			if (response.ok) {
+				const sentFilesCount = files.length;
+				const messageText = message ? evaluateExpressions(message) : "";
+				addLog(`✅ Đã gửi tin nhắn với ${sentFilesCount} file thành công!`, messageText, webhookName, webhookUrl);
+
+				await Swal.fire({
+					icon: "success",
+					title: "Thành công!",
+					text: `Bạn đã gửi tin nhắn với ${sentFilesCount} file thành công.`,
+					showConfirmButton: true,
+				});
+
+				// Xóa file đã chọn
+				fileInput.value = "";
+				updateFileList(fileInput);
+			} else {
+				const error = await response.json();
+				throw new Error(error.message || "Không thể gửi file");
 			}
+		} else {
+			// Chỉ gửi tin nhắn văn bản
+			const evaluatedMessage = evaluateExpressions(message);
 
-			const splitPos = findBestSplitPoint(remainingText, maxLength);
-			const chunk = remainingText.substring(0, splitPos).trim();
-			if (chunk) {
+			// Chia nhỏ tin nhắn nếu quá dài (1900 ký tự để đảm bảo an toàn)
+			const maxLength = 1900;
+			const messageChunks = [];
+
+			// Hàm tìm vị trí cắt phù hợp
+			const findBestSplitPoint = (str, maxPos) => {
+				// Ưu tiên cắt tại dấu xuống dòng
+				let splitPos = str.lastIndexOf('\n', maxPos);
+
+				// Nếu không tìm thấy, cắt tại dấu cách gần nhất
+				if (splitPos === -1) {
+					splitPos = str.lastIndexOf(' ', maxPos);
+				}
+
+				// Nếu vẫn không tìm thấy, cắt tại maxPos
+				return splitPos === -1 ? maxPos : splitPos;
+			};
+
+			let remainingText = evaluatedMessage;
+			while (remainingText.length > 0) {
+				if (remainingText.length <= maxLength) {
+					messageChunks.push(remainingText);
+					break;
+				}
+
+				const splitPos = findBestSplitPoint(remainingText, maxLength);
+				const chunk = remainingText.substring(0, splitPos);
 				messageChunks.push(chunk);
+				remainingText = remainingText.substring(splitPos).trim();
 			}
-			remainingText = remainingText.substring(splitPos).trim();
-		}
 
-		const payloadBase = {
-			tts: tts,
-		};
-
-		if (username) payloadBase.username = username;
-		if (avatarUrl) payloadBase.avatar_url = avatarUrl;
-
-		let successCount = 0;
-
-		// Gửi từng phần tin nhắn
-		for (const chunk of messageChunks) {
-			try {
-				const payload = { ...payloadBase, content: chunk };
+			// Gửi từng phần tin nhắn
+			for (let i = 0; i < messageChunks.length; i++) {
+				const payload = {
+					content: messageChunks[i],
+					username: username || undefined,
+					avatar_url: avatarUrl || undefined,
+					tts: tts,
+				};
 
 				const response = await fetch(webhookUrl, {
 					method: "POST",
@@ -446,108 +480,37 @@ async function sendTextMessage() {
 				});
 
 				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
+					const error = await response.json();
+					throw new Error(error.message || "Không thể gửi tin nhắn");
 				}
 
-				successCount++;
-
-				// Thêm độ trễ nhỏ giữa các lần gửi để tránh rate limiting
-				if (messageChunks.indexOf(chunk) < messageChunks.length - 1) {
+				// Đợi một chút giữa các tin nhắn để tránh rate limit
+				if (i < messageChunks.length - 1) {
 					await new Promise(resolve => setTimeout(resolve, 1000));
 				}
-				addLog(`📤 Đang gửi phần ${messageChunks.indexOf(chunk) + 1}/${messageChunks.length}...`, chunk, webhookName, webhookUrl);
-			} catch (error) {
-				addLog(`❌ Lỗi khi gửi phần tin nhắn: ${error.message}`, "", webhookName, webhookUrl, true);
-				throw error; // Dừng việc gửi nếu có lỗi
 			}
-		}
 
-		await Swal.fire({
-			icon: "success",
-			title: "Thành công!",
-			text: messageChunks.length > 1
-				? `Đã gửi thành công ${successCount} phần tin nhắn.`
-				: "Tin nhắn đã được gửi thành công.",
-			showConfirmButton: true,
-		});
-
-	} catch (error) {
-		addLog(`❌ Lỗi kết nối: ${error.message}`, "", webhookName, webhookUrl, true);
-		await Swal.fire({
-			icon: "error",
-			title: "Lỗi!",
-			text: "Đã xảy ra lỗi khi gửi tin nhắn: " + error.message,
-		});
-	}
-}
-
-// Gửi file đính kèm
-async function sendFileMessage() {
-	try {
-		const webhooks = await getWebhookUrls();
-		const webhookSelect = document.getElementById("webhookSelect");
-		const selectedWebhookId = webhookSelect.value;
-		const webhookUrl = webhooks[selectedWebhookId];
-		const webhookName = webhookSelect.options[webhookSelect.selectedIndex].text;
-		const fileInput = document.getElementById("fileInput");
-		const files = fileInput.files;
-		const message = document.getElementById("fileMessageText").value;
-		const username = document.getElementById("customUsername").value;
-		const avatarUrl = document.getElementById("avatarUrl").value;
-
-		if (files.length === 0) {
-			Swal.fire({
-				icon: "error",
-				title: "Lỗi!",
-				text: "Vui lòng chọn ít nhất một file",
-				confirmButtonText: "OK",
-			});
-			return;
-		}
-
-		const formData = new FormData();
-		if (message) formData.append("content", evaluateExpressions(message));
-		if (username) formData.append("username", username);
-		if (avatarUrl) formData.append("avatar_url", avatarUrl);
-
-		// Thêm tất cả các file đã chọn
-		for (let i = 0; i < files.length; i++) {
-			formData.append(`file${i}`, files[i]);
-		}
-
-		const response = await fetch(webhookUrl, {
-			method: "POST",
-			body: formData,
-		});
-
-		if (response.ok) {
-			const sentFilesCount = files.length;
-			addLog(`✅ Đã gửi ${sentFilesCount} file thành công!`, evaluateExpressions(message), webhookName, webhookUrl);
+			addLog(`✅ Đã gửi tin nhắn thành công!`, evaluatedMessage, webhookName, webhookUrl);
 
 			await Swal.fire({
 				icon: "success",
 				title: "Thành công!",
-				text: `Bạn đã gửi ${sentFilesCount} file thành công.`,
+				text: messageChunks.length > 1 
+					? `Đã gửi tin nhắn thành công (đã chia thành ${messageChunks.length} phần).`
+					: "Đã gửi tin nhắn thành công!",
 				showConfirmButton: true,
 			});
-		} else {
-			const error = await response.json();
-			addLog(`❌ Lỗi khi gửi file: ${error.message || response.statusText}`, "", webhookName, webhookUrl, true);
-
-			await Swal.fire({
-				icon: "error",
-				title: "Lỗi!",
-				text: `Lỗi khi gửi file: ${error.message || response.statusText}`,
-			});
 		}
-	} catch (error) {
-		console.error("Lỗi khi gửi file:", error);
-		addLog(`❌ Lỗi: ${error.message}`, "", webhookName, webhookUrl, true);
 
-		await Swal.fire({
+	} catch (error) {
+		console.error("Lỗi khi gửi tin nhắn:", error);
+		addLog(`❌ Lỗi khi gửi tin nhắn: ${error.message}`, message, webhookName, webhookUrl, true);
+
+		Swal.fire({
 			icon: "error",
 			title: "Lỗi!",
-			text: `Lỗi khi gửi file: ${error.message}`,
+			text: `Không thể gửi tin nhắn: ${error.message}`,
+			confirmButtonText: "OK",
 		});
 	}
 }
@@ -978,7 +941,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Xử lý phím Enter + Ctrl để gửi tin nhắn (giữ nguyên)
 		else if (e.key === "Enter" && e.ctrlKey) {
 			e.preventDefault();
-			sendTextMessage();
+			sendMessage();
 		}
 		// Xử lý phím tắt Ctrl + S để lưu bản nháp
 		else if ((e.ctrlKey || e.metaKey) && e.key === "s") {
@@ -1004,7 +967,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 });
 
-async function scheduleMessage(type = "text") {
+async function scheduleMessage(type = "message") {
 	const { value: minutes } = await Swal.fire({
 		title: "Hẹn giờ gửi tin nhắn",
 		input: "number",
@@ -1033,15 +996,13 @@ async function scheduleMessage(type = "text") {
 
 	// Xác định loại tin nhắn
 	let messageType = "tin nhắn";
-	if (type === "file") messageType = "file đính kèm";
-	else if (type === "embed") messageType = "tin nhúng";
+	if (type === "embed") messageType = "tin nhúng";
 
 	const { isConfirmed } = await Swal.fire({
 		title: "Xác nhận hẹn giờ",
 		html: `Bạn có chắc muốn gửi ${messageType} sau <b>${minutesNum} phút</b>?<br>(Lúc ${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")})`,
 		icon: "question",
 		showCancelButton: true,
-		cancelButtonText: "Hủy",
 		confirmButtonText: "Xác nhận",
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
@@ -1078,12 +1039,10 @@ async function scheduleMessage(type = "text") {
 				if (!isCancelled) {
 					swal.close();
 					// Gọi hàm gửi tin nhắn tương ứng với loại
-					if (type === "file") {
-						sendFileMessage();
-					} else if (type === "embed") {
+					if (type === "embed") {
 						sendEmbedMessage();
 					} else {
-						sendTextMessage();
+						sendMessage();
 					}
 					showSuccessMessage(`Đã gửi ${messageType} theo lịch hẹn`);
 				}
@@ -1105,8 +1064,8 @@ async function scheduleMessage(type = "text") {
 								</div>
 							</div>
 						`,
-			showConfirmButton: true,
-			confirmButtonText: "Hủy bỏ",
+			showConfirmButton: false,
+			showCloseButton: false,
 			allowOutsideClick: false,
 			didOpen: () => {
 				timerInterval = setInterval(updateTimer, 1000);
@@ -1656,9 +1615,8 @@ document.addEventListener("DOMContentLoaded", function () {
 // Gọi hàm khởi tạo khi DOM đã tải xong
 document.addEventListener("DOMContentLoaded", function () {
 	initTemplateDropdown();
-	// Tạo các nút định dạng cho cả hai tab
+	// Tạo các nút định dạng cho tab tin nhắn
 	document.getElementById("formattingButtons").innerHTML = createFormattingButtons("messageText");
-	document.getElementById("fileFormattingButtons").innerHTML = createFormattingButtons("fileMessageText");
 });
 
 // Hàm lưu bản nháp lên Firebase
