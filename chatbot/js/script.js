@@ -108,6 +108,8 @@ async function loadWebhooks() {
 			// Thêm nhóm (optgroup)
 			const groupElement = document.createElement("optgroup");
 			groupElement.label = group;
+			groupElement.style.color = "red";
+			groupElement.style.fontWeight = "bold";
 
 			// Thêm các webhook trong nhóm
 			groupedWebhooks[group].forEach((webhook) => {
@@ -115,6 +117,7 @@ async function loadWebhooks() {
 				option.value = webhook.id;
 				// Hiển thị toàn bộ tên webhook trong option
 				option.textContent = webhook.name || `Webhook ${webhook.id}`;
+				option.style.color = "black"; // Giữ màu đen cho các webhook con
 				groupElement.appendChild(option);
 			});
 
@@ -697,7 +700,7 @@ let currentTemplate = null;
 const messageTemplates = {
 	1: {
 		name: "Rollback Thất Bại",
-		content: `❓ THÔNG BÁO ❓
+		content: `## ❓ THÔNG BÁO ❓
 		🆎 Nội Dung: Rollback thất bại
 		💳 Tài Khoản: 
 		👤 ID Nhân Vật: 
@@ -710,15 +713,6 @@ const messageTemplates = {
 	},
 
 	2: {
-		name: "Thông báo",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ 
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
-	3: {
 		name: "Phản Hồi Thông Tin",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ 
@@ -728,7 +722,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	4: {
+	3: {
 		name: "Thắc Mắc",
 		content: `## ❓ THÔNG BÁO ❓
 		📢 __**Nội Dung:**__ 
@@ -738,7 +732,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	5: {
+	4: {
 		name: "Cảnh Báo",
 		content: `## ⚠️ CẢNH BÁO ⚠️
 		📢 __**Nội Dung:**__ 
@@ -747,7 +741,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	6: {
+	5: {
 		name: "Reset Tiêu Phí Tháng",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset tiêu phí tháng tk **** hoàn tất
@@ -756,7 +750,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	7: {
+	6: {
 		name: "Reset Huyền Thông",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Reset điểm Huyền Thông về 0 ID **** hoàn tất
@@ -765,7 +759,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	8: {
+	7: {
 		name: "Sửa lỗi Phi Phong",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Sửa lỗi xác nhận kết quả phi phong ID **** hoàn tất
@@ -774,7 +768,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	9: {
+	8: {
 		name: "Chặn IP",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Chặn IP tk **** (Lúc **** đăng nhập S5: ****) hoàn tất
@@ -783,7 +777,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	10: {
+	9: {
 		name: "Nội Dung File Bảo Trì",
 		content: `# [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
 		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) 
@@ -794,7 +788,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	11: {
+	10: {
 		name: "Cập Nhật File Hoàn Tất",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Cập nhật hoàn tất nội dung file **___**. Vui lòng kiểm tra lại
@@ -803,25 +797,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	12: {
-		name: "Bảo Trì Gộp SV",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Bảo trì gộp **S5 S6 (S44 S45)** hoàn tất
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
-	13: {
-		name: "Nhiệm Vụ Ngày",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Hoàn tất nhiệm vụ **** (Chuỗi Nhiệm Vụ Ngày) ID ****
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
-	14: {
+	11: {
 		name: "Đổi Nhân Vật Chính",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ 
@@ -832,7 +808,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	15: {
+	12: {
 		name: "Thêm Gói Quà Event",
 		content: `## 🔔 THÔNG BÁO 🔔
 		📢 __**Nội Dung:**__ Thêm gói **** hoàn tất. Vui lòng kiểm tra lại
@@ -841,16 +817,7 @@ const messageTemplates = {
 		-----------------------------------------------------------------`,
 	},
 
-	16: {
-		name: "Điều Chỉnh Quà Phúc Lợi",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Điều chỉnh **** () hoàn tất
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
-	17: {
+	13: {
 		name: "Lệnh Không Hỗ Trợ",
 		content: `🚫 Lệnh không được hỗ trợ hoặc chưa được kích hoạt tại nhóm này.`,
 	},
