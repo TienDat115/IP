@@ -269,6 +269,53 @@ body:not(.dark) .hover\:bg-gray-600:hover {
 	header .items-center {
 		gap: 0.5rem;
 	}
+
+	/* Tooltip styles for icon-only navigation */
+	.hover-text-tooltip {
+		position: relative;
+	}
+
+	.hover-text-tooltip:hover::after {
+		content: attr(data-tooltip);
+		position: absolute;
+		bottom: -35px;
+		left: 50%;
+		transform: translateX(-50%);
+		background-color: #1f2937;
+		color: white;
+		padding: 6px 12px;
+		border-radius: 6px;
+		font-size: 14px;
+		white-space: nowrap;
+		z-index: 1000;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+		border: 1px solid #374151;
+		opacity: 0;
+		animation: tooltipFadeIn 0.3s ease-in-out forwards;
+	}
+
+	.hover-text-tooltip:hover::before {
+		content: '';
+		position: absolute;
+		bottom: -8px;
+		left: 50%;
+		transform: translateX(-50%);
+		border: 6px solid transparent;
+		border-top-color: #1f2937;
+		z-index: 1001;
+	}
+
+	@keyframes tooltipFadeIn {
+		from {
+			opacity: 0;
+			transform: translateX(-50%) translateY(-5px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateX(-50%) translateY(0);
+		}
+	}
 }
 
 @media (max-width: 768px) {
