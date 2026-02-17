@@ -18,19 +18,17 @@ async function initializePage() {
         
         // Check for country parameter in URL
         const urlParams = new URLSearchParams(window.location.search);
-        const countryParam = urlParams.get('country');
-        
-        if (countryParam) {
-            document.getElementById('countrySelect').value = countryParam;
-            await loadCountryMovies();
+        const country = urlParams.get('country');
+        if (country) {
+            const radio = document.querySelector(`input[name="country"][value="${country}"]`);
+            if (radio) {
+                radio.checked = true;
+            }
+            await loadCountryMovies(1);
         }
         
-        // Add enter key support for country selection
-        document.getElementById('countrySelect').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                loadCountryMovies();
-            }
-        });
+        // Setup event listeners for radio buttons
+        setupEventListeners();
         
     } catch (error) {
         console.error('Error initializing page:', error);
@@ -38,10 +36,26 @@ async function initializePage() {
     }
 }
 
+// Setup event listeners
+function setupEventListeners() {
+    // Add event listeners for radio buttons to update display
+    const radioButtons = document.querySelectorAll('input[name="country"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const selectedCountry = e.target.value;
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('country', selectedCountry);
+            window.history.pushState({}, '', url);
+        });
+    });
+}
+
 // Load movies by country
 async function loadCountryMovies(page = 1) {
-    const countrySelect = document.getElementById('countrySelect');
-    const selectedCountry = countrySelect.value;
+    // Get selected country
+    const selectedRadio = document.querySelector('input[name="country"]:checked');
+    const selectedCountry = selectedRadio ? selectedRadio.value : '';
     
     if (!selectedCountry) {
         showWarning('Vui lòng chọn quốc gia để xem phim.');

@@ -14,7 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category');
         if (category) {
-            document.getElementById('categorySelect').value = category;
+            const radio = document.querySelector(`input[name="category"][value="${category}"]`);
+            if (radio) {
+                radio.checked = true;
+                // Update display text
+                const selectedCategorySpan = document.getElementById('selectedCategory');
+                if (selectedCategorySpan) {
+                    const displayName = getCategoryDisplayName(category);
+                    selectedCategorySpan.textContent = displayName;
+                }
+            }
             loadMoviesByCategory(category, 1);
         }
     }, 1500);
@@ -22,37 +31,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Setup event listeners
 function setupEventListeners() {
-    const categorySelect = document.getElementById('categorySelect');
-    
-    if (categorySelect) {
-        categorySelect.addEventListener('change', function(e) {
-            const category = e.target.value;
-            if (category) {
-                currentCategory = category;
-                currentPage = 1;
-                loadMoviesByCategory(category, 1);
-                
-                // Update URL
-                const url = new URL(window.location);
-                url.searchParams.set('category', category);
-                window.history.pushState({}, '', url);
-            } else {
-                // Clear movies if no category selected
-                document.getElementById('moviesGrid').innerHTML = '';
-                document.getElementById('pagination').innerHTML = '';
-                showNoResults();
+    // Add event listeners for radio buttons to update display text
+    const radioButtons = document.querySelectorAll('input[name="category"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const selectedCategorySpan = document.getElementById('selectedCategory');
+            if (selectedCategorySpan) {
+                const displayName = getCategoryDisplayName(e.target.value);
+                selectedCategorySpan.textContent = displayName;
             }
         });
-    }
-    
-    // Add enter key support
-    categorySelect.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            const category = e.target.value;
-            if (category) {
-                loadMoviesByCategory(category, 1);
-            }
-        }
     });
 }
 

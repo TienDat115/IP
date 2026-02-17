@@ -19,6 +19,63 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
+		<style>
+			/* Custom radio button styling */
+			input[type="radio"]:checked + span {
+				background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+				color: white;
+				font-weight: 600;
+				box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+				transform: scale(1.05);
+			}
+
+			input[type="radio"]:checked {
+				background-color: #8b5cf6;
+				border-color: #6366f1;
+				box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+			}
+
+			input[type="radio"]:hover + span {
+				background-color: rgba(107, 114, 128, 0.1);
+			}
+
+			input[type="radio"]:hover {
+				background-color: rgba(107, 114, 128, 0.2);
+				border-color: #6366f1;
+			}
+
+			/* Custom responsive grid */
+			@media (max-width: 320px) {
+				.category-grid {
+					grid-template-columns: repeat(1, 1fr);
+				}
+			}
+			@media (min-width: 321px) and (max-width: 640px) {
+				.category-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+			@media (min-width: 641px) and (max-width: 768px) {
+				.category-grid {
+					grid-template-columns: repeat(3, 1fr);
+				}
+			}
+			@media (min-width: 769px) and (max-width: 1024px) {
+				.category-grid {
+					grid-template-columns: repeat(4, 1fr);
+				}
+			}
+			@media (min-width: 1025px) and (max-width: 1280px) {
+				.category-grid {
+					grid-template-columns: repeat(5, 1fr);
+				}
+			}
+			@media (min-width: 1281px) {
+				.category-grid {
+					grid-template-columns: repeat(6, 1fr);
+				}
+			}
+		</style>
 	</head>
 	<body class="bg-gray-900 text-white">
 		<!-- Header -->
@@ -98,31 +155,93 @@
 			<div class="bg-gray-800 rounded-lg p-6 mb-8">
 				<div class="flex flex-col sm:flex-row items-center gap-4">
 					<div class="w-full sm:w-auto">
-						<label for="categorySelect" class="block text-sm font-medium text-gray-300 mb-2">Chọn thể loại:</label>
-						<select id="categorySelect" onchange="loadMoviesByCategory(this.value)" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
-							<option value="">-- Chọn thể loại --</option>
-							<option value="hanh-dong">Hành Động</option>
-							<option value="phieu-luu">Phiêu Lưu</option>
-							<option value="hoat-hinh">Hoạt Hình</option>
-							<option value="phim-hai">Phim Hài</option>
-							<option value="hinh-su">Hình Sự</option>
-							<option value="tai-lieu">Tài Liệu</option>
-							<option value="chinh-kich">Chính Kịch</option>
-							<option value="gia-dinh">Gia Đình</option>
-							<option value="gia-tuong">Giả Tưởng</option>
-							<option value="lich-su">Lịch Sử</option>
-							<option value="kinh-di">Kinh Dị</option>
-							<option value="phim-nhac">Phim Nhạc</option>
-							<option value="bi-an">Bí Ẩn</option>
-							<option value="lang-man">Lãng Mạn</option>
-							<option value="khoa-hoc-vien-tuong">Khoa Học Viễn Tưởng</option>
-							<option value="gay-can">Gây Cấn</option>
-							<option value="chien-tranh">Chiến Tranh</option>
-							<option value="mien-tay">Miền Tây</option>
-							<option value="co-trang">Cổ Trang</option>
-							<option value="tam-ly">Tâm Lý</option>
-							<option value="tinh-cam">Tình Cảm</option>
-						</select>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Chọn thể loại:</label>
+						<div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 bg-gray-700 p-4 rounded-lg">
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="hanh-dong" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Hành Động</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="phieu-luu" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Phiêu Lưu</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="hoat-hinh" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Hoạt Hình</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="phim-hai" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Phim Hài</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="hinh-su" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Hình Sự</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="tai-lieu" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Tài Liệu</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="chinh-kich" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Chính Kịch</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="gia-dinh" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Gia Đình</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="gia-tuong" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Giả Tưởng</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="lich-su" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Lịch Sử</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="kinh-di" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Kinh Dị</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="phim-nhac" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Phim Nhạc</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="bi-an" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Bí Ẩn</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="lang-man" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Lãng Mạn</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="khoa-hoc-vien-tuong" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Khoa Học Viễn Tưởng</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="gay-can" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Gây Cấn</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="chien-tranh" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Chiến Tranh</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="mien-tay" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Miền Tây</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="co-trang" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Cổ Trang</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="tam-ly" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Tâm Lý</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="category" value="tinh-cam" onchange="loadMoviesByCategory(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Tình Cảm</span>
+							</label>
+						</div>
 					</div>
 				</div>
 			</div>

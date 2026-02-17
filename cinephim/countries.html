@@ -26,6 +26,63 @@
 
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
+		<style>
+			/* Custom responsive grid */
+			@media (max-width: 320px) {
+				.movies-grid {
+					grid-template-columns: repeat(1, 1fr);
+				}
+			}
+			@media (min-width: 321px) and (max-width: 640px) {
+				.movies-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+			@media (min-width: 641px) and (max-width: 768px) {
+				.movies-grid {
+					grid-template-columns: repeat(3, 1fr);
+				}
+			}
+			@media (min-width: 769px) and (max-width: 1024px) {
+				.movies-grid {
+					grid-template-columns: repeat(4, 1fr);
+				}
+			}
+			@media (min-width: 1025px) and (max-width: 1280px) {
+				.movies-grid {
+					grid-template-columns: repeat(5, 1fr);
+				}
+			}
+			@media (min-width: 1281px) {
+				.movies-grid {
+					grid-template-columns: repeat(6, 1fr);
+				}
+			}
+
+			/* Custom radio button styling */
+			input[type="radio"]:checked + span {
+				background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+				color: white;
+				font-weight: 600;
+				box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+				transform: scale(1.05);
+			}
+
+			input[type="radio"]:checked {
+				background-color: #8b5cf6;
+				border-color: #6366f1;
+				box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+			}
+
+			input[type="radio"]:hover + span {
+				background-color: rgba(107, 114, 128, 0.1);
+			}
+
+			input[type="radio"]:hover {
+				background-color: rgba(107, 114, 128, 0.2);
+				border-color: #6366f1;
+			}
+		</style>
 	</head>
 	<body class="bg-gray-900 text-white">
 		<!-- Header -->
@@ -114,43 +171,125 @@
 			<div class="bg-gray-800 rounded-lg p-6 mb-8">
 				<div class="flex flex-col sm:flex-row items-center gap-4">
 					<div class="w-full sm:w-auto">
-						<label for="countrySelect" class="block text-sm font-medium text-gray-300 mb-2">Chọn quốc gia:</label>
-						<select id="countrySelect" onchange="loadCountryMovies()" class="bg-gray-700 text-white px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-purple-400">
-							<option value="">-- Chọn quốc gia --</option>
-							<option value="au-my">Âu Mỹ</option>
-							<option value="anh">Anh</option>
-							<option value="trung-quoc">Trung Quốc</option>
-							<option value="indonesia">Indonesia</option>
-							<option value="viet-nam">Việt Nam</option>
-							<option value="argentina">Argentina</option>
-							<option value="ao">Áo</option>
-							<option value="uc">Úc</option>
-							<option value="bangladesh">Bangladesh</option>
-							<option value="brazil">Brazil</option>
-							<option value="bahamas">Bahamas</option>
-							<option value="belarus">Belarus</option>
-							<option value="canada">Canada</option>
-							<option value="thuy-si">Thụy Sĩ</option>
-							<option value="bo-bien-nga">Bờ Biển Ngà</option>
-							<option value="chile">Chile</option>
-							<option value="colombia">Colombia</option>
-							<option value="costa-rica">Costa Rica</option>
-							<option value="duc">Đức</option>
-							<option value="dan-mach">Đan Mạch</option>
-							<option value="tay-ban-nha">Tây Ban Nha</option>
-							<option value="phap">Pháp</option>
-							<option value="greenland">Greenland</option>
-							<option value="hong-kong">Hồng Kông</option>
-							<option value="han-quoc">Hàn Quốc</option>
-							<option value="nhat-ban">Nhật Bản</option>
-							<option value="thai-lan">Thái Lan</option>
-							<option value="dai-loan">Đài Loan</option>
-							<option value="nga">Nga</option>
-							<option value="ha-lan">Hà Lan</option>
-							<option value="quoc-gia-khac">Quốc gia khác</option>
-							<option value="philippines">Philippines</option>
-							<option value="an-do">Ấn Độ</option>
-						</select>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Chọn quốc gia:</label>
+						<div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 bg-gray-700 p-4 rounded-lg">
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="au-my" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Âu Mỹ</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="anh" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Anh</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="trung-quoc" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Trung Quốc</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="indonesia" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Indonesia</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="viet-nam" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Việt Nam</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="argentina" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Argentina</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="ao" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Áo</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="uc" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Úc</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="bangladesh" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Bangladesh</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="thuy-si" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Thụy Sĩ</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="bo-bien-nga" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Bờ Biển Ngà</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="chile" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Chile</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="colombia" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Colombia</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="costa-rica" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Costa Rica</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="duc" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Đức</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="dan-mach" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Đan Mạch</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="tay-ban-nha" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Tây Ban Nha</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="phap" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Pháp</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="greenland" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Greenland</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="hong-kong" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Hồng Kông</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="han-quoc" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Hàn Quốc</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="nhat-ban" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Nhật Bản</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="thai-lan" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Thái Lan</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="dai-loan" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Đài Loan</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="nga" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Nga</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="ha-lan" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Hà Lan</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="quoc-gia-khac" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Quốc gia khác</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="philippines" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Philippines</span>
+							</label>
+							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+								<input type="radio" name="country" value="an-do" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+								<span class="text-white">Ấn Độ</span>
+							</label>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -163,7 +302,7 @@
 
 			<!-- Movies Grid -->
 			<div id="moviesContainer">
-				<div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+				<div id="moviesGrid" class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
 					<!-- Movies will be loaded here -->
 				</div>
 
