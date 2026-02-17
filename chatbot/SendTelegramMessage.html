@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
@@ -159,10 +159,7 @@
 				<div class="card-body">
 					<ul class="nav nav-tabs" id="messageTabs" role="tablist">
 						<li class="nav-item" role="presentation">
-							<button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button">Tin nhắn văn bản</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button">Hình ảnh</button>
+							<button class="nav-link active" id="content-tab" data-bs-toggle="tab" data-bs-target="#content" type="button">Nội dung tin nhắn</button>
 						</li>
 						<li class="nav-item" role="presentation">
 							<button class="nav-link" id="poll-tab" data-bs-toggle="tab" data-bs-target="#poll" type="button">Bỏ phiếu</button>
@@ -170,8 +167,8 @@
 					</ul>
 
 					<div class="tab-content" id="messageTabsContent">
-						<!-- Tab Tin nhắn văn bản -->
-						<div class="tab-pane fade show active" id="text" role="tabpanel">
+						<!-- Tab Nội dung tin nhắn -->
+						<div class="tab-pane fade show active" id="content" role="tabpanel">
 							<div class="mb-3">
 								<label class="form-label">Nội dung tin nhắn:</label>
 								<div class="mb-2">
@@ -186,32 +183,27 @@
 								<textarea class="form-control" id="messageText" rows="8" placeholder="Nhập nội dung tin nhắn..."></textarea>
 								<div class="form-text">Sử dụng HTML để định dạng: <b>chữ đậm</b>, <i>nghiêng</i>, <u>gạch chân</u></div>
 							</div>
-							<button class="btn btn-primary" onclick="sendTextMessage()">
-								<span class="spinner-border spinner-border-sm d-none" id="textSpinner" role="status" aria-hidden="true"></span>
-								Gửi tin nhắn
-							</button>
-						</div>
 
-						<!-- Tab Hình ảnh -->
-						<div class="tab-pane fade" id="image" role="tabpanel">
 							<div class="mb-3">
-								<label class="form-label">Chọn hình ảnh:</label>
+								<label class="form-label">Chọn hình ảnh (tùy chọn):</label>
 								<input type="file" class="form-control" id="imageInput" accept="image/*" multiple />
 								<div class="form-text">Có thể chọn nhiều ảnh cùng lúc (tối đa 10 ảnh)</div>
 							</div>
-							<div class="mb-3">
-								<label class="form-label">Chú thích (tùy chọn):</label>
-								<div class="mb-2">
-									<span class="emoji-btn" onclick="insertTextTo('imageCaption', '🔔', '')" title="Thông báo">🔔</span>
-									<span class="emoji-btn" onclick="insertTextTo('imageCaption', '📢', '')" title="Phát thanh">📢</span>
-									<span class="emoji-btn" onclick="insertTextTo('imageCaption', '❓', '')" title="Hỏi đáp">❓</span>
-								</div>
-								<textarea class="form-control" id="imageCaption" rows="3" placeholder="Nhập chú thích cho hình ảnh..."></textarea>
+
+							<div class="d-flex gap-2">
+								<button class="btn btn-primary" onclick="sendMixedMessage()">
+									<span class="spinner-border spinner-border-sm d-none" id="contentSpinner" role="status" aria-hidden="true"></span>
+									Gửi tin nhắn
+								</button>
+								<button class="btn btn-outline-secondary" onclick="sendTextOnly()">
+									<span class="spinner-border spinner-border-sm d-none" id="textOnlySpinner" role="status" aria-hidden="true"></span>
+									Chỉ gửi văn bản
+								</button>
+								<button class="btn btn-outline-secondary" onclick="sendImageOnly()">
+									<span class="spinner-border spinner-border-sm d-none" id="imageOnlySpinner" role="status" aria-hidden="true"></span>
+									Chỉ gửi hình ảnh
+								</button>
 							</div>
-							<button class="btn btn-primary" onclick="sendImageMessage()">
-								<span class="spinner-border spinner-border-sm d-none" id="imageSpinner" role="status" aria-hidden="true"></span>
-								Gửi hình ảnh
-							</button>
 						</div>
 
 						<!-- Tab Bỏ phiếu -->
@@ -444,6 +436,209 @@
 				`;
 
 				optionsContainer.appendChild(newOption);
+			}
+
+			// Gửi tin nhắn hỗn hợp (văn bản + hình ảnh)
+			async function sendMixedMessage() {
+				const botToken = document.getElementById("botSelect").value;
+				const chatId = document.getElementById("chatSelect").value;
+				const message = document.getElementById("messageText").value.trim();
+				const fileInput = document.getElementById("imageInput");
+
+				if (!message && (!fileInput.files || fileInput.files.length === 0)) {
+					showAlert("Lỗi", "Vui lòng nhập nội dung tin nhắn hoặc chọn hình ảnh", "error");
+					return;
+				}
+
+				const btn = document.querySelector("#content button.btn-primary");
+				const spinner = document.getElementById("contentSpinner");
+				btn.disabled = true;
+				spinner.classList.remove("d-none");
+
+				try {
+					// Nếu có cả văn bản và hình ảnh
+					if (message && fileInput.files && fileInput.files.length > 0) {
+						// Gửi tin nhắn văn bản trước
+						if (message) {
+							await sendTelegramMessage(botToken, chatId, message);
+							addLog("Đã gửi tin nhắn văn bản", "success");
+						}
+
+						// Sau đó gửi hình ảnh (không có caption)
+						await sendImages(botToken, chatId, "", fileInput);
+					}
+					// Nếu chỉ có văn bản
+					else if (message) {
+						await sendTelegramMessage(botToken, chatId, message);
+						addLog("Đã gửi tin nhắn văn bản", "success");
+					}
+					// Nếu chỉ có hình ảnh
+					else if (fileInput.files && fileInput.files.length > 0) {
+						await sendImages(botToken, chatId, "", fileInput);
+					}
+
+					showAlert("Thành công", "Đã gửi tin nhắn thành công!", "success");
+				} catch (error) {
+					console.error("Lỗi khi gửi tin nhắn:", error);
+					addLog("Lỗi khi gửi tin nhắn: " + error.message, "error");
+					showAlert("Lỗi", "Không thể gửi tin nhắn: " + error.message, "error");
+				} finally {
+					btn.disabled = false;
+					spinner.classList.add("d-none");
+				}
+			}
+
+			// Chỉ gửi văn bản
+			async function sendTextOnly() {
+				const botToken = document.getElementById("botSelect").value;
+				const chatId = document.getElementById("chatSelect").value;
+				const message = document.getElementById("messageText").value.trim();
+
+				if (!message) {
+					showAlert("Lỗi", "Vui lòng nhập nội dung tin nhắn", "error");
+					return;
+				}
+
+				const btn = document.querySelector("#content button[onclick='sendTextOnly()']");
+				const spinner = document.getElementById("textOnlySpinner");
+				btn.disabled = true;
+				spinner.classList.remove("d-none");
+
+				try {
+					await sendTelegramMessage(botToken, chatId, message);
+					addLog("Đã gửi tin nhắn văn bản", "success");
+					showAlert("Thành công", "Đã gửi tin nhắn văn bản thành công!", "success");
+				} catch (error) {
+					console.error("Lỗi khi gửi tin nhắn:", error);
+					addLog("Lỗi khi gửi tin nhắn: " + error.message, "error");
+					showAlert("Lỗi", "Không thể gửi tin nhắn: " + error.message, "error");
+				} finally {
+					btn.disabled = false;
+					spinner.classList.add("d-none");
+				}
+			}
+
+			// Chỉ gửi hình ảnh
+			async function sendImageOnly() {
+				const botToken = document.getElementById("botSelect").value;
+				const chatId = document.getElementById("chatSelect").value;
+				const fileInput = document.getElementById("imageInput");
+
+				if (!fileInput.files || fileInput.files.length === 0) {
+					showAlert("Lỗi", "Vui lòng chọn ít nhất một hình ảnh", "error");
+					return;
+				}
+
+				const btn = document.querySelector("#content button[onclick='sendImageOnly()']");
+				const spinner = document.getElementById("imageOnlySpinner");
+				btn.disabled = true;
+				spinner.classList.remove("d-none");
+
+				try {
+					await sendImages(botToken, chatId, "", fileInput);
+					showAlert("Thành công", "Đã gửi hình ảnh thành công!", "success");
+				} catch (error) {
+					console.error("Lỗi khi gửi hình ảnh:", error);
+					addLog("Lỗi khi gửi hình ảnh: " + error.message, "error");
+					showAlert("Lỗi", "Không thể gửi hình ảnh: " + error.message, "error");
+				} finally {
+					btn.disabled = false;
+					spinner.classList.add("d-none");
+				}
+			}
+
+			// Hàm gửi hình ảnh (tách ra từ hàm sendImageMessage cũ)
+			async function sendImages(botToken, chatId, caption, fileInput) {
+				// Kiểm tra số lượng file
+				if (fileInput.files.length > 10) {
+					showAlert("Lỗi", "Chỉ được chọn tối đa 10 ảnh", "error");
+					return;
+				}
+
+				// Kiểm tra định dạng file
+				for (let file of fileInput.files) {
+					if (!file.type.startsWith("image/")) {
+						showAlert("Lỗi", "Vui lòng chỉ chọn file ảnh (jpg, png, ...)", "error");
+						return;
+					}
+				}
+
+				const formData = new FormData();
+
+				// Nếu chỉ có 1 ảnh, dùng sendPhoto
+				if (fileInput.files.length === 1) {
+					formData.append("chat_id", chatId);
+					formData.append("photo", fileInput.files[0]);
+					if (caption) {
+						formData.append("caption", caption);
+						formData.append("parse_mode", "HTML");
+					}
+
+					const response = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+						method: "POST",
+						body: formData,
+					});
+
+					const result = await response.json();
+
+					if (result.ok) {
+						addLog("Đã gửi 1 hình ảnh", "success");
+
+						// Lưu message_id
+						saveMessageLog({
+							type: "photo",
+							messageId: result.result.message_id,
+							chatId: chatId,
+							caption: caption,
+							fileCount: 1,
+							timestamp: new Date().toISOString(),
+						});
+					} else {
+						throw new Error(result.description || "Lỗi không xác định");
+					}
+				}
+				// Nếu nhiều ảnh, dùng sendMediaGroup
+				else {
+					const media = [];
+
+					for (let i = 0; i < fileInput.files.length; i++) {
+						formData.append(`photo${i}`, fileInput.files[i]);
+
+						media.push({
+							type: "photo",
+							media: `attach://photo${i}`,
+							caption: i === 0 ? caption : undefined,
+							parse_mode: i === 0 ? "HTML" : undefined,
+						});
+					}
+
+					formData.append("chat_id", chatId);
+					formData.append("media", JSON.stringify(media));
+
+					const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMediaGroup`, {
+						method: "POST",
+						body: formData,
+					});
+
+					const result = await response.json();
+
+					if (result.ok) {
+						addLog(`Đã gửi ${fileInput.files.length} hình ảnh`, "success");
+
+						// Lưu message_id của tất cả ảnh
+						const messageIds = result.result.map((item) => item.message_id);
+						saveMessageLog({
+							type: "media_group",
+							messageIds: messageIds,
+							chatId: chatId,
+							caption: caption,
+							fileCount: fileInput.files.length,
+							timestamp: new Date().toISOString(),
+						});
+					} else {
+						throw new Error(result.description || "Lỗi không xác định");
+					}
+				}
 			}
 
 			// Gửi tin nhắn văn bản
@@ -720,6 +915,22 @@
 				} catch (error) {
 					console.error("Lỗi khi đăng xuất:", error);
 					showAlert("Lỗi", "Không thể đăng xuất: " + error.message, "error");
+				}
+			}
+
+			// Hàm thêm log (hiển thị trong console)
+			function addLog(message, type = "info") {
+				const timestamp = new Date().toLocaleString("vi-VN");
+				console.log(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+			}
+
+			// Hàm lưu log tin nhắn vào Firestore
+			async function saveMessageLog(messageData) {
+				try {
+					await db.collection("message_logs").add(messageData);
+					console.log("Đã lưu log tin nhắn:", messageData);
+				} catch (error) {
+					console.error("Lỗi khi lưu log tin nhắn:", error);
 				}
 			}
 
