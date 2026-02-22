@@ -143,6 +143,8 @@ async function displayMovieDetails() {
     document.getElementById('movieYear').textContent = yearText + dateText;
     document.getElementById('movieDuration').textContent = currentMovie.time || 'Không rõ';
     document.getElementById("episodeProgress").textContent = formatEpisodeProgress(currentMovie.current_episode, currentMovie.total_episodes);
+    document.getElementById('movieCasts').textContent = currentMovie.casts || 'Không có thông tin diễn viên.';
+    document.getElementById('movieCategories').textContent = getCategoriesFromCategory(currentMovie.category) || 'Không có thông tin thể loại.';
     document.getElementById('movieDescription').textContent = currentMovie.content || currentMovie.description || 'Không có mô tả.';
     
     // Update breadcrumb
@@ -168,6 +170,17 @@ function getCategoriesFromCategory(category) {
         return categories.join(', ');
     } else if (category.list) {
         return category.list.map(cat => cat.name).join(', ');
+    } else if (typeof category === 'object') {
+        // Handle the new API structure with numeric keys
+        const categories = [];
+        Object.values(category).forEach(item => {
+            if (item.group && item.group.name === 'Thể loại' && item.list) {
+                item.list.forEach(cat => {
+                    if (cat.name) categories.push(cat.name);
+                });
+            }
+        });
+        return categories.join(', ');
     }
     
     return '';
