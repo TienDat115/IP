@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Hóa Đơn - Quản Lý Phòng Trọ</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+		<link href="style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container">
+				<a class="navbar-brand" href="index.html"> <i class="fas fa-home"></i> Quản Lý Phòng Trọ </a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="rooms.html"><i class="fas fa-door-open"></i> Phòng</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="tenants.html"><i class="fas fa-users"></i> Khách Thuê</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="utilities.html"><i class="fas fa-bolt"></i> Điện Nước</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" href="bills.html"><i class="fas fa-file-invoice"></i> Hóa Đơn</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="payments.html"><i class="fas fa-money-bill-wave"></i> Thanh Toán</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container mt-4">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h2><i class="fas fa-file-invoice"></i> Quản Lý Hóa Đơn</h2>
+				<div>
+					<button class="btn btn-success" onclick="generateAllBills()"><i class="fas fa-magic"></i> Tạo Tất Cả Hóa Đơn</button>
+					<button class="btn btn-primary ms-2" onclick="exportBills()"><i class="fas fa-download"></i> Xuất Excel</button>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<div class="col-md-3">
+					<select class="form-select" id="filterRoom">
+						<option value="">Tất cả phòng</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<select class="form-select" id="filterMonth">
+						<option value="">Tất cả tháng</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<select class="form-select" id="filterYear">
+						<option value="">Tất cả năm</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<select class="form-select" id="filterStatus">
+						<option value="">Tất cả trạng thái</option>
+						<option value="pending">Chưa thanh toán</option>
+						<option value="partial">Thanh toán một phần</option>
+						<option value="paid">Đã thanh toán</option>
+						<option value="overdue">Quá hạn</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Mã HĐ</th>
+							<th>Phòng</th>
+							<th>Khách Thuê</th>
+							<th>Kỳ</th>
+							<th>Tiền Phòng</th>
+							<th>Tiền Điện</th>
+							<th>Tiền Nước</th>
+							<th>Phí Dịch Vụ</th>
+							<th>Tổng Cộng</th>
+							<th>Đã Trả</th>
+							<th>Còn Lại</th>
+							<th>Trạng Thái</th>
+							<th>Hạn Đóng</th>
+							<th>Thao Tác</th>
+						</tr>
+					</thead>
+					<tbody id="billsList"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Modal Chi Tiết Hóa Đơn -->
+		<div class="modal fade" id="billDetailModal" tabindex="-1">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Chi Tiết Hóa Đơn</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body" id="billDetailContent"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+						<button type="button" class="btn btn-primary" onclick="printBill()"><i class="fas fa-print"></i> In Hóa Đơn</button>
+						<button type="button" class="btn btn-success" onclick="recordPayment()"><i class="fas fa-money-bill-wave"></i> Ghi Nhận Thanh Toán</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal Ghi Nhận Thanh Toán -->
+		<div class="modal fade" id="paymentModal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Ghi Nhận Thanh Toán</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<form id="paymentForm">
+							<input type="hidden" id="paymentBillId" />
+							<div class="mb-3">
+								<label class="form-label">Số tiền thanh toán (VNĐ)</label>
+								<input type="number" class="form-control" id="paymentAmount" required />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Phương thức thanh toán</label>
+								<select class="form-select" id="paymentMethod" required>
+									<option value="cash">Tiền mặt</option>
+									<option value="transfer">Chuyển khoản</option>
+									<option value="momo">MoMo</option>
+									<option value="zalopay">ZaloPay</option>
+								</select>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Ngày thanh toán</label>
+								<input type="date" class="form-control" id="paymentDate" required />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Ghi chú</label>
+								<textarea class="form-control" id="paymentNotes" rows="3"></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="button" class="btn btn-primary" onclick="savePayment()">Lưu Thanh Toán</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Hóa Đơn In -->
+		<div id="printableBill" style="display: none">
+			<div class="bill-container">
+				<div class="bill-header text-center mb-4">
+					<h3>PHIẾU THU TIỀN PHÒNG TRỌ</h3>
+					<p><strong>Chủ trọ:</strong> <span id="billOwnerName"></span></p>
+					<p><strong>Địa chỉ:</strong> <span id="billOwnerAddress"></span></p>
+					<p><strong>SĐT:</strong> <span id="billOwnerPhone"></span></p>
+					<hr />
+				</div>
+				<div class="bill-info mb-3">
+					<p><strong>Mã hóa đơn:</strong> <span id="billCode"></span></p>
+					<p><strong>Ngày lập:</strong> <span id="billDate"></span></p>
+					<p><strong>Khách thuê:</strong> <span id="billTenantName"></span></p>
+					<p><strong>Phòng:</strong> <span id="billRoomNumber"></span></p>
+					<p><strong>Kỳ thanh toán:</strong> <span id="billPeriod"></span></p>
+				</div>
+				<div class="bill-details">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Hạng mục</th>
+								<th>Số lượng</th>
+								<th>Đơn giá</th>
+								<th>Thành tiền</th>
+							</tr>
+						</thead>
+						<tbody id="billDetailsBody"></tbody>
+						<tfoot>
+							<tr>
+								<td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+								<td><strong id="billTotal"></strong></td>
+							</tr>
+							<tr>
+								<td colspan="3" class="text-end"><strong>Đã trả:</strong></td>
+								<td><strong id="billPaid"></strong></td>
+							</tr>
+							<tr>
+								<td colspan="3" class="text-end"><strong>Còn lại:</strong></td>
+								<td><strong id="billRemaining"></strong></td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+				<div class="bill-footer mt-4">
+					<div class="row">
+						<div class="col-6 text-center">
+							<p>Khách thuê</p>
+							<p><em>(Ký và ghi rõ họ tên)</em></p>
+							<br /><br /><br />
+							<p id="billTenantSignature"></p>
+						</div>
+						<div class="col-6 text-center">
+							<p>Chủ trọ</p>
+							<p><em>(Ký và ghi rõ họ tên)</em></p>
+							<br /><br /><br />
+							<p id="billOwnerSignature"></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Khách Thuê - Quản Lý Phòng Trọ</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+		<link href="style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container">
+				<a class="navbar-brand" href="index.html"> <i class="fas fa-home"></i> Quản Lý Phòng Trọ </a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="rooms.html"><i class="fas fa-door-open"></i> Phòng</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" href="tenants.html"><i class="fas fa-users"></i> Khách Thuê</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="utilities.html"><i class="fas fa-bolt"></i> Điện Nước</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="bills.html"><i class="fas fa-file-invoice"></i> Hóa Đơn</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="payments.html"><i class="fas fa-money-bill-wave"></i> Thanh Toán</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container mt-4">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h2><i class="fas fa-users"></i> Quản Lý Khách Thuê</h2>
+				<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTenantModal"><i class="fas fa-plus"></i> Thêm Khách Thuê Mới</button>
+			</div>
+
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<div class="input-group">
+						<span class="input-group-text"><i class="fas fa-search"></i></span>
+						<input type="text" class="form-control" id="searchTenant" placeholder="Tìm kiếm khách thuê..." />
+					</div>
+				</div>
+				<div class="col-md-3">
+					<select class="form-select" id="filterRoom">
+						<option value="">Tất cả phòng</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<select class="form-select" id="filterStatus">
+						<option value="">Tất cả trạng thái</option>
+						<option value="active">Đang thuê</option>
+						<option value="inactive">Đã rời đi</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Họ Tên</th>
+							<th>Số Điện Thoại</th>
+							<th>CCCD</th>
+							<th>Phòng</th>
+							<th>Ngày Bắt Đầu</th>
+							<th>Trạng Thái</th>
+							<th>Thao Tác</th>
+						</tr>
+					</thead>
+					<tbody id="tenantsList"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Modal Thêm Khách Thuê -->
+		<div class="modal fade" id="addTenantModal" tabindex="-1">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm Khách Thuê Mới</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<form id="addTenantForm">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Họ và tên</label>
+										<input type="text" class="form-control" id="tenantName" required />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Số điện thoại</label>
+										<input type="tel" class="form-control" id="tenantPhone" required />
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">CCCD/CMND</label>
+										<input type="text" class="form-control" id="tenantIdCard" required />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Ngày sinh</label>
+										<input type="date" class="form-control" id="tenantBirthdate" required />
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Phòng</label>
+										<select class="form-select" id="tenantRoom" required>
+											<option value="">Chọn phòng</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Ngày bắt đầu thuê</label>
+										<input type="date" class="form-control" id="tenantStartDate" required />
+									</div>
+								</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Địa chỉ thường trú</label>
+								<input type="text" class="form-control" id="tenantAddress" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Email</label>
+								<input type="email" class="form-control" id="tenantEmail" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Ghi chú</label>
+								<textarea class="form-control" id="tenantNotes" rows="3"></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="button" class="btn btn-primary" onclick="addTenant()">Thêm Khách Thuê</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal Chỉnh Sửa Khách Thuê -->
+		<div class="modal fade" id="editTenantModal" tabindex="-1">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Chỉnh Sửa Thông Tin Khách Thuê</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<form id="editTenantForm">
+							<input type="hidden" id="editTenantId" />
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Họ và tên</label>
+										<input type="text" class="form-control" id="editTenantName" required />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Số điện thoại</label>
+										<input type="tel" class="form-control" id="editTenantPhone" required />
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">CCCD/CMND</label>
+										<input type="text" class="form-control" id="editTenantIdCard" required />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Ngày sinh</label>
+										<input type="date" class="form-control" id="editTenantBirthdate" required />
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Phòng</label>
+										<select class="form-select" id="editTenantRoom" required>
+											<option value="">Chọn phòng</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Trạng thái</label>
+										<select class="form-select" id="editTenantStatus">
+											<option value="active">Đang thuê</option>
+											<option value="inactive">Đã rời đi</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Địa chỉ thường trú</label>
+								<input type="text" class="form-control" id="editTenantAddress" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Email</label>
+								<input type="email" class="form-control" id="editTenantEmail" />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Ghi chú</label>
+								<textarea class="form-control" id="editTenantNotes" rows="3"></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<button type="button" class="btn btn-primary" onclick="updateTenant()">Cập Nhật</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>

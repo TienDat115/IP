@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Quản Lý Phòng Trọ</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+		<link href="style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container">
+				<a class="navbar-brand" href="index.html"> <i class="fas fa-home"></i> Quản Lý Phòng Trọ </a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="rooms.html"><i class="fas fa-door-open"></i> Phòng</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="tenants.html"><i class="fas fa-users"></i> Khách Thuê</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="utilities.html"><i class="fas fa-bolt"></i> Điện Nước</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="bills.html"><i class="fas fa-file-invoice"></i> Hóa Đơn</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="payments.html"><i class="fas fa-money-bill-wave"></i> Thanh Toán</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container mt-4">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="card bg-primary text-white">
+						<div class="card-body">
+							<h5 class="card-title"><i class="fas fa-door-open"></i> Tổng Phòng</h5>
+							<h2 id="totalRooms">0</h2>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-success text-white">
+						<div class="card-body">
+							<h5 class="card-title"><i class="fas fa-check-circle"></i> Phòng Trống</h5>
+							<h2 id="availableRooms">0</h2>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-warning text-white">
+						<div class="card-body">
+							<h5 class="card-title"><i class="fas fa-users"></i> Khách Thuê</h5>
+							<h2 id="totalTenants">0</h2>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-danger text-white">
+						<div class="card-body">
+							<h5 class="card-title"><i class="fas fa-money-bill-wave"></i> Thu Tháng Này</h5>
+							<h2 id="monthlyRevenue">0đ</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row mt-4">
+				<div class="col-md-6">
+					<div class="card">
+						<div class="card-header">
+							<h5><i class="fas fa-clock"></i> Hoạt Động Gần Đây</h5>
+						</div>
+						<div class="card-body">
+							<div id="recentActivities">
+								<p class="text-muted">Chưa có hoạt động nào</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="card">
+						<div class="card-header">
+							<h5><i class="fas fa-exclamation-triangle"></i> Cần Thu Tiền</h5>
+						</div>
+						<div class="card-body">
+							<div id="pendingPayments">
+								<p class="text-muted">Không có khoản thanh toán nào cần thu</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row mt-4">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-header">
+							<h5><i class="fas fa-chart-bar"></i> Thống Kê Thu Nhập</h5>
+						</div>
+						<div class="card-body">
+							<canvas id="revenueChart" width="400" height="100"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>
