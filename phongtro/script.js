@@ -27,7 +27,12 @@ let utilities = [];
 let bills = [];
 let payments = [];
 let settings = {
-    electricPrice: 3500,
+    electricPrice: [
+        { min: 0, max: 50, price: 2000 },      // 50 kWh đầu giá 2000
+        { min: 51, max: 100, price: 2500 },    // 51-100 kWh giá 2500
+        { min: 101, max: 200, price: 3000 },    // 101-200 kWh giá 3000
+        { min: 201, max: null, price: 3500 }    // Trên 200 kWh giá 3500
+    ],
     waterPrice: 25000,
     serviceFee: 100000,
     ownerName: 'Chủ Trọ',
@@ -61,9 +66,12 @@ async function initializeApp() {
             break;
         case 'tenants.html':
             loadTenants();
+            loadRooms();
             break;
         case 'utilities.html':
             loadUtilities();
+            loadRooms();
+            loadPriceConfig();
             break;
         case 'bills.html':
             loadBills();
@@ -505,6 +513,7 @@ function editTenant(tenantId) {
     document.getElementById('editTenantEmail').value = tenant.email;
     document.getElementById('editTenantNotes').value = tenant.notes;
     
+    updateRoomSelects();
     openModal('editTenantModal');
 }
 
@@ -653,7 +662,7 @@ function updateRoomSelects() {
         const currentValue = select.value;
         select.innerHTML = '<option value="">Chọn phòng</option>';
         
-        rooms.filter(room => room.status === 'available' || select.id.includes('filter')).forEach(room => {
+        rooms.filter(room => room.status === 'available' || select.id.includes('edit') || select.id.includes('filter') || select.id.includes('utility')).forEach(room => {
             const option = document.createElement('option');
             option.value = room.id;
             option.textContent = `Phòng ${room.number} - ${formatCurrency(room.price)}`;
@@ -668,26 +677,409 @@ function updateTenantSelects() {
     // Update tenant selects if needed
 }
 
-// Initialize sample data
-async function initializeSampleData() {
-    if (rooms.length === 0) {
-        // Sample rooms
-        for (let i = 1; i <= 6; i++) {
-            const room = {
-                number: i.toString(),
-                price: 1500000 + (i * 100000),
-                area: 20 + (i * 2),
-                type: i <= 2 ? 'single' : i <= 4 ? 'double' : 'deluxe',
-                description: `Phòng ${i} description`,
-                status: i <= 3 ? 'occupied' : 'available',
-                createdAt: new Date().toISOString()
-            };
-            await addRoomToFirebase(room);
+// Calculate electricity cost based on tiered pricing
+function calculateElectricityCost(kwh) {
+    let totalCost = 0;
+    let remainingKwh = kwh;
+    
+    for (const tier of settings.electricPrice) {
+        if (remainingKwh <= 0) break;
+        
+        const tierRange = tier.max ? tier.max - tier.min + 1 : remainingKwh;
+        const kwhInTier = Math.min(remainingKwh, tierRange);
+        
+        totalCost += kwhInTier * tier.price;
+        remainingKwh -= kwhInTier;
+    }
+    
+    return totalCost;
+}
+
+// Utility Management
+function loadUtilities() {
+    const utilitiesList = document.getElementById('utilitiesList');
+    if (!utilitiesList) return;
+    
+    utilitiesList.innerHTML = '';
+    
+    utilities.forEach(utility => {
+        const row = document.createElement('tr');
+        const room = rooms.find(r => r.id === utility.roomId);
+        const electricUsage = utility.newElectric - utility.oldElectric;
+        const waterUsage = utility.newWater - utility.oldWater;
+        const electricCost = calculateElectricityCost(electricUsage);
+        const waterCost = waterUsage * settings.waterPrice;
+        const totalCost = electricCost + waterCost;
+        
+        row.innerHTML = `
+            <td>${room ? room.number : 'N/A'}</td>
+            <td>Tháng ${utility.month}/${utility.year}</td>
+            <td>${utility.oldElectric}</td>
+            <td>${utility.newElectric}</td>
+            <td>${electricUsage} kWh</td>
+            <td>${utility.oldWater}</td>
+            <td>${utility.newWater}</td>
+            <td>${waterUsage} m³</td>
+            <td>${formatCurrency(totalCost)}</td>
+            <td><span class="badge bg-success">Đã thanh toán</span></td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="editUtility('${utility.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUtility('${utility.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        
+        utilitiesList.appendChild(row);
+    });
+    
+    // Update room selects
+    updateRoomSelects();
+}
+
+async function addUtility() {
+    const utility = {
+        roomId: document.getElementById('utilityRoom').value,
+        month: parseInt(document.getElementById('utilityMonth').value),
+        year: parseInt(document.getElementById('utilityYear').value),
+        oldElectric: parseInt(document.getElementById('oldElectric').value),
+        newElectric: parseInt(document.getElementById('newElectric').value),
+        oldWater: parseInt(document.getElementById('oldWater').value),
+        newWater: parseInt(document.getElementById('newWater').value),
+        notes: document.getElementById('utilityNotes').value,
+        createdAt: new Date().toISOString()
+    };
+    
+    try {
+        await addUtilityToFirebase(utility);
+        loadUtilities();
+        closeModal('addUtilityModal');
+        showNotification('Ghi chỉ số thành công!', 'success');
+    } catch (error) {
+        showNotification('Lỗi ghi chỉ số: ' + error.message, 'error');
+    }
+}
+
+function editUtility(utilityId) {
+    const utility = utilities.find(u => u.id === utilityId);
+    if (!utility) return;
+    
+    // Fill edit form with utility data
+    document.getElementById('utilityRoom').value = utility.roomId;
+    document.getElementById('utilityMonth').value = utility.month;
+    document.getElementById('utilityYear').value = utility.year;
+    document.getElementById('oldElectric').value = utility.oldElectric;
+    document.getElementById('newElectric').value = utility.newElectric;
+    document.getElementById('oldWater').value = utility.oldWater;
+    document.getElementById('newWater').value = utility.newWater;
+    document.getElementById('utilityNotes').value = utility.notes;
+    
+    openModal('addUtilityModal');
+}
+
+async function deleteUtility(utilityId) {
+    if (confirm('Bạn có chắc muốn xóa bản ghi này?')) {
+        try {
+            await deleteUtilityFromFirebase(utilityId);
+            loadUtilities();
+            showNotification('Xóa bản ghi thành công!', 'success');
+        } catch (error) {
+            showNotification('Lỗi xóa bản ghi: ' + error.message, 'error');
         }
     }
 }
 
-// Call initialize sample data when page loads
-window.addEventListener('load', () => {
-    setTimeout(initializeSampleData, 1000);
+async function deleteUtilityFromFirebase(utilityId) {
+    try {
+        await db.collection('utilities').doc(utilityId).delete();
+        utilities = utilities.filter(u => u.id !== utilityId);
+    } catch (error) {
+        console.error('Error deleting utility from Firebase:', error);
+        throw error;
+    }
+}
+
+function savePriceConfig() {
+    settings.electricPrice = [
+        { min: 0, max: 50, price: parseInt(document.getElementById('electricPrice1').value) },
+        { min: 51, max: 100, price: parseInt(document.getElementById('electricPrice2').value) },
+        { min: 101, max: 200, price: parseInt(document.getElementById('electricPrice3').value) },
+        { min: 201, max: null, price: parseInt(document.getElementById('electricPrice4').value) }
+    ];
+    settings.waterPrice = parseInt(document.getElementById('waterPrice').value);
+    settings.serviceFee = parseInt(document.getElementById('serviceFee').value);
+    
+    // Save to Firebase or localStorage
+    localStorage.setItem('settings', JSON.stringify(settings));
+    
+    closeModal('priceConfigModal');
+    showNotification('Lưu cấu hình giá thành công!', 'success');
+    
+    // Refresh utilities list to recalculate costs
+    if (document.getElementById('utilitiesList')) {
+        loadUtilities();
+    }
+}
+
+function loadPriceConfig() {
+    // Load saved settings or use defaults
+    const savedSettings = localStorage.getItem('settings');
+    if (savedSettings) {
+        settings = JSON.parse(savedSettings);
+    }
+    
+    // Update price config form
+    if (document.getElementById('electricPrice1')) {
+        document.getElementById('electricPrice1').value = settings.electricPrice[0].price;
+        document.getElementById('electricPrice2').value = settings.electricPrice[1].price;
+        document.getElementById('electricPrice3').value = settings.electricPrice[2].price;
+        document.getElementById('electricPrice4').value = settings.electricPrice[3].price;
+        document.getElementById('waterPrice').value = settings.waterPrice;
+        document.getElementById('serviceFee').value = settings.serviceFee;
+    }
+}
+
+// Add event listeners for modals
+document.addEventListener('DOMContentLoaded', function() {
+    // Listen for modal show events
+    document.getElementById('addUtilityModal')?.addEventListener('show.bs.modal', function () {
+        updateRoomSelects();
+    });
+    
+    document.getElementById('priceConfigModal')?.addEventListener('show.bs.modal', function () {
+        loadPriceConfig();
+    });
 });
+
+// Generate bills from utilities
+async function generateBills() {
+    try {
+        // Get current month and year
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear();
+        
+        // Find utilities for current month that don't have bills yet
+        const currentUtilities = utilities.filter(u => 
+            u.month === currentMonth && 
+            u.year === currentYear &&
+            !bills.some(b => b.utilityId === u.id)
+        );
+        
+        if (currentUtilities.length === 0) {
+            showNotification('Không có dữ liệu điện nước cho tháng này hoặc hóa đơn đã được tạo!', 'warning');
+            return;
+        }
+        
+        // Generate bills for each utility
+        for (const utility of currentUtilities) {
+            const room = rooms.find(r => r.id === utility.roomId);
+            const tenant = tenants.find(t => t.roomId === utility.roomId && t.status === 'active');
+            
+            if (!room || !tenant) continue;
+            
+            const electricUsage = utility.newElectric - utility.oldElectric;
+            const waterUsage = utility.newWater - utility.oldWater;
+            const electricCost = calculateElectricityCost(electricUsage);
+            const waterCost = waterUsage * settings.waterPrice;
+            const totalAmount = room.price + electricCost + waterCost + settings.serviceFee;
+            
+            const bill = {
+                utilityId: utility.id,
+                roomId: utility.roomId,
+                tenantId: tenant.id,
+                month: utility.month,
+                year: utility.year,
+                roomPrice: room.price,
+                electricUsage: electricUsage,
+                electricCost: electricCost,
+                waterUsage: waterUsage,
+                waterCost: waterCost,
+                serviceFee: settings.serviceFee,
+                totalAmount: totalAmount,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            await addBillToFirebase(bill);
+        }
+        
+        loadBills();
+        showNotification(`Đã tạo ${currentUtilities.length} hóa đơn thành công!`, 'success');
+        
+    } catch (error) {
+        console.error('Error generating bills:', error);
+        showNotification('Lỗi tạo hóa đơn: ' + error.message, 'error');
+    }
+}
+
+// Generate all bills for all rooms with utilities data
+async function generateAllBills() {
+    try {
+        // Get current month and year
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear();
+        
+        // Find all utilities that don't have bills yet
+        const availableUtilities = utilities.filter(u => 
+            !bills.some(b => b.utilityId === u.id)
+        );
+        
+        if (availableUtilities.length === 0) {
+            showNotification('Không có dữ liệu điện nước nào chưa tạo hóa đơn!', 'warning');
+            return;
+        }
+        
+        let billsCreated = 0;
+        
+        // Generate bills for each utility
+        for (const utility of availableUtilities) {
+            const room = rooms.find(r => r.id === utility.roomId);
+            const tenant = tenants.find(t => t.roomId === utility.roomId && t.status === 'active');
+            
+            if (!room || !tenant) continue;
+            
+            const electricUsage = utility.newElectric - utility.oldElectric;
+            const waterUsage = utility.newWater - utility.oldWater;
+            const electricCost = calculateElectricityCost(electricUsage);
+            const waterCost = waterUsage * settings.waterPrice;
+            const totalAmount = room.price + electricCost + waterCost + settings.serviceFee;
+            
+            const bill = {
+                utilityId: utility.id,
+                roomId: utility.roomId,
+                tenantId: tenant.id,
+                month: utility.month,
+                year: utility.year,
+                roomPrice: room.price,
+                electricUsage: electricUsage,
+                electricCost: electricCost,
+                waterUsage: waterUsage,
+                waterCost: waterCost,
+                serviceFee: settings.serviceFee,
+                totalAmount: totalAmount,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            await addBillToFirebase(bill);
+            billsCreated++;
+        }
+        
+        loadBills();
+        showNotification(`Đã tạo ${billsCreated} hóa đơn thành công!`, 'success');
+        
+    } catch (error) {
+        console.error('Error generating all bills:', error);
+        showNotification('Lỗi tạo hóa đơn: ' + error.message, 'error');
+    }
+}
+// Bill Management
+function loadBills() {
+    const billsList = document.getElementById('billsList');
+    if (!billsList) return;
+    
+    billsList.innerHTML = '';
+    
+    bills.forEach(bill => {
+        const row = document.createElement('tr');
+        const room = rooms.find(r => r.id === bill.roomId);
+        const tenant = tenants.find(t => t.id === bill.tenantId);
+        
+        const statusClass = bill.status === 'paid' ? 'bg-success' : 'bg-warning';
+        const statusText = bill.status === 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán';
+        
+        row.innerHTML = `
+            <td>${tenant ? tenant.name : 'N/A'}</td>
+            <td>${room ? room.number : 'N/A'}</td>
+            <td>Tháng ${bill.month}/${bill.year}</td>
+            <td>${formatCurrency(bill.roomPrice)}</td>
+            <td>${bill.electricUsage} kWh</td>
+            <td>${formatCurrency(bill.electricCost)}</td>
+            <td>${bill.waterUsage} m³</td>
+            <td>${formatCurrency(bill.waterCost)}</td>
+            <td>${formatCurrency(bill.serviceFee)}</td>
+            <td><strong>${formatCurrency(bill.totalAmount)}</strong></td>
+            <td><span class="badge ${statusClass}">${statusText}</span></td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="viewBill('${bill.id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-success" onclick="payBill('${bill.id}')" ${bill.status === 'paid' ? 'disabled' : ''}>
+                    <i class="fas fa-money-bill"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteBill('${bill.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        
+        billsList.appendChild(row);
+    });
+}
+
+function viewBill(billId) {
+    const bill = bills.find(b => b.id === billId);
+    if (!bill) return;
+    
+    const room = rooms.find(r => r.id === bill.roomId);
+    const tenant = tenants.find(t => t.id === bill.tenantId);
+    
+    const billDetails = `
+        Chi tiết hóa đơn
+        Khách thuê: ${tenant ? tenant.name : 'N/A'}
+        Phòng: ${room ? room.number : 'N/A'}
+        Tháng/Năm: Tháng ${bill.month}/${bill.year}
+        ----------------------------------------
+        Tiền phòng: ${formatCurrency(bill.roomPrice)}
+        Tiền điện (${bill.electricUsage} kWh): ${formatCurrency(bill.electricCost)}
+        Tiền nước (${bill.waterUsage} m³): ${formatCurrency(bill.waterCost)}
+        Phí dịch vụ: ${formatCurrency(bill.serviceFee)}
+        ----------------------------------------
+        Tổng cộng: ${formatCurrency(bill.totalAmount)}
+        Trạng thái: ${bill.status === 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán'}
+    `;
+    
+    alert(billDetails);
+}
+
+async function payBill(billId) {
+    if (confirm('Xác nhận thanh toán hóa đơn này?')) {
+        try {
+            await updateBillStatus(billId, 'paid');
+            showNotification('Thanh toán hóa đơn thành công!', 'success');
+        } catch (error) {
+            showNotification('Lỗi thanh toán: ' + error.message, 'error');
+        }
+    }
+}
+
+async function updateBillStatus(billId, status) {
+    try {
+        await db.collection('bills').doc(billId).update({ status: status });
+        const bill = bills.find(b => b.id === billId);
+        if (bill) {
+            bill.status = status;
+        }
+        loadBills();
+    } catch (error) {
+        console.error('Error updating bill status:', error);
+        throw error;
+    }
+}
+
+async function deleteBill(billId) {
+    if (confirm('Bạn có chắc muốn xóa hóa đơn này?')) {
+        try {
+            await db.collection('bills').doc(billId).delete();
+            bills = bills.filter(b => b.id !== billId);
+            loadBills();
+            showNotification('Xóa hóa đơn thành công!', 'success');
+        } catch (error) {
+            showNotification('Lỗi xóa hóa đơn: ' + error.message, 'error');
+        }
+    }
+}
