@@ -53,7 +53,7 @@ async function initializeApp() {
     });
     
     // Load data from Firebase
-    await loadDataFromFirebase();
+    await loadData();
     
     // Load data based on current page
     const currentPage = window.location.pathname.split('/').pop();
@@ -82,27 +82,23 @@ async function initializeApp() {
     }
 }
 
-// Firebase Data Loading Functions
-async function loadDataFromFirebase() {
+// Firebase Load Functions
+async function loadData() {
     try {
-        const roomsSnapshot = await db.collection('rooms').get();
-        rooms = roomsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Load data from phongtro collection
+        const phongtroDoc = await db.collection('phongtro').doc('data').get();
         
-        const tenantsSnapshot = await db.collection('tenants').get();
-        tenants = tenantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        const utilitiesSnapshot = await db.collection('utilities').get();
-        utilities = utilitiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        const billsSnapshot = await db.collection('bills').get();
-        bills = billsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        const paymentsSnapshot = await db.collection('payments').get();
-        payments = paymentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        const settingsDoc = await db.collection('settings').doc('config').get();
-        if (settingsDoc.exists) {
-            settings = settingsDoc.data();
+        if (phongtroDoc.exists) {
+            const data = phongtroDoc.data();
+            rooms = data.rooms || [];
+            tenants = data.tenants || [];
+            utilities = data.utilities || [];
+            bills = data.bills || [];
+            payments = data.payments || [];
+            settings = data.settings || settings;
+        } else {
+            // Initialize with empty data if not exists
+            await saveData();
         }
     } catch (error) {
         console.error('Error loading data from Firebase:', error);
@@ -113,48 +109,17 @@ async function loadDataFromFirebase() {
 // Firebase Save Functions
 async function saveData() {
     try {
-        // Save rooms
-        const roomsBatch = db.batch();
-        rooms.forEach(room => {
-            const docRef = db.collection('rooms').doc(room.id);
-            roomsBatch.set(docRef, room);
-        });
-        await roomsBatch.commit();
+        // Save all data to single phongtro document
+        const data = {
+            rooms: rooms,
+            tenants: tenants,
+            utilities: utilities,
+            bills: bills,
+            payments: payments,
+            settings: settings
+        };
         
-        // Save tenants
-        const tenantsBatch = db.batch();
-        tenants.forEach(tenant => {
-            const docRef = db.collection('tenants').doc(tenant.id);
-            tenantsBatch.set(docRef, tenant);
-        });
-        await tenantsBatch.commit();
-        
-        // Save utilities
-        const utilitiesBatch = db.batch();
-        utilities.forEach(utility => {
-            const docRef = db.collection('utilities').doc(utility.id);
-            utilitiesBatch.set(docRef, utility);
-        });
-        await utilitiesBatch.commit();
-        
-        // Save bills
-        const billsBatch = db.batch();
-        bills.forEach(bill => {
-            const docRef = db.collection('bills').doc(bill.id);
-            billsBatch.set(docRef, bill);
-        });
-        await billsBatch.commit();
-        
-        // Save payments
-        const paymentsBatch = db.batch();
-        payments.forEach(payment => {
-            const docRef = db.collection('payments').doc(payment.id);
-            paymentsBatch.set(docRef, payment);
-        });
-        await paymentsBatch.commit();
-        
-        // Save settings
-        await db.collection('settings').doc('config').set(settings);
+        await db.collection('phongtro').doc('data').set(data);
         
     } catch (error) {
         console.error('Error saving data to Firebase:', error);
@@ -165,9 +130,9 @@ async function saveData() {
 // Firebase Add Functions
 async function addRoomToFirebase(room) {
     try {
-        const docRef = await db.collection('rooms').add(room);
-        room.id = docRef.id;
+        room.id = generateId();
         rooms.push(room);
+        await saveData();
         return room;
     } catch (error) {
         console.error('Error adding room to Firebase:', error);
@@ -177,9 +142,9 @@ async function addRoomToFirebase(room) {
 
 async function addTenantToFirebase(tenant) {
     try {
-        const docRef = await db.collection('tenants').add(tenant);
-        tenant.id = docRef.id;
+        tenant.id = generateId();
         tenants.push(tenant);
+        await saveData();
         return tenant;
     } catch (error) {
         console.error('Error adding tenant to Firebase:', error);
@@ -189,9 +154,9 @@ async function addTenantToFirebase(tenant) {
 
 async function addUtilityToFirebase(utility) {
     try {
-        const docRef = await db.collection('utilities').add(utility);
-        utility.id = docRef.id;
+        utility.id = generateId();
         utilities.push(utility);
+        await saveData();
         return utility;
     } catch (error) {
         console.error('Error adding utility to Firebase:', error);
@@ -201,9 +166,9 @@ async function addUtilityToFirebase(utility) {
 
 async function addBillToFirebase(bill) {
     try {
-        const docRef = await db.collection('bills').add(bill);
-        bill.id = docRef.id;
+        bill.id = generateId();
         bills.push(bill);
+        await saveData();
         return bill;
     } catch (error) {
         console.error('Error adding bill to Firebase:', error);
@@ -213,9 +178,9 @@ async function addBillToFirebase(bill) {
 
 async function addPaymentToFirebase(payment) {
     try {
-        const docRef = await db.collection('payments').add(payment);
-        payment.id = docRef.id;
+        payment.id = generateId();
         payments.push(payment);
+        await saveData();
         return payment;
     } catch (error) {
         console.error('Error adding payment to Firebase:', error);
@@ -226,10 +191,10 @@ async function addPaymentToFirebase(payment) {
 // Firebase Update Functions
 async function updateRoomInFirebase(roomId, roomData) {
     try {
-        await db.collection('rooms').doc(roomId).update(roomData);
         const index = rooms.findIndex(r => r.id === roomId);
         if (index !== -1) {
             rooms[index] = { ...rooms[index], ...roomData };
+            await saveData();
         }
     } catch (error) {
         console.error('Error updating room in Firebase:', error);
@@ -239,10 +204,10 @@ async function updateRoomInFirebase(roomId, roomData) {
 
 async function updateTenantInFirebase(tenantId, tenantData) {
     try {
-        await db.collection('tenants').doc(tenantId).update(tenantData);
         const index = tenants.findIndex(t => t.id === tenantId);
         if (index !== -1) {
             tenants[index] = { ...tenants[index], ...tenantData };
+            await saveData();
         }
     } catch (error) {
         console.error('Error updating tenant in Firebase:', error);
@@ -250,11 +215,25 @@ async function updateTenantInFirebase(tenantId, tenantData) {
     }
 }
 
+async function updateBillStatus(billId, status) {
+    try {
+        const index = bills.findIndex(b => b.id === billId);
+        if (index !== -1) {
+            bills[index].status = status;
+            await saveData();
+        }
+        loadBills();
+    } catch (error) {
+        console.error('Error updating bill status:', error);
+        throw error;
+    }
+}
+
 // Firebase Delete Functions
 async function deleteRoomFromFirebase(roomId) {
     try {
-        await db.collection('rooms').doc(roomId).delete();
         rooms = rooms.filter(r => r.id !== roomId);
+        await saveData();
     } catch (error) {
         console.error('Error deleting room from Firebase:', error);
         throw error;
