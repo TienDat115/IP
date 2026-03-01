@@ -1,5 +1,10 @@
 // CinePhim - Watch History Page JavaScript
 
+// Pagination variables
+let currentPage = 1;
+const itemsPerPage = 10;
+let totalPages = 1;
+
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         loadWatchHistory();
@@ -59,10 +64,12 @@ async function loadWatchHistory() {
         }
         
         displayWatchHistory();
+        updatePagination();
     } catch (error) {
         console.error('Error loading watch history:', error);
         watchHistory = [];
         displayWatchHistory();
+        updatePagination();
     }
 }
 
@@ -105,6 +112,7 @@ async function clearWatchHistory() {
         }
         
         displayWatchHistory();
+        updatePagination();
         
         Swal.fire({
             icon: 'success',
@@ -133,12 +141,20 @@ function displayWatchHistory() {
         
         if (!watchHistory || watchHistory.length === 0) {
             container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400"><i class="fas fa-history text-4xl mb-4"></i><p>Không có dữ liệu lịch sử</p></div>';
+            document.getElementById('pagination').innerHTML = '';
             return;
         }
         
+        // Calculate pagination
+        totalPages = Math.ceil(watchHistory.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const currentItems = watchHistory.slice(startIndex, endIndex);
+        
         let html = '';
-        watchHistory.forEach((item, index) => {
-            console.log('Building HTML for item ' + index + ':', item);
+        currentItems.forEach((item, index) => {
+            const actualIndex = startIndex + index;
+            console.log('Building HTML for item ' + actualIndex + ':', item);
             html += '<div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail(\'' + item.movieSlug + '\')">';
             html += '<div class="absolute top-2 right-2 z-10">';
             html += '<button onclick="event.stopPropagation(); removeFromWatchHistory(\'' + item.movieSlug + '\')" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">';
@@ -148,7 +164,7 @@ function displayWatchHistory() {
             html += '<i class="fas fa-history text-gray-300 mr-1"></i>' + formatWatchTime(item.watchedAt);
             html += '</div>';
             html += '<div class="relative">';
-            html += '<div class="aspect-video bg-gray-700 flex items-center justify-center" id="poster-' + item.movieSlug + '">';
+            html += '<div class="film-poster w-full bg-gray-700 flex items-center justify-center" id="poster-' + item.movieSlug + '">';
             html += '<i class="fas fa-film text-4xl text-gray-500"></i>';
             html += '</div>';
             html += '<div class="absolute bottom-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">';
@@ -190,7 +206,7 @@ async function loadPosters() {
                     posterContainer.innerHTML = `
                         <img src="${getVerticalImage(data.movie.poster_url, data.movie.thumb_url)}" 
                              alt="${data.movie.name || data.movie.title || item.movieTitle}" 
-                             class="w-full h-full object-cover"
+                             class="film-poster w-full"
                              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                     `;
                 }
@@ -199,6 +215,101 @@ async function loadPosters() {
             console.error('Error loading poster for', item.movieSlug, ':', error);
         }
     }
+}
+
+// Pagination functions
+function updatePagination() {
+    const paginationContainer = document.getElementById('pagination');
+    
+    if (!watchHistory || watchHistory.length === 0) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    totalPages = Math.ceil(watchHistory.length / itemsPerPage);
+    
+    let paginationHTML = '';
+    
+    // Previous button
+    paginationHTML += `
+        <button onclick="goToPage(${currentPage - 1})" 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    currentPage === 1 
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                }" 
+                ${currentPage === 1 ? 'disabled' : ''}>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    `;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        paginationHTML += `
+            <button onclick="goToPage(1)" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">1</button>
+        `;
+        if (startPage > 2) {
+            paginationHTML += `<span class="px-2 text-gray-400">...</span>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+            <button onclick="goToPage(${i})" 
+                    class="px-3 py-2 rounded-lg text-sm font-medium transition ${
+                        i === currentPage 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-700 text-white hover:bg-gray-600'
+                    }">
+                ${i}
+            </button>
+        `;
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            paginationHTML += `<span class="px-2 text-gray-400">...</span>`;
+        }
+        paginationHTML += `
+            <button onclick="goToPage(${totalPages})" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">${totalPages}</button>
+        `;
+    }
+    
+    // Next button
+    paginationHTML += `
+        <button onclick="goToPage(${currentPage + 1})" 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    currentPage === totalPages 
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                }" 
+                ${currentPage === totalPages ? 'disabled' : ''}>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    `;
+    
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+function goToPage(page) {
+    if (page < 1 || page > totalPages || page === currentPage) {
+        return;
+    }
+    
+    currentPage = page;
+    displayWatchHistory();
+    updatePagination();
+    
+    // Scroll to top of the grid
+    document.getElementById('watchHistoryGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function removeFromWatchHistory(movieSlug) {
