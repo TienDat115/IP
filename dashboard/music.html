@@ -133,7 +133,7 @@
 			/* Content Area */
 			.content-area {
 				background: linear-gradient(to bottom, #1e1e1e 0%, var(--spotify-black) 100%);
-				padding: 24px;
+				padding: 16px;
 				overflow-y: auto;
 				overflow-x: hidden;
 				height: 100%;
@@ -384,14 +384,14 @@
 
 			/* Playlist Section */
 			.playlist-section {
-				margin-bottom: 32px;
+				margin-bottom: 20px;
 			}
 
 			.section-header {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				margin-bottom: 20px;
+				margin-bottom: 12px;
 			}
 
 			.section-title {
@@ -490,14 +490,14 @@
 			.song-list {
 				background-color: var(--spotify-gray-light);
 				border-radius: 8px;
-				padding: 16px;
+				padding: 12px;
 			}
 
 			.song-item {
 				display: grid;
 				grid-template-columns: 16px 1fr 100px 60px;
 				align-items: center;
-				padding: 12px;
+				padding: 8px;
 				border-radius: 4px;
 				transition: all 0.2s ease;
 				gap: 16px;
@@ -595,7 +595,7 @@
 			.control-buttons {
 				display: flex;
 				gap: 8px;
-				margin-bottom: 24px;
+				margin-bottom: 16px;
 			}
 
 			.control-btn {
@@ -685,6 +685,9 @@
 				.player-controls {
 					justify-content: center;
 					gap: 12px;
+					display: flex;
+					align-items: center;
+					flex-wrap: wrap;
 				}
 
 				.volume-control {
@@ -692,6 +695,7 @@
 					align-items: center;
 					gap: 8px;
 					min-width: 120px;
+					margin-left: auto;
 				}
 
 				.volume-slider {
@@ -784,12 +788,16 @@
 				.player-controls {
 					gap: 8px;
 					margin-bottom: 8px;
+					justify-content: center;
+					align-items: center;
 				}
 
 				.volume-control {
 					justify-content: center;
 					min-width: auto;
 					width: 100%;
+					margin-left: 0;
+					margin-top: 8px;
 				}
 
 				.volume-slider {
@@ -965,31 +973,6 @@
 						<span>🎵</span>
 						<span>Spotify</span>
 					</div>
-
-					<div class="sidebar-section">
-						<ul class="sidebar-nav">
-							<li>
-								<a href="#" class="active"><span class="material-icons">home</span> Home</a>
-							</li>
-							<li>
-								<a href="#"><span class="material-icons">search</span> Search</a>
-							</li>
-							<li>
-								<a href="#"><span class="material-icons">library_music</span> Your Library</a>
-							</li>
-						</ul>
-					</div>
-
-					<div class="sidebar-section">
-						<ul class="sidebar-nav">
-							<li>
-								<a href="#"><span class="material-icons">add_box</span> Create Playlist</a>
-							</li>
-							<li>
-								<a href="#"><span class="material-icons">favorite</span> Liked Songs</a>
-							</li>
-						</ul>
-					</div>
 				</aside>
 
 				<!-- Content Area -->
@@ -1070,16 +1053,16 @@
 						<button class="player-btn" onclick="playNext()">
 							<span class="material-icons">skip_next</span>
 						</button>
-					</div>
-				</div>
 
-				<!-- Volume Control -->
-				<div class="volume-control">
-					<button class="player-btn" id="muteBtn">
-						<span class="material-icons">volume_up</span>
-					</button>
-					<input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider" />
-					<span id="volumeValue" style="color: var(--spotify-gray-text); font-size: 12px; min-width: 40px">50%</span>
+						<!-- Volume Control -->
+						<div class="volume-control">
+							<button class="player-btn" id="muteBtn">
+								<span class="material-icons">volume_up</span>
+							</button>
+							<input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider" />
+							<span id="volumeValue" style="color: var(--spotify-gray-text); font-size: 12px; min-width: 40px">50%</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
