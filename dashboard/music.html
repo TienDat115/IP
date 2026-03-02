@@ -259,6 +259,9 @@
 				padding: 8px;
 				border-radius: 50%;
 				transition: all 0.2s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 			}
 
 			.player-btn:hover {
@@ -271,6 +274,12 @@
 				color: var(--spotify-black);
 				width: 32px;
 				height: 32px;
+			}
+
+			.player-btn .material-icons {
+				font-size: 20px;
+				display: block;
+				line-height: 1;
 			}
 
 			.player-btn.play-btn:hover {
@@ -326,6 +335,8 @@
 				align-items: center;
 				justify-content: flex-end;
 				gap: 8px;
+				min-width: 0;
+				flex-shrink: 0;
 			}
 
 			.volume-slider {
@@ -337,6 +348,8 @@
 				-webkit-appearance: none;
 				-moz-appearance: none;
 				appearance: none;
+				flex-shrink: 0;
+				min-width: 0;
 			}
 
 			.volume-slider::-webkit-slider-thumb {
@@ -346,6 +359,7 @@
 				background-color: var(--spotify-white);
 				border-radius: 50%;
 				cursor: pointer;
+				flex-shrink: 0;
 			}
 
 			.volume-slider::-moz-range-thumb {
@@ -355,6 +369,17 @@
 				border-radius: 50%;
 				cursor: pointer;
 				border: none;
+				flex-shrink: 0;
+			}
+
+			.volume-slider::-webkit-slider-thumb:hover {
+				background-color: var(--spotify-green);
+				transform: scale(1.1);
+			}
+
+			.volume-slider::-moz-range-thumb:hover {
+				background-color: var(--spotify-green);
+				transform: scale(1.1);
 			}
 
 			/* Playlist Section */
@@ -627,18 +652,29 @@
 				}
 
 				.player-bar {
-					grid-template-columns: 1fr;
-					gap: 8px;
-					padding: 12px;
+					grid-template-columns: 1fr auto;
+					gap: 12px;
+					padding: 12px 16px;
+					height: auto;
+					min-height: 90px;
+				}
+
+				.track-info {
+					flex: 1;
+					min-width: 0;
 				}
 
 				.player-center {
 					gap: 8px;
+					flex: 1;
+					display: flex;
+					flex-direction: column;
 				}
 
 				.progress-container {
 					order: -1;
 					margin-bottom: 8px;
+					width: 100%;
 				}
 
 				.progress-time {
@@ -648,15 +684,18 @@
 
 				.player-controls {
 					justify-content: center;
+					gap: 12px;
 				}
 
 				.volume-control {
-					justify-content: center;
-					order: 1;
+					justify-content: flex-end;
+					align-items: center;
+					gap: 8px;
+					min-width: 120px;
 				}
 
 				.volume-slider {
-					width: 80px;
+					width: 60px;
 				}
 
 				.playlist-grid {
@@ -705,34 +744,36 @@
 				}
 			}
 
-			@media (max-width: 480px) {
+			@media (max-width: 600px) {
 				.player-bar {
-					padding: 8px;
-					gap: 6px;
+					grid-template-columns: 1fr;
+					gap: 10px;
+					padding: 10px 12px;
 				}
 
 				.track-info {
-					gap: 8px;
+					justify-content: center;
+					text-align: center;
+					margin-bottom: 8px;
 				}
 
 				.track-art {
-					width: 40px;
-					height: 40px;
-					font-size: 18px;
+					width: 36px;
+					height: 36px;
+					font-size: 16px;
 				}
 
 				.track-name {
-					font-size: 12px;
-					max-width: 150px;
+					font-size: 11px;
+					max-width: 200px;
 				}
 
-				.track-artist {
-					font-size: 10px;
-					max-width: 150px;
+				.player-center {
+					width: 100%;
 				}
 
 				.progress-container {
-					gap: 6px;
+					margin-bottom: 6px;
 				}
 
 				.progress-time {
@@ -740,13 +781,64 @@
 					min-width: 30px;
 				}
 
+				.player-controls {
+					gap: 8px;
+					margin-bottom: 8px;
+				}
+
+				.volume-control {
+					justify-content: center;
+					min-width: auto;
+					width: 100%;
+				}
+
+				.volume-slider {
+					width: 80px;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.player-bar {
+					padding: 8px;
+					gap: 8px;
+					min-height: 100px;
+				}
+
+				.track-info {
+					gap: 6px;
+				}
+
+				.track-art {
+					width: 32px;
+					height: 32px;
+					font-size: 14px;
+				}
+
+				.track-name {
+					font-size: 10px;
+					max-width: 150px;
+				}
+
+				.progress-container {
+					gap: 4px;
+				}
+
+				.progress-time {
+					font-size: 8px;
+					min-width: 28px;
+				}
+
 				.player-btn {
-					padding: 6px;
+					padding: 5px;
 				}
 
 				.player-btn.play-btn {
-					width: 28px;
-					height: 28px;
+					width: 24px;
+					height: 24px;
+				}
+
+				.player-btn .material-icons {
+					font-size: 16px;
 				}
 
 				.volume-slider {
@@ -754,8 +846,8 @@
 				}
 
 				.volume-value {
-					font-size: 10px;
-					min-width: 35px;
+					font-size: 9px;
+					min-width: 30px;
 				}
 
 				.control-buttons {
@@ -798,6 +890,51 @@
 				.pagination button {
 					padding: 6px 10px;
 					font-size: 12px;
+				}
+			}
+
+			@media (max-width: 360px) {
+				.player-bar {
+					padding: 6px;
+					gap: 6px;
+					min-height: 110px;
+				}
+
+				.track-art {
+					width: 28px;
+					height: 28px;
+					font-size: 12px;
+				}
+
+				.track-name {
+					font-size: 9px;
+					max-width: 120px;
+				}
+
+				.player-controls {
+					gap: 6px;
+				}
+
+				.player-btn {
+					padding: 4px;
+				}
+
+				.player-btn.play-btn {
+					width: 20px;
+					height: 20px;
+				}
+
+				.player-btn .material-icons {
+					font-size: 14px;
+				}
+
+				.volume-slider {
+					width: 50px;
+				}
+
+				.progress-time {
+					font-size: 7px;
+					min-width: 25px;
 				}
 			}
 
@@ -875,10 +1012,6 @@
 							<span class="material-icons">skip_next</span>
 							<span>Next</span>
 						</button>
-						<button id="togglePlaylistBtn" class="control-btn">
-							<span class="material-icons">queue_music</span>
-							<span>Playlist</span>
-						</button>
 					</div>
 
 					<!-- Playlist Section -->
@@ -911,7 +1044,6 @@
 					<div class="track-art" id="trackArt">🎵</div>
 					<div class="track-details">
 						<div class="track-name" id="trackName">No track playing</div>
-						<div class="track-artist" id="trackArtist">Select a song to play</div>
 					</div>
 				</div>
 
@@ -1070,7 +1202,6 @@
 					const currentSongDisplay = document.getElementById("currentSong");
 					const playlist = document.getElementById("playlist");
 					const playlistWrapper = document.getElementById("playlistWrapper");
-					const togglePlaylistBtn = document.getElementById("togglePlaylistBtn");
 
 					// Progress bar elements
 					const progressBar = document.getElementById("progressBar");
@@ -1216,8 +1347,8 @@
 						const pagination = document.getElementById("pagination");
 						pagination.innerHTML = "";
 						const totalPages = Math.ceil(playlists[currentPlaylist].length / pageSize);
-						const isMobile = window.innerWidth <= 360; // 768px là breakpoint phổ biến cho mobile
-						const maxVisiblePages = isMobile ? 3 : 15; // 3 cho mobile, 15 cho desktop
+						const isMobile = window.innerWidth <= 360; // 360px là breakpoint cho mobile nhỏ
+						const maxVisiblePages = isMobile ? 3 : 5; // 3 cho mobile nhỏ, 5 cho desktop
 						let startPage, endPage;
 
 						// Tính toán trang bắt đầu và kết thúc để hiển thị
@@ -1364,15 +1495,10 @@
 
 						// Cập nhật thông tin bài hát trên player bar
 						const trackName = document.getElementById("trackName");
-						const trackArtist = document.getElementById("trackArtist");
 						const trackArt = document.getElementById("trackArt");
 
 						if (trackName) {
 							trackName.textContent = songData.title;
-						}
-
-						if (trackArtist) {
-							trackArtist.textContent = "Unknown Artist";
 						}
 
 						if (trackArt) {
@@ -1660,14 +1786,6 @@
 						play(currentIndex);
 						renderPagination();
 					}
-
-					// Ẩn/hiện playlist
-					let isPlaylistVisible = true;
-
-					togglePlaylistBtn.onclick = () => {
-						isPlaylistVisible = !isPlaylistVisible;
-						playlistWrapper.style.display = isPlaylistVisible ? "block" : "none";
-					};
 
 					// Khởi tạo trạng thái mặc định cho các nút
 					const initButtonState = (btnId, isActive = false) => {
