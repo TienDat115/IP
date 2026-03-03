@@ -509,6 +509,31 @@
 
 			.song-item.playing {
 				color: var(--spotify-green);
+				background-color: rgba(30, 215, 96, 0.1);
+				border-left: 3px solid var(--spotify-green);
+			}
+
+			.song-item.playing .song-number::before {
+				content: "🎵";
+				font-size: 12px;
+				animation: pulse 1.5s infinite;
+			}
+
+			.song-item.playing .song-number {
+				color: var(--spotify-green);
+				font-weight: 600;
+			}
+
+			@keyframes pulse {
+				0%,
+				100% {
+					opacity: 1;
+					transform: scale(1);
+				}
+				50% {
+					opacity: 0.7;
+					transform: scale(1.1);
+				}
 			}
 
 			.song-number {
@@ -621,6 +646,8 @@
 			.control-btn.active {
 				background-color: var(--spotify-green);
 				color: var(--spotify-black);
+				box-shadow: 0 2px 8px rgba(30, 215, 96, 0.3);
+				transform: translateY(-1px);
 			}
 
 			/* Responsive Design */
@@ -736,6 +763,12 @@
 				.control-btn {
 					padding: 6px 12px;
 					font-size: 12px;
+				}
+
+				.control-btn.active {
+					background-color: var(--spotify-green);
+					color: var(--spotify-black);
+					box-shadow: 0 2px 6px rgba(30, 215, 96, 0.3);
 				}
 
 				.section-title {
