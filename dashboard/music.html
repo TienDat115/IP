@@ -1020,7 +1020,7 @@
 							<span class="material-icons">repeat</span>
 							<span>Repeat</span>
 						</button>
-						<button onclick="toggleNoRepeat()" class="control-btn active" id="noRepeatBtn">
+						<button onclick="toggleNoRepeat()" class="control-btn" id="noRepeatBtn">
 							<span class="material-icons">repeat_one</span>
 							<span>No Repeat</span>
 						</button>
@@ -1813,8 +1813,13 @@
 					};
 
 					// Thiết lập trạng thái mặc định cho các nút
-					initButtonState("noRepeatBtn", true); // Bật mặc định nút Tắt phát lại
-					initButtonState("repeatBtn");
+					initButtonState("noRepeatBtn", false); // isNoRepeat = false = button không active
+					initButtonState("repeatBtn"); // isRepeat = false nên không active
+
+					// Set shuffle button active if isRandom is true
+					if (isRandom) {
+						initButtonState("shuffleBtn", true);
+					}
 
 					// Khởi động trang
 					renderPlaylist();
