@@ -1276,28 +1276,6 @@ function previewAvatar() {
 	}
 }
 
-// Thêm sự kiện cho nút ẩn/hiện nhật ký
-document.addEventListener("DOMContentLoaded", function () {
-	const toggleLogBtn = document.getElementById("toggleLogBtn");
-	const logContainer = document.getElementById("logContainer");
-	const toggleIcon = toggleLogBtn.querySelector("i");
-
-	toggleLogBtn.addEventListener("click", function () {
-		logContainer.classList.toggle("hidden");
-		if (logContainer.classList.contains("hidden")) {
-			toggleIcon.className = "fas fa-eye";
-			toggleLogBtn.innerHTML = '<i class="fas fa-eye"></i>';
-		} else {
-			toggleIcon.className = "fas fa-eye-slash";
-			toggleLogBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
-		}
-	});
-
-	// Ẩn log container mặc định
-	logContainer.classList.add("hidden");
-	toggleLogBtn.innerHTML = '<i class="fas fa-eye"></i>';
-});
-
 // Hàm khởi tạo dropdown template
 function initTemplateDropdown() {
 	// Khởi tạo cho tab văn bản
