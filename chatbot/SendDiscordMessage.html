@@ -97,7 +97,12 @@
 
 							<div class="mb-3">
 								<label class="form-label">File đính kèm (tuỳ chọn):</label>
-								<input type="file" class="form-control" id="fileInput" multiple onchange="updateFileList(this)" />
+								<div id="dropZone" class="border border-2 border-dashed rounded p-4 text-center mb-3" style="cursor: pointer; transition: all 0.3s ease">
+									<i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+									<p class="mb-2">Kéo thả file vào đây hoặc click để chọn</p>
+									<p class="small text-muted">Hoặc nhấn Ctrl+V để paste hình ảnh từ clipboard</p>
+									<input type="file" class="form-control d-none" id="fileInput" multiple onchange="updateFileList(this)" />
+								</div>
 								<div id="fileList" class="mt-2 small text-muted" style="max-height: 150px; overflow-y: auto">Chưa có file nào được chọn</div>
 							</div>
 

@@ -1647,3 +1647,96 @@ function updateFileList(input) {
 		fileList.innerHTML = "Chưa có file nào được chọn";
 	}
 }
+
+// Xử lý drag & drop và paste clipboard
+document.addEventListener("DOMContentLoaded", function() {
+	const dropZone = document.getElementById("dropZone");
+	const fileInput = document.getElementById("fileInput");
+
+	if (dropZone && fileInput) {
+		// Click để mở file input
+		dropZone.addEventListener("click", function() {
+			fileInput.click();
+		});
+
+		// Drag & drop events
+		dropZone.addEventListener("dragover", function(e) {
+			e.preventDefault();
+			dropZone.classList.add("border-primary", "bg-light");
+		});
+
+		dropZone.addEventListener("dragleave", function(e) {
+			e.preventDefault();
+			dropZone.classList.remove("border-primary", "bg-light");
+		});
+
+		dropZone.addEventListener("drop", function(e) {
+			e.preventDefault();
+			dropZone.classList.remove("border-primary", "bg-light");
+			
+			const files = e.dataTransfer.files;
+			if (files.length > 0) {
+				fileInput.files = files;
+				updateFileList(fileInput);
+			}
+		});
+
+		// Paste event - xử lý paste hình ảnh từ clipboard
+		document.addEventListener("paste", function(e) {
+			// Chỉ xử lý paste khi người dùng không đang focus vào input hoặc textarea
+			const activeElement = document.activeElement;
+			const isInputFocused = activeElement && (
+				activeElement.tagName === "INPUT" || 
+				activeElement.tagName === "TEXTAREA" ||
+				activeElement.contentEditable === "true"
+			);
+
+			if (!isInputFocused) {
+				const items = e.clipboardData.items;
+				let hasImage = false;
+
+				for (let i = 0; i < items.length; i++) {
+					const item = items[i];
+					
+					if (item.type.indexOf("image") !== -1) {
+						hasImage = true;
+						const file = item.getAsFile();
+						
+						if (file) {
+							// Tạo một DataTransfer mới để thêm file vào input
+							const dataTransfer = new DataTransfer();
+							
+							// Giữ lại các file đã có trước đó
+							for (let j = 0; j < fileInput.files.length; j++) {
+								dataTransfer.items.add(fileInput.files[j]);
+							}
+							
+							// Thêm file mới từ clipboard
+							dataTransfer.items.add(file);
+							
+							// Cập nhật file input
+							fileInput.files = dataTransfer.files;
+							updateFileList(fileInput);
+
+							// Hiển thị thông báo
+							Swal.fire({
+								icon: "success",
+								title: "Thành công!",
+								text: "Đã thêm hình ảnh từ clipboard vào danh sách file",
+								showConfirmButton: false,
+								timer: 1500,
+								position: "top-end",
+								toast: true
+							});
+						}
+						break;
+					}
+				}
+
+				if (hasImage) {
+					e.preventDefault(); // Ngăn hành động paste mặc định
+				}
+			}
+		});
+	}
+});
