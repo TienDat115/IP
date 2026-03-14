@@ -190,7 +190,17 @@
 											<button onclick="saveWatchTimeNote()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition" title="Lưu ghi chú"><i class="fas fa-save"></i> Lưu</button>
 										</div>
 									</div>
-									<input type="text" id="watchTimeNote" placeholder="Ví dụ: 15:30 - Đã xem đến 1h23p" class="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-400 placeholder-gray-400" />
+									<input
+										type="text"
+										id="watchTimeNote"
+										placeholder="Ví dụ: 15:30 - Đã xem đến 1h23p"
+										class="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-400 placeholder-gray-400"
+										onkeypress="
+											if (event.key === 'Enter') {
+												saveWatchTimeNote();
+											}
+										"
+									/>
 
 									<!-- Virtual Keyboard -->
 									<div id="virtualKeyboard" class="hidden mt-3 bg-gray-800 rounded-lg p-3">
