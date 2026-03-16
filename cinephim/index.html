@@ -100,6 +100,29 @@
 
 		<!-- Main Content -->
 		<main class="container mx-auto px-4 py-8">
+			<!-- Phim xem gần nhất -->
+			<section id="recentWatchedSection" class="mb-8">
+				<div class="flex justify-between items-center mb-4">
+					<h2 class="text-xl font-bold text-purple-400"><i class="fas fa-history mr-2"></i>Phim xem gần nhất</h2>
+					<a href="watch-history.html" class="text-purple-400 hover:text-purple-300 text-sm transition"> Xem thêm <i class="fas fa-arrow-right ml-1"></i> </a>
+				</div>
+				<div id="recentWatchedGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+					<!-- Recent watched movies will be loaded here -->
+				</div>
+				<div id="recentWatchedEmpty" class="hidden text-center py-8 text-gray-400">
+					<i class="fas fa-history text-3xl mb-3"></i>
+					<p>Chưa có lịch sử xem phim</p>
+					<p class="text-sm mt-1">Hãy xem một vài phim để lịch sử được hiển thị!</p>
+				</div>
+			</section>
+
+			<!-- Phim mới cập nhật -->
+			<section id="newMoviesSection" class="mb-8">
+				<div class="mb-4">
+					<h2 class="text-xl font-bold text-purple-400"><i class="fas fa-film mr-2"></i>Phim mới cập nhật</h2>
+				</div>
+			</section>
+
 			<!-- Loading -->
 			<div id="loading" class="text-center py-12 hidden">
 				<div class="loading-spinner mx-auto"></div>

@@ -8,6 +8,7 @@ let searchQuery = '';
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for common.js to initialize Firebase
     setTimeout(() => {
+        loadRecentWatched();
         loadNewMovies();
         setupEventListeners();
     }, 1500);
@@ -262,5 +263,93 @@ function changePage(page) {
         searchMovies(searchQuery, page);
     } else {
         loadNewMovies(page);
+    }
+}
+
+// Load recent watched movies
+async function loadRecentWatched() {
+    try {
+        const grid = document.getElementById('recentWatchedGrid');
+        const emptyState = document.getElementById('recentWatchedEmpty');
+        
+        if (!grid || !emptyState) return;
+        
+        // Load from Firebase if user is logged in
+        let recentWatched = [];
+        if (currentUser) {
+            const snapshot = await db.collection('users').doc(currentUser.uid).collection('watchHistory').orderBy('watchedAt', 'desc').limit(5).get();
+            
+            snapshot.forEach(doc => {
+                recentWatched.push(doc.data());
+            });
+            
+            console.log('Loaded recent watched from Firebase:', recentWatched);
+        }
+        
+        if (recentWatched.length === 0) {
+            grid.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            return;
+        }
+        
+        emptyState.classList.add('hidden');
+        
+        let html = '';
+        for (const item of recentWatched) {
+            html += `
+                <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail('${item.movieSlug}')">
+                    <div class="relative">
+                        <div class="film-poster w-full bg-gray-700 flex items-center justify-center" id="recent-poster-${item.movieSlug}">
+                            <i class="fas fa-film text-4xl text-gray-500"></i>
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
+                            ${item.episodeName || 'Tập phim'}
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">${item.movieTitle || ''}</h3>
+                        <p class="text-gray-400 text-xs">${item.episodeName || ''}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        grid.innerHTML = html;
+        
+        // Load posters for recent watched movies
+        loadRecentWatchedPosters(recentWatched);
+        
+    } catch (error) {
+        console.error('Error loading recent watched:', error);
+        const grid = document.getElementById('recentWatchedGrid');
+        const emptyState = document.getElementById('recentWatchedEmpty');
+        if (grid && emptyState) {
+            grid.innerHTML = '';
+            emptyState.classList.remove('hidden');
+        }
+    }
+}
+
+// Load posters for recent watched movies
+async function loadRecentWatchedPosters(recentWatched) {
+    for (const item of recentWatched) {
+        try {
+            const response = await fetch(`${API_BASE}/film/${item.movieSlug}`);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.movie) {
+                const posterContainer = document.getElementById('recent-poster-' + item.movieSlug);
+                if (posterContainer) {
+                    posterContainer.innerHTML = `
+                        <img src="${getVerticalImage(data.movie.poster_url, data.movie.thumb_url)}" 
+                             alt="${data.movie.name || data.movie.title || item.movieTitle}" 
+                             class="film-poster w-full"
+                             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading poster for recent watched', item.movieSlug, ':', error);
+        }
     }
 }

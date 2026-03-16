@@ -125,6 +125,184 @@ async function clearWatchHistory() {
     }
 }
 
+// Remove duplicate watch history items
+async function removeDuplicateHistory() {
+    if (!watchHistory || watchHistory.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Thông báo',
+            text: 'Không có lịch sử để kiểm tra trùng lặp.',
+            confirmButtonColor: '#8b5cf6'
+        });
+        return;
+    }
+
+    // Find duplicates based on movieSlug
+    const uniqueMovies = new Map();
+    const duplicates = [];
+    
+    watchHistory.forEach((item, index) => {
+        const movieSlug = item.movieSlug;
+        if (uniqueMovies.has(movieSlug)) {
+            // This is a duplicate
+            duplicates.push({
+                movieSlug: movieSlug,
+                movieTitle: item.movieTitle,
+                originalIndex: uniqueMovies.get(movieSlug).index,
+                duplicateIndex: index,
+                originalWatchedAt: uniqueMovies.get(movieSlug).watchedAt,
+                duplicateWatchedAt: item.watchedAt
+            });
+        } else {
+            // First occurrence
+            uniqueMovies.set(movieSlug, {
+                index: index,
+                watchedAt: item.watchedAt,
+                data: item
+            });
+        }
+    });
+
+    if (duplicates.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Thông báo',
+            text: 'Không có lịch sử trùng lặp nào được tìm thấy.',
+            confirmButtonColor: '#8b5cf6'
+        });
+        return;
+    }
+
+    // Show confirmation with details
+    const duplicateList = duplicates.slice(0, 5).map(d => 
+        `${d.movieTitle || d.movieSlug} (x2)`
+    ).join('\n');
+    
+    const moreText = duplicates.length > 5 ? `\n... và ${duplicates.length - 5} phim khác` : '';
+
+    const result = await Swal.fire({
+        title: 'Xóa lịch sử trùng lặp',
+        html: `
+            <p>Tìm thấy <strong>${duplicates.length}</strong> phim có lịch sử trùng lặp.</p>
+            <p class="text-sm text-gray-400 mt-2">Chỉ giữ lại bản xem gần nhất cho mỗi phim:</p>
+            <div class="text-left mt-3 text-sm">
+                <pre class="bg-gray-700 p-2 rounded">${duplicateList}${moreText}</pre>
+            </div>
+            <p class="text-sm text-orange-400 mt-3">Bạn có chắc chắn muốn xóa các bản trùng lặp?</p>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f97316',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Xóa trùng lặp',
+        cancelButtonText: 'Hủy'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            if (currentUser) {
+                // Process in Firebase
+                const userRef = db.collection('users').doc(currentUser.uid);
+                const historyRef = userRef.collection('watchHistory');
+                
+                // Get all documents to process duplicates more efficiently
+                const allSnapshot = await historyRef.get();
+                const movieGroups = new Map();
+                
+                // Group documents by movieSlug
+                allSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const movieSlug = data.movieSlug;
+                    if (!movieGroups.has(movieSlug)) {
+                        movieGroups.set(movieSlug, []);
+                    }
+                    movieGroups.get(movieSlug).push({
+                        doc: doc,
+                        data: data,
+                        watchedAt: data.watchedAt
+                    });
+                });
+
+                // Create batch for deletions
+                const batch = db.batch();
+                let deletedCount = 0;
+
+                // Process each movie group
+                for (const [movieSlug, documents] of movieGroups) {
+                    if (documents.length > 1) {
+                        // Sort by watchedAt descending (newest first)
+                        documents.sort((a, b) => {
+                            const timeA = a.watchedAt.toDate ? a.watchedAt.toDate().getTime() : a.watchedAt.getTime();
+                            const timeB = b.watchedAt.toDate ? b.watchedAt.toDate().getTime() : b.watchedAt.getTime();
+                            return timeB - timeA;
+                        });
+
+                        // Keep the first (newest) document, delete the rest
+                        for (let i = 1; i < documents.length; i++) {
+                            batch.delete(documents[i].doc.ref);
+                            deletedCount++;
+                        }
+                    }
+                }
+
+                if (deletedCount > 0) {
+                    await batch.commit();
+                    console.log(`Deleted ${deletedCount} duplicate watch history items from Firebase`);
+                } else {
+                    console.log('No duplicates found to delete in Firebase');
+                }
+            } else {
+                // If not logged in, filter local array
+                const uniqueMovies = new Map();
+                const filteredHistory = [];
+                
+                watchHistory.forEach(item => {
+                    const movieSlug = item.movieSlug;
+                    if (!uniqueMovies.has(movieSlug)) {
+                        uniqueMovies.set(movieSlug, true);
+                        filteredHistory.push(item);
+                    }
+                });
+                
+                watchHistory = filteredHistory;
+                console.log('Filtered local watch history for duplicates');
+            }
+
+            // Reload and display
+            await loadWatchHistory();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: `Đã xóa các lịch sử trùng lặp. Chỉ giữ lại bản mới nhất cho mỗi phim.`,
+                confirmButtonColor: '#8b5cf6',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+        } catch (error) {
+            console.error('Error removing duplicate watch history:', error);
+            
+            // Show more detailed error information
+            let errorMessage = 'Không thể xóa lịch sử trùng lặp. Vui lòng thử lại.';
+            if (error.code === 'permission-denied') {
+                errorMessage = 'Bạn không có quyền xóa lịch sử. Vui lòng đăng nhập lại.';
+            } else if (error.code === 'unavailable') {
+                errorMessage = 'Kết nối đến server bị gián đoạn. Vui lòng thử lại sau.';
+            } else if (error.message) {
+                errorMessage = `Lỗi: ${error.message}`;
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: errorMessage,
+                confirmButtonColor: '#8b5cf6'
+            });
+        }
+    }
+}
+
 function displayWatchHistory() {
     console.log('displayWatchHistory() called');
     
