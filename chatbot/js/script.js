@@ -1632,20 +1632,91 @@ function updateFileList(input) {
 		for (let i = 0; i < input.files.length; i++) {
 			const file = input.files[i];
 			const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Chuyển sang MB
-			html += `
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    <div class="text-truncate" style="max-width: 70%;" title="${file.name}">
-                        <i class="far fa-file me-2"></i>${file.name}
-                    </div>
-                    <span class="badge bg-secondary rounded-pill">${fileSize} MB</span>
-                </div>
-            `;
+			const isImage = file.type.startsWith('image/');
+			
+			if (isImage) {
+				// Tạo URL cho preview hình ảnh
+				const imageUrl = URL.createObjectURL(file);
+				html += `
+					<div class="list-group-item list-group-item-action">
+						<div class="d-flex justify-content-between align-items-start">
+							<div class="flex-grow-1">
+								<div class="d-flex align-items-center mb-2">
+									<i class="far fa-image me-2 text-primary"></i>
+									<span class="text-truncate" style="max-width: 200px;" title="${file.name}">${file.name}</span>
+								</div>
+								<div class="image-preview-container mb-2">
+									<img src="${imageUrl}" alt="${file.name}" class="img-thumbnail" style="max-width: 150px; max-height: 100px; object-fit: cover; cursor: pointer;" onclick="viewImagePreview('${imageUrl}', '${file.name}')" />
+								</div>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="badge bg-primary rounded-pill">${fileSize} MB</span>
+									<small class="text-muted">Click để xem lớn</small>
+								</div>
+							</div>
+							<button class="btn btn-sm btn-outline-danger ms-2" onclick="removeFile(${i})" title="Xóa file">
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+					</div>
+				`;
+			} else {
+				html += `
+					<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+						<div class="text-truncate" style="max-width: 70%;" title="${file.name}">
+							<i class="far fa-file me-2"></i>${file.name}
+						</div>
+						<div class="d-flex align-items-center">
+							<span class="badge bg-secondary rounded-pill me-2">${fileSize} MB</span>
+							<button class="btn btn-sm btn-outline-danger" onclick="removeFile(${i})" title="Xóa file">
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+					</div>
+				`;
+			}
 		}
 		html += "</div>";
 		fileList.innerHTML = html;
 	} else {
 		fileList.innerHTML = "Chưa có file nào được chọn";
 	}
+}
+
+// Function to remove a specific file
+function removeFile(index) {
+	const fileInput = document.getElementById("fileInput");
+	const dt = new DataTransfer();
+	
+	// Add all files except the one to remove
+	for (let i = 0; i < fileInput.files.length; i++) {
+		if (i !== index) {
+			dt.items.add(fileInput.files[i]);
+		}
+	}
+	
+	// Update the file input
+	fileInput.files = dt.files;
+	
+	// Update the file list display
+	updateFileList(fileInput);
+	
+	// Show success message
+	showSuccessMessage("Đã xóa file thành công");
+}
+
+// Function to view full image preview
+function viewImagePreview(imageUrl, fileName) {
+	Swal.fire({
+		title: fileName,
+		html: `<img src="${imageUrl}" alt="${fileName}" class="img-fluid" style="max-height: 70vh;" />`,
+		width: 'auto',
+		showCloseButton: true,
+		showConfirmButton: false,
+		background: '#2d3748',
+		customClass: {
+			popup: 'image-preview-modal'
+		}
+	});
 }
 
 // Xử lý drag & drop và paste clipboard
