@@ -67,11 +67,25 @@ async function loadNewMovies(page = 1) {
                 displayPagination({
                     current_page: currentPage,
                     total_page: 5,
-                    total_items: data.items?.length || 50
+                    per_page: 20,
+                    total_items: 100
                 });
             }
+            
+            // Scroll to movies container after loading new page
+            if (page > 1) {
+                setTimeout(() => {
+                    const moviesContainer = document.getElementById('moviesContainer');
+                    if (moviesContainer) {
+                        moviesContainer.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                    }
+                }, 100);
+            }
         } else {
-            showError('Không thể tải danh sách phim');
+            showError('Không thể tải phim');
         }
     } catch (error) {
         showError('Lỗi kết nối đến server');
@@ -93,6 +107,17 @@ async function searchMovies(keyword, page = 1) {
         if (data.status === 'success') {
             displayMovies(data.items);
             displayPagination(data.paginate);
+            
+            // Scroll to movies container after search results are loaded
+            setTimeout(() => {
+                const moviesContainer = document.getElementById('moviesContainer');
+                if (moviesContainer) {
+                    moviesContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 100);
         } else {
             showError('Không tìm thấy phim nào');
         }
@@ -255,9 +280,6 @@ function displayPagination(pagination) {
 function changePage(page) {
     console.log('Changing to page:', page);
     currentPage = page; // Update global currentPage
-    
-    // Scroll to top when changing page
-    window.scrollTo(0, 0);
     
     if (searchQuery) {
         searchMovies(searchQuery, page);
