@@ -47,6 +47,9 @@ function setupEventListeners() {
             const url = new URL(window.location);
             url.searchParams.set('country', selectedCountry);
             window.history.pushState({}, '', url);
+            
+            // Load movies for selected country
+            loadCountryMovies(1);
         });
     });
 }
@@ -90,6 +93,17 @@ async function loadCountryMovies(page = 1) {
             
             // Update breadcrumb
             updateBreadcrumb(countryName);
+            
+            // Scroll to movies container after loading country
+            setTimeout(() => {
+                const moviesContainer = document.getElementById('moviesContainer');
+                if (moviesContainer) {
+                    moviesContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 100);
             
         } else {
             showNoResults();

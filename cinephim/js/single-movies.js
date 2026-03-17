@@ -50,6 +50,19 @@ async function loadSingleMovies(page = 1) {
             // Update page title
             document.title = `Phim Lẻ - CinePhim`;
             
+            // Scroll to movies container after loading new page
+            if (page > 1) {
+                setTimeout(() => {
+                    const moviesGrid = document.getElementById('moviesGrid');
+                    if (moviesGrid) {
+                        moviesGrid.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                    }
+                }, 100);
+            }
+            
         } else {
             showNoResults();
         }

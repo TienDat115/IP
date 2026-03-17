@@ -40,6 +40,9 @@ function setupEventListeners() {
                 const displayName = getCategoryDisplayName(e.target.value);
                 selectedCategorySpan.textContent = displayName;
             }
+            
+            // Load movies for selected category
+            loadMoviesByCategory(e.target.value, 1);
         });
     });
 }
@@ -79,6 +82,17 @@ async function loadMoviesByCategory(category, page = 1) {
             
             // Update breadcrumb
             updateBreadcrumb(categoryName);
+            
+            // Scroll to movies container after loading category
+            setTimeout(() => {
+                const moviesContainer = document.getElementById('moviesContainer');
+                if (moviesContainer) {
+                    moviesContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 100);
             
         } else {
             showNoResults();
