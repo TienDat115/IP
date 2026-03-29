@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializePage();
 });
 
-// Initialize the page
+// Initialize page
 async function initializePage() {
     try {
         // Listen for auth state changes
@@ -15,8 +15,15 @@ async function initializePage() {
             updateAuthUI();
         });
         
+        // Check for page parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page');
+        
+        // Load with page from URL (default to 1 if not specified)
+        const pageNumber = page ? parseInt(page) : 1;
+        
         // Load single movies
-        await loadSingleMovies();
+        await loadSingleMovies(pageNumber);
         
     } catch (error) {
         console.error('Error initializing page:', error);
@@ -199,6 +206,11 @@ function updatePagination(paginate) {
     }
     
     paginationContainer.innerHTML = paginationHTML;
+    
+    // Update URL with page parameter
+    const url = new URL(window.location);
+    url.searchParams.set('page', current);
+    window.history.pushState({}, '', url);
 }
 
 // Go to movie detail page

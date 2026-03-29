@@ -19,12 +19,16 @@ async function initializePage() {
         // Check for country parameter in URL
         const urlParams = new URLSearchParams(window.location.search);
         const country = urlParams.get('country');
+        const page = urlParams.get('page');
+        
         if (country) {
             const radio = document.querySelector(`input[name="country"][value="${country}"]`);
             if (radio) {
                 radio.checked = true;
             }
-            await loadCountryMovies(1);
+            // Load with page from URL (default to 1 if not specified)
+            const pageNumber = page ? parseInt(page) : 1;
+            await loadCountryMovies(pageNumber);
         }
         
         // Setup event listeners for radio buttons
@@ -43,12 +47,7 @@ function setupEventListeners() {
     radioButtons.forEach(radio => {
         radio.addEventListener('change', function(e) {
             const selectedCountry = e.target.value;
-            // Update URL
-            const url = new URL(window.location);
-            url.searchParams.set('country', selectedCountry);
-            window.history.pushState({}, '', url);
-            
-            // Load movies for selected country
+            // Load movies for selected country (page 1)
             loadCountryMovies(1);
         });
     });
@@ -71,6 +70,12 @@ async function loadCountryMovies(page = 1) {
         
         currentCountry = selectedCountry;
         currentPage = page;
+        
+        // Update URL with country and page parameters
+        const url = new URL(window.location);
+        url.searchParams.set('country', selectedCountry);
+        url.searchParams.set('page', page);
+        window.history.pushState({}, '', url);
         
         // Scroll to top when changing page
         window.scrollTo(0, 0);
@@ -163,6 +168,7 @@ function displayMovies(movies) {
         return;
     }
     
+    // Display all movies but limit grid to 5 columns maximum
     moviesGrid.innerHTML = movies.map(movie => `
         <div class="bg-gray-800 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="goToMovieDetail('${movie.slug}')">
             <div class="relative">
@@ -241,6 +247,11 @@ function updatePagination(paginate) {
     }
     
     paginationContainer.innerHTML = paginationHTML;
+    
+    // Update URL with page parameter
+    const url = new URL(window.location);
+    url.searchParams.set('page', current);
+    window.history.pushState({}, '', url);
 }
 
 // Get country display name

@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check if category is in URL params
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category');
+        const page = urlParams.get('page');
+        
         if (category) {
             const radio = document.querySelector(`input[name="category"][value="${category}"]`);
             if (radio) {
@@ -24,7 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     selectedCategorySpan.textContent = displayName;
                 }
             }
-            loadMoviesByCategory(category, 1);
+            // Load with page from URL (default to 1 if not specified)
+            const pageNumber = page ? parseInt(page) : 1;
+            loadMoviesByCategory(category, pageNumber);
         }
     }, 1500);
 });
@@ -60,6 +64,12 @@ async function loadMoviesByCategory(category, page = 1) {
         
         currentCategory = category;
         currentPage = page;
+        
+        // Update URL with category and page parameters
+        const url = new URL(window.location);
+        url.searchParams.set('category', category);
+        url.searchParams.set('page', page);
+        window.history.pushState({}, '', url);
         
         // Scroll to top when changing page
         window.scrollTo(0, 0);
@@ -179,16 +189,37 @@ function displayMovies(movies) {
 function updatePagination(paginate) {
     const paginationContainer = document.getElementById('pagination');
     
-    if (!paginate) {
-        paginationContainer.innerHTML = '';
+    if (!paginationContainer) {
+        console.error('Pagination container not found');
         return;
     }
     
-    const { current_page: current, total_page: total } = paginate;
-    currentPage = current;
-    totalPages = total;
+    // Handle different pagination structures
+    let paginationData = paginate;
+    
+    // If pagination is nested in data.paginate
+    if (pagination && pagination.paginate) {
+        paginationData = pagination.paginate;
+    }
+    
+    // If no pagination data, create default pagination
+    if (!paginationData) {
+        console.log('No pagination data, creating default');
+        paginationData = {
+            current_page: currentPage || 1,
+            total_page: 5,
+            total_items: 50
+        };
+    }
+    
+    // Use global currentPage if available, otherwise use pagination data
+    const current = currentPage || paginationData.current_page || 1;
+    const total = paginationData.total_page || 1;
+    
+    console.log('Current page:', current, 'Total pages:', total);
     
     if (total <= 1) {
+        console.log('Only 1 page, no pagination needed');
         paginationContainer.innerHTML = '';
         return;
     }

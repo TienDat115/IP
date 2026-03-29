@@ -7,6 +7,14 @@ let totalPages = 1;
 
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
+        // Check for page parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page');
+        
+        // Load with page from URL (default to 1 if not specified)
+        const pageNumber = page ? parseInt(page) : 1;
+        currentPage = pageNumber;
+        
         loadWatchHistory();
         setupEventListeners();
     }, 1500);
@@ -483,6 +491,12 @@ function goToPage(page) {
     }
     
     currentPage = page;
+    
+    // Update URL with page parameter
+    const url = new URL(window.location);
+    url.searchParams.set('page', page);
+    window.history.pushState({}, '', url);
+    
     displayWatchHistory();
     updatePagination();
     

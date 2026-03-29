@@ -8,8 +8,22 @@ let searchQuery = '';
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for common.js to initialize Firebase
     setTimeout(() => {
+        // Check for page parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page');
+        const search = urlParams.get('search');
+        
+        // Load with page from URL (default to 1 if not specified)
+        const pageNumber = page ? parseInt(page) : 1;
+        
         loadRecentWatched();
-        loadNewMovies();
+        
+        if (search) {
+            searchMovies(search, pageNumber);
+        } else {
+            loadNewMovies(pageNumber);
+        }
+        
         setupEventListeners();
     }, 1500);
 });
@@ -42,6 +56,12 @@ async function loadNewMovies(page = 1) {
     currentCountry = '';
     currentYear = '';
     searchQuery = '';
+    
+    // Update URL with page parameter
+    const url = new URL(window.location);
+    url.searchParams.delete('search');
+    url.searchParams.set('page', page);
+    window.history.pushState({}, '', url);
     
     try {
         const response = await fetch(`${API_BASE}/films/phim-moi-cap-nhat?page=${page}`);
@@ -100,15 +120,40 @@ async function searchMovies(keyword, page = 1) {
     currentPage = page;
     searchQuery = keyword;
     
+    // Update URL with search and page parameters
+    const url = new URL(window.location);
+    url.searchParams.set('search', keyword);
+    url.searchParams.set('page', page);
+    window.history.pushState({}, '', url);
+    
     try {
         const response = await fetch(`${API_BASE}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`);
         const data = await response.json();
         
         if (data.status === 'success') {
             displayMovies(data.items);
-            displayPagination(data.paginate);
             
-            // Scroll to movies container after search results are loaded
+            // Update currentPage from API response
+            if (data.paginate && data.paginate.current_page) {
+                currentPage = data.paginate.current_page;
+            } else {
+                currentPage = page;
+            }
+            
+            // Always show pagination for testing
+            if (data.paginate) {
+                displayPagination(data.paginate);
+            } else {
+                // Create mock pagination for testing
+                displayPagination({
+                    current_page: currentPage,
+                    total_page: 5,
+                    per_page: 20,
+                    total_items: 100
+                });
+            }
+            
+            // Scroll to movies container after search
             setTimeout(() => {
                 const moviesContainer = document.getElementById('moviesContainer');
                 if (moviesContainer) {
@@ -119,7 +164,7 @@ async function searchMovies(keyword, page = 1) {
                 }
             }, 100);
         } else {
-            showError('Không tìm thấy phim nào');
+            showError('Không tìm thấy kết quả');
         }
     } catch (error) {
         showError('Lỗi kết nối đến server');

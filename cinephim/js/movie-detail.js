@@ -138,14 +138,17 @@ async function displayMovieDetails() {
     
     // Update movie info
     const createdDate = currentMovie.created ? new Date(currentMovie.created) : null;
+    const modifiedDate = currentMovie.modified ? new Date(currentMovie.modified) : null;
     const yearText = createdDate ? createdDate.getFullYear() : (currentMovie.year || currentMovie.release_year || 'Không rõ');
     const dateText = createdDate ? ` (${createdDate.getDate()}/${createdDate.getMonth() + 1}/${createdDate.getFullYear()})` : '';
+    const modifiedText = modifiedDate ? `${modifiedDate.getDate()}/${modifiedDate.getMonth() + 1}/${modifiedDate.getFullYear()}` : 'Không rõ';
     document.getElementById('movieYear').textContent = yearText + dateText;
     document.getElementById('movieDuration').textContent = currentMovie.time || 'Không rõ';
     document.getElementById("episodeProgress").textContent = formatEpisodeProgress(currentMovie.current_episode, currentMovie.total_episodes);
     document.getElementById('movieCasts').textContent = currentMovie.casts || 'Không có thông tin diễn viên.';
     document.getElementById('movieCategories').textContent = getCategoriesFromCategory(currentMovie.category) || 'Không có thông tin thể loại.';
     document.getElementById('movieDescription').textContent = currentMovie.content || currentMovie.description || 'Không có mô tả.';
+    document.getElementById('movieModified').textContent = modifiedText;
     
     // Update breadcrumb
     const firstCategory = getFirstCategory(currentMovie.category);
