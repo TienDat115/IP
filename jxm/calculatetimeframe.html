@@ -666,8 +666,11 @@
 
 			// Khởi tạo khi trang tải
 			document.addEventListener("DOMContentLoaded", async function () {
-				const today = new Date().toISOString().split("T")[0];
-				document.getElementById("inputDate").value = today;
+				// Lấy ngày today với múi giờ Việt Nam (UTC+7)
+				const today = new Date();
+				const vietnamTime = new Date(today.getTime() + 7 * 60 * 60 * 1000);
+				const todayStr = vietnamTime.toISOString().split("T")[0];
+				document.getElementById("inputDate").value = todayStr;
 
 				try {
 					// Tải và cập nhật dữ liệu
