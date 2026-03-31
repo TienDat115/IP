@@ -1068,9 +1068,7 @@ function saveWatchTimeNote() {
     // If user is logged in, save to Firebase
     if (auth.currentUser) {
         saveWatchTimeNoteToFirebase(note);
-        if (note) {
-            showSuccess('Đã lưu ghi chú thời gian xem');
-        }
+        showSuccess('Đã lưu ghi chú thời gian xem');
     } else {
         showInfo('Vui lòng đăng nhập để lưu ghi chú');
     }
