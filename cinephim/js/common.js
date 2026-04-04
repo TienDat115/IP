@@ -1170,7 +1170,7 @@ async function savePinnedMoviesToFirebase() {
 }
 
 // Toggle pin movie
-async function togglePin(slug) {
+async function togglePin(slug, movieData = null) {
     const index = pinnedMovies.findIndex(pin => pin.slug === slug);
     
     if (index > -1) {
@@ -1190,13 +1190,25 @@ async function togglePin(slug) {
         updatePinButton(slug, false);
     } else {
         // Add to pinned movies
-        const movieData = {
+        const movieInfo = movieData || {
             slug: slug,
-            title: slug, // Use slug as title fallback
-            name: slug, // Use slug as name fallback
+            title: slug,
+            name: slug,
+            poster_url: '',
+            thumb_url: '',
+            year: ''
+        };
+        
+        const newMovieData = {
+            slug: movieInfo.slug,
+            title: movieInfo.name || movieInfo.title || slug,
+            name: movieInfo.name || movieInfo.title || slug,
+            poster_url: movieInfo.poster_url || '',
+            thumb_url: movieInfo.thumb_url || '',
+            year: movieInfo.year || '',
             pinnedAt: new Date().toISOString()
         };
-        pinnedMovies.unshift(movieData);
+        pinnedMovies.unshift(newMovieData);
         
         // Show notification
         Swal.fire({

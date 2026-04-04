@@ -942,8 +942,8 @@ async function togglePinMovie() {
         return;
     }
     
-    // Call the global togglePin function from common.js
-    await window.togglePin(currentMovie.slug);
+    // Call the global togglePin function from common.js with movie data
+    await window.togglePin(currentMovie.slug, currentMovie);
 }
 
 // Share movie

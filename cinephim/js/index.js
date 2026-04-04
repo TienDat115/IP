@@ -453,16 +453,19 @@ async function loadPinnedMovies() {
             html += `
                 <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative group" onclick="showMovieDetail('${item.slug}')">
                     <div class="relative">
-                        <div class="film-poster w-full bg-gray-700 flex items-center justify-center" id="pinned-poster-${item.slug}">
-                            <i class="fas fa-film text-4xl text-gray-500"></i>
+                        <img src="${getVerticalImage(item.poster_url, item.thumb_url)}" 
+                             alt="${item.title || item.name}" 
+                             class="film-poster w-full"
+                             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                        <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
+                            HD
                         </div>
-                        <div class="absolute top-2 right-2 bg-yellow-600 px-2 py-1 rounded text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="absolute top-2 left-2 bg-yellow-600 px-2 py-1 rounded text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                             <i class="fas fa-thumbtack"></i> Đã ghim
                         </div>
                     </div>
                     <div class="p-4">
                         <h3 class="font-semibold text-sm mb-2 line-clamp-2">${item.title || item.name || ''}</h3>
-                        <p class="text-gray-400 text-xs">Đã ghim</p>
                     </div>
                 </div>
             `;
@@ -470,8 +473,8 @@ async function loadPinnedMovies() {
         
         grid.innerHTML = html;
         
-        // Load posters for pinned movies
-        loadPinnedMoviesPosters(displayPinned);
+        // No need to load additional info since we have it saved
+        // loadPinnedMoviesPosters(displayPinned);
         
     } catch (error) {
         console.error('Error loading pinned movies:', error);
@@ -480,30 +483,6 @@ async function loadPinnedMovies() {
         if (grid && emptyState) {
             grid.innerHTML = '';
             emptyState.classList.remove('hidden');
-        }
-    }
-}
-
-// Load posters for pinned movies
-async function loadPinnedMoviesPosters(pinnedMovies) {
-    for (const item of pinnedMovies) {
-        try {
-            const response = await fetch(`${API_BASE}/film/${item.slug}`);
-            const data = await response.json();
-            
-            if (data.status === 'success' && data.movie) {
-                const posterContainer = document.getElementById('pinned-poster-' + item.slug);
-                if (posterContainer) {
-                    posterContainer.innerHTML = `
-                        <img src="${getVerticalImage(data.movie.poster_url, data.movie.thumb_url)}" 
-                             alt="${data.movie.name || data.movie.title || item.title || item.name}" 
-                             class="film-poster w-full"
-                             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
-                    `;
-                }
-            }
-        } catch (error) {
-            console.error('Error loading poster for pinned movie', item.slug, ':', error);
         }
     }
 }
