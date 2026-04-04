@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const pageNumber = page ? parseInt(page) : 1;
         
         loadRecentWatched();
+        loadPinnedMovies();
         
         if (search) {
             searchMovies(search, pageNumber);
@@ -417,6 +418,92 @@ async function loadRecentWatchedPosters(recentWatched) {
             }
         } catch (error) {
             console.error('Error loading poster for recent watched', item.movieSlug, ':', error);
+        }
+    }
+}
+
+// Load pinned movies
+async function loadPinnedMovies() {
+    try {
+        const grid = document.getElementById('pinnedMoviesGrid');
+        const emptyState = document.getElementById('pinnedMoviesEmpty');
+        
+        if (!grid || !emptyState) return;
+        
+        // Wait for pinnedMovies to be loaded from Firebase
+        let attempts = 0;
+        while (pinnedMovies.length === 0 && attempts < 20) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (pinnedMovies.length === 0) {
+            grid.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            return;
+        }
+        
+        emptyState.classList.add('hidden');
+        
+        let html = '';
+        // Limit to 10 pinned movies for display
+        const displayPinned = pinnedMovies.slice(0, 10);
+        
+        for (const item of displayPinned) {
+            html += `
+                <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative group" onclick="showMovieDetail('${item.slug}')">
+                    <div class="relative">
+                        <div class="film-poster w-full bg-gray-700 flex items-center justify-center" id="pinned-poster-${item.slug}">
+                            <i class="fas fa-film text-4xl text-gray-500"></i>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-yellow-600 px-2 py-1 rounded text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-thumbtack"></i> Đã ghim
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">${item.title || item.name || ''}</h3>
+                        <p class="text-gray-400 text-xs">Đã ghim</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        grid.innerHTML = html;
+        
+        // Load posters for pinned movies
+        loadPinnedMoviesPosters(displayPinned);
+        
+    } catch (error) {
+        console.error('Error loading pinned movies:', error);
+        const grid = document.getElementById('pinnedMoviesGrid');
+        const emptyState = document.getElementById('pinnedMoviesEmpty');
+        if (grid && emptyState) {
+            grid.innerHTML = '';
+            emptyState.classList.remove('hidden');
+        }
+    }
+}
+
+// Load posters for pinned movies
+async function loadPinnedMoviesPosters(pinnedMovies) {
+    for (const item of pinnedMovies) {
+        try {
+            const response = await fetch(`${API_BASE}/film/${item.slug}`);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.movie) {
+                const posterContainer = document.getElementById('pinned-poster-' + item.slug);
+                if (posterContainer) {
+                    posterContainer.innerHTML = `
+                        <img src="${getVerticalImage(data.movie.poster_url, data.movie.thumb_url)}" 
+                             alt="${data.movie.name || data.movie.title || item.title || item.name}" 
+                             class="film-poster w-full"
+                             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading poster for pinned movie', item.slug, ':', error);
         }
     }
 }

@@ -88,6 +88,7 @@ async function loadMovieDetail(slug) {
             
             // Update favorite button status
             updateFavoriteButton();
+            updatePinButton();
             
             // Store episodes data for server switching
             window.currentMovieEpisodes = currentMovie.episodes;
@@ -877,6 +878,72 @@ function updateFavoriteButton() {
         console.error('Error checking favorite status:', error);
         favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i>Thêm vào yêu thích';
     });
+}
+
+// Update pin button text and state
+function updatePinButton() {
+    const pinBtn = document.querySelector('button[onclick="togglePinMovie()"]');
+    if (!pinBtn) return;
+    
+    if (!currentMovie) {
+        pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Ghim phim';
+        pinBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+        pinBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        return;
+    }
+    
+    if (!isUserLoggedIn()) {
+        // Check localStorage for non-logged in users
+        const pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
+        const isPinned = pinnedMovies.some(pin => pin.slug === currentMovie.slug);
+        
+        if (isPinned) {
+            pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Bỏ ghim';
+            pinBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+            pinBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+        } else {
+            pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Ghim phim';
+            pinBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            pinBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        }
+        return;
+    }
+    
+    const user = auth.currentUser;
+    const pinnedRef = db.collection('users').doc(user.uid).collection('pinnedMovies');
+    
+    pinnedRef.where('slug', '==', currentMovie.slug).get().then((snapshot) => {
+        if (snapshot.empty) {
+            pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Ghim phim';
+            pinBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            pinBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        } else {
+            pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Bỏ ghim';
+            pinBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+            pinBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+        }
+    }).catch((error) => {
+        console.error('Error checking pin status:', error);
+        pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Ghim phim';
+        pinBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+        pinBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+    });
+}
+
+// Toggle pin for current movie
+async function togglePinMovie() {
+    if (!currentMovie) {
+        showError('Không tìm thấy thông tin phim');
+        return;
+    }
+    
+    if (!isUserLoggedIn()) {
+        showError('Vui lòng đăng nhập để ghim phim');
+        return;
+    }
+    
+    // Call the global togglePin function from common.js
+    await window.togglePin(currentMovie.slug);
 }
 
 // Share movie

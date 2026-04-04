@@ -5,6 +5,7 @@ const API_BASE = 'https://phim.nguonc.com/api';
 
 // Global variables
 let favorites = [];
+let pinnedMovies = [];
 let isDarkMode = localStorage.getItem('darkMode') !== 'false';
 let watchHistory = [];
 let currentUser = null;
@@ -125,10 +126,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('User logged in:', user.email);
                 loadWatchHistoryFromFirebase();
                 loadFavoritesFromFirebase();
+                loadPinnedMoviesFromFirebase();
             } else {
                 console.log('User not logged in');
                 watchHistory = [];
                 favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
             }
             updateLoginButton();
             applyTheme();
@@ -1104,6 +1107,142 @@ function hideLoading() {
     if (loading) {
         loading.classList.add('hidden');
     }
+}
+
+// Load pinned movies from Firebase
+async function loadPinnedMoviesFromFirebase() {
+    if (!currentUser) {
+        // Fallback to localStorage if not logged in
+        pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
+        return;
+    }
+    
+    try {
+        const snapshot = await db.collection('users').doc(currentUser.uid).collection('pinnedMovies').orderBy('pinnedAt', 'desc').get();
+        pinnedMovies = [];
+        snapshot.forEach(doc => {
+            pinnedMovies.push(doc.data());
+        });
+        console.log('Pinned movies loaded from Firebase:', pinnedMovies);
+    } catch (error) {
+        console.error('Error loading pinned movies:', error);
+        // Fallback to localStorage
+        pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
+    }
+}
+
+// Save pinned movies to Firebase
+async function savePinnedMoviesToFirebase() {
+    if (!currentUser) return;
+    
+    try {
+        const userRef = db.collection('users').doc(currentUser.uid);
+        const pinnedRef = userRef.collection('pinnedMovies');
+        
+        // Clear existing pinned movies
+        const existingDocs = await pinnedRef.get();
+        const batch = db.batch();
+        
+        existingDocs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        
+        // Add new pinned movies
+        pinnedMovies.forEach(item => {
+            const docRef = pinnedRef.doc();
+            // Clean data before saving
+            const cleanItem = {
+                slug: item.slug || '',
+                title: item.title || '',
+                name: item.name || '',
+                poster_url: item.poster_url || '',
+                thumb_url: item.thumb_url || '',
+                pinnedAt: item.pinnedAt || new Date().toISOString()
+            };
+            batch.set(docRef, cleanItem);
+        });
+        
+        await batch.commit();
+        console.log('Pinned movies saved to Firebase');
+    } catch (error) {
+        console.error('Error saving pinned movies:', error);
+    }
+}
+
+// Toggle pin movie
+async function togglePin(slug) {
+    const index = pinnedMovies.findIndex(pin => pin.slug === slug);
+    
+    if (index > -1) {
+        // Remove from pinned movies
+        pinnedMovies.splice(index, 1);
+        
+        // Show notification
+        Swal.fire({
+            icon: 'success',
+            title: 'Đã bỏ ghim',
+            text: 'Phim đã được bỏ khỏi danh sách ghim',
+            timer: 2000,
+            showConfirmButton: false
+        });
+        
+        // Update pin button if it exists
+        updatePinButton(slug, false);
+    } else {
+        // Add to pinned movies
+        const movieData = {
+            slug: slug,
+            title: slug, // Use slug as title fallback
+            name: slug, // Use slug as name fallback
+            pinnedAt: new Date().toISOString()
+        };
+        pinnedMovies.unshift(movieData);
+        
+        // Show notification
+        Swal.fire({
+            icon: 'success',
+            title: 'Đã ghim phim',
+            text: 'Phim đã được thêm vào danh sách ghim',
+            timer: 2000,
+            showConfirmButton: false
+        });
+        
+        // Update pin button if it exists
+        updatePinButton(slug, true);
+    }
+    
+    // Save to Firebase if logged in, otherwise localStorage
+    if (currentUser) {
+        await savePinnedMoviesToFirebase();
+    } else {
+        localStorage.setItem('pinnedMovies', JSON.stringify(pinnedMovies));
+    }
+    
+    // Update movie detail page if it's open
+    if (typeof updatePinButton === 'function') {
+        updatePinButton(slug, pinnedMovies.some(pin => pin.slug === slug));
+    }
+}
+
+// Update pin button state
+function updatePinButton(slug, isPinned) {
+    const pinButton = document.querySelector('button[onclick="togglePinMovie()"]');
+    if (pinButton && currentMovie && currentMovie.slug === slug) {
+        if (isPinned) {
+            pinButton.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Bỏ ghim';
+            pinButton.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+            pinButton.classList.add('bg-gray-600', 'hover:bg-gray-700');
+        } else {
+            pinButton.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Ghim phim';
+            pinButton.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            pinButton.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        }
+    }
+}
+
+// Check if movie is pinned
+function isMoviePinned(slug) {
+    return pinnedMovies.some(pin => pin.slug === slug);
 }
 
 function showError(message) {
