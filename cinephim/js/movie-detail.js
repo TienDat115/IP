@@ -22,6 +22,22 @@ async function waitForWatchHistory() {
     console.log('Watch history loaded or timeout after', attempts * 100, 'ms');
 }
 
+// Auto-scroll to video player
+function scrollToVideo() {
+    const videoPlayer = document.getElementById('videoPlayer');
+    if (videoPlayer) {
+        // Smooth scroll to video player with some offset for better visibility
+        const offset = 100; // 100px from top
+        const elementPosition = videoPlayer.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+    }
+}
+
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializePage();
@@ -96,6 +112,11 @@ async function loadMovieDetail(slug) {
             
             showLoading(false);
             document.getElementById('movieContent').classList.remove('hidden');
+            
+            // Auto-scroll to video player after content is loaded
+            setTimeout(() => {
+                scrollToVideo();
+            }, 500);
             
         } else {
             throw new Error('Movie not found');
@@ -413,6 +434,11 @@ function playEpisode(episodeSlug, videoUrl) {
         
         // Update navigation buttons state
         updateNavigationButtons();
+        
+        // Auto-scroll to video player when episode changes
+        setTimeout(() => {
+            scrollToVideo();
+        }, 300);
         
         // Save to watch history
         saveToWatchHistory(currentMovie.slug, episodeSlug);
@@ -1247,10 +1273,57 @@ function insertToNote(character) {
     }
 }
 
+// Clear and save watch time note
+async function clearAndSaveNote() {
+    const noteInput = document.getElementById('watchTimeNote');
+    if (noteInput) {
+        // Clear the input
+        noteInput.value = '';
+        
+        // Save empty note to Firebase/localStorage to clear previous note
+        if (isUserLoggedIn()) {
+            try {
+                // Clear from Firebase - use where clause to find and delete all matching documents
+                const userRef = db.collection('users').doc(auth.currentUser.uid);
+                const notesRef = userRef.collection('watchTimeNotes');
+                
+                // Find all documents for this movie
+                const snapshot = await notesRef.where('movieSlug', '==', currentMovie.slug).get();
+                
+                // Delete all matching documents
+                const batch = db.batch();
+                snapshot.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                
+                await batch.commit();
+                
+                // Clear from localStorage
+                const watchTimeNotes = JSON.parse(localStorage.getItem('watchTimeNotes') || '{}');
+                delete watchTimeNotes[currentMovie.slug];
+                localStorage.setItem('watchTimeNotes', JSON.stringify(watchTimeNotes));
+                
+                showInfo('Ghi chú đã được xóa');
+                console.log('Watch time note cleared from Firebase');
+            } catch (error) {
+                console.error('Error clearing watch time note:', error);
+                showError('Không thể xóa ghi chú. Vui lòng thử lại.');
+            }
+        } else {
+            // Clear from localStorage only if not logged in
+            const watchTimeNotes = JSON.parse(localStorage.getItem('watchTimeNotes') || '{}');
+            delete watchTimeNotes[currentMovie.slug];
+            localStorage.setItem('watchTimeNotes', JSON.stringify(watchTimeNotes));
+            
+            showInfo('Ghi chú đã được xóa');
+        }
+    }
+}
+
+// Clear note input only
 function clearNote() {
     const noteInput = document.getElementById('watchTimeNote');
     if (noteInput) {
         noteInput.value = '';
-        noteInput.focus();
     }
 }

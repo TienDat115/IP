@@ -145,12 +145,17 @@
 
 			<!-- Movie Content -->
 			<div id="movieContent" class="hidden">
-				<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-					<!-- Left Column - Movie Info -->
-					<div class="lg:col-span-1">
-						<div class="bg-gray-800 rounded-lg overflow-hidden">
-							<img id="moviePoster" src="https://via.placeholder.com/400x600/374151/ffffff?text=Loading..." alt="Movie Poster" class="w-full h-auto max-w-[200px] sm:max-w-[250px] md:max-w-xs lg:max-w-sm mx-auto" />
-							<div class="p-6">
+				<div class="space-y-8">
+					<!-- Movie Info Section -->
+					<div class="bg-gray-800 rounded-lg overflow-hidden">
+						<div class="lg:flex">
+							<!-- Poster Column -->
+							<div class="lg:w-1/3">
+								<img id="moviePoster" src="https://via.placeholder.com/400x600/374151/ffffff?text=Loading..." alt="Movie Poster" class="w-full h-auto lg:max-w-full" />
+							</div>
+
+							<!-- Info Column -->
+							<div class="lg:w-2/3 p-6">
 								<h1 id="movieTitle" class="text-2xl font-bold mb-4">Đang tải...</h1>
 
 								<div class="space-y-3 mb-6">
@@ -180,6 +185,12 @@
 									</div>
 								</div>
 
+								<!-- Action Buttons -->
+								<div class="flex space-x-3 mb-6">
+									<button onclick="toggleFavorite()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-heart mr-2"></i>Thêm vào yêu thích</button>
+									<button onclick="togglePinMovie()" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-thumbtack mr-2"></i>Ghim phim</button>
+								</div>
+
 								<!-- Watch Time Note -->
 								<div class="bg-gray-700 rounded-lg p-4 mb-6">
 									<div class="flex items-center justify-between mb-2">
@@ -190,6 +201,9 @@
 										<div class="flex items-center space-x-2">
 											<button onclick="toggleVirtualKeyboard()" class="text-purple-400 hover:text-purple-300 transition" title="Mở bàn phím ảo">
 												<i class="fas fa-keyboard"></i>
+											</button>
+											<button onclick="clearAndSaveNote()" class="text-orange-400 hover:text-orange-300 transition" title="Xóa và lưu">
+												<i class="fas fa-eraser"></i>
 											</button>
 											<button onclick="saveWatchTimeNote()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition" title="Lưu ghi chú"><i class="fas fa-save"></i> Lưu</button>
 										</div>
@@ -234,13 +248,8 @@
 									<p class="text-xs text-gray-400 mt-2">Ghi chú giúp bạn nhớ vị trí xem đã dừng lại</p>
 								</div>
 
-								<div class="space-y-3">
-									<button onclick="toggleFavorite()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-heart mr-2"></i>Thêm vào yêu thích</button>
-									<button onclick="togglePinMovie()" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-thumbtack mr-2"></i>Ghim phim</button>
-								</div>
-
 								<!-- Movie Description -->
-								<div class="mt-6 bg-gray-800 rounded-lg p-6">
+								<div class="bg-gray-800 rounded-lg p-6">
 									<div class="flex justify-between items-center mb-4">
 										<h3 class="text-xl font-semibold">Nội dung phim</h3>
 										<button onclick="toggleMovieDescription()" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm transition">
@@ -254,46 +263,46 @@
 								</div>
 							</div>
 						</div>
-					</div>
 
-					<!-- Right Column - Player and Episodes -->
-					<div class="lg:col-span-2">
-						<!-- Video Player -->
-						<div class="bg-gray-800 rounded-lg overflow-hidden mb-6">
-							<div class="relative" style="padding-bottom: 56.25%">
-								<iframe id="videoPlayer" class="absolute top-0 left-0 w-full h-full" src="about:blank" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" scrolling="no"></iframe>
-							</div>
-						</div>
-
-						<!-- Episodes Section -->
-						<div id="episodesSection" class="bg-gray-800 rounded-lg p-6 mb-6">
-							<div class="flex justify-between items-center mb-4">
-								<h3 class="text-xl font-semibold">Danh sách tập</h3>
-								<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition"><i class="fas fa-history mr-2"></i>Lịch sử xem</button>
-							</div>
-
-							<!-- Episode Navigation Buttons -->
-							<div class="flex justify-between items-center mb-4">
-								<button onclick="playPreviousEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center"><i class="fas fa-chevron-left mr-2"></i>Tập trước</button>
-								<span id="currentEpisodeDisplay" class="text-white font-medium">Chưa chọn tập</span>
-								<button onclick="playNextEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center">Tập sau<i class="fas fa-chevron-right ml-2"></i></button>
-							</div>
-
-							<!-- Watch History Section - Hidden by default -->
-							<div id="watchHistorySection" class="hidden mb-6">
-								<h4 class="text-lg font-medium mb-3">Lịch sử xem phim này</h4>
-								<div id="watchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
-									<!-- Watch history will be loaded here -->
+						<!-- Player and Episodes Section -->
+						<div>
+							<!-- Video Player -->
+							<div class="bg-gray-800 rounded-lg overflow-hidden mb-6">
+								<div class="relative" style="padding-bottom: 56.25%">
+									<iframe id="videoPlayer" class="absolute top-0 left-0 w-full h-full" src="about:blank" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" scrolling="no"></iframe>
 								</div>
 							</div>
 
-							<div class="mb-4">
-								<div id="serverSelect" class="flex flex-wrap gap-2">
-									<!-- Server options will be loaded here -->
+							<!-- Episodes Section -->
+							<div id="episodesSection" class="bg-gray-800 rounded-lg p-6 mb-6">
+								<div class="flex justify-between items-center mb-4">
+									<h3 class="text-xl font-semibold">Danh sách tập</h3>
+									<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition"><i class="fas fa-history mr-2"></i>Lịch sử xem</button>
 								</div>
-							</div>
-							<div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
-								<!-- Episodes will be loaded here -->
+
+								<!-- Episode Navigation Buttons -->
+								<div class="flex justify-between items-center mb-4">
+									<button onclick="playPreviousEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center"><i class="fas fa-chevron-left mr-2"></i>Tập trước</button>
+									<span id="currentEpisodeDisplay" class="text-white font-medium">Chưa chọn tập</span>
+									<button onclick="playNextEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center">Tập sau<i class="fas fa-chevron-right ml-2"></i></button>
+								</div>
+
+								<!-- Watch History Section - Hidden by default -->
+								<div id="watchHistorySection" class="hidden mb-6">
+									<h4 class="text-lg font-medium mb-3">Lịch sử xem phim này</h4>
+									<div id="watchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
+										<!-- Watch history will be loaded here -->
+									</div>
+								</div>
+
+								<div class="mb-4">
+									<div id="serverSelect" class="flex flex-wrap gap-2">
+										<!-- Server options will be loaded here -->
+									</div>
+								</div>
+								<div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+									<!-- Episodes will be loaded here -->
+								</div>
 							</div>
 						</div>
 					</div>
