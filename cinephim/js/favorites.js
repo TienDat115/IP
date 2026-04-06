@@ -104,7 +104,7 @@ async function loadFavorites() {
                 if (!slug) continue;
                 
                 try {
-                    const response = await fetch(`${API_BASE}/film/${slug}`);
+                    const response = await fetch(getApiUrl(`${API_BASE}/film/${slug}`));
                     const data = await response.json();
                     if (data.status === 'success') {
                         movies.push(data.movie);

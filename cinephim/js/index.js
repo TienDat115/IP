@@ -65,7 +65,7 @@ async function loadNewMovies(page = 1) {
     window.history.pushState({}, '', url);
     
     try {
-        const response = await fetch(`${API_BASE}/films/phim-moi-cap-nhat?page=${page}`);
+        const response = await fetch(getApiUrl(`${API_BASE}/films/phim-moi-cap-nhat?page=${page}`));
         const data = await response.json();
         
         console.log('API Response:', data);
@@ -128,7 +128,7 @@ async function searchMovies(keyword, page = 1) {
     window.history.pushState({}, '', url);
     
     try {
-        const response = await fetch(`${API_BASE}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+        const response = await fetch(getApiUrl(`${API_BASE}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`));
         const data = await response.json();
         
         if (data.status === 'success') {
@@ -402,7 +402,7 @@ async function loadRecentWatched() {
 async function loadRecentWatchedPosters(recentWatched) {
     for (const item of recentWatched) {
         try {
-            const response = await fetch(`${API_BASE}/film/${item.movieSlug}`);
+            const response = await fetch(getApiUrl(`${API_BASE}/film/${item.movieSlug}`));
             const data = await response.json();
             
             if (data.status === 'success' && data.movie) {

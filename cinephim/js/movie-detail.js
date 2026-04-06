@@ -89,7 +89,7 @@ async function loadMovieDetail(slug) {
     try {
         showLoading(true);
         
-        const response = await fetch(`${API_BASE}/film/${slug}`);
+        const response = await fetch(getApiUrl(`${API_BASE}/film/${slug}`));
         if (!response.ok) {
             throw new Error('Failed to fetch movie details');
         }
@@ -770,7 +770,7 @@ async function loadRelatedMovies() {
         if (!categoryData || !categoryData.list || categoryData.list.length === 0) return;
         
         const categorySlug = categoryData.list[0].slug;
-        const response = await fetch(`${API_BASE}/films/category/${categorySlug}?page=1`);
+        const response = await fetch(getApiUrl(`${API_BASE}/films/category/${categorySlug}?page=1`));
         
         if (!response.ok) throw new Error('Failed to fetch related movies');
         

@@ -3,6 +3,13 @@
 // API Configuration
 const API_BASE = 'https://phim.nguonc.com/api';
 
+// Helper function to prevent API caching
+function getApiUrl(url) {
+    const separator = url.includes('?') ? '&' : '?';
+    const timestamp = new Date().getTime();
+    return `${url}${separator}_t=${timestamp}`;
+}
+
 // Global variables
 let favorites = [];
 let pinnedMovies = [];

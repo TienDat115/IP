@@ -383,7 +383,7 @@ function displayWatchHistory() {
 async function loadPosters() {
     for (const item of watchHistory) {
         try {
-            const response = await fetch(`${API_BASE}/film/${item.movieSlug}`);
+            const response = await fetch(getApiUrl(`${API_BASE}/film/${item.movieSlug}`));
             const data = await response.json();
             
             if (data.status === 'success' && data.movie) {

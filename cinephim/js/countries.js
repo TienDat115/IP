@@ -80,7 +80,7 @@ async function loadCountryMovies(page = 1) {
         // Scroll to top when changing page
         window.scrollTo(0, 0);
         
-        const response = await fetch(`${API_BASE}/films/quoc-gia/${selectedCountry}?page=${page}`);
+        const response = await fetch(getApiUrl(`${API_BASE}/films/quoc-gia/${selectedCountry}?page=${page}`));
         
         if (!response.ok) {
             throw new Error('Failed to fetch country movies');
