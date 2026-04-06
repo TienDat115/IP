@@ -473,17 +473,198 @@ async function handleRegister(event) {
     }
 }
 
+// Toggle mobile user dropdown menu
+function toggleMobileUserDropdown() {
+    const dropdown = document.getElementById('mobileUserDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+// Close mobile user dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const mobileUserProfileMenu = document.getElementById('mobileUserProfileMenu');
+    const mobileUserDropdown = document.getElementById('mobileUserDropdown');
+    
+    if (mobileUserProfileMenu && mobileUserDropdown && !mobileUserDropdown.classList.contains('hidden')) {
+        if (!mobileUserProfileMenu.contains(event.target)) {
+            mobileUserDropdown.classList.add('hidden');
+        }
+    }
+});
+
+// Toggle user dropdown menu
+function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+// Close user dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const userProfileMenu = document.getElementById('userProfileMenu');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userProfileMenu && userDropdown && !userDropdown.classList.contains('hidden')) {
+        if (!userProfileMenu.contains(event.target)) {
+            userDropdown.classList.add('hidden');
+        }
+    }
+});
+
+// Handle logout from dropdown
+async function handleLogout() {
+    try {
+        await auth.signOut();
+        currentUser = null;
+        watchHistory = [];
+        
+        // Close desktop dropdown
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            dropdown.classList.add('hidden');
+        }
+        
+        // Close mobile dropdown
+        const mobileDropdown = document.getElementById('mobileUserDropdown');
+        if (mobileDropdown) {
+            mobileDropdown.classList.add('hidden');
+        }
+        
+        // Update UI
+        updateLoginButton();
+        
+        console.log('User logged out');
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Đã đăng xuất!',
+            text: 'Bạn đã đăng xuất thành công.',
+            confirmButtonColor: '#8b5cf6',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Không thể đăng xuất. Vui lòng thử lại.',
+            confirmButtonColor: '#8b5cf6'
+        });
+    }
+}
+
+// Show account modal (placeholder function)
+function showAccountModal() {
+    // Close desktop dropdown first
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.add('hidden');
+    }
+    
+    // Close mobile dropdown
+    const mobileDropdown = document.getElementById('mobileUserDropdown');
+    if (mobileDropdown) {
+        mobileDropdown.classList.add('hidden');
+    }
+    
+    Swal.fire({
+        icon: 'info',
+        title: 'Tài khoản',
+        text: 'Chức năng quản lý tài khoản sẽ sớm được cập nhật!',
+        confirmButtonColor: '#8b5cf6'
+    });
+}
+
 // Update login button based on auth state
 function updateLoginButton() {
-    const loginIcon = document.getElementById('loginIcon');
-    const loginText = document.getElementById('loginText');
+    // Desktop elements
+    const userProfileMenu = document.getElementById('userProfileMenu');
+    const loginButton = document.getElementById('loginButton');
+    const userEmail = document.getElementById('userEmail');
+    const userAvatar = document.getElementById('userAvatar');
+    
+    // Mobile elements
+    const mobileUserProfileMenu = document.getElementById('mobileUserProfileMenu');
+    const mobileLoginButton = document.getElementById('mobileLoginButton');
+    const mobileUserEmail = document.getElementById('mobileUserEmail');
+    const mobileUserAvatar = document.getElementById('mobileUserAvatar');
     
     if (currentUser) {
-        if (loginIcon) loginIcon.className = 'fas fa-sign-out-alt mr-1';
-        if (loginText) loginText.textContent = 'Đăng xuất';
+        // Show user profile menu, hide login button for desktop
+        if (userProfileMenu) {
+            userProfileMenu.classList.remove('hidden');
+            
+            // Update user email
+            if (userEmail) {
+                userEmail.textContent = currentUser.email || 'user@example.com';
+            }
+            
+            // Generate user avatar with first letter of email
+            if (userAvatar) {
+                const firstLetter = currentUser.email ? currentUser.email.charAt(0).toUpperCase() : 'U';
+                userAvatar.src = `https://ui-avatars.com/api/?name=${firstLetter}&background=6366f1&color=ffffff&size=32`;
+                userAvatar.alt = currentUser.email || 'User Avatar';
+            }
+        }
+        
+        if (loginButton) {
+            loginButton.classList.add('hidden');
+        }
+        
+        // Show user profile menu, hide login button for mobile
+        if (mobileUserProfileMenu) {
+            mobileUserProfileMenu.classList.remove('hidden');
+            
+            // Update mobile user email
+            if (mobileUserEmail) {
+                mobileUserEmail.textContent = currentUser.email || 'user@example.com';
+            }
+            
+            // Generate mobile user avatar
+            if (mobileUserAvatar) {
+                const firstLetter = currentUser.email ? currentUser.email.charAt(0).toUpperCase() : 'U';
+                mobileUserAvatar.src = `https://ui-avatars.com/api/?name=${firstLetter}&background=6366f1&color=ffffff&size=28`;
+                mobileUserAvatar.alt = currentUser.email || 'User Avatar';
+            }
+        }
+        
+        if (mobileLoginButton) {
+            mobileLoginButton.classList.add('hidden');
+        }
     } else {
-        if (loginIcon) loginIcon.className = 'fas fa-sign-in-alt mr-1';
-        if (loginText) loginText.textContent = 'Đăng nhập';
+        // Show login button, hide user profile menu for desktop
+        if (userProfileMenu) {
+            userProfileMenu.classList.add('hidden');
+        }
+        
+        if (loginButton) {
+            loginButton.classList.remove('hidden');
+            
+            // Update login button content
+            const loginIcon = document.getElementById('loginIcon');
+            const loginText = document.getElementById('loginText');
+            
+            if (loginIcon) loginIcon.className = 'fas fa-sign-in-alt mr-1';
+            if (loginText) loginText.textContent = 'Đăng nhập';
+        }
+        
+        // Show login button, hide user profile menu for mobile
+        if (mobileUserProfileMenu) {
+            mobileUserProfileMenu.classList.add('hidden');
+        }
+        
+        if (mobileLoginButton) {
+            mobileLoginButton.classList.remove('hidden');
+            
+            // Update mobile login icon
+            const mobileLoginIcon = document.getElementById('mobileLoginIcon');
+            if (mobileLoginIcon) {
+                mobileLoginIcon.className = 'fas fa-sign-in-alt';
+            }
+        }
     }
 }
 

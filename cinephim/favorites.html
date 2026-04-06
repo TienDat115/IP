@@ -25,10 +25,52 @@
 					</button>
 					<a href="index.html" class="text-lg font-bold text-purple-400 hover:text-purple-300 transition"><i class="fas fa-film mr-1"></i>CinePhim</a>
 					<div class="flex items-center space-x-2">
-						<button onclick="toggleTheme()" class="text-white hover:text-purple-400 transition">
-							<i id="mobileThemeIcon" class="fas fa-moon"></i>
-						</button>
-						<button onclick="toggleLogin()" class="text-white hover:text-purple-400 transition">
+						<!-- Mobile User Profile Menu (shown when logged in) -->
+						<div id="mobileUserProfileMenu" class="relative hidden">
+							<button onclick="toggleMobileUserDropdown()" class="text-white hover:text-purple-400 transition">
+								<img id="mobileUserAvatar" src="https://via.placeholder.com/28x28/4B5563/ffffff?text=User" alt="User Avatar" class="w-7 h-7 rounded-full" />
+							</button>
+
+							<!-- Mobile Dropdown Menu -->
+							<div id="mobileUserDropdown" class="absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50">
+								<div class="p-4 border-b border-gray-700">
+									<p class="text-sm text-gray-300">Chào,</p>
+									<p id="mobileUserEmail" class="text-sm font-medium text-white truncate">user@example.com</p>
+								</div>
+
+								<div class="py-2">
+									<a href="favorites.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-heart w-5 mr-3 text-red-400"></i>
+										Yêu thích
+									</a>
+									<a href="watch-history.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-history w-5 mr-3 text-blue-400"></i>
+										Xem tiếp
+									</a>
+									<a
+										href="#"
+										onclick="
+											showAccountModal();
+											return false;
+										"
+										class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition"
+									>
+										<i class="fas fa-user w-5 mr-3 text-green-400"></i>
+										Tài khoản
+									</a>
+								</div>
+
+								<div class="border-t border-gray-700 py-2">
+									<button onclick="handleLogout()" class="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-sign-out-alt w-5 mr-3 text-orange-400"></i>
+										Thoát
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- Mobile Login Button (shown when not logged in) -->
+						<button id="mobileLoginButton" onclick="toggleLogin()" class="text-white hover:text-purple-400 transition">
 							<i id="mobileLoginIcon" class="fas fa-sign-in-alt"></i>
 						</button>
 					</div>
@@ -42,23 +84,65 @@
 						<a href="categories.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Thể loại"><i class="fas fa-list mr-1"></i><span class="nav-text">Thể loại</span></a>
 						<a href="countries.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Quốc gia"><i class="fas fa-globe mr-1"></i><span class="nav-text">Quốc gia</span></a>
 						<a href="single-movies.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Phim Lẻ"><i class="fas fa-film mr-1"></i><span class="nav-text">Phim Lẻ</span></a>
-						<a href="favorites.html" class="text-purple-400 hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Yêu thích"><i class="fas fa-heart mr-1"></i><span class="nav-text">Yêu thích</span></a>
-						<a href="watch-history.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Lịch sử"><i class="fas fa-history mr-1"></i><span class="nav-text">Lịch sử</span></a>
 						<a href="sources.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Nguồn phim"><i class="fas fa-link mr-1"></i><span class="nav-text">Nguồn phim</span></a>
-						<button onclick="toggleLogin()" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Đăng nhập">
+						<!-- User Profile Menu (shown when logged in) -->
+						<div id="userProfileMenu" class="relative hidden">
+							<button onclick="toggleUserDropdown()" class="flex items-center space-x-2 hover:text-purple-400 transition">
+								<img id="userAvatar" src="https://via.placeholder.com/32x32/4B5563/ffffff?text=User" alt="User Avatar" class="w-8 h-8 rounded-full" />
+							</button>
+
+							<!-- Dropdown Menu -->
+							<div id="userDropdown" class="absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50">
+								<div class="p-4 border-b border-gray-700">
+									<p class="text-sm text-gray-300">Chào,</p>
+									<p id="userEmail" class="text-sm font-medium text-white truncate">user@example.com</p>
+								</div>
+
+								<div class="py-2">
+									<a href="favorites.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-heart w-5 mr-3 text-red-400"></i>
+										Yêu thích
+									</a>
+									<a href="watch-history.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-history w-5 mr-3 text-blue-400"></i>
+										Xem tiếp
+									</a>
+									<a
+										href="#"
+										onclick="
+											showAccountModal();
+											return false;
+										"
+										class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition"
+									>
+										<i class="fas fa-user w-5 mr-3 text-green-400"></i>
+										Tài khoản
+									</a>
+								</div>
+
+								<div class="border-t border-gray-700 py-2">
+									<button onclick="handleLogout()" class="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-sign-out-alt w-5 mr-3 text-orange-400"></i>
+										Thoát
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- Login Button (shown when not logged in) -->
+						<button id="loginButton" onclick="toggleLogin()" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Đăng nhập">
 							<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
 							<span id="loginText">Đăng nhập</span>
 						</button>
 					</div>
 				</div>
+				<!-- Mobile Navigation Menu -->
 				<div id="mobileMenu" class="hidden sm:hidden mt-2 bg-gray-700 rounded-lg p-2">
 					<div class="grid grid-cols-2 gap-2">
 						<a href="index.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-home mr-1"></i>Trang chủ</a>
 						<a href="categories.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-list mr-1"></i>Thể loại</a>
 						<a href="countries.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-globe mr-1"></i>Quốc gia</a>
 						<a href="single-movies.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-film mr-1"></i>Phim Lẻ</a>
-						<a href="favorites.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-heart mr-1"></i>Yêu thích</a>
-						<a href="watch-history.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-history mr-1"></i>Lịch sử</a>
 						<a href="sources.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-link mr-1"></i>Nguồn phim</a>
 					</div>
 				</div>

@@ -408,3 +408,86 @@ body:not(.dark) .hover\:bg-gray-600:hover {
 		/* Prevent zoom on iOS */
 	}
 }
+
+/* User Profile Dropdown Styles */
+#userDropdown {
+	animation: dropdownFadeIn 0.2s ease-in-out;
+}
+
+@keyframes dropdownFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+#userDropdown .flex.items-center {
+	transition: background-color 0.2s ease;
+}
+
+#userDropdown .flex.items-center:hover {
+	background-color: rgba(55, 65, 81, 0.5);
+}
+
+/* Light mode styles for dropdown */
+body:not(.dark) #userDropdown {
+	background-color: #ffffff;
+	border-color: #e5e7eb;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+body:not(.dark) #userDropdown .border-gray-700 {
+	border-color: #e5e7eb;
+}
+
+body:not(.dark) #userDropdown .text-gray-300 {
+	color: #6b7280;
+}
+
+body:not(.dark) #userDropdown .text-white {
+	color: #111827;
+}
+
+body:not(.dark) #userDropdown .hover\:bg-gray-700:hover {
+	background-color: #f9fafb;
+}
+
+body:not(.dark) #userDropdown .hover\:bg-gray-600:hover {
+	background-color: #f3f4f6;
+}
+
+/* User avatar hover effect */
+#userProfileMenu button:hover img {
+	transform: scale(1.05);
+	transition: transform 0.2s ease;
+}
+
+/* Mobile responsive for dropdown */
+@media (max-width: 640px) {
+	#userDropdown {
+		width: 280px;
+		right: -10px;
+	}
+
+	#mobileUserDropdown {
+		width: 280px;
+		right: -10px;
+		animation: dropdownFadeIn 0.2s ease-in-out;
+	}
+
+	/* Mobile user avatar hover effect */
+	#mobileUserProfileMenu button:hover img {
+		transform: scale(1.05);
+		transition: transform 0.2s ease;
+	}
+
+	/* Ensure mobile dropdown appears above other elements */
+	#mobileUserDropdown {
+		z-index: 60;
+	}
+}
