@@ -170,23 +170,27 @@ function displayMovies(movies) {
     
     // Display all movies but limit grid to 5 columns maximum
     moviesGrid.innerHTML = movies.map(movie => `
-        <div class="bg-gray-800 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="goToMovieDetail('${movie.slug}')">
+        <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer" onclick="goToMovieDetail('${movie.slug}')">
             <div class="relative">
                 <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                      alt="${movie.name || movie.title}" 
-                     class="w-full h-64 object-cover"
+                     class="film-poster w-full"
                      onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
-                ${movie.quality ? `<span class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded">${movie.quality}</span>` : ''}
-                ${movie.year ? `<span class="absolute top-2 left-2 bg-gray-900 bg-opacity-75 text-white px-2 py-1 text-xs rounded">${movie.year}</span>` : ''}
+                <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
+                    ${movie.quality || 'HD'}
+                </div>
                 ${movie.current_episode ? `
                     <div class="absolute bottom-2 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">
                         ${formatEpisodeInfo(movie.current_episode, movie.total_episodes)}
                     </div>
                 ` : ''}
             </div>
-            <div class="p-3">
-                <h3 class="font-medium text-sm truncate mb-1">${movie.name || movie.title}</h3>
-                <p class="text-xs text-gray-400 line-clamp-2">${movie.content || movie.description || 'Không có mô tả'}</p>
+            <div class="p-4">
+                <h3 class="font-semibold text-sm mb-2 line-clamp-2">${movie.name || movie.title}</h3>
+                <p class="text-gray-400 text-xs mb-2">${movie.year || movie.time || ''}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-500">${getCountryFromCategory(movie.category) || ''}</span>
+                </div>
             </div>
         </div>
     `).join('');
