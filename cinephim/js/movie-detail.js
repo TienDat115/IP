@@ -281,15 +281,33 @@ function updatePageMeta() {
     document.getElementById('ogImage').content = getHeroImage(currentMovie.poster_url, currentMovie.thumb_url);
 }
 
-// Auto-play latest watched episode from history
+// Auto-play episode from URL or latest watched from history
 function autoPlayLatestEpisode() {
     if (!currentMovie || !currentMovie.episodes) return;
     
-    // Find latest watched episode for this movie from history
+    // First, check if episode parameter is in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const episodeSlug = urlParams.get('episode');
+    const serverIndex = parseInt(urlParams.get('server')) || 0;
+    
+    if (episodeSlug) {
+        console.log('Found episode in URL:', episodeSlug, 'Server:', serverIndex);
+        
+        // Set server selection if specified
+        if (serverIndex >= 0 && serverIndex < currentMovie.episodes.length) {
+            selectServer(serverIndex);
+        }
+        
+        // Find and play the episode
+        playEpisodeFromHistory(episodeSlug, serverIndex);
+        return;
+    }
+    
+    // If no URL parameter, use history logic
     const movieHistory = watchHistory.filter(item => item.movieSlug === currentMovie.slug);
     
     if (movieHistory.length > 0) {
-        // Get the latest watched episode
+        // Get latest watched episode
         const latestEpisode = movieHistory[0]; // Most recent is at index 0
         console.log('Found latest episode in history:', latestEpisode);
         
@@ -364,6 +382,26 @@ function selectServer(serverIndex) {
     
     // Update episodes list
     updateEpisodesListForServer(serverIndex);
+    
+    // Update URL with server parameter
+    updateUrlWithServer(serverIndex);
+}
+
+// Update URL with server parameter
+function updateUrlWithServer(serverIndex) {
+    if (!currentMovie) return;
+    
+    try {
+        const url = new URL(window.location);
+        url.searchParams.set('server', serverIndex.toString());
+        
+        // Update browser URL without page reload
+        window.history.pushState({}, '', url);
+        
+        console.log('URL updated with server:', url.toString());
+    } catch (error) {
+        console.error('Error updating URL:', error);
+    }
 }
 
 // Update episodes list when server changes
@@ -435,6 +473,9 @@ function playEpisode(episodeSlug, videoUrl) {
         // Update navigation buttons state
         updateNavigationButtons();
         
+        // Update URL with episode parameter
+        updateUrlWithEpisode(episodeSlug);
+        
         // Auto-scroll to video player when episode changes
         setTimeout(() => {
             scrollToVideo();
@@ -454,6 +495,24 @@ function playEpisode(episodeSlug, videoUrl) {
     } catch (error) {
         console.error('Error playing episode:', error);
         showError('Có lỗi xảy ra khi phát video: ' + error.message + '. Vui lòng thử lại.');
+    }
+}
+
+// Update URL with episode parameter
+function updateUrlWithEpisode(episodeSlug) {
+    if (!currentMovie || !episodeSlug) return;
+    
+    try {
+        const url = new URL(window.location);
+        url.searchParams.set('episode', episodeSlug);
+        url.searchParams.set('server', getCurrentServerIndex().toString());
+        
+        // Update browser URL without page reload
+        window.history.pushState({}, '', url);
+        
+        console.log('URL updated with episode:', url.toString());
+    } catch (error) {
+        console.error('Error updating URL:', error);
     }
 }
 
