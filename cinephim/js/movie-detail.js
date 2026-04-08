@@ -3,6 +3,8 @@ let currentMovie = null;
 let currentEpisodeIndex = 0;
 let currentServerIndex = 0;
 let player = null;
+let currentEpisodePage = 1;
+let episodesPerPage = 50;
 
 // Check if user is logged in
 function isUserLoggedIn() {
@@ -162,8 +164,8 @@ async function displayMovieDetails() {
     const createdDate = currentMovie.created ? new Date(currentMovie.created) : null;
     const modifiedDate = currentMovie.modified ? new Date(currentMovie.modified) : null;
     const yearText = createdDate ? createdDate.getFullYear() : (currentMovie.year || currentMovie.release_year || 'Không rõ');
-    const dateText = createdDate ? ` (${createdDate.getDate()}/${createdDate.getMonth() + 1}/${createdDate.getFullYear()})` : '';
-    const modifiedText = modifiedDate ? `${modifiedDate.getDate()}/${modifiedDate.getMonth() + 1}/${modifiedDate.getFullYear()}` : 'Không rõ';
+    const dateText = createdDate ? ` (${String(createdDate.getDate()).padStart(2, '0')}/${String(createdDate.getMonth() + 1).padStart(2, '0')}/${createdDate.getFullYear()})` : '';
+    const modifiedText = modifiedDate ? `${String(modifiedDate.getDate()).padStart(2, '0')}/${String(modifiedDate.getMonth() + 1).padStart(2, '0')}/${modifiedDate.getFullYear()}` : 'Không rõ';
     document.getElementById('movieYear').textContent = yearText + dateText;
     document.getElementById('movieDuration').textContent = currentMovie.time || 'Không rõ';
     document.getElementById("episodeProgress").textContent = formatEpisodeProgress(currentMovie.current_episode, currentMovie.total_episodes);
@@ -419,16 +421,137 @@ function updateEpisodesListForServer(serverIndex) {
     const server = currentMovie.episodes[serverIndex];
     
     if (server && server.items) {
-        episodesList.innerHTML = [...server.items].reverse().map((episode, index) => `
+        const totalEpisodes = server.items.length;
+        
+        // Reset to page 1 if server changes
+        if (currentServerIndex !== serverIndex) {
+            currentEpisodePage = 1;
+        }
+        
+        // Calculate pagination
+        const startIndex = (currentEpisodePage - 1) * episodesPerPage;
+        const endIndex = Math.min(startIndex + episodesPerPage, totalEpisodes);
+        const paginatedEpisodes = [...server.items].reverse().slice(startIndex, endIndex);
+        
+        // Display episodes for current page
+        episodesList.innerHTML = paginatedEpisodes.map((episode, index) => `
             <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
                     class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug, currentMovie.slug) ? 'ring-2 ring-blue-500' : ''}">
-                ${episode.name || `Tập ${server.items.length - index}`}
+                ${episode.name || `Tập ${server.items.length - (startIndex + index)}`}
                 ${isEpisodeWatched(episode.slug, currentMovie.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
             </button>
         `).join('');
         
+        // Update pagination if needed
+        updateEpisodesPagination(totalEpisodes);
+        
         // Update navigation buttons state
         updateNavigationButtons();
+    }
+}
+
+// Update episodes pagination
+function updateEpisodesPagination(totalEpisodes) {
+    const paginationContainer = document.getElementById('episodesPagination');
+    
+    if (!paginationContainer) return;
+    
+    // Only show pagination if more than 50 episodes
+    if (totalEpisodes <= episodesPerPage) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    const totalPages = Math.ceil(totalEpisodes / episodesPerPage);
+    let paginationHTML = '';
+    
+    // Previous button
+    paginationHTML += `
+        <button onclick="goToEpisodePage(${currentEpisodePage - 1})" 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    currentEpisodePage === 1 
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                }" 
+                ${currentEpisodePage === 1 ? 'disabled' : ''}>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    `;
+    
+    // Page numbers (max 5 visible pages)
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentEpisodePage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        paginationHTML += `
+            <button onclick="goToEpisodePage(1)" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">1</button>
+        `;
+        if (startPage > 2) {
+            paginationHTML += `<span class="px-2 text-gray-400">...</span>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+            <button onclick="goToEpisodePage(${i})" 
+                    class="px-3 py-2 rounded-lg text-sm font-medium transition ${
+                        i === currentEpisodePage 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-700 text-white hover:bg-gray-600'
+                    }">
+                ${i}
+            </button>
+        `;
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            paginationHTML += `<span class="px-2 text-gray-400">...</span>`;
+        }
+        paginationHTML += `
+            <button onclick="goToEpisodePage(${totalPages})" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">${totalPages}</button>
+        `;
+    }
+    
+    // Next button
+    paginationHTML += `
+        <button onclick="goToEpisodePage(${currentEpisodePage + 1})" 
+                class="px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    currentEpisodePage === totalPages 
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                }" 
+                ${currentEpisodePage === totalPages ? 'disabled' : ''}>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    `;
+    
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+// Go to specific episode page
+function goToEpisodePage(page) {
+    const serverIndex = getCurrentServerIndex();
+    const server = currentMovie.episodes[serverIndex];
+    
+    if (!server || !server.items) return;
+    
+    const totalPages = Math.ceil(server.items.length / episodesPerPage);
+    
+    if (page < 1 || page > totalPages) return;
+    
+    currentEpisodePage = page;
+    updateEpisodesListForServer(serverIndex);
+    
+    // Scroll to episodes section
+    const episodesSection = document.getElementById('episodesSection');
+    if (episodesSection) {
+        episodesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
@@ -469,6 +592,9 @@ function playEpisode(episodeSlug, videoUrl) {
         
         // Update current episode display
         updateCurrentEpisodeDisplay(episodeSlug);
+        
+        // Update page title with episode number
+        updatePageTitleWithEpisode(episodeSlug);
         
         // Update navigation buttons state
         updateNavigationButtons();
@@ -735,6 +861,19 @@ function updateCurrentEpisodeDisplay(episodeSlug) {
     
     const episodeName = getEpisodeName(episodeSlug);
     displayElement.textContent = episodeName;
+}
+
+// Update page title with episode number
+function updatePageTitleWithEpisode(episodeSlug) {
+    if (!currentMovie || !episodeSlug) return;
+    
+    const episodeName = getEpisodeName(episodeSlug);
+    const title = `${currentMovie.name || currentMovie.title} - ${episodeName}`;
+    
+    // Update document title and meta tags
+    document.title = title;
+    document.getElementById('pageTitle').textContent = title;
+    document.getElementById('ogTitle').content = title;
 }
 
 // Update navigation buttons state
