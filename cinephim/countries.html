@@ -28,32 +28,27 @@
 		<link rel="stylesheet" href="css/styles.css" />
 		<style>
 			/* Custom responsive grid */
-			@media (max-width: 320px) {
-				.movies-grid {
-					grid-template-columns: repeat(1, 1fr);
-				}
-			}
-			@media (min-width: 321px) and (max-width: 640px) {
+			@media (max-width: 639px) {
 				.movies-grid {
 					grid-template-columns: repeat(2, 1fr);
 				}
 			}
-			@media (min-width: 641px) and (max-width: 768px) {
+			@media (min-width: 640px) and (max-width: 767px) {
 				.movies-grid {
 					grid-template-columns: repeat(3, 1fr);
 				}
 			}
-			@media (min-width: 769px) and (max-width: 1024px) {
+			@media (min-width: 768px) and (max-width: 1023px) {
 				.movies-grid {
 					grid-template-columns: repeat(4, 1fr);
 				}
 			}
-			@media (min-width: 1025px) and (max-width: 1280px) {
+			@media (min-width: 1024px) and (max-width: 1279px) {
 				.movies-grid {
 					grid-template-columns: repeat(5, 1fr);
 				}
 			}
-			@media (min-width: 1281px) {
+			@media (min-width: 1280px) {
 				.movies-grid {
 					grid-template-columns: repeat(6, 1fr);
 				}
@@ -251,7 +246,7 @@
 				<div class="flex flex-col sm:flex-row items-center gap-4">
 					<div class="w-full sm:w-auto">
 						<label class="block text-sm font-medium text-gray-300 mb-2">Chọn quốc gia:</label>
-						<div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 bg-gray-700 p-4 rounded-lg">
+						<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 bg-gray-700 p-4 rounded-lg">
 							<label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
 								<input type="radio" name="country" value="au-my" onchange="loadCountryMovies(this.value)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
 								<span class="text-white">Âu Mỹ</span>
@@ -381,7 +376,7 @@
 
 			<!-- Movies Grid -->
 			<div id="moviesContainer">
-				<div id="moviesGrid" class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+				<div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
 					<!-- Movies will be loaded here -->
 				</div>
 
