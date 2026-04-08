@@ -25,13 +25,17 @@
 				padding: 0 1rem;
 			}
 
-			/* Responsive grid */
+			/* Mobile button icons only */
 			@media (max-width: 639px) {
 				#watchHistoryGrid {
 					grid-template-columns: repeat(2, 1fr);
 				}
 				#pagination {
 					padding: 0 0.5rem;
+				}
+				/* Hide text and center icon on mobile */
+				.hidden.sm\:inline + i {
+					margin-right: 0 !important;
 				}
 			}
 			@media (min-width: 640px) and (max-width: 767px) {
@@ -192,9 +196,18 @@
 			<div class="flex justify-between items-center mb-6">
 				<h1 class="text-3xl font-bold">Lịch sử xem phim</h1>
 				<div class="flex gap-2">
-					<button onclick="removeDuplicateHistory()" class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-lg text-sm transition"><i class="fas fa-compress-alt mr-2"></i>Xóa trùng lặp</button>
-					<button onclick="refreshWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition"><i class="fas fa-sync mr-2"></i>Làm mới</button>
-					<button onclick="clearWatchHistory()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm transition"><i class="fas fa-trash mr-2"></i>Xóa tất cả</button>
+					<button onclick="removeDuplicateHistory()" class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-lg text-sm transition">
+						<i class="fas fa-compress-alt mr-2"></i>
+						<span class="hidden sm:inline">Xóa trùng lặp</span>
+					</button>
+					<button onclick="refreshWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition">
+						<i class="fas fa-sync mr-2"></i>
+						<span class="hidden sm:inline">Làm mới</span>
+					</button>
+					<button onclick="clearWatchHistory()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm transition">
+						<i class="fas fa-trash mr-2"></i>
+						<span class="hidden sm:inline">Xóa tất cả</span>
+					</button>
 				</div>
 			</div>
 			<div id="watchHistoryGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
