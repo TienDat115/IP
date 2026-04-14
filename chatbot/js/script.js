@@ -423,9 +423,23 @@ async function sendMessage() {
 					showConfirmButton: true,
 				});
 
-				// Xóa file đã chọn
-				fileInput.value = "";
-				updateFileList(fileInput);
+				// Hỏi người dùng có muốn xóa file sau khi gửi không
+				Swal.fire({
+					title: 'Xóa file sau khi gửi?',
+					text: 'Bạn có muốn xóa các file đã gửi khỏi danh sách không?',
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonText: 'Xóa file',
+					cancelButtonText: 'Giữ lại file',
+					confirmButtonColor: '#d33',
+					cancelButtonColor: '#3085d6'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						// Xóa file đã chọn
+						fileInput.value = "";
+						updateFileList(fileInput);
+					}
+				});
 			} else {
 				const error = await response.json();
 				throw new Error(error.message || "Không thể gửi file");
@@ -1626,6 +1640,7 @@ async function loadDraft(textareaId = "messageText") {
 
 function updateFileList(input) {
 	const fileList = document.getElementById("fileList");
+	const clearFilesBtn = document.getElementById("clearFilesBtn");
 
 	if (input.files.length > 0) {
 		let html = '<div class="list-group">';
@@ -1677,9 +1692,40 @@ function updateFileList(input) {
 		}
 		html += "</div>";
 		fileList.innerHTML = html;
+		
+		// Hiển thị nút xóa tất cả khi có file
+		if (clearFilesBtn) {
+			clearFilesBtn.style.display = 'inline-flex';
+		}
 	} else {
 		fileList.innerHTML = "Chưa có file nào được chọn";
+		
+		// Ẩn nút xóa tất cả khi không có file
+		if (clearFilesBtn) {
+			clearFilesBtn.style.display = 'none';
+		}
 	}
+}
+
+// Function to clear all files
+function clearAllFiles() {
+	Swal.fire({
+		title: 'Xác nhận xóa tất cả',
+		text: 'Bạn có chắc chắn muốn xóa tất cả file đã chọn không?',
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#d33',
+		cancelButtonColor: '#3085d6',
+		confirmButtonText: 'Xóa tất cả',
+		cancelButtonText: 'Hủy'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			const fileInput = document.getElementById("fileInput");
+			fileInput.value = "";
+			updateFileList(fileInput);
+			showSuccessMessage("Đã xóa tất cả file thành công");
+		}
+	});
 }
 
 // Function to remove a specific file
@@ -1694,10 +1740,10 @@ function removeFile(index) {
 		}
 	}
 	
-	// Update the file input
+	// Update file input
 	fileInput.files = dt.files;
 	
-	// Update the file list display
+	// Update file list display
 	updateFileList(fileInput);
 	
 	// Show success message
@@ -1727,7 +1773,41 @@ document.addEventListener("DOMContentLoaded", function() {
 	if (dropZone && fileInput) {
 		// Click để mở file input
 		dropZone.addEventListener("click", function() {
-			fileInput.click();
+			// Lưu các file hiện tại trước khi mở file input
+			const currentFiles = Array.from(fileInput.files);
+			
+			// Tạo một input tạm thời để xử lý việc chọn file
+			const tempInput = document.createElement('input');
+			tempInput.type = 'file';
+			tempInput.multiple = true;
+			
+			tempInput.addEventListener('change', function(e) {
+				const newFiles = Array.from(e.target.files);
+				
+				if (newFiles.length > 0) {
+					// Tạo DataTransfer mới để kết hợp file cũ và file mới
+					const dataTransfer = new DataTransfer();
+					
+					// Thêm các file cũ
+					currentFiles.forEach(file => {
+						dataTransfer.items.add(file);
+					});
+					
+					// Thêm các file mới
+					newFiles.forEach(file => {
+						dataTransfer.items.add(file);
+					});
+					
+					// Cập nhật file input
+					fileInput.files = dataTransfer.files;
+					updateFileList(fileInput);
+					
+					// Hiển thị thông báo
+					showSuccessMessage(`Đã thêm ${newFiles.length} file mới vào danh sách`);
+				}
+			});
+			
+			tempInput.click();
 		});
 
 		// Drag & drop events
@@ -1745,10 +1825,27 @@ document.addEventListener("DOMContentLoaded", function() {
 			e.preventDefault();
 			dropZone.classList.remove("border-primary", "bg-light");
 			
-			const files = e.dataTransfer.files;
-			if (files.length > 0) {
-				fileInput.files = files;
+			const newFiles = e.dataTransfer.files;
+			if (newFiles.length > 0) {
+				// Tạo DataTransfer mới để kết hợp file cũ và file mới
+				const dataTransfer = new DataTransfer();
+				
+				// Thêm các file cũ
+				for (let i = 0; i < fileInput.files.length; i++) {
+					dataTransfer.items.add(fileInput.files[i]);
+				}
+				
+				// Thêm các file mới từ drag & drop
+				for (let i = 0; i < newFiles.length; i++) {
+					dataTransfer.items.add(newFiles[i]);
+				}
+				
+				// Cập nhật file input
+				fileInput.files = dataTransfer.files;
 				updateFileList(fileInput);
+				
+				// Hiển thị thông báo
+				showSuccessMessage(`Đã thêm ${newFiles.length} file mới vào danh sách`);
 			}
 		});
 

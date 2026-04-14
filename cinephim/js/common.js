@@ -299,6 +299,8 @@ async function toggleLogin() {
             if (loginIcon) loginIcon.className = 'fas fa-sign-in-alt mr-1';
             if (loginText) loginText.textContent = 'Đăng nhập';
             console.log('User logged out');
+            // Reload page after logout
+            window.location.reload();
         } catch (error) {
             console.error('Logout error:', error);
         }
@@ -371,6 +373,9 @@ async function handleLogin(event) {
             confirmButtonColor: '#8b5cf6',
             timer: 2000,
             showConfirmButton: false
+        }).then(() => {
+            // Reload page after successful login
+            window.location.reload();
         });
         
     } catch (error) {
@@ -450,6 +455,9 @@ async function handleRegister(event) {
             confirmButtonColor: '#8b5cf6',
             timer: 2000,
             showConfirmButton: false
+        }).then(() => {
+            // Reload page after successful registration
+            window.location.reload();
         });
         
     } catch (error) {
@@ -551,6 +559,9 @@ async function handleLogout() {
             confirmButtonColor: '#8b5cf6',
             timer: 2000,
             showConfirmButton: false
+        }).then(() => {
+            // Reload page after successful logout
+            window.location.reload();
         });
     } catch (error) {
         console.error('Logout error:', error);

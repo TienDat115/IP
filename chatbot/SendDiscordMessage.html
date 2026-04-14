@@ -103,7 +103,13 @@
 									<p class="small text-muted">Hoặc nhấn Ctrl+V để paste hình ảnh từ clipboard</p>
 									<input type="file" class="form-control d-none" id="fileInput" multiple onchange="updateFileList(this)" />
 								</div>
-								<div id="fileList" class="mt-2 small text-muted" style="max-height: 150px; overflow-y: auto">Chưa có file nào được chọn</div>
+								<div class="d-flex justify-content-between align-items-center mt-2">
+									<div id="fileList" class="small text-muted flex-grow-1" style="max-height: 150px; overflow-y: auto">Chưa có file nào được chọn</div>
+									<button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearAllFiles()" title="Xóa tất cả file" id="clearFilesBtn" style="display: none">
+										<i class="fas fa-trash"></i>
+										<span class="d-none d-sm-inline ms-1">Xóa tất cả</span>
+									</button>
+								</div>
 							</div>
 
 							<div class="form-check mb-3">
