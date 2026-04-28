@@ -30,5 +30,13 @@
 
 		],
 		"lastUpdate": "2025-06-08 15:00:00"
+	},
+	"game5": {
+		"name": "Võ Lâm Ba Miền",
+		"url": "VoLamBaMien",
+		"levelToOpenDays": [
+
+		],
+		"lastUpdate": "2025-06-08 15:00:00"
 	}
 }
