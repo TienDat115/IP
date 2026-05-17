@@ -383,15 +383,27 @@ function displayWatchHistory() {
 async function loadPosters() {
     for (const item of watchHistory) {
         try {
-            const response = await fetch(getApiUrl(`${API_BASE}/film/${item.movieSlug}`));
+            const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
             const data = await response.json();
             
-            if (data.status === 'success' && data.movie) {
+            const movieData = data.movie || data.item || data.data?.item;
+            if ((data.status === 'success' || data.status === true) && movieData) {
+                // Fix OPhim image paths if needed
+                if (currentSourceKey === 'ophim' && data.pathImage) {
+                    if (movieData.poster_url && !movieData.poster_url.startsWith('http')) {
+                        movieData.poster_url = data.pathImage + movieData.poster_url;
+                    }
+                    if (movieData.thumb_url && !movieData.thumb_url.startsWith('http')) {
+                        movieData.thumb_url = data.pathImage + movieData.thumb_url;
+                    }
+                }
+                
+                const movie = normalizeMovieData(movieData);
                 const posterContainer = document.getElementById('poster-' + item.movieSlug);
                 if (posterContainer) {
                     posterContainer.innerHTML = `
-                        <img src="${getVerticalImage(data.movie.poster_url, data.movie.thumb_url)}" 
-                             alt="${data.movie.name || data.movie.title || item.movieTitle}" 
+                        <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+                             alt="${movie.name || movie.title || item.movieTitle}" 
                              class="film-poster w-full"
                              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                     `;

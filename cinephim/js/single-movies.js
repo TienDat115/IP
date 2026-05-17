@@ -42,7 +42,12 @@ async function loadSingleMovies(page = 1) {
         // Scroll to top when changing page
         window.scrollTo(0, 0);
         
-        const response = await fetch(getApiUrl(`${API_BASE}/films/danh-sach/phim-le?page=${page}`));
+        let endpoint = `/danh-sach/phim-le`;
+        if (currentSourceKey === 'nguonc') {
+            endpoint = `/films/danh-sach/phim-le`;
+        }
+        
+        const response = await fetch(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
         
         if (!response.ok) {
             throw new Error('Failed to fetch single movies');
@@ -50,9 +55,13 @@ async function loadSingleMovies(page = 1) {
         
         const data = await response.json();
         
-        if (data.status === 'success' && data.items) {
-            displayMovies(data.items);
-            updatePagination(data.paginate);
+        if (data.status === 'success' || data.status === true) {
+            const pathImage = data.pathImage || data.data?.pathImage || '';
+            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
+            displayMovies(movies);
+            
+            const pagination = normalizePagination(data);
+            updatePagination(pagination);
             
             // Update page title
             document.title = `Phim Lẻ - CinePhim`;

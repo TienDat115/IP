@@ -65,24 +65,20 @@ async function loadNewMovies(page = 1) {
     window.history.pushState({}, '', url);
     
     try {
-        const response = await fetch(getApiUrl(`${API_BASE}/films/phim-moi-cap-nhat?page=${page}`));
+        const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.new}?page=${page}`));
         const data = await response.json();
         
         console.log('API Response:', data);
         
         if (data.status === 'success') {
-            displayMovies(data.items);
+            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, data.pathImage));
+            displayMovies(movies);
             
-            // Update currentPage from API response
-            if (data.paginate && data.paginate.current_page) {
-                currentPage = data.paginate.current_page;
-            } else {
-                currentPage = page;
-            }
+            const pagination = normalizePagination(data);
             
-            // Always show pagination for testing
-            if (data.paginate) {
-                displayPagination(data.paginate);
+            if (pagination) {
+                currentPage = pagination.current_page;
+                displayPagination(pagination);
             } else {
                 // Create mock pagination for testing
                 displayPagination({
@@ -128,22 +124,18 @@ async function searchMovies(keyword, page = 1) {
     window.history.pushState({}, '', url);
     
     try {
-        const response = await fetch(getApiUrl(`${API_BASE}/films/search?keyword=${encodeURIComponent(keyword)}&page=${page}`));
+        const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.search}?keyword=${encodeURIComponent(keyword)}&page=${page}`));
         const data = await response.json();
         
         if (data.status === 'success') {
-            displayMovies(data.items);
+            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, data.pathImage));
+            displayMovies(movies);
             
-            // Update currentPage from API response
-            if (data.paginate && data.paginate.current_page) {
-                currentPage = data.paginate.current_page;
-            } else {
-                currentPage = page;
-            }
+            const pagination = normalizePagination(data);
             
-            // Always show pagination for testing
-            if (data.paginate) {
-                displayPagination(data.paginate);
+            if (pagination) {
+                currentPage = pagination.current_page;
+                displayPagination(pagination);
             } else {
                 // Create mock pagination for testing
                 displayPagination({
@@ -402,15 +394,27 @@ async function loadRecentWatched() {
 async function loadRecentWatchedPosters(recentWatched) {
     for (const item of recentWatched) {
         try {
-            const response = await fetch(getApiUrl(`${API_BASE}/film/${item.movieSlug}`));
+            const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
             const data = await response.json();
             
-            if (data.status === 'success' && data.movie) {
+            const movieData = data.movie || data.item || data.data?.item;
+            if ((data.status === 'success' || data.status === true) && movieData) {
+                // Fix OPhim image paths if needed
+                if (currentSourceKey === 'ophim' && data.pathImage) {
+                    if (movieData.poster_url && !movieData.poster_url.startsWith('http')) {
+                        movieData.poster_url = data.pathImage + movieData.poster_url;
+                    }
+                    if (movieData.thumb_url && !movieData.thumb_url.startsWith('http')) {
+                        movieData.thumb_url = data.pathImage + movieData.thumb_url;
+                    }
+                }
+                
+                const movie = normalizeMovieData(movieData);
                 const posterContainer = document.getElementById('recent-poster-' + item.movieSlug);
                 if (posterContainer) {
                     posterContainer.innerHTML = `
-                        <img src="${getVerticalImage(data.movie.poster_url, data.movie.thumb_url)}" 
-                             alt="${data.movie.name || data.movie.title || item.movieTitle}" 
+                        <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+                             alt="${movie.name || movie.title || item.movieTitle}" 
                              class="film-poster w-full"
                              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                     `;

@@ -104,10 +104,20 @@ async function loadFavorites() {
                 if (!slug) continue;
                 
                 try {
-                    const response = await fetch(getApiUrl(`${API_BASE}/film/${slug}`));
+                    const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
                     const data = await response.json();
-                    if (data.status === 'success') {
-                        movies.push(data.movie);
+                    const movieData = data.movie || data.item || data.data?.item;
+                    if ((data.status === 'success' || data.status === true) && movieData) {
+                        // Fix OPhim image paths if needed
+                        if (currentSourceKey === 'ophim' && data.pathImage) {
+                            if (movieData.poster_url && !movieData.poster_url.startsWith('http')) {
+                                movieData.poster_url = data.pathImage + movieData.poster_url;
+                            }
+                            if (movieData.thumb_url && !movieData.thumb_url.startsWith('http')) {
+                                movieData.thumb_url = data.pathImage + movieData.thumb_url;
+                            }
+                        }
+                        movies.push(normalizeMovieData(movieData));
                     }
                 } catch (error) {
                     console.error('Error loading favorite movie:', error);

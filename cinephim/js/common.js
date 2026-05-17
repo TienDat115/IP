@@ -1,7 +1,45 @@
 // CinePhim - Common JavaScript Functions
 
 // API Configuration
-const API_BASE = 'https://phim.nguonc.com/api';
+const SOURCES = {
+    nguonc: {
+        name: 'NguonC',
+        base: 'https://phim.nguonc.com/api',
+        endpoints: {
+            new: '/films/phim-moi-cap-nhat',
+            search: '/films/search',
+            detail: '/film',
+            category: '/categories',
+            country: '/countries'
+        }
+    },
+    ophim: {
+        name: 'OPhim',
+        base: 'https://ophim1.com/v1/api',
+        endpoints: {
+            new: '/home',
+            search: '/tim-kiem',
+            detail: '/phim',
+            category: '/the-loai',
+            country: '/quoc-gia'
+        }
+    }
+};
+
+// Current source management
+let currentSourceKey = localStorage.getItem('movieSource') || 'nguonc';
+if (!SOURCES[currentSourceKey]) currentSourceKey = 'nguonc';
+
+let currentSource = SOURCES[currentSourceKey];
+let API_BASE = currentSource.base;
+
+// Function to switch source
+function setSource(sourceKey) {
+    if (SOURCES[sourceKey]) {
+        localStorage.setItem('movieSource', sourceKey);
+        window.location.reload();
+    }
+}
 
 // Helper function to prevent API caching
 function getApiUrl(url) {
@@ -103,14 +141,14 @@ function getVerticalImage(posterUrl, thumbUrl) {
     return getBestImageForOrientation(posterUrl, thumbUrl, 'vertical') || 
            posterUrl || 
            thumbUrl || 
-           'https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster';
+           'https://placehold.co/300x450/374151/ffffff?text=No+Poster';
 }
 
 function getHorizontalImage(posterUrl, thumbUrl) {
     return getBestImageForOrientation(posterUrl, thumbUrl, 'horizontal') || 
            posterUrl || 
            thumbUrl || 
-           'https://via.placeholder.com/800x450/374151/ffffff?text=No+Image';
+           'https://placehold.co/800x450/374151/ffffff?text=No+Image';
 }
 
 function getHeroImage(posterUrl, thumbUrl) {
@@ -119,6 +157,9 @@ function getHeroImage(posterUrl, thumbUrl) {
 
 // Initialize Firebase and common functions
 document.addEventListener('DOMContentLoaded', function() {
+    // Render source switcher if container exists
+    renderSourceSwitcher();
+
     // Wait for Firebase to be ready
     setTimeout(() => {
         // Clear any existing auth listener
@@ -786,6 +827,89 @@ async function toggleFavorite(slug) {
     }
 }
 
+// Data Normalization Helpers
+function normalizeMovieData(item, pathImage = '') {
+    if (!item) return null;
+    
+    // Normalize based on source
+    if (currentSourceKey === 'ophim') {
+        let poster_url = item.poster_url || '';
+        let thumb_url = item.thumb_url || '';
+        
+        // Add absolute path if it's a relative URL and pathImage is provided
+        if (pathImage) {
+            if (poster_url && !poster_url.startsWith('http')) {
+                poster_url = pathImage + poster_url;
+            }
+            if (thumb_url && !thumb_url.startsWith('http')) {
+                thumb_url = pathImage + thumb_url;
+            }
+        }
+        
+        return {
+            name: item.name || item.title || '',
+            slug: item.slug || '',
+            poster_url: poster_url,
+            thumb_url: thumb_url,
+            quality: item.quality || 'HD',
+            current_episode: item.episode_current || '',
+            total_episodes: item.episode_total || '',
+            year: item.year || '',
+            category: item.category || [],
+            country: item.country || []
+        };
+    }
+    
+    // NguonC is already in the expected format, but let's ensure consistency
+    return {
+        name: item.name || item.title || '',
+        slug: item.slug || '',
+        poster_url: item.poster_url || '',
+        thumb_url: item.thumb_url || '',
+        quality: item.quality || 'HD',
+        current_episode: item.current_episode || '',
+        total_episodes: item.total_episodes || '',
+        year: item.year || item.time || '',
+        category: item.category || [],
+        country: item.country || []
+    };
+}
+
+function normalizePagination(data) {
+    if (currentSourceKey === 'ophim') {
+        const p = data.params?.pagination;
+        if (!p) return null;
+        return {
+            current_page: p.currentPage,
+            total_page: p.totalPages,
+            total_items: p.totalItems,
+            per_page: p.totalItemsPerPage
+        };
+    }
+    
+    return data.paginate || null;
+}
+
+// Render source switcher UI
+function renderSourceSwitcher() {
+    const desktopContainer = document.getElementById('sourceSwitcherDesktop');
+    const mobileContainer = document.getElementById('sourceSwitcherMobile');
+    
+    const html = `
+        <div class="flex items-center space-x-2 bg-gray-700 rounded-lg p-1">
+            ${Object.keys(SOURCES).map(key => `
+                <button onclick="setSource('${key}')" 
+                        class="px-3 py-1 text-xs rounded-md transition ${currentSourceKey === key ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-gray-600'}">
+                    ${SOURCES[key].name}
+                </button>
+            `).join('')}
+        </div>
+    `;
+    
+    if (desktopContainer) desktopContainer.innerHTML = html;
+    if (mobileContainer) mobileContainer.innerHTML = html;
+}
+
 // Add to watch history
 async function addToWatchHistory(movieSlug, movieTitle, episodeName) {
     if (!movieSlug || !movieTitle) {
@@ -796,6 +920,7 @@ async function addToWatchHistory(movieSlug, movieTitle, episodeName) {
     // Check if this episode is already in watch history (avoid duplicates)
     const existingEntry = watchHistory.find(item => 
         item.movieSlug === movieSlug && 
+        item.source === currentSourceKey && // Source-specific history
         (item.episodeSlug === episodeName || item.episodeName === episodeName)
     );
     

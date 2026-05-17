@@ -91,15 +91,25 @@ async function loadMovieDetail(slug) {
     try {
         showLoading(true);
         
-        const response = await fetch(getApiUrl(`${API_BASE}/film/${slug}`));
+        const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
         if (!response.ok) {
             throw new Error('Failed to fetch movie details');
         }
         
         const data = await response.json();
         
-        if (data.status === 'success' && data.movie) {
-            currentMovie = data.movie;
+        if (data.status === 'success' || data.status === true) {
+            currentMovie = data.movie || data.item || data.data?.item;
+            if (currentSourceKey === 'ophim' && data.pathImage) {
+                // Fix OPhim image paths
+                if (currentMovie.poster_url && !currentMovie.poster_url.startsWith('http')) {
+                    currentMovie.poster_url = data.pathImage + currentMovie.poster_url;
+                }
+                if (currentMovie.thumb_url && !currentMovie.thumb_url.startsWith('http')) {
+                    currentMovie.thumb_url = data.pathImage + currentMovie.thumb_url;
+                }
+            }
+            
             await displayMovieDetails();
             updatePageMeta();
             setupEpisodes();
@@ -337,10 +347,11 @@ function setupEpisodes() {
     episodesList.innerHTML = '';
     
     // Populate server buttons
-    currentMovie.episodes.forEach((server, index) => {
+    const servers = currentMovie.episodes || [];
+    servers.forEach((server, index) => {
         const button = document.createElement('button');
         button.className = 'bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center';
-        button.textContent = server.server_name;
+        button.textContent = server.server_name || `Server ${index + 1}`;
         button.onclick = () => selectServer(index);
         button.dataset.serverIndex = index;
         
@@ -420,8 +431,9 @@ function updateEpisodesListForServer(serverIndex) {
     
     const server = currentMovie.episodes[serverIndex];
     
-    if (server && server.items) {
-        const totalEpisodes = server.items.length;
+    if (server) {
+        const items = server.items || server.server_data || [];
+        const totalEpisodes = items.length;
         
         // Reset to page 1 if server changes
         if (currentServerIndex !== serverIndex) {
@@ -431,16 +443,23 @@ function updateEpisodesListForServer(serverIndex) {
         // Calculate pagination
         const startIndex = (currentEpisodePage - 1) * episodesPerPage;
         const endIndex = Math.min(startIndex + episodesPerPage, totalEpisodes);
-        const paginatedEpisodes = [...server.items].reverse().slice(startIndex, endIndex);
+        const paginatedEpisodes = [...items].reverse().slice(startIndex, endIndex);
         
         // Display episodes for current page
-        episodesList.innerHTML = paginatedEpisodes.map((episode, index) => `
-            <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
-                    class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug, currentMovie.slug) ? 'ring-2 ring-blue-500' : ''}">
-                ${episode.name || `Tập ${server.items.length - (startIndex + index)}`}
-                ${isEpisodeWatched(episode.slug, currentMovie.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
-            </button>
-        `).join('');
+        episodesList.innerHTML = paginatedEpisodes.map((episode, index) => {
+            const slug = episode.slug;
+            const embed = episode.embed || episode.link_embed;
+            const m3u8 = episode.m3u8 || episode.link_m3u8;
+            const name = episode.name || `Tập ${totalEpisodes - (startIndex + index)}`;
+            
+            return `
+                <button onclick="playEpisode('${slug}', '${embed || m3u8}')" 
+                        class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(slug, currentMovie.slug) ? 'ring-2 ring-blue-500' : ''}">
+                    ${name}
+                    ${isEpisodeWatched(slug, currentMovie.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
+                </button>
+            `;
+        }).join('');
         
         // Update pagination if needed
         updateEpisodesPagination(totalEpisodes);
@@ -759,10 +778,10 @@ function markEpisodeAsWatched(movieSlug, episodeIndex) {
         
         if (!watched.includes(episodeKey)) {
             watched.push(episodeKey);
-            return userRef.update({
+            return userRef.set({
                 watchedEpisodes: watched,
                 lastUpdated: new Date()
-            });
+            }, { merge: true });
         }
     }).catch((error) => {
         console.error('Error marking episode as watched:', error);
