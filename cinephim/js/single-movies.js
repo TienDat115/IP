@@ -56,7 +56,7 @@ async function loadSingleMovies(page = 1) {
         const data = await response.json();
         
         if (data.status === 'success' || data.status === true) {
-            const pathImage = data.pathImage || data.data?.pathImage || '';
+            const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
             const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
             displayMovies(movies);
             

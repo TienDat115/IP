@@ -827,24 +827,39 @@ async function toggleFavorite(slug) {
     }
 }
 
+// Resolve OPhim relative image paths robustly
+function resolveOPhimImageUrl(url, pathImageFromApi = '') {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    
+    // Default CDN domain
+    let cdnDomain = 'https://img.ophim.live';
+    
+    // Try to extract cdn domain from pathImageFromApi if it is valid
+    if (pathImageFromApi && typeof pathImageFromApi === 'string' && pathImageFromApi.startsWith('http')) {
+        // Remove trailing slash if present
+        cdnDomain = pathImageFromApi.replace(/\/$/, '');
+    }
+    
+    // Check if url already contains /uploads/movies/ or uploads/movies/
+    if (url.startsWith('/uploads/movies/')) {
+        return `${cdnDomain}${url}`;
+    } else if (url.startsWith('uploads/movies/')) {
+        return `${cdnDomain}/${url}`;
+    } else {
+        // If it's just a filename, prepend cdnDomain + /uploads/movies/
+        return `${cdnDomain}/uploads/movies/${url}`;
+    }
+}
+
 // Data Normalization Helpers
 function normalizeMovieData(item, pathImage = '') {
     if (!item) return null;
     
     // Normalize based on source
     if (currentSourceKey === 'ophim') {
-        let poster_url = item.poster_url || '';
-        let thumb_url = item.thumb_url || '';
-        
-        // Add absolute path if it's a relative URL and pathImage is provided
-        if (pathImage) {
-            if (poster_url && !poster_url.startsWith('http')) {
-                poster_url = pathImage + poster_url;
-            }
-            if (thumb_url && !thumb_url.startsWith('http')) {
-                thumb_url = pathImage + thumb_url;
-            }
-        }
+        let poster_url = resolveOPhimImageUrl(item.poster_url || '', pathImage);
+        let thumb_url = resolveOPhimImageUrl(item.thumb_url || '', pathImage);
         
         return {
             name: item.name || item.title || '',

@@ -109,13 +109,10 @@ async function loadFavorites() {
                     const movieData = data.movie || data.item || data.data?.item;
                     if ((data.status === 'success' || data.status === true) && movieData) {
                         // Fix OPhim image paths if needed
-                        if (currentSourceKey === 'ophim' && data.pathImage) {
-                            if (movieData.poster_url && !movieData.poster_url.startsWith('http')) {
-                                movieData.poster_url = data.pathImage + movieData.poster_url;
-                            }
-                            if (movieData.thumb_url && !movieData.thumb_url.startsWith('http')) {
-                                movieData.thumb_url = data.pathImage + movieData.thumb_url;
-                            }
+                        if (currentSourceKey === 'ophim') {
+                            const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
+                            movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
+                            movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
                         }
                         movies.push(normalizeMovieData(movieData));
                     }

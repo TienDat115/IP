@@ -100,14 +100,11 @@ async function loadMovieDetail(slug) {
         
         if (data.status === 'success' || data.status === true) {
             currentMovie = data.movie || data.item || data.data?.item;
-            if (currentSourceKey === 'ophim' && data.pathImage) {
+            if (currentSourceKey === 'ophim') {
                 // Fix OPhim image paths
-                if (currentMovie.poster_url && !currentMovie.poster_url.startsWith('http')) {
-                    currentMovie.poster_url = data.pathImage + currentMovie.poster_url;
-                }
-                if (currentMovie.thumb_url && !currentMovie.thumb_url.startsWith('http')) {
-                    currentMovie.thumb_url = data.pathImage + currentMovie.thumb_url;
-                }
+                const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
+                currentMovie.poster_url = resolveOPhimImageUrl(currentMovie.poster_url || '', pathImage);
+                currentMovie.thumb_url = resolveOPhimImageUrl(currentMovie.thumb_url || '', pathImage);
             }
             
             await displayMovieDetails();
@@ -161,6 +158,23 @@ function formatEpisodeProgress(currentEpisode, totalEpisodes) {
     return currentEpisode;
 }
 
+// Helper to parse date from various formats
+function parseDate(dateObjOrString) {
+    if (!dateObjOrString) return null;
+    let dateStr = '';
+    if (typeof dateObjOrString === 'string') {
+        dateStr = dateObjOrString;
+    } else if (typeof dateObjOrString === 'object' && dateObjOrString.time) {
+        dateStr = dateObjOrString.time;
+    } else if (typeof dateObjOrString === 'object' && dateObjOrString.seconds) {
+        return new Date(dateObjOrString.seconds * 1000);
+    } else {
+        dateStr = String(dateObjOrString);
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+}
+
 // Display movie details
 async function displayMovieDetails() {
     if (!currentMovie) return;
@@ -171,15 +185,29 @@ async function displayMovieDetails() {
     document.getElementById('moviePoster').alt = currentMovie.name || currentMovie.title || '';
     
     // Update movie info
-    const createdDate = currentMovie.created ? new Date(currentMovie.created) : null;
-    const modifiedDate = currentMovie.modified ? new Date(currentMovie.modified) : null;
+    const createdDate = parseDate(currentMovie.created);
+    const modifiedDate = parseDate(currentMovie.modified);
     const yearText = createdDate ? createdDate.getFullYear() : (currentMovie.year || currentMovie.release_year || 'Không rõ');
     const dateText = createdDate ? ` (${String(createdDate.getDate()).padStart(2, '0')}/${String(createdDate.getMonth() + 1).padStart(2, '0')}/${createdDate.getFullYear()})` : '';
     const modifiedText = modifiedDate ? `${String(modifiedDate.getDate()).padStart(2, '0')}/${String(modifiedDate.getMonth() + 1).padStart(2, '0')}/${modifiedDate.getFullYear()}` : 'Không rõ';
     document.getElementById('movieYear').textContent = yearText + dateText;
     document.getElementById('movieDuration').textContent = currentMovie.time || 'Không rõ';
-    document.getElementById("episodeProgress").textContent = formatEpisodeProgress(currentMovie.current_episode, currentMovie.total_episodes);
-    document.getElementById('movieCasts').textContent = currentMovie.casts || 'Không có thông tin diễn viên.';
+    
+    const currentEpisode = currentMovie.current_episode || currentMovie.episode_current || '';
+    const totalEpisodes = currentMovie.total_episodes || currentMovie.episode_total || '';
+    document.getElementById("episodeProgress").textContent = formatEpisodeProgress(currentEpisode, totalEpisodes);
+    
+    let castsText = 'Không có thông tin diễn viên.';
+    if (currentMovie.casts) {
+        castsText = currentMovie.casts;
+    } else if (currentMovie.actor) {
+        if (Array.isArray(currentMovie.actor)) {
+            castsText = currentMovie.actor.filter(Boolean).join(', ') || 'Không có thông tin diễn viên.';
+        } else if (typeof currentMovie.actor === 'string') {
+            castsText = currentMovie.actor;
+        }
+    }
+    document.getElementById('movieCasts').textContent = castsText;
     document.getElementById('movieCategories').textContent = getCategoriesFromCategory(currentMovie.category) || 'Không có thông tin thể loại.';
     document.getElementById('movieDescription').textContent = currentMovie.content || currentMovie.description || 'Không có mô tả.';
     document.getElementById('movieModified').textContent = modifiedText;
@@ -200,18 +228,23 @@ async function displayMovieDetails() {
 function getCategoriesFromCategory(category) {
     if (!category) return '';
     
-    // Handle different category structures
     if (Array.isArray(category)) {
-        const categories = category.filter(item => item.group && item.group.name === 'Thể loại')
-                                 .flatMap(item => item.list ? item.list.map(cat => cat.name) : []);
-        return categories.join(', ');
+        const hasNesting = category.some(item => item.group || item.list);
+        if (hasNesting) {
+            const categories = category.filter(item => item.group && item.group.name === 'Thể loại')
+                                     .flatMap(item => item.list ? item.list.map(cat => cat.name) : []);
+            return categories.join(', ');
+        } else {
+            return category.map(cat => cat.name).filter(Boolean).join(', ');
+        }
     } else if (category.list) {
         return category.list.map(cat => cat.name).join(', ');
     } else if (typeof category === 'object') {
-        // Handle the new API structure with numeric keys
         const categories = [];
         Object.values(category).forEach(item => {
-            if (item.group && item.group.name === 'Thể loại' && item.list) {
+            if (item.name) {
+                categories.push(item.name);
+            } else if (item.group && item.group.name === 'Thể loại' && item.list) {
                 item.list.forEach(cat => {
                     if (cat.name) categories.push(cat.name);
                 });
@@ -227,11 +260,17 @@ function getCategoriesFromCategory(category) {
 function getFirstCategory(category) {
     if (!category) return '';
     
-    // Handle different category structures
     if (Array.isArray(category)) {
-        const firstCategory = category.find(item => item.group && item.group.name === 'Thể loại');
-        if (firstCategory && firstCategory.list && firstCategory.list.length > 0) {
-            return firstCategory.list[0].name;
+        const hasNesting = category.some(item => item.group || item.list);
+        if (hasNesting) {
+            const firstCategory = category.find(item => item.group && item.group.name === 'Thể loại');
+            if (firstCategory && firstCategory.list && firstCategory.list.length > 0) {
+                return firstCategory.list[0].name;
+            }
+        } else {
+            if (category.length > 0) {
+                return category[0].name || '';
+            }
         }
     } else if (category.list && category.list.length > 0) {
         return category.list[0].name;
@@ -254,12 +293,24 @@ function updateStructuredData() {
         "datePublished": currentMovie.year ? `${currentMovie.year}-01-01` : '',
         "director": currentMovie.director ? {
             "@type": "Person",
-            "name": currentMovie.director
+            "name": Array.isArray(currentMovie.director) ? currentMovie.director.filter(Boolean).join(', ') : currentMovie.director
         } : {},
-        "actor": currentMovie.casts ? currentMovie.casts.split(',').map(actor => ({
-            "@type": "Person",
-            "name": actor.trim()
-        })) : [],
+        "actor": currentMovie.casts 
+            ? currentMovie.casts.split(',').map(actor => ({
+                "@type": "Person",
+                "name": actor.trim()
+            })) 
+            : (Array.isArray(currentMovie.actor) 
+                ? currentMovie.actor.filter(Boolean).map(actor => ({
+                    "@type": "Person",
+                    "name": actor.trim()
+                }))
+                : (typeof currentMovie.actor === 'string' 
+                    ? currentMovie.actor.split(',').map(actor => ({
+                        "@type": "Person",
+                        "name": actor.trim()
+                    }))
+                    : [])),
         "genre": getCategoriesFromCategory(currentMovie.category).split(', ').map(genre => genre.trim()),
         "contentRating": currentMovie.rating ? currentMovie.rating.toString() : '',
         "aggregateRating": currentMovie.rating ? {
@@ -279,8 +330,9 @@ function updateStructuredData() {
 function updatePageMeta() {
     if (!currentMovie) return;
 
+    const year = currentMovie.year || (parseDate(currentMovie.created) ? parseDate(currentMovie.created).getFullYear() : 'Không rõ');
     const title = `${currentMovie.name || currentMovie.title} - Xem phim HD | CinePhim`;
-    const description = `Xem ${currentMovie.name || currentMovie.title} (${currentMovie.year}) online miễn phí với chất lượng HD. ${currentMovie.content ? currentMovie.content.substring(0, 150) + '...' : ''}`;
+    const description = `Xem ${currentMovie.name || currentMovie.title} (${year}) online miễn phí với chất lượng HD. ${currentMovie.content ? currentMovie.content.substring(0, 150) + '...' : ''}`;
     
     // Update title and meta description
     document.title = title;
@@ -327,10 +379,14 @@ function autoPlayLatestEpisode() {
         playEpisodeFromHistory(latestEpisode.episodeSlug || latestEpisode.episodeName, latestEpisode.serverIndex);
     } else {
         // If no history or episode not found, play first episode
-        if (currentMovie.episodes.length > 0 && currentMovie.episodes[0].items.length > 0) {
-            const firstEpisode = currentMovie.episodes[0].items[0];
-            console.log('Playing first episode:', firstEpisode.name || 'Tập 1');
-            playEpisode(firstEpisode.slug, firstEpisode.embed || firstEpisode.m3u8);
+        if (currentMovie.episodes.length > 0) {
+            const server = currentMovie.episodes[0];
+            const items = server.items || server.server_data || [];
+            if (items.length > 0) {
+                const firstEpisode = items[0];
+                console.log('Playing first episode:', firstEpisode.name || 'Tập 1');
+                playEpisode(firstEpisode.slug, firstEpisode.embed || firstEpisode.link_embed || firstEpisode.m3u8 || firstEpisode.link_m3u8);
+            }
         }
     }
 }
@@ -558,9 +614,10 @@ function goToEpisodePage(page) {
     const serverIndex = getCurrentServerIndex();
     const server = currentMovie.episodes[serverIndex];
     
-    if (!server || !server.items) return;
+    if (!server) return;
+    const items = server.items || server.server_data || [];
     
-    const totalPages = Math.ceil(server.items.length / episodesPerPage);
+    const totalPages = Math.ceil(items.length / episodesPerPage);
     
     if (page < 1 || page > totalPages) return;
     
@@ -745,11 +802,10 @@ function getEpisodeName(episodeSlug) {
     if (!currentMovie || !currentMovie.episodes) return episodeSlug;
     
     for (let server of currentMovie.episodes) {
-        if (server.items) {
-            const episode = server.items.find(ep => ep.slug === episodeSlug);
-            if (episode) {
-                return episode.name || `Tập ${server.items.indexOf(episode) + 1}`;
-            }
+        const items = server.items || server.server_data || [];
+        const episode = items.find(ep => ep.slug === episodeSlug);
+        if (episode) {
+            return episode.name || `Tập ${items.indexOf(episode) + 1}`;
         }
     }
     return episodeSlug;
@@ -804,18 +860,20 @@ function playPreviousEpisode() {
     const serverIndex = getCurrentServerIndex();
     const server = currentMovie.episodes[serverIndex];
     
-    if (!server || !server.items || server.items.length === 0) return;
+    if (!server) return;
+    const items = server.items || server.server_data || [];
+    if (items.length === 0) return;
     
     // Find current episode in the list
-    const currentEpisode = server.items.find(ep => ep.slug === getCurrentEpisodeSlug());
+    const currentEpisode = items.find(ep => ep.slug === getCurrentEpisodeSlug());
     if (!currentEpisode) return;
     
-    const currentIndex = server.items.indexOf(currentEpisode);
+    const currentIndex = items.indexOf(currentEpisode);
     
     // Check if there's a previous episode
     if (currentIndex > 0) {
-        const previousEpisode = server.items[currentIndex - 1];
-        playEpisode(previousEpisode.slug, previousEpisode.embed || previousEpisode.m3u8);
+        const previousEpisode = items[currentIndex - 1];
+        playEpisode(previousEpisode.slug, previousEpisode.embed || previousEpisode.link_embed || previousEpisode.m3u8 || previousEpisode.link_m3u8);
     } else {
         showInfo('Đây là tập đầu tiên.');
     }
@@ -828,23 +886,25 @@ function playNextEpisode() {
     const serverIndex = getCurrentServerIndex();
     const server = currentMovie.episodes[serverIndex];
     
-    if (!server || !server.items || server.items.length === 0) return;
+    if (!server) return;
+    const items = server.items || server.server_data || [];
+    if (items.length === 0) return;
     
     // Find current episode in the list
-    const currentEpisode = server.items.find(ep => ep.slug === getCurrentEpisodeSlug());
+    const currentEpisode = items.find(ep => ep.slug === getCurrentEpisodeSlug());
     if (!currentEpisode) {
         // If no current episode, play the first one
-        const firstEpisode = server.items[0];
-        playEpisode(firstEpisode.slug, firstEpisode.embed || firstEpisode.m3u8);
+        const firstEpisode = items[0];
+        playEpisode(firstEpisode.slug, firstEpisode.embed || firstEpisode.link_embed || firstEpisode.m3u8 || firstEpisode.link_m3u8);
         return;
     }
     
-    const currentIndex = server.items.indexOf(currentEpisode);
+    const currentIndex = items.indexOf(currentEpisode);
     
     // Check if there's a next episode
-    if (currentIndex < server.items.length - 1) {
-        const nextEpisode = server.items[currentIndex + 1];
-        playEpisode(nextEpisode.slug, nextEpisode.embed || nextEpisode.m3u8);
+    if (currentIndex < items.length - 1) {
+        const nextEpisode = items[currentIndex + 1];
+        playEpisode(nextEpisode.slug, nextEpisode.embed || nextEpisode.link_embed || nextEpisode.m3u8 || nextEpisode.link_m3u8);
     } else {
         showInfo('Đây là tập cuối cùng.');
     }
@@ -859,14 +919,15 @@ function getCurrentEpisodeSlug() {
     
     // Find the episode that matches the current video URL
     for (let server of currentMovie.episodes) {
-        if (server.items) {
-            const episode = server.items.find(ep => 
-                (ep.embed && iframeElement.src.includes(ep.embed)) || 
-                (ep.m3u8 && iframeElement.src.includes(ep.m3u8))
-            );
-            if (episode) {
-                return episode.slug;
-            }
+        const items = server.items || server.server_data || [];
+        const episode = items.find(ep => 
+            (ep.embed && iframeElement.src.includes(ep.embed)) || 
+            (ep.link_embed && iframeElement.src.includes(ep.link_embed)) || 
+            (ep.m3u8 && iframeElement.src.includes(ep.m3u8)) || 
+            (ep.link_m3u8 && iframeElement.src.includes(ep.link_m3u8))
+        );
+        if (episode) {
+            return episode.slug;
         }
     }
     
@@ -905,7 +966,9 @@ function updateNavigationButtons() {
     const serverIndex = getCurrentServerIndex();
     const server = currentMovie.episodes[serverIndex];
     
-    if (!server || !server.items || server.items.length === 0) {
+    if (!server) return;
+    const items = server.items || server.server_data || [];
+    if (items.length === 0) {
         prevButton.disabled = true;
         nextButton.disabled = true;
         prevButton.classList.add('opacity-50', 'cursor-not-allowed');
@@ -913,7 +976,7 @@ function updateNavigationButtons() {
         return;
     }
     
-    const currentEpisode = server.items.find(ep => ep.slug === getCurrentEpisodeSlug());
+    const currentEpisode = items.find(ep => ep.slug === getCurrentEpisodeSlug());
     if (!currentEpisode) {
         // Enable next button if no current episode (can play first)
         prevButton.disabled = true;
@@ -923,7 +986,7 @@ function updateNavigationButtons() {
         return;
     }
     
-    const currentIndex = server.items.indexOf(currentEpisode);
+    const currentIndex = items.indexOf(currentEpisode);
     
     // Update previous button state
     if (currentIndex <= 0) {
@@ -935,7 +998,7 @@ function updateNavigationButtons() {
     }
     
     // Update next button state
-    if (currentIndex >= server.items.length - 1) {
+    if (currentIndex >= items.length - 1) {
         nextButton.disabled = true;
         nextButton.classList.add('opacity-50', 'cursor-not-allowed');
     } else {
@@ -961,10 +1024,9 @@ function findEpisodeIndex(episodeSlug) {
     if (!currentMovie || !currentMovie.episodes) return 0;
     
     for (let server of currentMovie.episodes) {
-        if (server.items) {
-            const index = server.items.findIndex(ep => ep.slug === episodeSlug);
-            if (index !== -1) return index;
-        }
+        const items = server.items || server.server_data || [];
+        const index = items.findIndex(ep => ep.slug === episodeSlug);
+        if (index !== -1) return index;
     }
     return 0;
 }
@@ -1278,10 +1340,12 @@ function playEpisodeFromHistory(episodeSlug, serverIndex) {
     
     // Find and play the episode
     const server = currentMovie.episodes[serverIndex];
-    if (server && server.items) {
-        const episode = server.items.find(ep => ep.slug === episodeSlug);
+    if (server) {
+        const items = server.items || server.server_data || [];
+        const episode = items.find(ep => ep.slug === episodeSlug);
         if (episode) {
-            playEpisode(episode.slug, episode.embed || episode.m3u8);
+            const videoUrl = episode.embed || episode.link_embed || episode.m3u8 || episode.link_m3u8;
+            playEpisode(episode.slug, videoUrl);
         } else {
             showError('Không tìm thấy tập phim trong server này.');
         }
