@@ -257,7 +257,7 @@ function displayPagination(pagination) {
     // Handle different pagination structures
     let paginationData = pagination;
     
-    // If pagination is nested in data.paginate
+    // If pagination is nested in pagination.paginate
     if (pagination && pagination.paginate) {
         paginationData = pagination.paginate;
     }

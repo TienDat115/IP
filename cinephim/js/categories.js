@@ -210,9 +210,9 @@ function updatePagination(paginate) {
     // Handle different pagination structures
     let paginationData = paginate;
     
-    // If pagination is nested in data.paginate
-    if (pagination && pagination.paginate) {
-        paginationData = pagination.paginate;
+    // If pagination is nested in paginate.paginate
+    if (paginate && paginate.paginate) {
+        paginationData = paginate.paginate;
     }
     
     // If no pagination data, create default pagination

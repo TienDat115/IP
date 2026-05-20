@@ -17,7 +17,7 @@ const SOURCES = {
         name: 'OPhim',
         base: 'https://ophim1.com/v1/api',
         endpoints: {
-            new: '/home',
+            new: '/danh-sach/phim-moi-cap-nhat',
             search: '/tim-kiem',
             detail: '/phim',
             category: '/the-loai',
@@ -892,11 +892,11 @@ function normalizeMovieData(item, pathImage = '') {
 
 function normalizePagination(data) {
     if (currentSourceKey === 'ophim') {
-        const p = data.params?.pagination;
+        const p = data.data?.params?.pagination || data.params?.pagination;
         if (!p) return null;
         return {
             current_page: p.currentPage,
-            total_page: p.totalPages,
+            total_page: p.totalPages || Math.ceil(p.totalItems / p.totalItemsPerPage) || 1,
             total_items: p.totalItems,
             per_page: p.totalItemsPerPage
         };
