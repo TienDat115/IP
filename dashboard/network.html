@@ -123,18 +123,35 @@
 		</div>
 
 		<script>
-			// Lấy thông tin IP và địa lý
-			fetch("https://ipwho.is/")
-				.then((res) => res.json())
-				.then((data) => {
-					document.getElementById("ip").textContent = data.ip || "Không rõ";
-					document.getElementById("country").textContent = data.country || "Không rõ";
-					document.getElementById("city").textContent = data.city || "Không rõ";
-					document.getElementById("isp").textContent = data.connection?.isp || "Không rõ";
-				})
-				.catch(() => {
-					document.getElementById("ip").textContent = "Không thể lấy IP";
-				});
+            // Lấy thông tin IP và địa lý với API mới và fallback
+            fetch("https://ipinfo.io/json")
+                .then(res => {
+                    if (!res.ok) throw new Error('ipinfo.io error');
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById("ip").textContent = data.ip || "Không rõ";
+                    document.getElementById("country").textContent = data.country || "Không rõ";
+                    document.getElementById("city").textContent = data.city || "Không rõ";
+                    document.getElementById("isp").textContent = data.org || "Không rõ";
+                })
+                .catch(() => {
+                    // fallback to geolocation-db.com nếu ipinfo.io thất bại
+                    fetch("https://geolocation-db.com/json/")
+                        .then(res => {
+                            if (!res.ok) throw new Error('geolocation-db.com error');
+                            return res.json();
+                        })
+                        .then(data => {
+                            document.getElementById("ip").textContent = data.IPv4 || "Không rõ";
+                            document.getElementById("country").textContent = data.country_name || "Không rõ";
+                            document.getElementById("city").textContent = data.city || "Không rõ";
+                            document.getElementById("isp").textContent = data.ISP || "Không rõ";
+                        })
+                        .catch(() => {
+                            document.getElementById("ip").textContent = "Không thể lấy IP";
+                        });
+                });
 
 			// Lấy trình duyệt và hệ điều hành
 			function getBrowserOS() {
