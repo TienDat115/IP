@@ -37,7 +37,16 @@ let API_BASE = currentSource.base;
 function setSource(sourceKey) {
     if (SOURCES[sourceKey]) {
         localStorage.setItem('movieSource', sourceKey);
-        window.location.reload();
+        
+        // If on movie detail page, remove episode/server params so it loads history of the new source
+        if (window.location.pathname.includes('movie-detail.html')) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('episode');
+            url.searchParams.delete('server');
+            window.location.href = url.toString();
+        } else {
+            window.location.reload();
+        }
     }
 }
 

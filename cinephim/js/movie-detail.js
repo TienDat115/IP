@@ -375,18 +375,59 @@ function autoPlayLatestEpisode() {
         const latestEpisode = movieHistory[0]; // Most recent is at index 0
         console.log('Found latest episode in history:', latestEpisode);
         
-        // Restore server selection and play episode using playEpisodeFromHistory function
-        playEpisodeFromHistory(latestEpisode.episodeSlug || latestEpisode.episodeName, latestEpisode.serverIndex);
+        let targetEpisodeSlug = null;
+        let targetServerIndex = 0;
+        let hasSourceHistory = false;
+        
+        if (typeof currentSourceKey !== 'undefined') {
+            if (currentSourceKey === 'nguonc') {
+                if (latestEpisode.episodeSlug_nguonc) {
+                    targetEpisodeSlug = latestEpisode.episodeSlug_nguonc;
+                    targetServerIndex = latestEpisode.serverIndex_nguonc !== undefined ? latestEpisode.serverIndex_nguonc : 0;
+                    hasSourceHistory = true;
+                } else if (latestEpisode.episodeSlug && !latestEpisode.videoUrl_ophim) {
+                    // Fallback to old history entry
+                    targetEpisodeSlug = latestEpisode.episodeSlug;
+                    targetServerIndex = latestEpisode.serverIndex || 0;
+                    hasSourceHistory = true;
+                }
+            } else if (currentSourceKey === 'ophim') {
+                if (latestEpisode.episodeSlug_ophim) {
+                    targetEpisodeSlug = latestEpisode.episodeSlug_ophim;
+                    targetServerIndex = latestEpisode.serverIndex_ophim !== undefined ? latestEpisode.serverIndex_ophim : 0;
+                    hasSourceHistory = true;
+                }
+            }
+        }
+        
+        if (hasSourceHistory && targetEpisodeSlug) {
+            // Restore server selection and play episode using playEpisodeFromHistory function
+            playEpisodeFromHistory(targetEpisodeSlug, targetServerIndex, true);
+        } else {
+            // If no history for this specific source, play first episode
+            playDefaultFirstEpisode();
+        }
     } else {
         // If no history or episode not found, play first episode
-        if (currentMovie.episodes.length > 0) {
-            const server = currentMovie.episodes[0];
-            const items = server.items || server.server_data || [];
-            if (items.length > 0) {
-                const firstEpisode = items[0];
-                console.log('Playing first episode:', firstEpisode.name || 'Tập 1');
-                playEpisode(firstEpisode.slug, firstEpisode.embed || firstEpisode.link_embed || firstEpisode.m3u8 || firstEpisode.link_m3u8);
+        playDefaultFirstEpisode();
+    }
+}
+
+// Function to play default first episode
+function playDefaultFirstEpisode() {
+    if (currentMovie.episodes.length > 0) {
+        const server = currentMovie.episodes[0];
+        const items = server.items || server.server_data || [];
+        if (items.length > 0) {
+            const firstEpisode = items[0];
+            console.log('Playing first episode:', firstEpisode.name || 'Tập 1');
+            
+            let videoUrl = firstEpisode.embed || firstEpisode.link_embed || firstEpisode.m3u8 || firstEpisode.link_m3u8;
+            if (typeof currentSourceKey !== 'undefined' && currentSourceKey === 'nguonc') {
+                videoUrl = videoUrl || currentMovie.link_m3u8 || currentMovie.link_embed;
             }
+            
+            playEpisode(firstEpisode.slug, videoUrl);
         }
     }
 }
@@ -724,24 +765,54 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
 
     const movieTitle = currentMovie.name || currentMovie.title || movieSlug;
     const episodeName = getEpisodeName(episodeSlug);
-    const watchedAt = new Date();
+    const watchedAt = new Date().toISOString();
     
     // Get current server index
     const serverIndex = getCurrentServerIndex();
     const serverName = currentMovie.episodes && currentMovie.episodes[serverIndex] ? 
                       currentMovie.episodes[serverIndex].server_name : 'Server 1';
     
-    // Use the same logic as the old system
-    const historyItem = {
+    // Get existing history item if any
+    let existingItem = watchHistory.find(item => item.movieSlug === movieSlug);
+    
+    // Create base history item preserving existing data
+    let historyItem = existingItem ? { ...existingItem } : {
         movieSlug: movieSlug,
-        movieTitle: movieTitle,
-        episodeSlug: episodeSlug,
-        episodeName: episodeName,
-        videoUrl: getCurrentVideoUrl(),
-        serverIndex: serverIndex,
-        serverName: serverName,
-        watchedAt: watchedAt
+        movieTitle: movieTitle
     };
+    
+    // Always update these base fields to the latest watched
+    historyItem.episodeSlug = episodeSlug;
+    historyItem.episodeName = episodeName;
+    historyItem.serverIndex = serverIndex;
+    historyItem.serverName = serverName;
+    historyItem.watchedAt = watchedAt;
+    
+    // Always save videoUrl for compatibility
+    historyItem.videoUrl = getCurrentVideoUrl();
+    
+    // Save source-specific data
+    if (typeof currentSourceKey !== 'undefined') {
+        historyItem.source = currentSourceKey;
+        if (currentSourceKey === 'nguonc') {
+            historyItem.videoUrl_nguonc = historyItem.videoUrl;
+            historyItem.episodeSlug_nguonc = episodeSlug;
+            historyItem.serverIndex_nguonc = serverIndex;
+            historyItem.serverName_nguonc = serverName;
+        } else if (currentSourceKey === 'ophim') {
+            historyItem.videoUrl_ophim = historyItem.videoUrl;
+            historyItem.episodeSlug_ophim = episodeSlug;
+            historyItem.serverIndex_ophim = serverIndex;
+            historyItem.serverName_ophim = serverName;
+        }
+    }
+    
+    // Remove undefined values to prevent Firebase errors
+    Object.keys(historyItem).forEach(key => {
+        if (historyItem[key] === undefined) {
+            delete historyItem[key];
+        }
+    });
     
     console.log('Adding to watch history:', historyItem);
     
@@ -1329,7 +1400,7 @@ function displayWatchHistory(history) {
 }
 
 // Play episode from history with server selection
-function playEpisodeFromHistory(episodeSlug, serverIndex) {
+function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
     if (!currentMovie || !currentMovie.episodes) return;
     
     // Set server selection
@@ -1343,9 +1414,47 @@ function playEpisodeFromHistory(episodeSlug, serverIndex) {
     if (server) {
         const items = server.items || server.server_data || [];
         const episode = items.find(ep => ep.slug === episodeSlug);
+        
+        // Find history item to get saved URL
+        const historyItem = watchHistory.find(item => item.movieSlug === currentMovie.slug);
+        
+        let savedVideoUrl = null;
+        if (historyItem && typeof currentSourceKey !== 'undefined') {
+            if (currentSourceKey === 'nguonc') {
+                savedVideoUrl = historyItem.videoUrl_nguonc;
+            } else if (currentSourceKey === 'ophim') {
+                savedVideoUrl = historyItem.videoUrl_ophim;
+            }
+        } else if (historyItem) {
+            savedVideoUrl = historyItem.videoUrl;
+        }
+        
         if (episode) {
-            const videoUrl = episode.embed || episode.link_embed || episode.m3u8 || episode.link_m3u8;
-            playEpisode(episode.slug, videoUrl);
+            const episodeUrl = episode.embed || episode.link_embed || episode.m3u8 || episode.link_m3u8;
+            let videoUrlToPlay = '';
+            
+            if (typeof currentSourceKey !== 'undefined') {
+                if (currentSourceKey === 'nguonc') {
+                    // Ưu tiên thứ tự load cho nguonC: videoUrl lưu -> link riêng tập -> link chung
+                    videoUrlToPlay = savedVideoUrl || episodeUrl || currentMovie.link_m3u8 || currentMovie.link_embed;
+                } else if (currentSourceKey === 'ophim') {
+                    // Load đúng videoUrl đã lưu của OPhim
+                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                } else {
+                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                }
+            } else {
+                videoUrlToPlay = savedVideoUrl || episodeUrl;
+            }
+            
+            if (videoUrlToPlay) {
+                playEpisode(episode.slug, videoUrlToPlay);
+            } else {
+                showError('Không tìm thấy link video cho tập này.');
+            }
+        } else if (savedVideoUrl && fromHistory) {
+            // Even if episode not found, play saved URL
+            playEpisode(episodeSlug, savedVideoUrl);
         } else {
             showError('Không tìm thấy tập phim trong server này.');
         }
