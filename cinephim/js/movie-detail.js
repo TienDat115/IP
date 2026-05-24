@@ -91,12 +91,7 @@ async function loadMovieDetail(slug) {
     try {
         showLoading(true);
         
-        const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
-        if (!response.ok) {
-            throw new Error('Failed to fetch movie details');
-        }
-        
-        const data = await response.json();
+        const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
         
         if (data.status === 'success' || data.status === true) {
             currentMovie = data.movie || data.item || data.data?.item;
@@ -1120,11 +1115,7 @@ async function loadRelatedMovies() {
         if (!categoryData || !categoryData.list || categoryData.list.length === 0) return;
         
         const categorySlug = categoryData.list[0].slug;
-        const response = await fetch(getApiUrl(`${API_BASE}/films/category/${categorySlug}?page=1`));
-        
-        if (!response.ok) throw new Error('Failed to fetch related movies');
-        
-        const data = await response.json();
+        const data = await fetchJSONCached(getApiUrl(`${API_BASE}/films/category/${categorySlug}?page=1`));
         
         if (data.status === 'success' && data.items) {
             displayRelatedMovies(data.items);
@@ -1154,7 +1145,7 @@ function displayRelatedMovies(movies) {
         <div class="bg-gray-700 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="goToMovieDetail('${movie.slug}')">
             <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
              alt="${movie.name || movie.title}" 
-             class="w-full h-48 object-cover"
+             loading="lazy" decoding="async" class="w-full h-48 object-cover"
              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
             <div class="p-3">
                 <h4 class="font-medium text-sm truncate">${movie.name || movie.title}</h4>
@@ -1696,3 +1687,4 @@ function clearNote() {
         noteInput.value = '';
     }
 }
+

@@ -1,10 +1,11 @@
 // CinePhim - Favorites Page JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
+    loadFavorites();
+    setupEventListeners();
+    document.addEventListener('cinephim:auth-ready', () => {
         loadFavorites();
-        setupEventListeners();
-    }, 1500);
+    });
 });
 
 function setupEventListeners() {
@@ -104,8 +105,7 @@ async function loadFavorites() {
                 if (!slug) continue;
                 
                 try {
-                    const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
-                    const data = await response.json();
+                    const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
                     const movieData = data.movie || data.item || data.data?.item;
                     if ((data.status === 'success' || data.status === true) && movieData) {
                         // Fix OPhim image paths if needed
@@ -155,7 +155,7 @@ function displayFavoriteMovies(movies) {
             <div class="relative">
                 <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                      alt="${movie.name || movie.title || movie.slug}" 
-                     class="film-poster w-full"
+                     loading="lazy" decoding="async" class="film-poster w-full"
                      onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                 <div class="absolute top-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                     ${movie.quality || 'HD'}
@@ -208,3 +208,5 @@ async function removeFromFavorites(movieSlug) {
         displayFavoriteMovies([]);
     }
 }
+
+

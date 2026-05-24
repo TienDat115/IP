@@ -7,30 +7,27 @@ let totalPages = 1;
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait for common.js to initialize Firebase
-    setTimeout(() => {
-        setupEventListeners();
-        // Check if category is in URL params
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category');
-        const page = urlParams.get('page');
-        
-        if (category) {
-            const radio = document.querySelector(`input[name="category"][value="${category}"]`);
-            if (radio) {
-                radio.checked = true;
-                // Update display text
-                const selectedCategorySpan = document.getElementById('selectedCategory');
-                if (selectedCategorySpan) {
-                    const displayName = getCategoryDisplayName(category);
-                    selectedCategorySpan.textContent = displayName;
-                }
+    setupEventListeners();
+    // Check if category is in URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    const page = urlParams.get('page');
+    
+    if (category) {
+        const radio = document.querySelector(`input[name="category"][value="${category}"]`);
+        if (radio) {
+            radio.checked = true;
+            // Update display text
+            const selectedCategorySpan = document.getElementById('selectedCategory');
+            if (selectedCategorySpan) {
+                const displayName = getCategoryDisplayName(category);
+                selectedCategorySpan.textContent = displayName;
             }
-            // Load with page from URL (default to 1 if not specified)
-            const pageNumber = page ? parseInt(page) : 1;
-            loadMoviesByCategory(category, pageNumber);
         }
-    }, 1500);
+        // Load with page from URL (default to 1 if not specified)
+        const pageNumber = page ? parseInt(page) : 1;
+        loadMoviesByCategory(category, pageNumber);
+    }
 });
 
 // Setup event listeners
@@ -79,13 +76,7 @@ async function loadMoviesByCategory(category, page = 1) {
             endpoint = `/films/the-loai/${category}`;
         }
         
-        const response = await fetch(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch category movies');
-        }
-        
-        const data = await response.json();
+        const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
         
         if (data.status === 'success' || data.status === true) {
             const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
@@ -176,7 +167,7 @@ function displayMovies(movies) {
             <div class="relative">
                 <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                      alt="${movie.name || movie.title}" 
-                     class="film-poster w-full"
+                     loading="lazy" decoding="async" class="film-poster w-full"
                      onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                 <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                     ${movie.quality || 'HD'}
@@ -430,3 +421,5 @@ document.getElementById('mobileSearchInput')?.addEventListener('keypress', funct
         }
     }
 });
+
+

@@ -6,18 +6,19 @@ const itemsPerPage = 10;
 let totalPages = 1;
 
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        // Check for page parameter in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const page = urlParams.get('page');
-        
-        // Load with page from URL (default to 1 if not specified)
-        const pageNumber = page ? parseInt(page) : 1;
-        currentPage = pageNumber;
-        
+    // Check for page parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    
+    // Load with page from URL (default to 1 if not specified)
+    const pageNumber = page ? parseInt(page) : 1;
+    currentPage = pageNumber;
+    
+    loadWatchHistory();
+    setupEventListeners();
+    document.addEventListener('cinephim:auth-ready', () => {
         loadWatchHistory();
-        setupEventListeners();
-    }, 1500);
+    });
 });
 
 function setupEventListeners() {
@@ -383,8 +384,7 @@ function displayWatchHistory() {
 async function loadPosters() {
     for (const item of watchHistory) {
         try {
-            const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
-            const data = await response.json();
+            const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
             
             const movieData = data.movie || data.item || data.data?.item;
             if ((data.status === 'success' || data.status === true) && movieData) {
@@ -401,7 +401,7 @@ async function loadPosters() {
                     posterContainer.innerHTML = `
                         <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                              alt="${movie.name || movie.title || item.movieTitle}" 
-                             class="film-poster w-full"
+                             loading="lazy" decoding="async" class="film-poster w-full"
                              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                     `;
                 }
@@ -554,3 +554,5 @@ async function removeFromWatchHistory(movieSlug) {
         });
     }
 }
+
+

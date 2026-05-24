@@ -50,11 +50,43 @@ function setSource(sourceKey) {
     }
 }
 
-// Helper function to prevent API caching
+// Helper function to normalize API url
 function getApiUrl(url) {
-    const separator = url.includes('?') ? '&' : '?';
-    const timestamp = new Date().getTime();
-    return `${url}${separator}_t=${timestamp}`;
+    return url;
+}
+
+const API_CACHE_TTL = 2 * 60 * 1000;
+const apiResponseCache = new Map();
+const inFlightRequests = new Map();
+
+async function fetchJSONCached(url, { ttl = API_CACHE_TTL, force = false } = {}) {
+    const now = Date.now();
+    const cached = apiResponseCache.get(url);
+    if (!force && cached && now - cached.timestamp < ttl) {
+        return cached.data;
+    }
+
+    if (!force && inFlightRequests.has(url)) {
+        return inFlightRequests.get(url);
+    }
+
+    const request = fetch(url)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            apiResponseCache.set(url, { data, timestamp: Date.now() });
+            return data;
+        })
+        .finally(() => {
+            inFlightRequests.delete(url);
+        });
+
+    inFlightRequests.set(url, request);
+    return request;
 }
 
 // Global variables
@@ -64,6 +96,7 @@ let isDarkMode = localStorage.getItem('darkMode') !== 'false';
 let watchHistory = [];
 let currentUser = null;
 let authListener = null;
+let hasResolvedInitialAuth = false;
 
 // Initialize Firebase
 const db = firebase.firestore();
@@ -169,31 +202,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // Render source switcher if container exists
     renderSourceSwitcher();
 
-    // Wait for Firebase to be ready
-    setTimeout(() => {
-        // Clear any existing auth listener
-        if (authListener) {
-            authListener();
+    // Clear any existing auth listener
+    if (authListener) {
+        authListener();
+    }
+    
+    // Set up auth state listener once
+    authListener = auth.onAuthStateChanged(function(user) {
+        currentUser = user;
+        if (user) {
+            console.log('User logged in:', user.email);
+            loadWatchHistoryFromFirebase();
+            loadFavoritesFromFirebase();
+            loadPinnedMoviesFromFirebase();
+        } else {
+            console.log('User not logged in');
+            watchHistory = [];
+            favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
         }
-        
-        // Set up auth state listener once
-        authListener = auth.onAuthStateChanged(function(user) {
-            currentUser = user;
-            if (user) {
-                console.log('User logged in:', user.email);
-                loadWatchHistoryFromFirebase();
-                loadFavoritesFromFirebase();
-                loadPinnedMoviesFromFirebase();
-            } else {
-                console.log('User not logged in');
-                watchHistory = [];
-                favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-                pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
-            }
-            updateLoginButton();
-            applyTheme();
-        });
-    }, 1000);
+        updateLoginButton();
+        applyTheme();
+
+        if (!hasResolvedInitialAuth) {
+            hasResolvedInitialAuth = true;
+        }
+        document.dispatchEvent(new CustomEvent('cinephim:auth-ready', { detail: { user: currentUser } }));
+    });
 });
 
 // Load favorites from Firebase

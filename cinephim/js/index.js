@@ -6,27 +6,28 @@ let searchQuery = '';
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait for common.js to initialize Firebase
-    setTimeout(() => {
-        // Check for page parameter in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const page = urlParams.get('page');
-        const search = urlParams.get('search');
-        
-        // Load with page from URL (default to 1 if not specified)
-        const pageNumber = page ? parseInt(page) : 1;
-        
+    // Check for page parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    const search = urlParams.get('search');
+    
+    // Load with page from URL (default to 1 if not specified)
+    const pageNumber = page ? parseInt(page) : 1;
+    
+    loadRecentWatched();
+    loadPinnedMovies();
+    document.addEventListener('cinephim:auth-ready', () => {
         loadRecentWatched();
         loadPinnedMovies();
-        
-        if (search) {
-            searchMovies(search, pageNumber);
-        } else {
-            loadNewMovies(pageNumber);
-        }
-        
-        setupEventListeners();
-    }, 1500);
+    });
+    
+    if (search) {
+        searchMovies(search, pageNumber);
+    } else {
+        loadNewMovies(pageNumber);
+    }
+    
+    setupEventListeners();
 });
 
 // Setup event listeners
@@ -65,8 +66,7 @@ async function loadNewMovies(page = 1) {
     window.history.pushState({}, '', url);
     
     try {
-        const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.new}?page=${page}`));
-        const data = await response.json();
+        const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.new}?page=${page}`));
         
         console.log('API Response:', data);
         
@@ -125,8 +125,7 @@ async function searchMovies(keyword, page = 1) {
     window.history.pushState({}, '', url);
     
     try {
-        const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.search}?keyword=${encodeURIComponent(keyword)}&page=${page}`));
-        const data = await response.json();
+        const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.search}?keyword=${encodeURIComponent(keyword)}&page=${page}`));
         
         if (data.status === 'success') {
             const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
@@ -220,7 +219,7 @@ function displayMovies(movies) {
             <div class="relative">
                 <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                      alt="${movie.name || movie.title}" 
-                     class="film-poster w-full"
+                     loading="lazy" decoding="async" class="film-poster w-full"
                      onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                 <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                     ${movie.quality || 'HD'}
@@ -396,8 +395,7 @@ async function loadRecentWatched() {
 async function loadRecentWatchedPosters(recentWatched) {
     for (const item of recentWatched) {
         try {
-            const response = await fetch(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
-            const data = await response.json();
+            const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
             
             const movieData = data.movie || data.item || data.data?.item;
             if ((data.status === 'success' || data.status === true) && movieData) {
@@ -414,7 +412,7 @@ async function loadRecentWatchedPosters(recentWatched) {
                     posterContainer.innerHTML = `
                         <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                              alt="${movie.name || movie.title || item.movieTitle}" 
-                             class="film-poster w-full"
+                             loading="lazy" decoding="async" class="film-poster w-full"
                              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                     `;
                 }
@@ -458,7 +456,7 @@ async function loadPinnedMovies() {
                     <div class="relative">
                         <img src="${getVerticalImage(item.poster_url, item.thumb_url)}" 
                              alt="${item.title || item.name}" 
-                             class="film-poster w-full"
+                             loading="lazy" decoding="async" class="film-poster w-full"
                              onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                         <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                             HD
@@ -489,3 +487,5 @@ async function loadPinnedMovies() {
         }
     }
 }
+
+

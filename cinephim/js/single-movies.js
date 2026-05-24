@@ -47,13 +47,7 @@ async function loadSingleMovies(page = 1) {
             endpoint = `/films/danh-sach/phim-le`;
         }
         
-        const response = await fetch(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch single movies');
-        }
-        
-        const data = await response.json();
+        const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
         
         if (data.status === 'success' || data.status === true) {
             const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
@@ -142,7 +136,7 @@ function displayMovies(movies) {
             <div class="relative">
                 <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                      alt="${movie.name || movie.title}" 
-                     class="film-poster w-full"
+                     loading="lazy" decoding="async" class="film-poster w-full"
                      onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
                 <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                     ${movie.quality || 'HD'}
@@ -328,3 +322,5 @@ document.getElementById('mobileSearchInput')?.addEventListener('keypress', funct
         }
     }
 });
+
+
