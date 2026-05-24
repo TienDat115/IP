@@ -13,9 +13,14 @@
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Trình phát nhạc cá nhân tối ưu tốc độ tải và trải nghiệm mượt mà trên desktop và mobile." />
 		<title>Lofi Music</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+		<link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+		<link rel="preload" href="js/playlists.json" as="fetch" crossorigin />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 		<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 		<link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet" />
 		<!-- Firebase Compatibility SDKs -->
@@ -200,7 +205,7 @@
 				top: -2px;
 			}
 
-			-progress-hover {
+			.progress-hover {
 				position: absolute;
 				top: 0;
 				left: 0;
@@ -491,6 +496,8 @@
 				background-color: var(--spotify-gray-light);
 				border-radius: 8px;
 				padding: 12px;
+				content-visibility: auto;
+				contain-intrinsic-size: 600px;
 			}
 
 			.song-item {
@@ -995,6 +1002,10 @@
 			#playlistWrapper {
 				display: none;
 			}
+
+			.hidden {
+				display: none !important;
+			}
 		</style>
 	</head>
 	<body>
@@ -1230,6 +1241,51 @@
 					const volumeValue = document.getElementById("volumeValue");
 					const muteBtn = document.getElementById("muteBtn");
 					let isMuted = false;
+					const songList = document.getElementById("songList");
+					const pagination = document.getElementById("pagination");
+					const durationCacheKey = "music_duration_cache_v1";
+					const durationCache = new Map(Object.entries(JSON.parse(localStorage.getItem(durationCacheKey) || "{}")));
+					const durationLoading = new Map();
+
+					function saveDurationCache() {
+						localStorage.setItem(durationCacheKey, JSON.stringify(Object.fromEntries(durationCache)));
+					}
+
+					function queueDurationLoad(url, durationEl) {
+						if (durationCache.has(url)) {
+							durationEl.textContent = durationCache.get(url);
+							return;
+						}
+
+						durationEl.textContent = "--:--";
+						if (durationLoading.has(url)) {
+							durationLoading.get(url).then((value) => {
+								durationEl.textContent = value;
+							});
+							return;
+						}
+
+						const loadPromise = new Promise((resolve) => {
+							const tempAudio = new Audio();
+							tempAudio.preload = "metadata";
+							tempAudio.src = url;
+							tempAudio.addEventListener("loadedmetadata", function () {
+								const value = formatTime(tempAudio.duration);
+								durationCache.set(url, value);
+								saveDurationCache();
+								resolve(value);
+							});
+							tempAudio.addEventListener("error", function () {
+								resolve("0:00");
+							});
+						});
+
+						durationLoading.set(url, loadPromise);
+						loadPromise.then((value) => {
+							durationLoading.delete(url);
+							durationEl.textContent = value;
+						});
+					}
 
 					// Format time helper
 					function formatTime(seconds) {
@@ -1268,9 +1324,9 @@
 					});
 
 					function renderPlaylist() {
-						const songList = document.getElementById("songList");
 						songList.innerHTML = "";
 						const currentList = playlists[currentPlaylist];
+						const fragment = document.createDocumentFragment();
 
 						// Kiểm tra nếu là playlist đặc biệt (đã được xử lý sẵn)
 						const isSpecialPlaylist = currentPlaylist === "Tất cả bài hát" || currentPlaylist === "Danh Sách Yêu Thích";
@@ -1323,18 +1379,7 @@
 							// Song duration
 							const songDuration = document.createElement("div");
 							songDuration.className = "song-duration";
-							// Lấy duration từ audio metadata khi có thể
-							const tempAudio = new Audio(url);
-							tempAudio.addEventListener("loadedmetadata", function () {
-								const minutes = Math.floor(tempAudio.duration / 60);
-								const seconds = Math.floor(tempAudio.duration % 60);
-								songDuration.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-							});
-							tempAudio.addEventListener("error", function () {
-								// Fallback nếu không load được metadata
-								songDuration.textContent = "0:00";
-							});
-							songDuration.textContent = "Loading...";
+							queueDurationLoad(url, songDuration);
 							songItem.appendChild(songDuration);
 
 							// Favorite button
@@ -1354,13 +1399,13 @@
 									renderPlaylist();
 								}
 							};
-							songList.appendChild(songItem);
+							fragment.appendChild(songItem);
 						}
+						songList.appendChild(fragment);
 						renderPagination();
 					}
 
 					function renderPagination() {
-						const pagination = document.getElementById("pagination");
 						pagination.innerHTML = "";
 						const totalPages = Math.ceil(playlists[currentPlaylist].length / pageSize);
 						const isMobile = window.innerWidth <= 360; // 360px là breakpoint cho mobile nhỏ
@@ -1393,7 +1438,7 @@
 
 						// Nút Previous
 						const prevBtn = document.createElement("button");
-						prevBtn.textContent = "";
+						prevBtn.textContent = "<";
 						prevBtn.disabled = currentPage === 1;
 						prevBtn.onclick = () => {
 							if (currentPage > 1) {
@@ -1457,7 +1502,7 @@
 
 						// Nút Next
 						const nextBtn = document.createElement("button");
-						nextBtn.textContent = "";
+						nextBtn.textContent = ">";
 						nextBtn.disabled = currentPage === totalPages;
 						nextBtn.onclick = () => {
 							if (currentPage < totalPages) {
