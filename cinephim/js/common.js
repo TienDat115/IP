@@ -197,6 +197,32 @@ function getHeroImage(posterUrl, thumbUrl) {
     return getVerticalImage(posterUrl, thumbUrl);
 }
 
+function applyPosterOrientationClass(img) {
+    if (!img || !img.classList || !img.classList.contains('film-poster')) return;
+    if (!img.naturalWidth || !img.naturalHeight) return;
+
+    img.classList.remove('film-poster-landscape');
+    if (img.naturalWidth > img.naturalHeight) {
+        img.classList.add('film-poster-landscape');
+    }
+}
+
+document.addEventListener('load', function(event) {
+    const target = event.target;
+    if (target && target.tagName === 'IMG') {
+        applyPosterOrientationClass(target);
+    }
+}, true);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const posters = document.querySelectorAll('img.film-poster');
+    posters.forEach((img) => {
+        if (img.complete) {
+            applyPosterOrientationClass(img);
+        }
+    });
+});
+
 // Initialize Firebase and common functions
 document.addEventListener('DOMContentLoaded', function() {
     // Render source switcher if container exists

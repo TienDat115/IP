@@ -351,7 +351,7 @@ function displayWatchHistory() {
             html += '<i class="fas fa-history text-gray-300 mr-1"></i>' + formatWatchTime(item.watchedAt);
             html += '</div>';
             html += '<div class="relative">';
-            html += '<div class="film-poster w-full bg-gray-700 flex items-center justify-center" id="poster-' + item.movieSlug + '">';
+            html += '<div class="w-full bg-gray-700 flex items-center justify-center" id="poster-' + item.movieSlug + '">';
             html += '<i class="fas fa-film text-4xl text-gray-500"></i>';
             html += '</div>';
             html += '<div class="absolute bottom-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">';

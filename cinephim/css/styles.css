@@ -13,6 +13,12 @@
 .film-poster {
 	aspect-ratio: 2/3;
 	object-fit: cover;
+	object-position: center;
+	background-color: #111827;
+}
+
+.film-poster.film-poster-landscape {
+	aspect-ratio: 16/9;
 }
 
 /* Pagination styles */

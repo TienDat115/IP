@@ -360,7 +360,7 @@ async function loadRecentWatched() {
             html += `
                 <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail('${item.movieSlug}')">
                     <div class="relative">
-                        <div class="film-poster w-full bg-gray-700 flex items-center justify-center" id="recent-poster-${item.movieSlug}">
+                        <div class="w-full bg-gray-700 flex items-center justify-center" id="recent-poster-${item.movieSlug}">
                             <i class="fas fa-film text-4xl text-gray-500"></i>
                         </div>
                         <div class="absolute bottom-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
