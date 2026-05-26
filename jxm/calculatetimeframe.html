@@ -184,6 +184,10 @@
 											<span class="input-group-text"><i class="bi bi-calendar3"></i></span>
 											<input type="date" class="form-control" id="inputDate" required />
 										</div>
+										<div class="form-text mt-1">
+											<i class="bi bi-lightbulb"></i> Gợi ý: 
+											<a href="#" id="suggestedSaturday" style="text-decoration:none;" onclick="setSuggestedDate(); return false;"></a>
+										</div>
 									</div>
 								</div>
 
@@ -668,6 +672,28 @@
 				});
 			});
 
+			// Hàm đặt ngày về thứ 7 của tuần hiện tại
+			function setSuggestedDate() {
+				const today = new Date();
+				const vietnamTime = new Date(today.getTime() + 7 * 60 * 60 * 1000);
+				const dayOfWeek = vietnamTime.getUTCDay(); // 0=CN, 6=Thứ 7
+				const daysToSaturday = (6 - dayOfWeek + 7) % 7;
+				const saturday = new Date(vietnamTime);
+				saturday.setUTCDate(vietnamTime.getUTCDate() + daysToSaturday);
+				document.getElementById("inputDate").value = saturday.toISOString().split("T")[0];
+			}
+
+			// Cập nhật hiển thị ngày thứ 7 gợi ý
+			function updateSuggestedSaturday() {
+				const today = new Date();
+				const vietnamTime = new Date(today.getTime() + 7 * 60 * 60 * 1000);
+				const dayOfWeek = vietnamTime.getUTCDay();
+				const daysToSaturday = (6 - dayOfWeek + 7) % 7;
+				const saturday = new Date(vietnamTime);
+				saturday.setUTCDate(vietnamTime.getUTCDate() + daysToSaturday);
+				document.getElementById("suggestedSaturday").textContent = `Thứ 7, ${saturday.toISOString().split("T")[0]}`;
+			}
+
 			// Khởi tạo khi trang tải
 			document.addEventListener("DOMContentLoaded", async function () {
 				// Lấy ngày today với múi giờ Việt Nam (UTC+7)
@@ -675,6 +701,7 @@
 				const vietnamTime = new Date(today.getTime() + 7 * 60 * 60 * 1000);
 				const todayStr = vietnamTime.toISOString().split("T")[0];
 				document.getElementById("inputDate").value = todayStr;
+				updateSuggestedSaturday();
 
 				try {
 					// Tải và cập nhật dữ liệu
