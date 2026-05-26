@@ -372,6 +372,26 @@ async function saveWatchHistoryToFirebase() {
     }
 }
 
+// Save a single watch history item to Firebase immediately
+async function saveSingleWatchHistoryItem(historyItem) {
+    if (!currentUser) return;
+
+    try {
+        const historyRef = db.collection('users').doc(currentUser.uid).collection('watchHistory');
+        const existingSnapshot = await historyRef.where('movieSlug', '==', historyItem.movieSlug).get();
+
+        if (!existingSnapshot.empty) {
+            existingSnapshot.forEach(doc => {
+                doc.ref.update(historyItem);
+            });
+        } else {
+            await historyRef.add(historyItem);
+        }
+    } catch (error) {
+        console.error('Error saving watch history item:', error);
+    }
+}
+
 // Apply theme
 function applyTheme() {
     if (isDarkMode) {
@@ -1034,9 +1054,9 @@ async function addToWatchHistory(movieSlug, movieTitle, episodeName) {
         watchHistory = watchHistory.slice(0, 50);
     }
     
-    // Save to Firebase if user is logged in
+    // Save to Firebase immediately if user is logged in
     if (currentUser) {
-        await saveWatchHistoryToFirebase();
+        await saveSingleWatchHistoryItem(historyItem);
     }
     
     console.log('Watch history saved. Total items:', watchHistory.length);
@@ -1212,13 +1232,21 @@ function playEpisodeFromHistory(episodeSlug) {
 }
 
 // Remove from watch history
-function removeFromWatchHistory(movieSlug, episodeName) {
+async function removeFromWatchHistory(movieSlug, episodeName) {
     watchHistory = watchHistory.filter(item => 
         !(item.movieSlug === movieSlug && item.episodeName === episodeName)
     );
     
     if (currentUser) {
-        saveWatchHistoryToFirebase();
+        try {
+            const historyRef = db.collection('users').doc(currentUser.uid).collection('watchHistory');
+            const snapshot = await historyRef.where('movieSlug', '==', movieSlug).get();
+            const batch = db.batch();
+            snapshot.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        } catch (error) {
+            console.error('Error removing from watch history:', error);
+        }
     }
     
     loadWatchHistoryInModal();
@@ -1241,17 +1269,18 @@ function addToWatchHistory(movieSlug) {
     // Remove all existing entries for this movie
     watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
     
-    // Add new entry
-    watchHistory.push({
+    const historyItem = {
         movieSlug: movieSlug,
         movieTitle: movieTitle,
         episodeName: 'Chi tiết phim',
         watchedAt: watchedAt
-    });
+    };
     
-    // Save to Firebase if user is logged in
+    watchHistory.push(historyItem);
+    
+    // Save to Firebase immediately if user is logged in
     if (currentUser) {
-        saveWatchHistoryToFirebase();
+        saveSingleWatchHistoryItem(historyItem);
     }
     
     // Show notification
@@ -1411,9 +1440,9 @@ async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
         watchHistory = watchHistory.slice(0, 50);
     }
     
-    // Save to Firebase if user is logged in
+    // Save to Firebase immediately if user is logged in
     if (currentUser) {
-        await saveWatchHistoryToFirebase();
+        await saveSingleWatchHistoryItem(historyItem);
     }
     
     console.log('Watch history saved. Total items:', watchHistory.length);

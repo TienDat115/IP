@@ -822,48 +822,16 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
         watchHistory = watchHistory.slice(0, 50);
     }
     
-    // Save to Firebase if user is logged in
+    // Save to Firebase immediately if user is logged in
     const user = auth.currentUser;
     if (user) {
-        saveWatchHistoryToFirebase();
+        saveSingleWatchHistoryItem(historyItem);
     }
     
     console.log('Watch history saved. Total items:', watchHistory.length);
 }
 
-// Save watch history to Firebase
-async function saveWatchHistoryToFirebase() {
-    if (!auth.currentUser) return;
-    
-    try {
-        const userRef = db.collection('users').doc(auth.currentUser.uid);
-        const historyRef = userRef.collection('watchHistory');
-        
-        // Process each item in watchHistory array
-        const batch = db.batch();
-        
-        for (const item of watchHistory) {
-            // Check if this movie already exists in Firebase
-            const existingSnapshot = await historyRef.where('movieSlug', '==', item.movieSlug).get();
-            
-            if (!existingSnapshot.empty) {
-                // Update existing document
-                existingSnapshot.forEach(doc => {
-                    batch.update(doc.ref, item);
-                });
-            } else {
-                // Add new document
-                const docRef = historyRef.doc();
-                batch.set(docRef, item);
-            }
-        }
-        
-        await batch.commit();
-        console.log('Watch history saved to Firebase');
-    } catch (error) {
-        console.error('Error saving watch history to Firebase:', error);
-    }
-}
+
 function getEpisodeName(episodeSlug) {
     if (!currentMovie || !currentMovie.episodes) return episodeSlug;
     
