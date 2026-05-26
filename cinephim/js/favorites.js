@@ -65,6 +65,7 @@ async function loadFavorites() {
         // Load favorite movies sequentially to avoid Object in URL
         (async function loadFavoriteMovies() {
             const movies = [];
+            const invalidSlugs = [];
             for (const fav of favorites) {
                 const slug = typeof fav.slug === 'string' ? fav.slug : String(fav.slug || '');
                 if (!slug) continue;
@@ -80,9 +81,22 @@ async function loadFavorites() {
                             movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
                         }
                         movies.push(normalizeMovieData(movieData));
+                    } else {
+                        invalidSlugs.push(slug);
                     }
                 } catch (error) {
-                    console.error('Error loading favorite movie:', error);
+                    console.warn('Removing invalid favorite movie:', slug, error.message);
+                    invalidSlugs.push(slug);
+                }
+            }
+            
+            // Clean up invalid favorites
+            if (invalidSlugs.length > 0) {
+                favorites = favorites.filter(f => !invalidSlugs.includes(typeof f.slug === 'string' ? f.slug : String(f.slug || '')));
+                if (currentUser) {
+                    await saveFavoritesToFirebase();
+                } else {
+                    localStorage.setItem('favorites', JSON.stringify(favorites));
                 }
             }
             
