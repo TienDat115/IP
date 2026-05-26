@@ -2,7 +2,6 @@
 let currentMovie = null;
 let currentEpisodeIndex = 0;
 let currentServerIndex = 0;
-let player = null;
 let currentEpisodePage = 1;
 let episodesPerPage = 50;
 
@@ -1281,31 +1280,6 @@ async function togglePinMovie() {
     await window.togglePin(currentMovie.slug, currentMovie);
 }
 
-// Share movie
-function shareMovie() {
-    if (!currentMovie) return;
-
-    const shareUrl = window.location.href;
-    const shareText = `Xem ${currentMovie.name || currentMovie.title} (${currentMovie.year}) trên CinePhim`;
-
-    if (navigator.share) {
-        navigator.share({
-            title: currentMovie.name || currentMovie.title,
-            text: shareText,
-            url: shareUrl
-        }).catch((error) => {
-            console.log('Error sharing:', error);
-        });
-    } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            showSuccess('Đã sao chép link vào clipboard');
-        }).catch(() => {
-            showError('Không thể sao chép link');
-        });
-    }
-}
-
 // Toggle watch history section
 function toggleWatchHistory() {
     const watchHistorySection = document.getElementById('watchHistorySection');
@@ -1448,16 +1422,6 @@ function showSuccess(message) {
         timer: 2000,
         showConfirmButton: false
     });
-}
-
-function formatDate(date) {
-    return new Intl.DateTimeFormat('vi-VN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(date);
 }
 
 // Handle search

@@ -186,13 +186,6 @@ function getVerticalImage(posterUrl, thumbUrl) {
            'https://placehold.co/300x450/374151/ffffff?text=No+Poster';
 }
 
-function getHorizontalImage(posterUrl, thumbUrl) {
-    return getBestImageForOrientation(posterUrl, thumbUrl, 'horizontal') || 
-           posterUrl || 
-           thumbUrl || 
-           'https://placehold.co/800x450/374151/ffffff?text=No+Image';
-}
-
 function getHeroImage(posterUrl, thumbUrl) {
     return getVerticalImage(posterUrl, thumbUrl);
 }
@@ -335,40 +328,6 @@ async function loadWatchHistoryFromFirebase() {
     } catch (error) {
         console.error('Error loading watch history:', error);
         watchHistory = [];
-    }
-}
-
-// Save watch history to Firebase
-async function saveWatchHistoryToFirebase() {
-    if (!currentUser) return;
-    
-    try {
-        const userRef = db.collection('users').doc(currentUser.uid);
-        const historyRef = userRef.collection('watchHistory');
-        
-        // Process each item in watchHistory array
-        const batch = db.batch();
-        
-        for (const item of watchHistory) {
-            // Check if this movie already exists in Firebase
-            const existingSnapshot = await historyRef.where('movieSlug', '==', item.movieSlug).get();
-            
-            if (!existingSnapshot.empty) {
-                // Update existing document
-                existingSnapshot.forEach(doc => {
-                    batch.update(doc.ref, item);
-                });
-            } else {
-                // Add new document
-                const docRef = historyRef.doc();
-                batch.set(docRef, item);
-            }
-        }
-        
-        await batch.commit();
-        console.log('Watch history saved to Firebase');
-    } catch (error) {
-        console.error('Error saving watch history:', error);
     }
 }
 
@@ -817,30 +776,6 @@ function updateLoginButton() {
     }
 }
 
-// Show loading
-function showLoading() {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.classList.remove('hidden');
-    }
-    const container = document.getElementById('moviesContainer');
-    if (container) {
-        container.innerHTML = '';
-    }
-    const pagination = document.getElementById('pagination');
-    if (pagination) {
-        pagination.innerHTML = '';
-    }
-}
-
-// Hide loading
-function hideLoading() {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.classList.add('hidden');
-    }
-}
-
 // Show movie detail - redirect to detail page
 function showMovieDetail(slug) {
     window.location.href = `movie-detail.html?slug=${slug}`;
@@ -852,15 +787,6 @@ function closeMovieModal() {
     if (modal) {
         modal.classList.add('hidden');
     }
-}
-
-// Check if episode is watched
-function isEpisodeWatched(episodeSlug, movieSlug = null) {
-    const slugToCheck = movieSlug || window.currentMovieSlug;
-    return watchHistory.some(item => 
-        item.movieSlug === slugToCheck && 
-        item.episodeSlug === episodeSlug
-    );
 }
 
 // Toggle favorite
@@ -1015,53 +941,6 @@ function renderSourceSwitcher() {
     if (mobileContainer) mobileContainer.innerHTML = html;
 }
 
-// Add to watch history
-async function addToWatchHistory(movieSlug, movieTitle, episodeName) {
-    if (!movieSlug || !movieTitle) {
-        console.log('Missing required data for watch history:', { movieSlug, movieTitle, episodeName });
-        return;
-    }
-    
-    // Check if this episode is already in watch history (avoid duplicates)
-    const existingEntry = watchHistory.find(item => 
-        item.movieSlug === movieSlug && 
-        item.source === currentSourceKey && // Source-specific history
-        (item.episodeSlug === episodeName || item.episodeName === episodeName)
-    );
-    
-    if (existingEntry) {
-        console.log('Episode already in watch history, skipping save');
-        return;
-    }
-    
-    const historyItem = {
-        movieSlug,
-        movieTitle,
-        episodeName,
-        watchedAt: new Date().toISOString()
-    };
-    
-    console.log('Adding to watch history:', historyItem);
-    
-    // Remove existing entry for same movie
-    watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
-    
-    // Add new entry at the beginning
-    watchHistory.unshift(historyItem);
-    
-    // Keep only last 50 items
-    if (watchHistory.length > 50) {
-        watchHistory = watchHistory.slice(0, 50);
-    }
-    
-    // Save to Firebase immediately if user is logged in
-    if (currentUser) {
-        await saveSingleWatchHistoryItem(historyItem);
-    }
-    
-    console.log('Watch history saved. Total items:', watchHistory.length);
-}
-
 // Format watch time (relative time)
 function formatWatchTime(watchedAt) {
     const now = new Date();
@@ -1096,19 +975,34 @@ function formatDate(dateString) {
     });
 }
 
-// Show error message
-function showError(message) {
-    const container = document.getElementById('moviesContainer');
-    if (container) {
-        container.innerHTML = `
-            <div class="col-span-full text-center py-8">
-                <div class="text-red-400 mb-4">
-                    <i class="fas fa-exclamation-triangle text-4xl"></i>
-                </div>
-                <p class="text-gray-400">${message}</p>
-            </div>
-        `;
+// Format episode info
+function formatEpisodeInfo(currentEpisode, totalEpisodes) {
+    if (!currentEpisode) return '';
+
+    if (currentEpisode.toLowerCase().includes('full') ||
+        currentEpisode.toLowerCase().includes('hoàn tất') ||
+        currentEpisode.toLowerCase().includes('completed')) {
+        return currentEpisode;
     }
+
+    const currentMatch = currentEpisode.match(/(\d+)/);
+    const currentNum = currentMatch ? parseInt(currentMatch[1]) : 0;
+
+    let totalNum = 0;
+    if (totalEpisodes) {
+        const totalMatch = totalEpisodes.toString().match(/(\d+)/);
+        totalNum = totalMatch ? parseInt(totalMatch[1]) : 0;
+    }
+
+    if (currentNum > 0 && totalNum > 0) {
+        return `${currentNum}/${totalNum}`;
+    }
+
+    if (currentNum > 0) {
+        return `Tập ${currentNum}`;
+    }
+
+    return currentEpisode;
 }
 
 // Helper function to extract country from category
@@ -1140,78 +1034,6 @@ function closeMobileMenu() {
     if (mobileMenu) {
         mobileMenu.classList.add("hidden");
     }
-}
-
-// Sync theme icons
-function syncThemeIcons() {
-    const desktopIcon = document.getElementById("themeIcon");
-    const mobileIcon = document.getElementById("mobileThemeIcon");
-
-    if (desktopIcon && mobileIcon) {
-        if (desktopIcon.classList.contains("fa-moon")) {
-            mobileIcon.className = "fas fa-moon";
-        } else {
-            mobileIcon.className = "fas fa-sun";
-        }
-    }
-}
-
-// Sync login icons
-function syncLoginIcons() {
-    const desktopIcon = document.getElementById("loginIcon");
-    const mobileIcon = document.getElementById("mobileLoginIcon");
-    const desktopText = document.getElementById("loginText");
-
-    if (desktopIcon && mobileIcon) {
-        mobileIcon.className = desktopIcon.className;
-        if (desktopText && desktopText.textContent === "Đăng xuất") {
-            mobileIcon.className = "fas fa-sign-out-alt";
-        } else {
-            mobileIcon.className = "fas fa-sign-in-alt";
-        }
-    }
-}
-
-// Toggle watch history in modal - Show/hide toggle
-function toggleWatchHistoryInModal() {
-    const modal = document.getElementById('watchHistoryInModal');
-    const grid = document.getElementById('modalWatchHistoryGrid');
-    
-    if (modal.classList.contains('hidden')) {
-        // Show history
-        modal.classList.remove('hidden');
-        loadWatchHistoryInModal();
-    } else {
-        // Hide history
-        modal.classList.add('hidden');
-    }
-}
-
-// Load watch history in modal
-function loadWatchHistoryInModal() {
-    const grid = document.getElementById('modalWatchHistoryGrid');
-    const movieHistory = watchHistory.filter(item => item.movieSlug === window.currentMovieSlug);
-    
-    if (movieHistory.length === 0) {
-        grid.innerHTML = '<div class="text-center py-8 text-gray-400"><p>Chưa có tập nào được xem của phim này</p></div>';
-        return;
-    }
-    
-    grid.innerHTML = movieHistory.map(item => `
-        <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition" 
-             onclick="playEpisodeFromHistory('${item.episodeSlug || item.episodeName}')">
-            <div class="flex justify-between items-center">
-                <div class="flex-1">
-                    <p class="font-semibold">${item.episodeName || 'Không xác định'}</p>
-                    <p class="text-sm text-gray-400">${formatDate(item.watchedAt)}</p>
-                </div>
-                <button onclick="event.stopPropagation(); removeFromWatchHistory('${item.movieSlug}', '${item.episodeName}')" 
-                        class="text-red-400 hover:text-red-300 transition ml-4">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
 }
 
 // Play episode from history
@@ -1248,8 +1070,6 @@ async function removeFromWatchHistory(movieSlug, episodeName) {
             console.error('Error removing from watch history:', error);
         }
     }
-    
-    loadWatchHistoryInModal();
     
     Swal.fire({
         icon: 'success',
@@ -1500,27 +1320,6 @@ function loadHLSPlayer() {
     document.head.appendChild(script);
 }
 
-// Update episodes list when server changes
-function updateEpisodesList() {
-    const serverSelect = document.getElementById('serverSelect');
-    const episodesList = document.getElementById('episodesList');
-    
-    if (!serverSelect || !episodesList || !window.currentMovieEpisodes) return;
-    
-    const serverIndex = parseInt(serverSelect.value);
-    const server = window.currentMovieEpisodes[serverIndex];
-    
-    if (server && server.items) {
-        episodesList.innerHTML = [...server.items].reverse().map((episode, index) => `
-            <button onclick="playEpisode('${episode.slug}', '${episode.embed || episode.m3u8}')" 
-                    class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(episode.slug, window.currentMovieSlug) ? 'ring-2 ring-blue-500' : ''}">
-                ${episode.name || `Tập ${server.items.length - index}`}
-                ${isEpisodeWatched(episode.slug, window.currentMovieSlug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
-            </button>
-        `).join('');
-    }
-}
-
 // Close modal when clicking outside
 document.addEventListener('DOMContentLoaded', function() {
     const movieModal = document.getElementById('movieModal');
@@ -1688,11 +1487,6 @@ function updatePinButton(slug, isPinned) {
             pinButton.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
         }
     }
-}
-
-// Check if movie is pinned
-function isMoviePinned(slug) {
-    return pinnedMovies.some(pin => pin.slug === slug);
 }
 
 function showError(message) {
