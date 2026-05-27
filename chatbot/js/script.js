@@ -64,8 +64,13 @@ async function loadWebhooks() {
 		});
 
 		// Tạo các nhóm webhook dựa trên phần tên trước dấu gạch ngang (-)
+		const visibleWebhooks = webhooks.filter((w) => w.visible !== false);
+		if (visibleWebhooks.length === 0) {
+			webhookSelect.innerHTML = '<option value="">Không có webhook nào</option>';
+			return;
+		}
 		const groupedWebhooks = {};
-		webhooks.forEach((webhook) => {
+		visibleWebhooks.forEach((webhook) => {
 			let groupName = "Khác";
 			if (webhook.name && webhook.name.includes("-")) {
 				// Lấy phần tên trước dấu gạch ngang và bỏ khoảng trắng thừa
@@ -146,7 +151,9 @@ async function getWebhookUrls() {
 		const querySnapshot = await db.collection("webhooks").get();
 		querySnapshot.forEach((doc) => {
 			const data = doc.data();
-			webhooks[data.id] = data.url;
+			if (data.visible !== false) {
+				webhooks[data.id] = data.url;
+			}
 		});
 		return webhooks;
 	} catch (error) {
