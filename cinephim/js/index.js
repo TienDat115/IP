@@ -363,36 +363,41 @@ async function loadRecentWatchedPosters(recentWatched) {
             const posterContainer = document.getElementById('recent-poster-' + item.movieSlug);
             if (!posterContainer) continue;
 
-            const savedPoster = item.poster_url || item.thumb_url;
-            if (savedPoster) {
-                posterContainer.innerHTML = `
-                    <img src="${getVerticalImage(item.poster_url, item.thumb_url)}" 
-                         alt="${item.movieTitle || ''}" 
-                         loading="lazy" decoding="async" class="film-poster w-full"
-                         onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
-                `;
-                continue;
+            let posterUrl = '';
+            let thumbUrl = '';
+
+            try {
+                const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
+                const movieData = data.movie || data.item || data.data?.item;
+                if ((data.status === 'success' || data.status === true) && movieData) {
+                    if (currentSourceKey === 'ophim') {
+                        const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
+                        movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
+                        movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
+                    }
+                    const movie = normalizeMovieData(movieData);
+                    posterUrl = movie.poster_url || '';
+                    thumbUrl = movie.thumb_url || '';
+                }
+            } catch (apiError) {
+                console.warn('API fallback for', item.movieSlug, ':', apiError);
             }
 
-            const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
-            
-            const movieData = data.movie || data.item || data.data?.item;
-            if ((data.status === 'success' || data.status === true) && movieData) {
-                // Fix OPhim image paths if needed
-                if (currentSourceKey === 'ophim') {
-                    const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                    movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
-                    movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
-                }
-                
-                const movie = normalizeMovieData(movieData);
-                posterContainer.innerHTML = `
-                    <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
-                         alt="${movie.name || movie.title || item.movieTitle}" 
-                         loading="lazy" decoding="async" class="film-poster w-full"
-                         onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
-                `;
+            if (!posterUrl && !thumbUrl) {
+                posterUrl = item.poster_url || '';
+                thumbUrl = item.thumb_url || '';
             }
+
+            const imgSrc = (posterUrl || thumbUrl)
+                ? getVerticalImage(posterUrl, thumbUrl)
+                : 'https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster';
+
+            posterContainer.innerHTML = `
+                <img src="${imgSrc}" 
+                     alt="${item.movieTitle || ''}" 
+                     loading="lazy" decoding="async" class="film-poster w-full"
+                     onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+            `;
         } catch (error) {
             console.error('Error loading poster for recent watched', item.movieSlug, ':', error);
         }
