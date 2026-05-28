@@ -868,6 +868,11 @@ function resolveOPhimImageUrl(url, pathImageFromApi = '') {
     }
 }
 
+function stripHtml(str) {
+    if (!str) return '';
+    return str.replace(/<[^>]*>/g, '');
+}
+
 // Data Normalization Helpers
 function normalizeMovieData(item, pathImage = '') {
     if (!item) return null;

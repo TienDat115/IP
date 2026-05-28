@@ -254,7 +254,7 @@ async function displayMovieDetails() {
     }
     document.getElementById('movieCasts').textContent = castsText;
     document.getElementById('movieCategories').textContent = getCategoriesFromCategory(currentMovie.category) || 'Không có thông tin thể loại.';
-    document.getElementById('movieDescription').textContent = currentMovie.content || currentMovie.description || 'Không có mô tả.';
+    document.getElementById('movieDescription').textContent = stripHtml(currentMovie.content || currentMovie.description || 'Không có mô tả.');
     document.getElementById('movieModified').textContent = modifiedText;
     
     // Update breadcrumb
@@ -332,7 +332,7 @@ function updateStructuredData() {
         "@context": "https://schema.org",
         "@type": "Movie",
         "name": currentMovie.name || currentMovie.title || 'Không có tiêu đề',
-        "description": currentMovie.content || currentMovie.description || 'Không có mô tả.',
+        "description": stripHtml(currentMovie.content || currentMovie.description || 'Không có mô tả.'),
         "url": window.location.href,
         "image": getHeroImage(currentMovie.poster_url, currentMovie.thumb_url),
         "datePublished": currentMovie.year ? `${currentMovie.year}-01-01` : '',
@@ -377,7 +377,7 @@ function updatePageMeta() {
 
     const year = currentMovie.year || (parseDate(currentMovie.created) ? parseDate(currentMovie.created).getFullYear() : 'Không rõ');
     const title = `${currentMovie.name || currentMovie.title} - Xem phim HD | CinePhim`;
-    const description = `Xem ${currentMovie.name || currentMovie.title} (${year}) online miễn phí với chất lượng HD. ${currentMovie.content ? currentMovie.content.substring(0, 150) + '...' : ''}`;
+    const description = `Xem ${currentMovie.name || currentMovie.title} (${year}) online miễn phí với chất lượng HD. ${currentMovie.content ? stripHtml(currentMovie.content).substring(0, 150) + '...' : ''}`;
     
     // Update title and meta description
     document.title = title;
