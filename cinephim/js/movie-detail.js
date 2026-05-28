@@ -159,6 +159,8 @@ async function loadMovieDetail(slug) {
             // Store episodes data for server switching
             window.currentMovieEpisodes = currentMovie.episodes;
             window.currentMovieSlug = slug;
+            window.currentMoviePosterUrl = currentMovie.poster_url || '';
+            window.currentMovieThumbUrl = currentMovie.thumb_url || '';
             
             showLoading(false);
             document.getElementById('movieContent').classList.remove('hidden');
@@ -842,6 +844,8 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
     historyItem.serverIndex = serverIndex;
     historyItem.serverName = serverName;
     historyItem.watchedAt = watchedAt;
+    historyItem.poster_url = currentMovie.poster_url || '';
+    historyItem.thumb_url = currentMovie.thumb_url || '';
     
     // Always save videoUrl for compatibility
     historyItem.videoUrl = getCurrentVideoUrl();

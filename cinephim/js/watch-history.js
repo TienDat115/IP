@@ -384,6 +384,20 @@ function displayWatchHistory() {
 async function loadPosters() {
     for (const item of watchHistory) {
         try {
+            const posterContainer = document.getElementById('poster-' + item.movieSlug);
+            if (!posterContainer) continue;
+
+            const savedPoster = item.poster_url || item.thumb_url;
+            if (savedPoster) {
+                posterContainer.innerHTML = `
+                    <img src="${getVerticalImage(item.poster_url, item.thumb_url)}" 
+                         alt="${item.movieTitle || ''}" 
+                         loading="lazy" decoding="async" class="film-poster w-full"
+                         onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                `;
+                continue;
+            }
+
             const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
             
             const movieData = data.movie || data.item || data.data?.item;
@@ -396,15 +410,12 @@ async function loadPosters() {
                 }
                 
                 const movie = normalizeMovieData(movieData);
-                const posterContainer = document.getElementById('poster-' + item.movieSlug);
-                if (posterContainer) {
-                    posterContainer.innerHTML = `
-                        <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
-                             alt="${movie.name || movie.title || item.movieTitle}" 
-                             loading="lazy" decoding="async" class="film-poster w-full"
-                             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
-                    `;
-                }
+                posterContainer.innerHTML = `
+                    <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+                         alt="${movie.name || movie.title || item.movieTitle}" 
+                         loading="lazy" decoding="async" class="film-poster w-full"
+                         onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                `;
             }
         } catch (error) {
             console.error('Error loading poster for', item.movieSlug, ':', error);

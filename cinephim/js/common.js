@@ -1098,7 +1098,9 @@ function addToWatchHistory(movieSlug) {
         movieSlug: movieSlug,
         movieTitle: movieTitle,
         episodeName: 'Chi tiết phim',
-        watchedAt: watchedAt
+        watchedAt: watchedAt,
+        poster_url: window.currentMoviePosterUrl || '',
+        thumb_url: window.currentMovieThumbUrl || ''
     };
     
     watchHistory.push(historyItem);
@@ -1249,7 +1251,9 @@ async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
         episodeSlug: episodeName,
         serverIndex: serverIndex,
         serverName: serverName,
-        watchedAt: new Date().toISOString()
+        watchedAt: new Date().toISOString(),
+        poster_url: window.currentMoviePosterUrl || '',
+        thumb_url: window.currentMovieThumbUrl || ''
     };
     
     console.log('Adding to watch history:', historyItem);
