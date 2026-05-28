@@ -5,6 +5,20 @@ let currentServerIndex = 0;
 let currentEpisodePage = 1;
 let episodesPerPage = 50;
 
+// Helper to convert Youtube URL to embed URL
+function convertYoutubeToEmbed(url) {
+    if (!url) return '';
+    if (url.includes('youtube.com/embed/')) return url;
+    
+    let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    let match = url.match(regExp);
+    
+    if (match && match[2].length === 11) {
+        return `https://www.youtube.com/embed/${match[2]}`;
+    }
+    return url;
+}
+
 // Check if user is logged in
 function isUserLoggedIn() {
     return auth.currentUser !== null;
@@ -99,6 +113,39 @@ async function loadMovieDetail(slug) {
                 const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
                 currentMovie.poster_url = resolveOPhimImageUrl(currentMovie.poster_url || '', pathImage);
                 currentMovie.thumb_url = resolveOPhimImageUrl(currentMovie.thumb_url || '', pathImage);
+                
+                // Handle trailer for OPhim
+                const isTrailer = (currentMovie.status && currentMovie.status.toLowerCase() === 'trailer') || 
+                                  (currentMovie.episode_current && currentMovie.episode_current.toLowerCase().includes('trailer'));
+                if (isTrailer) {
+                    if (currentMovie.trailer_url) {
+                        const embedUrl = convertYoutubeToEmbed(currentMovie.trailer_url);
+                        currentMovie.episodes = [
+                            {
+                                server_name: "Trailer",
+                                server_data: [
+                                    {
+                                        name: "Trailer",
+                                        slug: "trailer",
+                                        embed: embedUrl,
+                                        m3u8: embedUrl
+                                    }
+                                ],
+                                items: [
+                                    {
+                                        name: "Trailer",
+                                        slug: "trailer",
+                                        embed: embedUrl,
+                                        m3u8: embedUrl
+                                    }
+                                ]
+                            }
+                        ];
+                    } else {
+                        // Nếu link rỗng thì gán episodes rỗng để không chọn tập phim luôn
+                        currentMovie.episodes = [];
+                    }
+                }
             }
             
             await displayMovieDetails();
@@ -135,6 +182,10 @@ async function loadMovieDetail(slug) {
 // Format episode progress for movie detail
 function formatEpisodeProgress(currentEpisode, totalEpisodes) {
     if (!currentEpisode) return 'Không rõ';
+    
+    if (currentEpisode.toLowerCase().includes('trailer')) {
+        return 'Trailer';
+    }
     
     // If current episode contains "full" or "hoàn tất", just return "Full"
     if (currentEpisode.toLowerCase().includes('full') || 
@@ -428,7 +479,17 @@ function playDefaultFirstEpisode() {
 
 // Setup episodes
 function setupEpisodes() {
-    if (!currentMovie || !currentMovie.episodes || currentMovie.episodes.length === 0) return;
+    const episodesSection = document.getElementById('episodesSection');
+    if (!currentMovie || !currentMovie.episodes || currentMovie.episodes.length === 0) {
+        if (episodesSection) {
+            episodesSection.classList.add('hidden');
+        }
+        return;
+    }
+    
+    if (episodesSection) {
+        episodesSection.classList.remove('hidden');
+    }
 
     const serverSelect = document.getElementById('serverSelect');
     const episodesList = document.getElementById('episodesList');
