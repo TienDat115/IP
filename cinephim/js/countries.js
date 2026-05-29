@@ -269,7 +269,7 @@ function getCountryDisplayName(countrySlug) {
 
 // Update breadcrumb
 function updateBreadcrumb(countryName) {
-    const breadcrumbContainer = document.querySelector('nav .text-gray-400');
+    const breadcrumbContainer = document.getElementById('breadcrumb');
     if (breadcrumbContainer) {
         breadcrumbContainer.innerHTML = `
             <a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
