@@ -22,15 +22,53 @@
 }
 
 /* Pagination styles */
+#pagination,
+#episodesPagination {
+	display: flex !important;
+	flex-wrap: nowrap !important;
+	justify-content: center !important;
+	align-items: center !important;
+	width: 100% !important;
+	overflow-x: auto !important;
+	overflow-y: hidden !important;
+	white-space: nowrap !important;
+	gap: 0.375rem !important;
+	scrollbar-width: none !important; /* Hide Firefox scrollbar */
+	-ms-overflow-style: none !important; /* Hide IE/Edge scrollbar */
+	padding: 0.5rem 0.25rem !important;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#pagination::-webkit-scrollbar,
+#episodesPagination::-webkit-scrollbar {
+	display: none !important;
+}
+
+#pagination button,
+#episodesPagination button,
 .pagination-btn {
+	flex: 0 0 auto !important;
+	white-space: nowrap !important;
+	min-width: 2.25rem !important;
+	height: 2.25rem !important;
+	padding: 0 0.5rem !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	font-size: 0.875rem !important;
 	transition: all 0.3s ease;
 }
 
-.pagination-btn:hover:not(:disabled) {
+.pagination-btn:hover:not(:disabled),
+#pagination button:hover:not(:disabled),
+#episodesPagination button:hover:not(:disabled) {
 	transform: translateY(-1px);
 }
 
-.pagination-btn:disabled {
+.pagination-btn:disabled,
+#pagination button:disabled,
+#episodesPagination button:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
@@ -248,9 +286,12 @@ body:not(.dark) .hover\:bg-gray-600:hover {
 	}
 
 	/* Pagination */
-	#pagination button {
-		padding: 0.5rem 0.75rem;
-		font-size: 0.75rem;
+	#pagination button,
+	#episodesPagination button {
+		min-width: 2rem !important;
+		height: 2rem !important;
+		padding: 0 0.375rem !important;
+		font-size: 0.75rem !important;
 	}
 
 	/* Categories and countries grid */
