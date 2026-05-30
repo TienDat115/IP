@@ -247,6 +247,114 @@ body {
 	filter: brightness(0) invert(1);
 }
 
+.webhook-dropdown {
+	position: relative;
+	width: 100%;
+}
+
+.webhook-dropdown-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 0.375rem 0.75rem;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #212529;
+	background-color: #fff;
+	border: 1px solid #ced4da;
+	border-radius: 0.375rem;
+	cursor: pointer;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	min-height: 38px;
+	text-align: left;
+}
+
+.webhook-dropdown-toggle:focus {
+	border-color: #86b7fe;
+	outline: 0;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.webhook-dropdown-toggle:disabled {
+	background-color: #e9ecef;
+	opacity: 0.65;
+	cursor: not-allowed;
+}
+
+.webhook-dropdown-toggle i {
+	margin-left: 8px;
+	flex-shrink: 0;
+	transition: transform 0.2s;
+	font-size: 0.75rem;
+	color: #6c757d;
+}
+
+.webhook-dropdown-toggle.open i {
+	transform: rotate(180deg);
+}
+
+.webhook-dropdown-menu {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	max-height: 300px;
+	overflow-y: auto;
+	background: #fff;
+	border: 1px solid #ced4da;
+	border-radius: 0.375rem;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 1050;
+	display: none;
+}
+
+.webhook-dropdown-menu.open {
+	display: block;
+}
+
+.webhook-dropdown-group-label {
+	padding: 6px 12px;
+	font-weight: 700;
+	color: #dc3545;
+	font-size: 0.875rem;
+	background: #f8f9fa;
+	border-bottom: 1px solid #eee;
+	position: sticky;
+	top: 0;
+	z-index: 1;
+}
+
+.webhook-dropdown-item {
+	padding: 8px 12px;
+	padding-left: 24px;
+	cursor: pointer;
+	font-size: 0.95rem;
+	transition: background 0.15s;
+	color: #212529;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.webhook-dropdown-item:hover {
+	background: #e9ecef;
+}
+
+.webhook-dropdown-item.selected {
+	background: #0d6efd;
+	color: #fff;
+}
+
+.webhook-dropdown-item:last-child {
+	border-bottom: none;
+}
+
+.webhook-dropdown-empty {
+	padding: 12px;
+	text-align: center;
+	color: #6c757d;
+}
+
 @media (max-width: 767.98px) {
 	.table-webhook thead {
 		display: none;

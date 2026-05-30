@@ -43,7 +43,12 @@ async function signOut() {
 async function loadWebhooks() {
 	try {
 		const webhookSelect = document.getElementById("webhookSelect");
+		const dropdownBtn = document.getElementById("webhookDropdownBtn");
+		const dropdownText = document.getElementById("webhookDropdownText");
+		const dropdownMenu = document.getElementById("webhookDropdownMenu");
+
 		webhookSelect.innerHTML = '<option value="">Đang tải danh sách webhook...</option>';
+		dropdownText.textContent = "Đang tải danh sách webhook...";
 
 		// Lấy danh sách webhook từ collection 'webhooks'
 		const webhooksRef = db.collection("webhooks");
@@ -51,6 +56,7 @@ async function loadWebhooks() {
 
 		if (snapshot.empty) {
 			webhookSelect.innerHTML = '<option value="">Không có webhook nào</option>';
+			dropdownText.textContent = "Không có webhook nào";
 			return;
 		}
 
@@ -67,6 +73,7 @@ async function loadWebhooks() {
 		const visibleWebhooks = webhooks.filter((w) => w.visible !== false);
 		if (visibleWebhooks.length === 0) {
 			webhookSelect.innerHTML = '<option value="">Không có webhook nào</option>';
+			dropdownText.textContent = "Không có webhook nào";
 			return;
 		}
 		const groupedWebhooks = {};
@@ -101,40 +108,68 @@ async function loadWebhooks() {
 
 		// Xóa option "Đang tải..."
 		webhookSelect.innerHTML = "";
+		dropdownMenu.innerHTML = "";
 
-		// Thêm option mặc định
+		// Thêm option mặc định & item mặc định
 		const defaultOption = document.createElement("option");
 		defaultOption.value = "";
 		defaultOption.textContent = "Chọn webhook...";
 		webhookSelect.appendChild(defaultOption);
 
-		// Thêm các webhook đã nhóm vào select
+		const defaultItem = document.createElement("div");
+		defaultItem.className = "webhook-dropdown-item";
+		defaultItem.dataset.value = "";
+		defaultItem.textContent = "Chọn webhook...";
+		defaultItem.addEventListener("click", function (e) {
+			e.stopPropagation();
+			selectWebhookItem("", "Chọn webhook...");
+		});
+		dropdownMenu.appendChild(defaultItem);
+
+		// Thêm các webhook đã nhóm vào select và custom dropdown
 		sortedGroups.forEach((group) => {
-			// Thêm nhóm (optgroup)
+			// 1. Populate hidden select (giữ tương thích)
 			const groupElement = document.createElement("optgroup");
 			groupElement.label = group;
-			groupElement.style.color = "red";
-			groupElement.style.fontWeight = "bold";
+			webhookSelect.appendChild(groupElement);
+
+			// 2. Populate custom dropdown
+			const groupLabel = document.createElement("div");
+			groupLabel.className = "webhook-dropdown-group-label";
+			groupLabel.textContent = group;
+			dropdownMenu.appendChild(groupLabel);
 
 			// Thêm các webhook trong nhóm
 			groupedWebhooks[group].forEach((webhook) => {
 				const option = document.createElement("option");
 				option.value = webhook.id;
-				// Hiển thị toàn bộ tên webhook trong option
 				option.textContent = webhook.name || `Webhook ${webhook.id}`;
-				option.style.color = "black"; // Giữ màu đen cho các webhook con
 				groupElement.appendChild(option);
-			});
 
-			webhookSelect.appendChild(groupElement);
+				const item = document.createElement("div");
+				item.className = "webhook-dropdown-item";
+				item.dataset.value = webhook.id;
+				item.textContent = webhook.name || `Webhook ${webhook.id}`;
+				item.addEventListener("click", function (e) {
+					e.stopPropagation();
+					selectWebhookItem(webhook.id, webhook.name || `Webhook ${webhook.id}`);
+				});
+				dropdownMenu.appendChild(item);
+			});
 		});
 
-		// Bật select sau khi tải xong
+		// Bật select và custom dropdown sau khi tải xong
 		webhookSelect.disabled = false;
+		dropdownBtn.disabled = false;
 	} catch (error) {
 		console.error("Lỗi khi tải danh sách webhook:", error);
 		const webhookSelect = document.getElementById("webhookSelect");
+		const dropdownText = document.getElementById("webhookDropdownText");
+		const dropdownBtn = document.getElementById("webhookDropdownBtn");
 		webhookSelect.innerHTML = '<option value="">Lỗi khi tải danh sách webhook</option>';
+		dropdownText.textContent = "Lỗi khi tải danh sách webhook";
+		webhookSelect.disabled = true;
+		if (dropdownBtn) dropdownBtn.disabled = true;
 		Swal.fire({
 			icon: "error",
 			title: "Lỗi!",
@@ -143,6 +178,71 @@ async function loadWebhooks() {
 		});
 	}
 }
+
+// Chọn webhook từ custom dropdown
+function selectWebhookItem(id, name) {
+	const webhookSelect = document.getElementById("webhookSelect");
+	const dropdownBtn = document.getElementById("webhookDropdownBtn");
+	const dropdownText = document.getElementById("webhookDropdownText");
+	const dropdownMenu = document.getElementById("webhookDropdownMenu");
+
+	// Cập nhật hidden select
+	webhookSelect.value = id;
+
+	// Cập nhật text hiển thị
+	dropdownText.textContent = name || "Chọn webhook...";
+
+	// Đánh dấu item được chọn
+	dropdownMenu.querySelectorAll(".webhook-dropdown-item").forEach((item) => {
+		item.classList.toggle("selected", item.dataset.value === id);
+	});
+
+	// Đóng menu
+	closeWebhookDropdown();
+
+	// Dispatch sự kiện change để trigger các hàm phụ thuộc
+	webhookSelect.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+// Mở/đóng custom dropdown
+function toggleWebhookDropdown() {
+	const dropdownMenu = document.getElementById("webhookDropdownMenu");
+	const dropdownBtn = document.getElementById("webhookDropdownBtn");
+	if (!dropdownMenu || dropdownBtn.disabled) return;
+	const isOpen = dropdownMenu.classList.contains("open");
+	if (isOpen) {
+		closeWebhookDropdown();
+	} else {
+		openWebhookDropdown();
+	}
+}
+
+function openWebhookDropdown() {
+	const dropdownMenu = document.getElementById("webhookDropdownMenu");
+	const dropdownBtn = document.getElementById("webhookDropdownBtn");
+	if (!dropdownMenu || !dropdownBtn) return;
+	dropdownMenu.classList.add("open");
+	dropdownBtn.classList.add("open");
+}
+
+function closeWebhookDropdown() {
+	const dropdownMenu = document.getElementById("webhookDropdownMenu");
+	const dropdownBtn = document.getElementById("webhookDropdownBtn");
+	if (!dropdownMenu || !dropdownBtn) return;
+	dropdownMenu.classList.remove("open");
+	dropdownBtn.classList.remove("open");
+}
+
+// Đóng dropdown khi click bên ngoài
+document.addEventListener("DOMContentLoaded", function () {
+	document.addEventListener("click", function (e) {
+		const dropdown = document.getElementById("customWebhookDropdown");
+		const menu = document.getElementById("webhookDropdownMenu");
+		if (dropdown && menu && !dropdown.contains(e.target) && menu.classList.contains("open")) {
+			closeWebhookDropdown();
+		}
+	});
+});
 
 // Hàm lấy webhook URLs từ Firebase
 async function getWebhookUrls() {
