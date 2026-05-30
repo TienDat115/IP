@@ -39,11 +39,9 @@ async function loadFavorites() {
                 favorites.push(doc.data());
             });
             
-            console.log('Loaded favorites from Firebase:', favorites);
         } else {
             // Fallback to localStorage if not logged in
             favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-            console.log('Loaded favorites from localStorage:', favorites);
         }
         
         const container = document.getElementById('favoritesGrid');
@@ -170,7 +168,6 @@ async function removeFromFavorites(movieSlug) {
             });
             
             await batch.commit();
-            console.log('Removed from Firebase favorites:', movieSlug);
         } else {
             // Remove from localStorage
             favorites = favorites.filter(item => item.slug !== movieSlug);

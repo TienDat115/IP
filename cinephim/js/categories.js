@@ -173,7 +173,6 @@ function updatePagination(paginate) {
     
     // If no pagination data, create default pagination
     if (!paginationData) {
-        console.log('No pagination data, creating default');
         paginationData = {
             current_page: currentPage || 1,
             total_page: 5,
@@ -185,10 +184,7 @@ function updatePagination(paginate) {
     const current = currentPage || paginationData.current_page || 1;
     const total = paginationData.total_page || 1;
     
-    console.log('Current page:', current, 'Total pages:', total);
-    
     if (total <= 1) {
-        console.log('Only 1 page, no pagination needed');
         paginationContainer.innerHTML = '';
         return;
     }

@@ -68,8 +68,6 @@ async function loadNewMovies(page = 1) {
     try {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.new}?page=${page}`));
         
-        console.log('API Response:', data);
-        
         if (data.status === 'success') {
             const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
             const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
@@ -147,14 +145,14 @@ async function searchMovies(keyword, page = 1) {
                 });
             }
             
-            // Scroll to movies container after search
+            // Scroll to search bar on mobile, movies container on desktop
             setTimeout(() => {
-                const moviesContainer = document.getElementById('moviesContainer');
-                if (moviesContainer) {
-                    moviesContainer.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
+                const isMobile = window.innerWidth < 640;
+                const target = isMobile
+                    ? document.getElementById('searchInput')
+                    : document.getElementById('moviesContainer');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }, 100);
         } else {
@@ -215,9 +213,6 @@ function displayPagination(pagination) {
         return;
     }
     
-    // Debug: Log pagination data
-    console.log('Pagination data:', pagination);
-    
     // Handle different pagination structures
     let paginationData = pagination;
     
@@ -228,7 +223,6 @@ function displayPagination(pagination) {
     
     // If no pagination data, create default pagination
     if (!paginationData) {
-        console.log('No pagination data, creating default');
         paginationData = {
             current_page: currentPage || 1, // Use global currentPage
             total_page: 5,
@@ -240,10 +234,7 @@ function displayPagination(pagination) {
     const current_page = currentPage || paginationData.current_page || 1;
     const total_page = paginationData.total_page || 1;
     
-    console.log('Current page:', current_page, 'Total pages:', total_page);
-    
     if (total_page <= 1) {
-        console.log('Only 1 page, no pagination needed');
         container.innerHTML = '';
         return;
     }
@@ -263,7 +254,6 @@ function displayPagination(pagination) {
     
     for (let i = startPage; i <= endPage; i++) {
         const isActive = i === current_page;
-        console.log(`Page ${i}: ${isActive ? 'ACTIVE' : 'inactive'}`);
         html += `<button onclick="changePage(${i})" class="px-3 py-2 ${isActive ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'} rounded transition">
             ${i}
         </button>`;
@@ -276,13 +266,11 @@ function displayPagination(pagination) {
         </button>`;
     }
     
-    console.log('Pagination HTML:', html);
     container.innerHTML = html;
 }
 
 // Change page
 function changePage(page) {
-    console.log('Changing to page:', page);
     currentPage = page; // Update global currentPage
     
     if (searchQuery) {
@@ -309,7 +297,6 @@ async function loadRecentWatched() {
                 recentWatched.push(doc.data());
             });
             
-            console.log('Loaded recent watched from Firebase:', recentWatched);
         }
         
         if (recentWatched.length === 0) {

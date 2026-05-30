@@ -230,12 +230,10 @@ document.addEventListener('DOMContentLoaded', function() {
     authListener = auth.onAuthStateChanged(function(user) {
         currentUser = user;
         if (user) {
-            console.log('User logged in:', user.email);
             loadWatchHistoryFromFirebase();
             loadFavoritesFromFirebase();
             loadPinnedMoviesFromFirebase();
         } else {
-            console.log('User not logged in');
             watchHistory = [];
             favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
             pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
@@ -264,7 +262,6 @@ async function loadFavoritesFromFirebase() {
         snapshot.forEach(doc => {
             favorites.push(doc.data());
         });
-        console.log('Favorites loaded from Firebase:', favorites);
     } catch (error) {
         console.error('Error loading favorites:', error);
         // Fallback to localStorage
@@ -302,7 +299,6 @@ async function saveFavoritesToFirebase() {
         });
         
         await batch.commit();
-        console.log('Favorites saved to Firebase');
     } catch (error) {
         console.error('Error saving favorites:', error);
     }
@@ -314,7 +310,6 @@ async function loadWatchHistoryFromFirebase() {
     
     // Only load if watchHistory is empty (first time login)
     if (watchHistory.length > 0) {
-        console.log('Watch history already loaded, skipping Firebase load');
         return;
     }
     
@@ -324,7 +319,6 @@ async function loadWatchHistoryFromFirebase() {
         snapshot.forEach(doc => {
             watchHistory.push(doc.data());
         });
-        console.log('Watch history loaded from Firebase:', watchHistory);
     } catch (error) {
         console.error('Error loading watch history:', error);
         watchHistory = [];
@@ -388,7 +382,6 @@ async function toggleLogin() {
             watchHistory = [];
             if (loginIcon) loginIcon.className = 'fas fa-sign-in-alt mr-1';
             if (loginText) loginText.textContent = 'Đăng nhập';
-            console.log('User logged out');
             // Reload page after logout
             window.location.reload();
         } catch (error) {
@@ -455,7 +448,6 @@ async function handleLogin(event) {
         updateLoginButton();
         closeLoginModal();
         
-        console.log('Login successful:', currentUser.email);
         Swal.fire({
             icon: 'success',
             title: 'Thành công!',
@@ -537,7 +529,6 @@ async function handleRegister(event) {
         updateLoginButton();
         closeRegisterModal();
         
-        console.log('Register successful:', currentUser.email);
         Swal.fire({
             icon: 'success',
             title: 'Thành công!',
@@ -639,8 +630,6 @@ async function handleLogout() {
         
         // Update UI
         updateLoginButton();
-        
-        console.log('User logged out');
         
         Swal.fire({
             icon: 'success',
@@ -1138,8 +1127,6 @@ function playEpisode(slug, videoUrl) {
     const movieSlug = window.currentMovieSlug || slug;
     const episodes = window.currentMovieEpisodes || [];
     
-    console.log('Playing episode:', { movieSlug, movieTitle, episodeSlug: slug, videoUrl });
-    
     // Find current episode, previous episode and next episode
     let currentEpisodeIndex = -1;
     let prevEpisode = null;
@@ -1223,7 +1210,6 @@ function playEpisode(slug, videoUrl) {
 // Add to watch history for episode
 async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
     if (!movieSlug || !movieTitle) {
-        console.log('Missing required data for watch history:', { movieSlug, movieTitle, episodeName });
         return;
     }
     
@@ -1234,7 +1220,6 @@ async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
     );
     
     if (existingEntry) {
-        console.log('Episode already in watch history, skipping save');
         return;
     }
     
@@ -1256,8 +1241,6 @@ async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
         thumb_url: window.currentMovieThumbUrl || ''
     };
     
-    console.log('Adding to watch history:', historyItem);
-    
     // Remove all existing entries for this movie (ghi đè)
     watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
     
@@ -1273,8 +1256,6 @@ async function addToWatchHistoryForEpisode(movieSlug, movieTitle, episodeName) {
     if (currentUser) {
         await saveSingleWatchHistoryItem(historyItem);
     }
-    
-    console.log('Watch history saved. Total items:', watchHistory.length);
     
     // Update watch history display if it's currently visible
     const watchHistorySection = document.getElementById('watchHistorySection');
@@ -1369,7 +1350,6 @@ async function loadPinnedMoviesFromFirebase() {
         snapshot.forEach(doc => {
             pinnedMovies.push(doc.data());
         });
-        console.log('Pinned movies loaded from Firebase:', pinnedMovies);
     } catch (error) {
         console.error('Error loading pinned movies:', error);
         // Fallback to localStorage
@@ -1409,7 +1389,6 @@ async function savePinnedMoviesToFirebase() {
         });
         
         await batch.commit();
-        console.log('Pinned movies saved to Firebase');
     } catch (error) {
         console.error('Error saving pinned movies:', error);
     }

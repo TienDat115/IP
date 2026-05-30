@@ -49,14 +49,11 @@ async function loadWatchHistory() {
                 watchHistory.push(doc.data());
             });
             
-            console.log('Loaded watch history from Firebase:', watchHistory);
         } else {
             // Empty array if not logged in
             watchHistory = [];
-            console.log('User not logged in, watch history set to empty array');
         }
         
-        console.log('Watch history length:', watchHistory.length);
         
         const grid = document.getElementById('watchHistoryGrid');
         if (!grid) return;
@@ -114,7 +111,6 @@ async function clearWatchHistory() {
                 });
                 
                 await batch.commit();
-                console.log('Watch history cleared from Firebase');
             } catch (error) {
                 console.error('Error clearing watch history:', error);
             }
@@ -256,9 +252,6 @@ async function removeDuplicateHistory() {
 
                 if (deletedCount > 0) {
                     await batch.commit();
-                    console.log(`Deleted ${deletedCount} duplicate watch history items from Firebase`);
-                } else {
-                    console.log('No duplicates found to delete in Firebase');
                 }
             } else {
                 // If not logged in, filter local array
@@ -274,7 +267,6 @@ async function removeDuplicateHistory() {
                 });
                 
                 watchHistory = filteredHistory;
-                console.log('Filtered local watch history for duplicates');
             }
 
             // Reload and display
@@ -313,16 +305,11 @@ async function removeDuplicateHistory() {
 }
 
 function displayWatchHistory() {
-    console.log('displayWatchHistory() called');
-    
     // Wait a bit for DOM to be ready
     setTimeout(() => {
         const container = document.getElementById('watchHistoryGrid');
-        console.log('Container found:', container);
-        console.log('Watch history data:', watchHistory);
         
         if (!container) {
-            console.log('Container not found!');
             return;
         }
         
@@ -341,7 +328,6 @@ function displayWatchHistory() {
         let html = '';
         currentItems.forEach((item, index) => {
             const actualIndex = startIndex + index;
-            console.log('Building HTML for item ' + actualIndex + ':', item);
             html += '<div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail(\'' + item.movieSlug + '\')">';
             html += '<div class="absolute top-2 right-2 z-10">';
             html += '<button onclick="event.stopPropagation(); removeFromWatchHistory(\'' + item.movieSlug + '\')" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">';
@@ -368,12 +354,7 @@ function displayWatchHistory() {
         // Clean up any zero-width spaces
         html = html.replace(/​/g, '');
         
-        console.log('Final HTML length:', html.length);
-        console.log('Setting innerHTML...');
         container.innerHTML = html;
-        console.log('Container innerHTML set successfully');
-        console.log('Container display:', container.style.display);
-        console.log('Container children count:', container.children.length);
         
         // Load posters for each movie
         loadPosters();
@@ -543,7 +524,6 @@ async function removeFromWatchHistory(movieSlug) {
             });
             
             await batch.commit();
-            console.log('Removed from Firebase watch history:', movieSlug);
         }
         
         // Reload and display

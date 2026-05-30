@@ -34,7 +34,6 @@ async function waitForWatchHistory() {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
     }
-    console.log('Watch history loaded or timeout after', attempts * 100, 'ms');
 }
 
 // Auto-scroll to video player
@@ -402,8 +401,6 @@ function autoPlayLatestEpisode() {
     const serverIndex = parseInt(urlParams.get('server')) || 0;
     
     if (episodeSlug) {
-        console.log('Found episode in URL:', episodeSlug, 'Server:', serverIndex);
-        
         // Set server selection if specified
         if (serverIndex >= 0 && serverIndex < currentMovie.episodes.length) {
             selectServer(serverIndex);
@@ -420,8 +417,6 @@ function autoPlayLatestEpisode() {
     if (movieHistory.length > 0) {
         // Get latest watched episode
         const latestEpisode = movieHistory[0]; // Most recent is at index 0
-        console.log('Found latest episode in history:', latestEpisode);
-        
         let targetEpisodeSlug = null;
         let targetServerIndex = 0;
         let hasSourceHistory = false;
@@ -467,8 +462,6 @@ function playDefaultFirstEpisode() {
         const items = server.items || server.server_data || [];
         if (items.length > 0) {
             const firstEpisode = items[0];
-            console.log('Playing first episode:', firstEpisode.name || 'Tập 1');
-            
             let videoUrl = firstEpisode.embed || firstEpisode.link_embed || firstEpisode.m3u8 || firstEpisode.link_m3u8;
             if (typeof currentSourceKey !== 'undefined' && currentSourceKey === 'nguonc') {
                 videoUrl = videoUrl || currentMovie.link_m3u8 || currentMovie.link_embed;
@@ -565,7 +558,6 @@ function updateUrlWithServer(serverIndex) {
         // Update browser URL without page reload
         window.history.pushState({}, '', url);
         
-        console.log('URL updated with server:', url.toString());
     } catch (error) {
         console.error('Error updating URL:', error);
     }
@@ -737,7 +729,6 @@ function initializeVideoPlayer() {
         return;
     }
     
-    console.log('Video iframe initialized');
 }
 
 // Play episode
@@ -759,8 +750,6 @@ function playEpisode(episodeSlug, videoUrl) {
         currentEpisodeIndex = findEpisodeIndex(episodeSlug);
         
         // Log video URL for debugging
-        console.log('Playing episode:', episodeSlug, 'URL:', videoUrl);
-        
         // Update iframe src with embed URL
         iframeElement.src = videoUrl;
         
@@ -810,7 +799,6 @@ function updateUrlWithEpisode(episodeSlug) {
         // Update browser URL without page reload
         window.history.pushState({}, '', url);
         
-        console.log('URL updated with episode:', url.toString());
     } catch (error) {
         console.error('Error updating URL:', error);
     }
@@ -873,8 +861,6 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
         }
     });
     
-    console.log('Adding to watch history:', historyItem);
-    
     // Remove existing entry for this movie (ghi đè)
     watchHistory = watchHistory.filter(item => item.movieSlug !== movieSlug);
     
@@ -892,7 +878,6 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
         saveSingleWatchHistoryItem(historyItem);
     }
     
-    console.log('Watch history saved. Total items:', watchHistory.length);
 }
 
 
@@ -1404,7 +1389,6 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
     // Set server selection
     if (currentMovie.episodes[serverIndex]) {
         selectServer(serverIndex);
-        console.log('Switched to server:', currentMovie.episodes[serverIndex].server_name);
     }
     
     // Find and play the episode
@@ -1571,7 +1555,6 @@ async function saveWatchTimeNoteToFirebase(note) {
         }
         
         await batch.commit();
-        console.log('Watch time note saved to Firebase');
     } catch (error) {
         console.error('Error saving watch time note to Firebase:', error);
     }
@@ -1661,7 +1644,6 @@ async function clearAndSaveNote() {
                 localStorage.setItem('watchTimeNotes', JSON.stringify(watchTimeNotes));
                 
                 showInfo('Ghi chú đã được xóa');
-                console.log('Watch time note cleared from Firebase');
             } catch (error) {
                 console.error('Error clearing watch time note:', error);
                 showError('Không thể xóa ghi chú. Vui lòng thử lại.');
