@@ -2,6 +2,40 @@
 let currentPage = 1;
 let currentCountry = '';
 let totalPages = 1;
+let countryNameMap = {};
+
+// NguonC fallback countries list (no API endpoint available)
+const NGUONC_COUNTRIES = [
+    { slug: 'au-my', name: 'Âu Mỹ' },
+    { slug: 'anh', name: 'Anh' },
+    { slug: 'trung-quoc', name: 'Trung Quốc' },
+    { slug: 'indonesia', name: 'Indonesia' },
+    { slug: 'viet-nam', name: 'Việt Nam' },
+    { slug: 'argentina', name: 'Argentina' },
+    { slug: 'ao', name: 'Áo' },
+    { slug: 'uc', name: 'Úc' },
+    { slug: 'bangladesh', name: 'Bangladesh' },
+    { slug: 'thuy-si', name: 'Thụy Sĩ' },
+    { slug: 'bo-bien-nga', name: 'Bờ Biển Ngà' },
+    { slug: 'chile', name: 'Chile' },
+    { slug: 'colombia', name: 'Colombia' },
+    { slug: 'costa-rica', name: 'Costa Rica' },
+    { slug: 'duc', name: 'Đức' },
+    { slug: 'dan-mach', name: 'Đan Mạch' },
+    { slug: 'tay-ban-nha', name: 'Tây Ban Nha' },
+    { slug: 'phap', name: 'Pháp' },
+    { slug: 'greenland', name: 'Greenland' },
+    { slug: 'hong-kong', name: 'Hồng Kông' },
+    { slug: 'han-quoc', name: 'Hàn Quốc' },
+    { slug: 'nhat-ban', name: 'Nhật Bản' },
+    { slug: 'thai-lan', name: 'Thái Lan' },
+    { slug: 'dai-loan', name: 'Đài Loan' },
+    { slug: 'nga', name: 'Nga' },
+    { slug: 'ha-lan', name: 'Hà Lan' },
+    { slug: 'quoc-gia-khac', name: 'Quốc gia khác' },
+    { slug: 'philippines', name: 'Philippines' },
+    { slug: 'an-do', name: 'Ấn Độ' }
+];
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -15,6 +49,8 @@ async function initializePage() {
         auth.onAuthStateChanged((user) => {
             updateAuthUI();
         });
+        
+        await loadCountries();
         
         // Check for country parameter in URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -40,16 +76,48 @@ async function initializePage() {
     }
 }
 
+// Load countries from API
+async function loadCountries() {
+    const container = document.getElementById('countriesContainer');
+    if (!container) return;
+
+    let countries = [];
+
+    if (currentSourceKey === 'ophim') {
+        try {
+            const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.country}`));
+            if (data.status === 'success' && data.data?.items) {
+                countries = data.data.items.map(item => ({
+                    slug: item.slug,
+                    name: item.name
+                }));
+            }
+        } catch (error) {
+            console.warn('Failed to load countries from API, using fallback:', error);
+        }
+    }
+
+    if (countries.length === 0) {
+        countries = NGUONC_COUNTRIES;
+    }
+
+    countryNameMap = {};
+    countries.forEach(c => { countryNameMap[c.slug] = c.name; });
+
+    container.innerHTML = countries.map(c => `
+        <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
+            <input type="radio" name="country" value="${c.slug}" onchange="loadCountryMovies(1)" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
+            <span class="text-white">${c.name}</span>
+        </label>
+    `).join('');
+}
+
 // Setup event listeners
 function setupEventListeners() {
-    // Add event listeners for radio buttons to update display
-    const radioButtons = document.querySelectorAll('input[name="country"]');
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            const selectedCountry = e.target.value;
-            // Load movies for selected country (page 1)
+    document.getElementById('countriesContainer')?.addEventListener('change', function(e) {
+        if (e.target && e.target.name === 'country') {
             loadCountryMovies(1);
-        });
+        }
     });
 }
 
@@ -228,43 +296,7 @@ function updatePagination(paginate) {
 
 // Get country display name
 function getCountryDisplayName(countrySlug) {
-    const countryNames = {
-        'au-my': 'Âu Mỹ',
-        'anh': 'Anh',
-        'trung-quoc': 'Trung Quốc',
-        'indonesia': 'Indonesia',
-        'viet-nam': 'Việt Nam',
-        'argentina': 'Argentina',
-        'ao': 'Áo',
-        'uc': 'Úc',
-        'bangladesh': 'Bangladesh',
-        'brazil': 'Brazil',
-        'bahamas': 'Bahamas',
-        'belarus': 'Belarus',
-        'canada': 'Canada',
-        'thuy-si': 'Thụy Sĩ',
-        'bo-bien-nga': 'Bờ Biển Ngà',
-        'chile': 'Chile',
-        'colombia': 'Colombia',
-        'costa-rica': 'Costa Rica',
-        'duc': 'Đức',
-        'dan-mach': 'Đan Mạch',
-        'tay-ban-nha': 'Tây Ban Nha',
-        'phap': 'Pháp',
-        'greenland': 'Greenland',
-        'hong-kong': 'Hồng Kông',
-        'han-quoc': 'Hàn Quốc',
-        'nhat-ban': 'Nhật Bản',
-        'thai-lan': 'Thái Lan',
-        'dai-loan': 'Đài Loan',
-        'nga': 'Nga',
-        'ha-lan': 'Hà Lan',
-        'quoc-gia-khac': 'Quốc gia khác',
-        'philippines': 'Philippines',
-        'an-do': 'Ấn Độ'
-    };
-    
-    return countryNames[countrySlug] || countrySlug;
+    return countryNameMap[countrySlug] || countrySlug;
 }
 
 // Update breadcrumb
