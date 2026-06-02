@@ -89,17 +89,14 @@ async function loadNewMovies(page = 1) {
             }
             
             // Scroll to movies container after loading new page
-            if (page > 1) {
-                setTimeout(() => {
-                    const moviesContainer = document.getElementById('moviesContainer');
-                    if (moviesContainer) {
-                        moviesContainer.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'start' 
-                        });
-                    }
-                }, 100);
-            }
+            setTimeout(() => {
+                const target = document.getElementById('moviesContainer');
+                if (target) {
+                    const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            }, 100);
         } else {
             showError('Không thể tải phim');
         }
@@ -145,14 +142,13 @@ async function searchMovies(keyword, page = 1) {
                 });
             }
             
-            // Scroll to search bar on mobile, movies container on desktop
+            // Scroll to search bar with offset for sticky header
             setTimeout(() => {
-                const isMobile = window.innerWidth < 640;
-                const target = isMobile
-                    ? document.getElementById('searchInput')
-                    : document.getElementById('moviesContainer');
+                const target = document.getElementById('searchBarSection');
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
                 }
             }, 100);
         } else {
