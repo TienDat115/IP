@@ -89,14 +89,16 @@ async function loadNewMovies(page = 1) {
             }
             
             // Scroll to movies container after loading new page
-            setTimeout(() => {
-                const target = document.getElementById('moviesContainer');
-                if (target) {
-                    const headerHeight = document.querySelector('header')?.offsetHeight || 60;
-                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
-                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-                }
-            }, 100);
+            if (page > 1) {
+                setTimeout(() => {
+                    const target = document.getElementById('moviesContainer');
+                    if (target) {
+                        const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                        const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                    }
+                }, 100);
+            }
         } else {
             showError('Không thể tải phim');
         }
