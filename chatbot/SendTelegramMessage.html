@@ -115,6 +115,10 @@
 								<i class="fas fa-arrow-left d-none d-sm-inline me-1"></i>
 								<span>Quay lại</span>
 							</a>
+							<a href="ManageTelegram.html" class="btn btn-sm btn-outline-warning">
+								<i class="fas fa-cog d-none d-sm-inline me-1"></i>
+								<span>Quản lý</span>
+							</a>
 							<button class="btn btn-sm btn-outline-danger" onclick="signOut()">
 								<i class="fas fa-sign-out-alt d-none d-sm-inline me-1"></i>
 								<span>Đăng xuất</span>
@@ -297,15 +301,19 @@
 				try {
 					const snapshot = await db.collection("bots").get();
 					botSelect.innerHTML = ""; // Xóa nội dung tạm
-					if (snapshot.empty) {
+					const visibleBots = [];
+					snapshot.forEach((doc) => {
+						const data = doc.data();
+						if (data.visible !== false) visibleBots.push({ ...data, docId: doc.id });
+					});
+					if (visibleBots.length === 0) {
 						botSelect.innerHTML = '<option value="">Không có bot nào</option>';
 						return;
 					}
 
-					snapshot.forEach((doc) => {
-						const data = doc.data();
+					visibleBots.forEach((data) => {
 						const option = document.createElement("option");
-						option.value = doc.id; // Bot token
+						option.value = data.docId;
 						option.textContent = data.name;
 						botSelect.appendChild(option);
 					});
@@ -324,15 +332,19 @@
 				try {
 					const snapshot = await db.collection("chats").get();
 					chatSelect.innerHTML = ""; // Xóa nội dung tạm
-					if (snapshot.empty) {
+					const visibleChats = [];
+					snapshot.forEach((doc) => {
+						const data = doc.data();
+						if (data.visible !== false) visibleChats.push({ ...data, docId: doc.id });
+					});
+					if (visibleChats.length === 0) {
 						chatSelect.innerHTML = '<option value="">Không có nhóm/cá nhân</option>';
 						return;
 					}
 
-					snapshot.forEach((doc) => {
-						const data = doc.data();
+					visibleChats.forEach((data) => {
 						const option = document.createElement("option");
-						option.value = doc.id; // Chat ID
+						option.value = data.docId;
 						option.textContent = data.name;
 						chatSelect.appendChild(option);
 					});
