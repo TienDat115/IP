@@ -162,6 +162,7 @@ async function loadWebhooks() {
 		// Bật select và custom dropdown sau khi tải xong
 		webhookSelect.disabled = false;
 		dropdownBtn.disabled = false;
+		dropdownText.textContent = "Chọn webhook...";
 		updateRecentBtnState();
 	} catch (error) {
 		console.error("Lỗi khi tải danh sách webhook:", error);
@@ -1648,19 +1649,9 @@ function createFormattingButtons(textareaId = "messageText") {
 			buttons: [
 				{ title: "Tag mọi người", content: "@everyone", prefix: "@everyone", suffix: "" },
 				{ title: "Zz_NHD_zZ", content: "@Zz_NHD_zZ", prefix: "<@352800692362149889>", suffix: "" },
-				{ title: "Manh", content: "@Manh", prefix: "<@419760576806518784>", suffix: "" },
-				{ title: "Vu", content: "@Vu", prefix: "<@468411054616084490>", suffix: "" },
+				{ title: "Manh", content: "@__Mạnh__", prefix: "<@419760576806518784>", suffix: "" },
+				{ title: "Cảo", content: "@CảoNgoanHiền(Hưng)", prefix: "<@403869958293028864>", suffix: "" },
 				{ title: "VNxWrist", content: "@VNxWrist", prefix: "<@1123545230143148113>", suffix: "" },
-			],
-		},
-		{
-			id: "mention-tab-2",
-			title: "Xích Hỏa",
-			buttons: [
-				{ title: "Tag mọi người", content: "@everyone", prefix: "@everyone", suffix: "" },
-				{ title: "Zz_NHD_zZ", content: "@Zz_NHD_zZ", prefix: "<@352800692362149889>", suffix: "" },
-				{ title: "Ozin", content: "@Ozin", prefix: "<@739346682835370094>", suffix: "" },
-				{ title: "Hương", content: "@Hương", prefix: "<@1085871904348438548>", suffix: "" },
 			],
 		},
 		{
