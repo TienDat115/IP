@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			// Tải dữ liệu sau khi đăng nhập
 			loadWebhooks();
 			loadLogs();
+			loadRecentWebhooks();
 		} else {
 			// Chưa đăng nhập, chuyển hướng về trang đăng nhập
 			window.location.href = "../login.html";
@@ -161,6 +162,7 @@ async function loadWebhooks() {
 		// Bật select và custom dropdown sau khi tải xong
 		webhookSelect.disabled = false;
 		dropdownBtn.disabled = false;
+		updateRecentBtnState();
 	} catch (error) {
 		console.error("Lỗi khi tải danh sách webhook:", error);
 		const webhookSelect = document.getElementById("webhookSelect");
@@ -202,6 +204,98 @@ function selectWebhookItem(id, name) {
 
 	// Dispatch sự kiện change để trigger các hàm phụ thuộc
 	webhookSelect.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+// Recent webhooks tracking
+let recentWebhooksCache = [];
+
+async function loadRecentWebhooks() {
+	try {
+		const user = auth.currentUser;
+		if (!user) return;
+		const doc = await db.collection('recentWebhooks').doc(user.uid).get();
+		recentWebhooksCache = doc.exists && doc.data().items ? doc.data().items : [];
+	} catch (e) {
+		console.warn('Lỗi tải webhook gần đây:', e);
+		recentWebhooksCache = [];
+	}
+	updateRecentBtnState();
+}
+
+function updateRecentBtnState() {
+	const recentBtn = document.getElementById('recentWebhookBtn');
+	if (recentBtn) recentBtn.disabled = recentWebhooksCache.length === 0;
+}
+
+async function addRecentWebhook(id, name) {
+	try {
+		const user = auth.currentUser;
+		if (!user) return;
+		const ts = firebase.firestore.Timestamp.now();
+		let items = recentWebhooksCache.filter(w => w.id !== id);
+		items.unshift({ id, name: name || `Webhook ${id}`, timestamp: ts });
+		if (items.length > 10) items = items.slice(0, 10);
+		await db.collection('recentWebhooks').doc(user.uid).set({ items }, { merge: true });
+		recentWebhooksCache = items;
+		updateRecentBtnState();
+	} catch (e) {
+		console.warn('Lỗi lưu webhook gần đây:', e);
+	}
+}
+
+function renderRecentWebhookItems(recent) {
+	return recent.map((w, i) => `
+		<button type="button" class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0 ${i === 0 ? 'active' : ''}" 
+				onclick="selectRecentWebhook('${w.id}', '${(w.name || '').replace(/'/g, "\\'")}')" 
+				style="cursor:pointer; padding: 10px 14px; border-radius: 6px; text-align: left; width: 100%; background: ${i === 0 ? '#5865f2' : 'transparent'}; color: ${i === 0 ? '#fff' : '#212529'}; transition: background 0.15s;">
+			<i class="fas fa-clock" style="${i === 0 ? 'color: #fff' : 'color: #6c757d'}; width: 18px;"></i>
+			<span style="flex: 1;">${w.name || 'Webhook ' + w.id}</span>
+			<small style="color: ${i === 0 ? 'rgba(255,255,255,0.7)' : '#999'}; font-size: 11px;">${formatRelativeTime(w.timestamp)}</small>
+		</button>
+	`).join('');
+}
+
+async function showRecentWebhooks() {
+	if (recentWebhooksCache.length === 0) {
+		await loadRecentWebhooks();
+	}
+	if (recentWebhooksCache.length === 0) {
+		Swal.fire({
+			icon: 'info',
+			title: 'Chưa có webhook gần đây',
+			text: 'Gửi tin nhắn để lưu webhook vào danh sách gần đây.',
+			confirmButtonText: 'OK',
+		});
+		return;
+	}
+
+	const items = renderRecentWebhookItems(recentWebhooksCache);
+
+	Swal.fire({
+		title: 'Webhook gần đây',
+		html: `<div style="display: flex; flex-direction: column; gap: 4px;">${items}</div>`,
+		showConfirmButton: false,
+		showCancelButton: true,
+		cancelButtonText: 'Đóng',
+		cancelButtonColor: '#6c757d',
+	});
+}
+
+function selectRecentWebhook(id, name) {
+	Swal.close();
+	selectWebhookItem(id, name || `Webhook ${id}`);
+}
+
+function formatRelativeTime(timestamp) {
+	const ts = timestamp?.toDate ? timestamp.toDate().getTime() : (typeof timestamp === 'number' ? timestamp : timestamp?.seconds * 1000 || Date.now());
+	const diff = Date.now() - ts;
+	const mins = Math.floor(diff / 60000);
+	if (mins < 1) return 'Vừa xong';
+	if (mins < 60) return `${mins} phút trước`;
+	const hours = Math.floor(mins / 60);
+	if (hours < 24) return `${hours} giờ trước`;
+	const days = Math.floor(hours / 24);
+	return `${days} ngày trước`;
 }
 
 // Mở/đóng custom dropdown
@@ -522,6 +616,7 @@ async function sendMessage() {
 				const sentFilesCount = files.length;
 				const messageText = message ? evaluateExpressions(message) : "";
 				addLog(`✅ Đã gửi tin nhắn với ${sentFilesCount} file thành công!`, messageText, webhookName, webhookUrl);
+				addRecentWebhook(selectedWebhookId, webhookName);
 
 				await Swal.fire({
 					icon: "success",
@@ -615,6 +710,7 @@ async function sendMessage() {
 			}
 
 			addLog(`✅ Đã gửi tin nhắn thành công!`, evaluatedMessage, webhookName, webhookUrl);
+			addRecentWebhook(selectedWebhookId, webhookName);
 
 			await Swal.fire({
 				icon: "success",
@@ -777,6 +873,7 @@ async function sendEmbedMessage() {
 
 		if (response.ok) {
 			addLog("✅ Đã gửi tin nhúng thành công!", "", webhookName, webhookUrl);
+			addRecentWebhook(selectedWebhookId, webhookName);
 			// Xóa form
 			document.getElementById("embedTitle").value = "";
 			document.getElementById("embedDescription").value = "";

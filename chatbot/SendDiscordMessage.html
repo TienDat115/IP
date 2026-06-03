@@ -43,12 +43,17 @@
 						<select id="webhookSelect" class="form-select d-none" disabled>
 							<option value="">Đang tải danh sách webhook...</option>
 						</select>
-						<div id="customWebhookDropdown" class="webhook-dropdown">
-							<button type="button" id="webhookDropdownBtn" class="webhook-dropdown-toggle" onclick="toggleWebhookDropdown()" disabled>
-								<span id="webhookDropdownText">Đang tải danh sách webhook...</span>
-								<i class="fas fa-chevron-down"></i>
+						<div class="d-flex align-items-start gap-2">
+							<div id="customWebhookDropdown" class="webhook-dropdown">
+								<button type="button" id="webhookDropdownBtn" class="webhook-dropdown-toggle" onclick="toggleWebhookDropdown()" disabled>
+									<span id="webhookDropdownText">Đang tải danh sách webhook...</span>
+									<i class="fas fa-chevron-down"></i>
+								</button>
+								<div id="webhookDropdownMenu" class="webhook-dropdown-menu"></div>
+							</div>
+							<button type="button" id="recentWebhookBtn" class="btn btn-sm btn-outline-secondary" onclick="showRecentWebhooks()" title="Webhook gần đây" disabled style="flex-shrink: 0; height: 38px; width: 38px; display: flex; align-items: center; justify-content: center;">
+								<i class="fas fa-history"></i>
 							</button>
-							<div id="webhookDropdownMenu" class="webhook-dropdown-menu"></div>
 						</div>
 					</div>
 					<div class="row g-3 mb-3">

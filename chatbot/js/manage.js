@@ -106,11 +106,19 @@ function renderWebhookList() {
 function showAddModal() {
 	document.getElementById("modalTitle").textContent = "Thêm Webhook";
 	document.getElementById("editId").value = "";
-	const maxId = allWebhooks.reduce((max, w) => {
-		const num = parseInt(w.id, 10);
-		return !isNaN(num) && num > max ? num : max;
-	}, 0);
-	document.getElementById("webhookIdField").value = maxId + 1;
+	const ids = allWebhooks
+		.map(w => parseInt(w.id, 10))
+		.filter(n => !isNaN(n))
+		.sort((a, b) => a - b);
+	let nextId = 1;
+	for (const id of ids) {
+		if (id === nextId) {
+			nextId++;
+		} else if (id > nextId) {
+			break;
+		}
+	}
+	document.getElementById("webhookIdField").value = nextId;
 	document.getElementById("webhookName").value = "";
 	document.getElementById("webhookUrl").value = "";
 	document.getElementById("webhookVisible").checked = true;
