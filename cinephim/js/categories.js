@@ -152,14 +152,14 @@ async function loadMoviesByCategory(category, page = 1) {
             // Update breadcrumb
             updateBreadcrumb(categoryName);
             
-            // Scroll to movies container after loading category
+            // Scroll to movies container with header offset
             setTimeout(() => {
                 const moviesContainer = document.getElementById('moviesContainer');
                 if (moviesContainer) {
-                    moviesContainer.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
+                    const header = document.querySelector('header');
+                    const headerHeight = header ? header.offsetHeight : 0;
+                    const top = moviesContainer.getBoundingClientRect().top + window.pageYOffset - headerHeight - 10;
+                    window.scrollTo({ top, behavior: 'smooth' });
                 }
             }, 100);
             

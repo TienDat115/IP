@@ -1201,6 +1201,7 @@ function toggleFavorite() {
                 slug: currentMovie.slug || '',
                 title: currentMovie.name || currentMovie.title || '',
                 name: currentMovie.name || currentMovie.title || '',
+                source: currentSourceKey || '',
                 addedAt: new Date().toISOString()
             };
             

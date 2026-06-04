@@ -293,6 +293,7 @@ async function saveFavoritesToFirebase() {
                 slug: item.slug || '',
                 title: item.title || item.name || item.slug || '',
                 name: item.name || item.title || item.slug || '',
+                source: item.source || currentSourceKey || '',
                 addedAt: item.addedAt || new Date().toISOString()
             };
             batch.set(docRef, cleanItem);
@@ -804,6 +805,7 @@ async function toggleFavorite(slug) {
             slug: slug,
             title: slug, // Use slug as title fallback
             name: slug, // Use slug as name fallback
+            source: currentSourceKey,
             addedAt: new Date().toISOString()
         };
         favorites.unshift(movieData);
