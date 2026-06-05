@@ -101,7 +101,7 @@ async function initializePage() {
 // Load movie details
 async function loadMovieDetail(slug) {
     try {
-        showLoading(true);
+        showLoading();
         
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
         
@@ -161,7 +161,7 @@ async function loadMovieDetail(slug) {
             window.currentMoviePosterUrl = currentMovie.poster_url || '';
             window.currentMovieThumbUrl = currentMovie.thumb_url || '';
             
-            showLoading(false);
+            hideLoading();
             document.getElementById('movieContent').classList.remove('hidden');
             
             // Auto-scroll to video player after content is loaded
@@ -176,7 +176,7 @@ async function loadMovieDetail(slug) {
     } catch (error) {
         console.error('Error loading movie details:', error);
         showError('Không thể tải thông tin phim. Vui lòng thử lại.');
-        showLoading(false);
+        hideLoading();
     }
 }
 
@@ -1090,18 +1090,6 @@ function updateNavigationButtons() {
     }
 }
 
-// Show info message
-function showInfo(message) {
-    Swal.fire({
-        icon: 'info',
-        title: 'Thông báo',
-        text: message,
-        confirmButtonColor: '#8b5cf6',
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
 // Find episode index by slug
 function findEpisodeIndex(episodeSlug) {
     if (!currentMovie || !currentMovie.episodes) return 0;
@@ -1159,7 +1147,7 @@ function displayRelatedMovies(movies) {
     }
 
     relatedMoviesContainer.innerHTML = relatedMovies.map(movie => `
-        <div class="bg-gray-700 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="goToMovieDetail('${movie.slug}')">
+        <div class="bg-gray-700 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="showMovieDetail('${movie.slug}')">
             <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
              alt="${movie.name || movie.title}" 
              loading="lazy" decoding="async" class="w-full h-48 object-cover"
@@ -1170,11 +1158,6 @@ function displayRelatedMovies(movies) {
             </div>
         </div>
     `).join('');
-}
-
-// Go to movie detail page
-function goToMovieDetail(slug) {
-    window.location.href = `movie-detail.html?slug=${slug}`;
 }
 
 // Toggle favorite
@@ -1446,63 +1429,21 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
     }
 }
 
-// Show/hide loading
-function showLoading(show) {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.classList.toggle('hidden', !show);
-    }
-}
-
-// Utility functions
-function showError(message) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Lỗi',
-        text: message,
-        confirmButtonColor: '#8b5cf6'
-    });
-}
-
-function showSuccess(message) {
-    Swal.fire({
-        icon: 'success',
-        title: 'Thành công',
-        text: message,
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
 // Handle search
-document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        const query = e.target.value.trim();
-        if (query) {
-            window.location.href = `index.html?search=${encodeURIComponent(query)}`;
-        }
-    }
-});
-
-document.getElementById('mobileSearchInput')?.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        const query = e.target.value.trim();
-        if (query) {
-            window.location.href = `index.html?search=${encodeURIComponent(query)}`;
-        }
-    }
-});
+setupSearchListeners();
 
 // Watch Time Note Functions
 function saveWatchTimeNote() {
     if (!currentMovie) return;
     
+    const episodeInput = document.getElementById('watchEpisodeNumber');
     const noteInput = document.getElementById('watchTimeNote');
-    const note = noteInput.value.trim();
+    const episodeNumber = episodeInput ? episodeInput.value.trim() : '';
+    const note = noteInput ? noteInput.value.trim() : '';
     
     // If user is logged in, save to Firebase
     if (auth.currentUser) {
-        saveWatchTimeNoteToFirebase(note);
+        saveWatchTimeNoteToFirebase(episodeNumber, note);
         showSuccess('Đã lưu ghi chú thời gian xem');
     } else {
         showInfo('Vui lòng đăng nhập để lưu ghi chú');
@@ -1526,14 +1467,13 @@ async function loadWatchTimeNote() {
 }
 
 // Save watch time note to Firebase
-async function saveWatchTimeNoteToFirebase(note) {
+async function saveWatchTimeNoteToFirebase(episodeNumber, note) {
     if (!auth.currentUser || !currentMovie) return;
     
     try {
         const userRef = db.collection('users').doc(auth.currentUser.uid);
         const notesRef = userRef.collection('watchTimeNotes');
         
-        // Remove existing note for this movie
         const existingDocs = await notesRef.where('movieSlug', '==', currentMovie.slug).get();
         const batch = db.batch();
         
@@ -1541,12 +1481,12 @@ async function saveWatchTimeNoteToFirebase(note) {
             batch.delete(doc.ref);
         });
         
-        // Add new note if not empty
-        if (note) {
+        if (episodeNumber || note) {
             const noteData = {
                 movieSlug: currentMovie.slug,
                 movieTitle: currentMovie.name || currentMovie.title,
-                note: note,
+                episodeNumber: episodeNumber || '',
+                note: note || '',
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
@@ -1575,7 +1515,12 @@ async function loadWatchTimeNoteFromFirebase() {
             const noteDoc = snapshot.docs[0];
             const noteData = noteDoc.data();
             
+            const episodeInput = document.getElementById('watchEpisodeNumber');
             const noteInput = document.getElementById('watchTimeNote');
+            
+            if (episodeInput && noteData.episodeNumber) {
+                episodeInput.value = noteData.episodeNumber;
+            }
             if (noteInput && noteData.note) {
                 noteInput.value = noteData.note;
             }

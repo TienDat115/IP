@@ -167,104 +167,31 @@ async function searchMovies(keyword, page = 1) {
 // Display movies
 function displayMovies(movies) {
     const container = document.getElementById('moviesContainer');
-    
     if (!container) return;
-    
     if (!movies || movies.length === 0) {
         container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400">Không có phim nào để hiển thị</div>';
         return;
     }
-    
-    container.innerHTML = movies.map(movie => `
-        <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer" onclick="showMovieDetail('${movie.slug}')">
-            <div class="relative">
-                <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
-                     alt="${movie.name || movie.title}" 
-                     loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
-                <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
-                    ${movie.quality || 'HD'}
-                </div>
-                ${movie.current_episode ? `
-                    <div class="absolute bottom-2 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">
-                        ${formatEpisodeInfo(movie.current_episode, movie.total_episodes)}
-                    </div>
-                ` : ''}
-            </div>
-            <div class="p-4">
-                <h3 class="font-semibold text-sm mb-2 line-clamp-2">${movie.name || movie.title}</h3>
-                <p class="text-gray-400 text-xs mb-2">${movie.year || movie.time || ''}</p>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs text-gray-500">${getCountryFromCategory(movie.category) || ''}</span>
-                </div>
-            </div>
-        </div>
-    `).join('');
+    container.innerHTML = movies.map(movie => getMovieCardHTML(movie)).join('');
 }
 
 // Display pagination
 function displayPagination(pagination) {
     const container = document.getElementById('pagination');
+    if (!container) return;
     
-    if (!container) {
-        console.error('Pagination container not found');
-        return;
-    }
-    
-    // Handle different pagination structures
     let paginationData = pagination;
-    
-    // If pagination is nested in pagination.paginate
     if (pagination && pagination.paginate) {
         paginationData = pagination.paginate;
     }
-    
-    // If no pagination data, create default pagination
     if (!paginationData) {
-        paginationData = {
-            current_page: currentPage || 1, // Use global currentPage
-            total_page: 5,
-            total_items: 50
-        };
+        paginationData = { current_page: currentPage || 1, total_page: 5, total_items: 50 };
     }
     
-    // Use global currentPage if available, otherwise use pagination data
     const current_page = currentPage || paginationData.current_page || 1;
     const total_page = paginationData.total_page || 1;
     
-    if (total_page <= 1) {
-        container.innerHTML = '';
-        return;
-    }
-    
-    let html = '';
-    
-    // Previous button
-    if (current_page > 1) {
-        html += `<button onclick="changePage(${current_page - 1})" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">
-            <i class="fas fa-chevron-left"></i>
-        </button>`;
-    }
-    
-    // Page numbers
-    const startPage = Math.max(1, current_page - 2);
-    const endPage = Math.min(total_page, current_page + 2);
-    
-    for (let i = startPage; i <= endPage; i++) {
-        const isActive = i === current_page;
-        html += `<button onclick="changePage(${i})" class="px-3 py-2 ${isActive ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'} rounded transition">
-            ${i}
-        </button>`;
-    }
-    
-    // Next button
-    if (current_page < total_page) {
-        html += `<button onclick="changePage(${current_page + 1})" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">
-            <i class="fas fa-chevron-right"></i>
-        </button>`;
-    }
-    
-    container.innerHTML = html;
+    container.innerHTML = getPaginationHTML(current_page, total_page, 'changePage({page})');
 }
 
 // Change page

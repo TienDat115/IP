@@ -412,83 +412,12 @@ async function loadPosters() {
 // Pagination functions
 function updatePagination() {
     const paginationContainer = document.getElementById('pagination');
-    
     if (!watchHistory || watchHistory.length === 0) {
         paginationContainer.innerHTML = '';
         return;
     }
-    
     totalPages = Math.ceil(watchHistory.length / itemsPerPage);
-    
-    let paginationHTML = '';
-    
-    // Previous button
-    paginationHTML += `
-        <button onclick="goToPage(${currentPage - 1})" 
-                class="px-3 py-2 rounded-lg text-sm font-medium transition ${
-                    currentPage === 1 
-                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
-                    : 'bg-gray-700 text-white hover:bg-gray-600'
-                }" 
-                ${currentPage === 1 ? 'disabled' : ''}>
-            <i class="fas fa-chevron-left"></i>
-        </button>
-    `;
-    
-    // Page numbers
-    const maxVisiblePages = 3;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
-    if (endPage - startPage < maxVisiblePages - 1) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-    
-    if (startPage > 1) {
-        paginationHTML += `
-            <button onclick="goToPage(1)" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">1</button>
-        `;
-        if (startPage > 2) {
-            paginationHTML += `<span class="px-2 text-gray-400">...</span>`;
-        }
-    }
-    
-    for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `
-            <button onclick="goToPage(${i})" 
-                    class="px-3 py-2 rounded-lg text-sm font-medium transition ${
-                        i === currentPage 
-                        ? 'bg-purple-600 text-white' 
-                        : 'bg-gray-700 text-white hover:bg-gray-600'
-                    }">
-                ${i}
-            </button>
-        `;
-    }
-    
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            paginationHTML += `<span class="px-2 text-gray-400">...</span>`;
-        }
-        paginationHTML += `
-            <button onclick="goToPage(${totalPages})" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">${totalPages}</button>
-        `;
-    }
-    
-    // Next button
-    paginationHTML += `
-        <button onclick="goToPage(${currentPage + 1})" 
-                class="px-3 py-2 rounded-lg text-sm font-medium transition ${
-                    currentPage === totalPages 
-                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
-                    : 'bg-gray-700 text-white hover:bg-gray-600'
-                }" 
-                ${currentPage === totalPages ? 'disabled' : ''}>
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    `;
-    
-    paginationContainer.innerHTML = paginationHTML;
+    paginationContainer.innerHTML = getPaginationHTML(currentPage, totalPages, 'goToPage({page})', 3);
 }
 
 function goToPage(page) {

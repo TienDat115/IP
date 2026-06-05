@@ -1487,3 +1487,135 @@ function showError(message) {
         confirmButtonColor: '#8b5cf6'
     });
 }
+
+function showSuccess(message) {
+    Swal.fire({
+        icon: 'success',
+        title: 'Thành công',
+        text: message,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+function showWarning(message) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Cảnh báo',
+        text: message,
+        confirmButtonColor: '#8b5cf6'
+    });
+}
+
+function showInfo(message) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Thông báo',
+        text: message,
+        confirmButtonColor: '#8b5cf6',
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+function goToMovieDetail(slug) {
+    showMovieDetail(slug);
+}
+
+function showPageLoading(show) {
+    const loading = document.getElementById('loading');
+    const moviesContainer = document.getElementById('moviesContainer');
+    if (loading) loading.classList.toggle('hidden', !show);
+    if (moviesContainer) moviesContainer.classList.toggle('hidden', show);
+}
+
+function showPageNoResults() {
+    const noResults = document.getElementById('noResults');
+    const moviesContainer = document.getElementById('moviesContainer');
+    if (noResults) noResults.classList.remove('hidden');
+    if (moviesContainer) moviesContainer.classList.add('hidden');
+}
+
+function hidePageNoResults() {
+    const noResults = document.getElementById('noResults');
+    const moviesContainer = document.getElementById('moviesContainer');
+    if (noResults) noResults.classList.add('hidden');
+    if (moviesContainer) moviesContainer.classList.remove('hidden');
+}
+
+function getMovieCardHTML(movie) {
+    return `
+        <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer" onclick="showMovieDetail('${movie.slug}')">
+            <div class="relative">
+                <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+                     alt="${movie.name || movie.title}" 
+                     loading="lazy" decoding="async" class="film-poster w-full"
+                     onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
+                    ${movie.quality || 'HD'}
+                </div>
+                ${movie.current_episode ? `
+                    <div class="absolute bottom-2 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">
+                        ${formatEpisodeInfo(movie.current_episode, movie.total_episodes)}
+                    </div>
+                ` : ''}
+            </div>
+            <div class="p-4">
+                <h3 class="font-semibold text-sm mb-2 line-clamp-2">${movie.name || movie.title}</h3>
+                <p class="text-gray-400 text-xs mb-2">${movie.year || movie.time || ''}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-500">${getCountryFromCategory(movie.category) || ''}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function getPaginationHTML(current, total, onClick, maxVisible = 5) {
+    if (total <= 1) return '';
+    let html = '';
+    
+    const prevDisabled = current <= 1;
+    html += `<button onclick="${prevDisabled ? '' : onClick.replace('{page}', current - 1)}" class="px-3 py-2 rounded-lg text-sm font-medium transition ${prevDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-700 text-white hover:bg-gray-600'}" ${prevDisabled ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
+    
+    let startPage = Math.max(1, current - Math.floor(maxVisible / 2));
+    let endPage = Math.min(total, startPage + maxVisible - 1);
+    if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+    
+    if (startPage > 1) {
+        html += `<button onclick="${onClick.replace('{page}', 1)}" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">1</button>`;
+        if (startPage > 2) html += `<span class="px-2 text-gray-400">...</span>`;
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="${onClick.replace('{page}', i)}" class="px-3 py-2 rounded-lg text-sm font-medium transition ${i === current ? 'bg-purple-600 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}">${i}</button>`;
+    }
+    
+    if (endPage < total) {
+        if (endPage < total - 1) html += `<span class="px-2 text-gray-400">...</span>`;
+        html += `<button onclick="${onClick.replace('{page}', total)}" class="px-3 py-2 rounded-lg text-sm font-medium bg-gray-700 text-white hover:bg-gray-600 transition">${total}</button>`;
+    }
+    
+    const nextDisabled = current >= total;
+    html += `<button onclick="${nextDisabled ? '' : onClick.replace('{page}', current + 1)}" class="px-3 py-2 rounded-lg text-sm font-medium transition ${nextDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-700 text-white hover:bg-gray-600'}" ${nextDisabled ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
+    
+    return html;
+}
+
+function setupSearchListeners() {
+    ['searchInput', 'mobileSearchInput'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    if (query) {
+                        window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+        }
+    });
+}
