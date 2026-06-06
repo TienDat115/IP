@@ -35,6 +35,8 @@ async function loadSingleMovies(page = 1) {
         let endpoint = `/danh-sach/phim-le`;
         if (currentSourceKey === 'nguonc') {
             endpoint = `/films/danh-sach/phim-le`;
+        } else if (currentSourceKey === 'kkphim') {
+            endpoint = `/v1/api/danh-sach/phim-le`;
         }
         
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));

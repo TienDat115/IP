@@ -379,6 +379,10 @@ async function loadPosters() {
                         const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
                         movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
                         movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
+                    } else if (currentSourceKey === 'kkphim') {
+                        const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
+                        movieData.poster_url = resolveKKPhimImageUrl(movieData.poster_url || '', pathImage);
+                        movieData.thumb_url = resolveKKPhimImageUrl(movieData.thumb_url || '', pathImage);
                     }
                     const movie = normalizeMovieData(movieData);
                     posterUrl = movie.poster_url || '';

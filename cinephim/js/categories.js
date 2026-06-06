@@ -75,6 +75,20 @@ async function loadCategories() {
         }
     }
 
+    if (currentSourceKey === 'kkphim') {
+        try {
+            const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.category}`));
+            if (Array.isArray(data) && data.length > 0) {
+                categories = data.map(item => ({
+                    slug: item.slug,
+                    name: item.name
+                }));
+            }
+        } catch (error) {
+            console.warn('Failed to load categories from API, using fallback:', error);
+        }
+    }
+
     // Fallback for NguonC or if API fails
     if (categories.length === 0) {
         categories = NGONC_CATEGORIES;
@@ -134,6 +148,8 @@ async function loadMoviesByCategory(category, page = 1) {
         let endpoint = `${currentSource.endpoints.category}/${category}`;
         if (currentSourceKey === 'nguonc') {
             endpoint = `/films/the-loai/${category}`;
+        } else if (currentSourceKey === 'kkphim') {
+            endpoint = `/v1/api/the-loai/${category}`;
         }
         
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));

@@ -93,6 +93,20 @@ async function loadCountries() {
         }
     }
 
+    if (currentSourceKey === 'kkphim') {
+        try {
+            const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.country}`));
+            if (Array.isArray(data) && data.length > 0) {
+                countries = data.map(item => ({
+                    slug: item.slug,
+                    name: item.name
+                }));
+            }
+        } catch (error) {
+            console.warn('Failed to load countries from API, using fallback:', error);
+        }
+    }
+
     if (countries.length === 0) {
         countries = NGUONC_COUNTRIES;
     }
@@ -147,6 +161,8 @@ async function loadCountryMovies(page = 1) {
         let endpoint = `${currentSource.endpoints.country}/${selectedCountry}`;
         if (currentSourceKey === 'nguonc') {
             endpoint = `/films/quoc-gia/${selectedCountry}`;
+        } else if (currentSourceKey === 'kkphim') {
+            endpoint = `/v1/api/quoc-gia/${selectedCountry}`;
         }
         
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));

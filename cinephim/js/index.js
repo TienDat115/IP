@@ -68,7 +68,7 @@ async function loadNewMovies(page = 1) {
     try {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.new}?page=${page}`));
         
-        if (data.status === 'success') {
+        if (data.status === 'success' || data.status === true) {
             const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
             const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
             displayMovies(movies);
@@ -124,7 +124,7 @@ async function searchMovies(keyword, page = 1) {
     try {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.search}?keyword=${encodeURIComponent(keyword)}&page=${page}`));
         
-        if (data.status === 'success') {
+        if (data.status === 'success' || data.status === true) {
             const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
             const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
             displayMovies(movies);
@@ -286,6 +286,10 @@ async function loadRecentWatchedPosters(recentWatched) {
                         const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
                         movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
                         movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
+                    } else if (currentSourceKey === 'kkphim') {
+                        const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
+                        movieData.poster_url = resolveKKPhimImageUrl(movieData.poster_url || '', pathImage);
+                        movieData.thumb_url = resolveKKPhimImageUrl(movieData.thumb_url || '', pathImage);
                     }
                     const movie = normalizeMovieData(movieData);
                     posterUrl = movie.poster_url || '';

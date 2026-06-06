@@ -147,6 +147,15 @@ async function loadMovieDetail(slug) {
                 }
             }
             
+            if (currentSourceKey === 'kkphim') {
+                const pathImageKK = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
+                currentMovie.poster_url = resolveKKPhimImageUrl(currentMovie.poster_url || '', pathImageKK);
+                currentMovie.thumb_url = resolveKKPhimImageUrl(currentMovie.thumb_url || '', pathImageKK);
+                if (data.episodes) {
+                    currentMovie.episodes = data.episodes;
+                }
+            }
+            
             await displayMovieDetails();
             updatePageMeta();
             setupEpisodes();
@@ -437,6 +446,12 @@ function autoPlayLatestEpisode() {
                 if (latestEpisode.episodeSlug_ophim) {
                     targetEpisodeSlug = latestEpisode.episodeSlug_ophim;
                     targetServerIndex = latestEpisode.serverIndex_ophim !== undefined ? latestEpisode.serverIndex_ophim : 0;
+                    hasSourceHistory = true;
+                }
+            } else if (currentSourceKey === 'kkphim') {
+                if (latestEpisode.episodeSlug_kkphim) {
+                    targetEpisodeSlug = latestEpisode.episodeSlug_kkphim;
+                    targetServerIndex = latestEpisode.serverIndex_kkphim !== undefined ? latestEpisode.serverIndex_kkphim : 0;
                     hasSourceHistory = true;
                 }
             }
@@ -851,6 +866,11 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
             historyItem.episodeSlug_ophim = episodeSlug;
             historyItem.serverIndex_ophim = serverIndex;
             historyItem.serverName_ophim = serverName;
+        } else if (currentSourceKey === 'kkphim') {
+            historyItem.videoUrl_kkphim = historyItem.videoUrl;
+            historyItem.episodeSlug_kkphim = episodeSlug;
+            historyItem.serverIndex_kkphim = serverIndex;
+            historyItem.serverName_kkphim = serverName;
         }
     }
     
@@ -1107,25 +1127,42 @@ async function loadRelatedMovies() {
     try {
         if (!currentMovie || !currentMovie.category) return;
 
-        // Lấy category đầu tiên để tìm phim liên quan
-        let categoryData = null;
-        
-        // Check if category is an array or object
+        let categorySlug = null;
+
         if (Array.isArray(currentMovie.category)) {
-            categoryData = currentMovie.category.find(item => item.group && item.group.name === 'Thể loại');
+            const hasNesting = currentMovie.category.some(item => item.group || item.list);
+            if (hasNesting) {
+                const cat = currentMovie.category.find(item => item.group && item.group.name === 'Thể loại');
+                if (cat && cat.list && cat.list.length > 0) {
+                    categorySlug = cat.list[0].slug;
+                }
+            } else {
+                if (currentMovie.category.length > 0) {
+                    categorySlug = currentMovie.category[0].slug;
+                }
+            }
         } else if (currentMovie.category.list) {
-            categoryData = currentMovie.category;
+            if (currentMovie.category.list.length > 0) {
+                categorySlug = currentMovie.category.list[0].slug;
+            }
         }
-        
-        if (!categoryData || !categoryData.list || categoryData.list.length === 0) return;
-        
-        const categorySlug = categoryData.list[0].slug;
-        const data = await fetchJSONCached(getApiUrl(`${API_BASE}/films/category/${categorySlug}?page=1`));
-        
-        if (data.status === 'success' && data.items) {
-            displayRelatedMovies(data.items);
+
+        if (!categorySlug) return;
+
+        let endpoint = `/films/category/${categorySlug}`;
+        if (currentSourceKey === 'kkphim') {
+            endpoint = `/v1/api/the-loai/${categorySlug}`;
+        } else if (currentSourceKey === 'ophim') {
+            endpoint = `/the-loai/${categorySlug}`;
         }
-        
+
+        const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=1`));
+
+        if (data.status === 'success' || data.status === true) {
+            const items = data.items || data.data?.items || [];
+            displayRelatedMovies(items);
+        }
+
     } catch (error) {
         console.error('Error loading related movies:', error);
     }
@@ -1390,6 +1427,8 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
                 savedVideoUrl = historyItem.videoUrl_nguonc;
             } else if (currentSourceKey === 'ophim') {
                 savedVideoUrl = historyItem.videoUrl_ophim;
+            } else if (currentSourceKey === 'kkphim') {
+                savedVideoUrl = historyItem.videoUrl_kkphim;
             }
         } else if (historyItem) {
             savedVideoUrl = historyItem.videoUrl;
@@ -1405,6 +1444,8 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
                     videoUrlToPlay = savedVideoUrl || episodeUrl || currentMovie.link_m3u8 || currentMovie.link_embed;
                 } else if (currentSourceKey === 'ophim') {
                     // Load đúng videoUrl đã lưu của OPhim
+                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                } else if (currentSourceKey === 'kkphim') {
                     videoUrlToPlay = savedVideoUrl || episodeUrl;
                 } else {
                     videoUrlToPlay = savedVideoUrl || episodeUrl;

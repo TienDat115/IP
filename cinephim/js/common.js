@@ -23,6 +23,17 @@ const SOURCES = {
             category: '/the-loai',
             country: '/quoc-gia'
         }
+    },
+    kkphim: {
+        name: 'KKPhim',
+        base: 'https://phimapi.com',
+        endpoints: {
+            new: '/danh-sach/phim-moi-cap-nhat',
+            search: '/v1/api/tim-kiem',
+            detail: '/phim',
+            category: '/the-loai',
+            country: '/quoc-gia'
+        }
     }
 };
 
@@ -871,6 +882,23 @@ function resolveOPhimImageUrl(url, pathImageFromApi = '') {
     }
 }
 
+// Resolve KKPhim relative image paths
+function resolveKKPhimImageUrl(url, pathImageFromApi = '') {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+
+    let cdnDomain = 'https://phimimg.com';
+
+    if (pathImageFromApi && typeof pathImageFromApi === 'string' && pathImageFromApi.startsWith('http')) {
+        cdnDomain = pathImageFromApi.replace(/\/$/, '');
+    }
+
+    if (url.startsWith('/')) {
+        return `${cdnDomain}${url}`;
+    }
+    return `${cdnDomain}/${url}`;
+}
+
 function stripHtml(str) {
     if (!str) return '';
     return str.replace(/<[^>]*>/g, '');
@@ -893,6 +921,24 @@ function normalizeMovieData(item, pathImage = '') {
             quality: item.quality || 'HD',
             current_episode: item.episode_current || '',
             total_episodes: item.episode_total || '',
+            year: item.year || '',
+            category: item.category || [],
+            country: item.country || []
+        };
+    }
+    
+    if (currentSourceKey === 'kkphim') {
+        let poster_url = resolveKKPhimImageUrl(item.poster_url || '', pathImage);
+        let thumb_url = resolveKKPhimImageUrl(item.thumb_url || '', pathImage);
+
+        return {
+            name: item.name || item.title || '',
+            slug: item.slug || '',
+            poster_url: poster_url,
+            thumb_url: thumb_url,
+            quality: item.quality || 'HD',
+            current_episode: item.episode_current || item.current_episode || '',
+            total_episodes: item.episode_total || item.total_episodes || '',
             year: item.year || '',
             category: item.category || [],
             country: item.country || []
@@ -926,6 +972,17 @@ function normalizePagination(data) {
         };
     }
     
+    if (currentSourceKey === 'kkphim') {
+        const p = data.pagination || data.data?.params?.pagination || data.params?.pagination;
+        if (!p) return null;
+        return {
+            current_page: p.currentPage,
+            total_page: p.totalPages || Math.ceil(p.totalItems / p.totalItemsPerPage) || 1,
+            total_items: p.totalItems,
+            per_page: p.totalItemsPerPage
+        };
+    }
+    
     return data.paginate || null;
 }
 
@@ -933,21 +990,82 @@ function normalizePagination(data) {
 function renderSourceSwitcher() {
     const desktopContainer = document.getElementById('sourceSwitcherDesktop');
     const mobileContainer = document.getElementById('sourceSwitcherMobile');
-    
-    const html = `
-        <div class="flex items-center space-x-2 bg-gray-700 rounded-lg p-1">
-            ${Object.keys(SOURCES).map(key => `
-                <button onclick="setSource('${key}')" 
-                        class="px-3 py-1 text-xs rounded-md transition ${currentSourceKey === key ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-gray-600'}">
-                    ${SOURCES[key].name}
-                </button>
-            `).join('')}
+
+    const currentName = currentSource?.name || 'NguonC';
+    const optionsHtml = Object.keys(SOURCES).map(key => `
+        <button onclick="setSource('${key}')"
+                class="flex items-center w-full px-4 py-2 text-sm transition ${currentSourceKey === key ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}">
+            <span class="flex-1 text-left" style="display:inline">${SOURCES[key].name}</span>
+            ${currentSourceKey === key ? '<i class="fas fa-check text-purple-200"></i>' : ''}
+        </button>
+    `).join('');
+
+    const desktopHtml = `
+        <div class="relative source-switcher">
+            <button onclick="toggleSourceDropdown(this)"
+                    class="flex items-center bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition border border-gray-600 hover:border-purple-500 px-3 py-1.5">
+                <i class="fas fa-exchange-alt text-purple-400 text-xs mr-1.5"></i>
+                <span class="text-white font-medium">${currentName}</span>
+                <i class="fas fa-chevron-down text-gray-500 text-xs ml-1 transition-transform duration-200 source-dropdown-arrow"></i>
+            </button>
+            <div class="absolute right-0 mt-2 w-44 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50 overflow-hidden source-dropdown-menu">
+                ${optionsHtml}
+            </div>
         </div>
     `;
-    
-    if (desktopContainer) desktopContainer.innerHTML = html;
-    if (mobileContainer) mobileContainer.innerHTML = html;
+
+    const mobileHtml = `
+        <div class="relative source-switcher">
+            <button onclick="toggleSourceDropdown(this)"
+                    class="flex items-center bg-gray-700 hover:bg-gray-600 rounded-lg text-xs transition border border-gray-600 px-2 py-1">
+                <span class="text-white font-semibold" style="display:inline">${currentName}</span>
+                <i class="fas fa-chevron-down text-gray-500 ml-1 transition-transform duration-200 source-dropdown-arrow" style="font-size:9px"></i>
+            </button>
+            <div class="absolute right-0 mt-1 w-40 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50 overflow-hidden source-dropdown-menu">
+                ${optionsHtml}
+            </div>
+        </div>
+    `;
+
+    if (desktopContainer) desktopContainer.innerHTML = desktopHtml;
+    if (mobileContainer) mobileContainer.innerHTML = mobileHtml;
 }
+
+// Toggle source dropdown
+function toggleSourceDropdown(btn) {
+    const switcher = btn.closest('.source-switcher');
+    if (!switcher) return;
+    const dropdown = switcher.querySelector('.source-dropdown-menu');
+    const arrow = switcher.querySelector('.source-dropdown-arrow');
+    if (dropdown) {
+        const isHidden = dropdown.classList.contains('hidden');
+        // Close all other dropdowns first
+        document.querySelectorAll('.source-dropdown-menu').forEach(m => {
+            if (m !== dropdown) m.classList.add('hidden');
+        });
+        document.querySelectorAll('.source-dropdown-arrow').forEach(a => {
+            if (a !== arrow) a.style.transform = 'rotate(0deg)';
+        });
+        dropdown.classList.toggle('hidden');
+        if (arrow) {
+            arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+    }
+}
+
+// Close source dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    document.querySelectorAll('.source-switcher').forEach(switcher => {
+        const dropdown = switcher.querySelector('.source-dropdown-menu');
+        const arrow = switcher.querySelector('.source-dropdown-arrow');
+        if (dropdown && !dropdown.classList.contains('hidden') && !switcher.contains(event.target)) {
+            dropdown.classList.add('hidden');
+            if (arrow) {
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+    });
+});
 
 // Format watch time (relative time)
 function formatWatchTime(watchedAt) {
