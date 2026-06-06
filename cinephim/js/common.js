@@ -764,6 +764,18 @@ function updateLoginButton() {
             }
         }
     }
+    
+    // Toggle user-specific sections on homepage
+    const recentWatchedSection = document.getElementById('recentWatchedSection');
+    const pinnedMoviesSection = document.getElementById('pinnedMoviesSection');
+    
+    if (currentUser) {
+        if (recentWatchedSection) recentWatchedSection.classList.remove('hidden');
+        if (pinnedMoviesSection) pinnedMoviesSection.classList.remove('hidden');
+    } else {
+        if (recentWatchedSection) recentWatchedSection.classList.add('hidden');
+        if (pinnedMoviesSection) pinnedMoviesSection.classList.add('hidden');
+    }
 }
 
 // Show movie detail - redirect to detail page
