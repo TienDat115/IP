@@ -251,164 +251,163 @@
 
 			<!-- Movie Content -->
 			<div id="movieContent" class="hidden">
-				<div class="space-y-8">
-					<!-- Movie Info Section -->
-					<div class="bg-gray-800 rounded-lg overflow-hidden">
-						<div class="lg:flex">
-							<!-- Poster Column -->
-							<div class="lg:w-1/3">
-								<img id="moviePoster" src="https://via.placeholder.com/400x600/374151/ffffff?text=Loading..." alt="Movie Poster" loading="eager" decoding="async" fetchpriority="high" class="w-full h-auto lg:max-w-full" />
+				<div class="space-y-6">
+					<!-- Movie Hero: Poster + Info -->
+					<div class="bg-gray-800 rounded-lg overflow-hidden lg:flex">
+						<!-- Poster Column -->
+						<div class="lg:w-1/3">
+							<img id="moviePoster" src="https://via.placeholder.com/400x600/374151/ffffff?text=Loading..." alt="Movie Poster" loading="eager" decoding="async" fetchpriority="high" class="w-full h-auto lg:max-w-full" />
+						</div>
+
+						<!-- Info Column -->
+						<div class="lg:w-2/3 p-6">
+							<h1 id="movieTitle" class="text-2xl font-bold mb-4">Đang tải...</h1>
+
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+								<div class="flex items-center">
+									<i class="fas fa-calendar-alt w-5 text-purple-400"></i>
+									<span class="ml-3" id="movieYear">Năm</span>
+								</div>
+								<div class="flex items-center">
+									<i class="fas fa-clock w-5 text-purple-400"></i>
+									<span class="ml-3" id="movieDuration">Thời lượng</span>
+								</div>
+								<div class="flex items-center">
+									<i class="fas fa-film w-5 text-purple-400"></i>
+									<span class="ml-3" id="episodeProgress">--/--</span>
+								</div>
+								<div class="flex items-center">
+									<i class="fas fa-edit w-5 text-purple-400"></i>
+									<span class="ml-3" id="movieModified">Đang tải...</span>
+								</div>
 							</div>
 
-							<!-- Info Column -->
-							<div class="lg:w-2/3 p-6">
-								<h1 id="movieTitle" class="text-2xl font-bold mb-4">Đang tải...</h1>
+							<div class="space-y-2 mb-6">
+								<div class="flex items-start">
+									<i class="fas fa-user w-5 text-purple-400 mt-0.5"></i>
+									<span class="ml-3" id="movieCasts">Đang tải...</span>
+								</div>
+								<div class="flex items-start">
+									<i class="fas fa-tags w-5 text-purple-400 mt-0.5"></i>
+									<span class="ml-3" id="movieCategories">Đang tải...</span>
+								</div>
+							</div>
 
-								<div class="space-y-3 mb-6">
+							<!-- Action Buttons -->
+							<div class="flex flex-col sm:flex-row gap-3 mb-6">
+								<button onclick="toggleFavorite()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-heart mr-2"></i>Thêm vào yêu thích</button>
+								<button onclick="togglePinMovie()" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-thumbtack mr-2"></i>Ghim phim</button>
+							</div>
+
+							<!-- Watch Time Note -->
+							<div class="bg-gray-700/50 rounded-lg p-4">
+								<div class="flex items-center justify-between mb-2">
 									<div class="flex items-center">
-										<i class="fas fa-calendar-alt w-5 text-purple-400"></i>
-										<span class="ml-3" id="movieYear">Năm</span>
+										<i class="fas fa-sticky-note w-5 text-purple-400"></i>
+										<label class="ml-3 text-sm font-medium">Ghi chú thời gian xem:</label>
 									</div>
-									<div class="flex items-center">
-										<i class="fas fa-clock w-5 text-purple-400"></i>
-										<span class="ml-3" id="movieDuration">Thời lượng</span>
+									<div class="flex items-center space-x-2">
+										<button onclick="toggleVirtualKeyboard()" class="text-purple-400 hover:text-purple-300 transition" title="Mở bàn phím ảo">
+											<i class="fas fa-keyboard"></i>
+										</button>
+										<button onclick="clearAndSaveNote()" class="text-orange-400 hover:text-orange-300 transition" title="Xóa và lưu">
+											<i class="fas fa-eraser"></i>
+										</button>
+										<button onclick="saveWatchTimeNote()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition" title="Lưu ghi chú"><i class="fas fa-save"></i> Lưu</button>
 									</div>
-									<div class="flex items-center">
-										<i class="fas fa-film w-5 text-purple-400"></i>
-										<span class="ml-3" id="episodeProgress">--/--</span>
+								</div>
+								<input
+									type="text"
+									id="watchTimeNote"
+									placeholder="Ví dụ: 15:30 - Đã xem đến 1h23p"
+									class="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-400 placeholder-gray-400"
+									onkeypress="
+										if (event.key === 'Enter') {
+											saveWatchTimeNote();
+										}
+									"
+								/>
+
+								<!-- Virtual Keyboard -->
+								<div id="virtualKeyboard" class="hidden mt-3 bg-gray-800 rounded-lg p-3">
+									<div class="grid grid-cols-10 gap-1 mb-2">
+										<button onclick="insertToNote('1')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">1</button>
+										<button onclick="insertToNote('2')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">2</button>
+										<button onclick="insertToNote('3')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">3</button>
+										<button onclick="insertToNote('4')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">4</button>
+										<button onclick="insertToNote('5')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">5</button>
+										<button onclick="insertToNote('6')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">6</button>
+										<button onclick="insertToNote('7')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">7</button>
+										<button onclick="insertToNote('8')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">8</button>
+										<button onclick="insertToNote('9')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">9</button>
+										<button onclick="insertToNote('0')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">0</button>
 									</div>
-									<div class="flex items-center">
-										<i class="fas fa-user w-5 text-purple-400"></i>
-										<span class="ml-3" id="movieCasts">Đang tải...</span>
+									<div class="grid grid-cols-9 gap-1 mb-2">
+										<button onclick="insertToNote(':')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">:</button>
+										<button onclick="insertToNote('-')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">-</button>
+										<button onclick="insertToNote(' ')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">space</button>
+										<button onclick="deleteCharFromNote()" class="bg-orange-600 hover:bg-orange-700 text-white px-2 py-1 rounded text-xs"><i class="fas fa-backspace"></i></button>
 									</div>
-									<div class="flex items-center">
-										<i class="fas fa-tags w-5 text-purple-400"></i>
-										<span class="ml-3" id="movieCategories">Đang tải...</span>
-									</div>
-									<div class="flex items-center">
-										<i class="fas fa-edit w-5 text-purple-400"></i>
-										<span class="ml-3" id="movieModified">Đang tải...</span>
+									<div class="grid grid-cols-2 gap-1">
+										<button onclick="clearNote()" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Xóa hết</button>
+										<button onclick="toggleVirtualKeyboard()" class="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs">Đóng</button>
 									</div>
 								</div>
 
-								<!-- Action Buttons -->
-								<div class="flex space-x-3 mb-6">
-									<button onclick="toggleFavorite()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-heart mr-2"></i>Thêm vào yêu thích</button>
-									<button onclick="togglePinMovie()" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-thumbtack mr-2"></i>Ghim phim</button>
-								</div>
+								<p class="text-xs text-gray-400 mt-2">Ghi chú giúp bạn nhớ vị trí xem đã dừng lại</p>
+							</div>
+						</div>
+					</div>
 
-								<!-- Watch Time Note -->
-								<div class="bg-gray-700 rounded-lg p-4 mb-6">
-									<div class="flex items-center justify-between mb-2">
-										<div class="flex items-center">
-											<i class="fas fa-sticky-note w-5 text-purple-400"></i>
-											<label class="ml-3 text-sm font-medium">Ghi chú thời gian xem:</label>
-										</div>
-										<div class="flex items-center space-x-2">
-											<button onclick="toggleVirtualKeyboard()" class="text-purple-400 hover:text-purple-300 transition" title="Mở bàn phím ảo">
-												<i class="fas fa-keyboard"></i>
-											</button>
-											<button onclick="clearAndSaveNote()" class="text-orange-400 hover:text-orange-300 transition" title="Xóa và lưu">
-												<i class="fas fa-eraser"></i>
-											</button>
-											<button onclick="saveWatchTimeNote()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition" title="Lưu ghi chú"><i class="fas fa-save"></i> Lưu</button>
-										</div>
-									</div>
-									<input
-										type="text"
-										id="watchTimeNote"
-										placeholder="Ví dụ: 15:30 - Đã xem đến 1h23p"
-										class="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-400 placeholder-gray-400"
-										onkeypress="
-											if (event.key === 'Enter') {
-												saveWatchTimeNote();
-											}
-										"
-									/>
+					<!-- Video Player -->
+					<div class="bg-gray-800 rounded-lg overflow-hidden">
+						<div class="relative" style="padding-bottom: 56.25%">
+							<iframe id="videoPlayer" class="absolute top-0 left-0 w-full h-full" src="about:blank" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" scrolling="no"></iframe>
+						</div>
+					</div>
 
-									<!-- Virtual Keyboard -->
-									<div id="virtualKeyboard" class="hidden mt-3 bg-gray-800 rounded-lg p-3">
-										<div class="grid grid-cols-10 gap-1 mb-2">
-											<button onclick="insertToNote('1')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">1</button>
-											<button onclick="insertToNote('2')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">2</button>
-											<button onclick="insertToNote('3')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">3</button>
-											<button onclick="insertToNote('4')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">4</button>
-											<button onclick="insertToNote('5')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">5</button>
-											<button onclick="insertToNote('6')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">6</button>
-											<button onclick="insertToNote('7')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">7</button>
-											<button onclick="insertToNote('8')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">8</button>
-											<button onclick="insertToNote('9')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">9</button>
-											<button onclick="insertToNote('0')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">0</button>
-										</div>
-										<div class="grid grid-cols-8 gap-1 mb-2">
-											<button onclick="insertToNote(':')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">:</button>
-											<button onclick="insertToNote('-')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">-</button>
-											<button onclick="insertToNote(' ')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">space</button>
-										</div>
-										<div class="grid grid-cols-2 gap-1">
-											<button onclick="clearNote()" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Xóa hết</button>
-											<button onclick="toggleVirtualKeyboard()" class="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs">Đóng</button>
-										</div>
-									</div>
+					<!-- Episodes Section -->
+					<div id="episodesSection" class="bg-gray-800 rounded-lg p-6">
+						<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+							<h3 class="text-xl font-semibold">Danh sách tập</h3>
+							<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition whitespace-nowrap"><i class="fas fa-history mr-2"></i>Lịch sử xem</button>
+						</div>
 
-									<p class="text-xs text-gray-400 mt-2">Ghi chú giúp bạn nhớ vị trí xem đã dừng lại</p>
-								</div>
+						<!-- Episode Navigation Buttons -->
+						<div class="flex justify-between items-center mb-4">
+							<button onclick="playPreviousEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center"><i class="fas fa-chevron-left mr-2"></i>Tập trước</button>
+							<span id="currentEpisodeDisplay" class="text-white font-medium">Chưa chọn tập</span>
+							<button onclick="playNextEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center">Tập sau<i class="fas fa-chevron-right ml-2"></i></button>
+						</div>
 
-								<!-- Movie Description -->
-								<div class="bg-gray-800 rounded-lg p-6">
-									<h3 class="text-xl font-semibold mb-4">Nội dung phim</h3>
-									<div id="movieDescriptionContainer">
-										<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
-									</div>
-								</div>
+						<!-- Watch History Section - Hidden by default -->
+						<div id="watchHistorySection" class="hidden mb-6">
+							<h4 class="text-lg font-medium mb-3">Lịch sử xem phim này</h4>
+							<div id="watchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
+								<!-- Watch history will be loaded here -->
 							</div>
 						</div>
 
-						<!-- Player and Episodes Section -->
-						<div>
-							<!-- Video Player -->
-							<div class="bg-gray-800 rounded-lg overflow-hidden mb-6">
-								<div class="relative" style="padding-bottom: 56.25%">
-									<iframe id="videoPlayer" class="absolute top-0 left-0 w-full h-full" src="about:blank" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" scrolling="no"></iframe>
-								</div>
+						<div class="mb-4">
+							<div id="serverSelect" class="flex flex-wrap gap-2">
+								<!-- Server options will be loaded here -->
 							</div>
+						</div>
+						<div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+							<!-- Episodes will be loaded here -->
+						</div>
 
-							<!-- Episodes Section -->
-							<div id="episodesSection" class="bg-gray-800 rounded-lg p-6 mb-6">
-								<div class="flex justify-between items-center mb-4">
-									<h3 class="text-xl font-semibold">Danh sách tập</h3>
-									<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition"><i class="fas fa-history mr-2"></i>Lịch sử xem</button>
-								</div>
+						<!-- Episodes Pagination -->
+						<div id="episodesPagination" class="flex justify-center items-center mt-4 space-x-2">
+							<!-- Episodes pagination buttons will be loaded here -->
+						</div>
+					</div>
 
-								<!-- Episode Navigation Buttons -->
-								<div class="flex justify-between items-center mb-4">
-									<button onclick="playPreviousEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center"><i class="fas fa-chevron-left mr-2"></i>Tập trước</button>
-									<span id="currentEpisodeDisplay" class="text-white font-medium">Chưa chọn tập</span>
-									<button onclick="playNextEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center">Tập sau<i class="fas fa-chevron-right ml-2"></i></button>
-								</div>
-
-								<!-- Watch History Section - Hidden by default -->
-								<div id="watchHistorySection" class="hidden mb-6">
-									<h4 class="text-lg font-medium mb-3">Lịch sử xem phim này</h4>
-									<div id="watchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
-										<!-- Watch history will be loaded here -->
-									</div>
-								</div>
-
-								<div class="mb-4">
-									<div id="serverSelect" class="flex flex-wrap gap-2">
-										<!-- Server options will be loaded here -->
-									</div>
-								</div>
-								<div id="episodesList" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
-									<!-- Episodes will be loaded here -->
-								</div>
-
-								<!-- Episodes Pagination -->
-								<div id="episodesPagination" class="flex justify-center items-center mt-4 space-x-2">
-									<!-- Episodes pagination buttons will be loaded here -->
-								</div>
-							</div>
+					<!-- Movie Description -->
+					<div class="bg-gray-800 rounded-lg p-6">
+						<h3 class="text-xl font-semibold mb-4">Nội dung phim</h3>
+						<div id="movieDescriptionContainer">
+							<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
 						</div>
 					</div>
 				</div>

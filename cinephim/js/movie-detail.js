@@ -1600,6 +1600,26 @@ function insertToNote(character) {
     }
 }
 
+function deleteCharFromNote() {
+    const noteInput = document.getElementById('watchTimeNote');
+    if (noteInput) {
+        const start = noteInput.selectionStart;
+        const end = noteInput.selectionEnd;
+        if (start > 0 || end > 0) {
+            if (start !== end) {
+                const newValue = noteInput.value.substring(0, start) + noteInput.value.substring(end);
+                noteInput.value = newValue;
+                noteInput.setSelectionRange(start, start);
+            } else {
+                const newValue = noteInput.value.substring(0, start - 1) + noteInput.value.substring(start);
+                noteInput.value = newValue;
+                noteInput.setSelectionRange(start - 1, start - 1);
+            }
+            noteInput.focus();
+        }
+    }
+}
+
 // Clear and save watch time note
 async function clearAndSaveNote() {
     const noteInput = document.getElementById('watchTimeNote');
