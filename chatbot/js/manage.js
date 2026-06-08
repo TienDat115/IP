@@ -81,9 +81,9 @@ function renderWebhookList() {
 						</div>
 					</div>
 				</td>
-				<td class="d-none d-md-table-cell">
+				<td class="d-none d-md-table-cell" style="max-width: 0;">
 					<div class="d-flex align-items-center gap-1">
-						<code class="small text-truncate" style="max-width: 250px;">${displayUrl}</code>
+						<code class="small text-truncate" style="min-width: 0;">${displayUrl}</code>
 						<button class="btn btn-sm btn-outline-secondary" onclick="copyUrl('${wh.docId}')" title="Sao chép URL">
 							<i class="fas fa-copy"></i>
 						</button>

@@ -67,7 +67,7 @@ function renderBotList() {
 	}
 	let html = "";
 	for (const bot of filtered) {
-		const displayToken = bot.docId ? bot.docId.substring(0, 20) + "..." : "";
+		const displayToken = bot.docId || "";
 		const isVisible = bot.visible !== false;
 		const visibleBtn = isVisible
 			? `<button class="btn btn-sm btn-outline-success" onclick="toggleBotVisible('${bot.docId}', false)" title="Tắt hiển thị"><i class="fas fa-eye"></i></button>`
@@ -77,7 +77,7 @@ function renderBotList() {
 				<td>
 					<div class="d-flex flex-column">
 						<div><strong>${bot.name || "Không tên"}</strong></div>
-						<span class="d-md-none small text-muted text-truncate" style="max-width: 200px;">${displayToken}</span>
+						<span class="d-md-none small text-muted">${displayToken}</span>
 						<div class="d-md-none mt-1 d-flex gap-1 flex-wrap">
 							${visibleBtn}
 							<button class="btn btn-outline-primary btn-sm" onclick="editBot('${bot.docId}')" title="Sửa"><i class="fas fa-edit"></i></button>
@@ -86,9 +86,9 @@ function renderBotList() {
 						</div>
 					</div>
 				</td>
-				<td class="d-none d-md-table-cell">
+				<td class="d-none d-md-table-cell" style="max-width: 0;">
 					<div class="d-flex align-items-center gap-1">
-						<code class="small text-truncate" style="max-width: 250px;">${displayToken}</code>
+						<code class="small">${displayToken}</code>
 						<button class="btn btn-sm btn-outline-secondary" onclick="copyToken('${bot.docId}')" title="Sao chép Token">
 							<i class="fas fa-copy"></i>
 						</button>
@@ -286,7 +286,7 @@ function renderChatList() {
 				<td>
 					<div class="d-flex flex-column">
 						<div><strong>${chat.name || "Không tên"}</strong></div>
-						<span class="d-md-none small text-muted text-truncate" style="max-width: 200px;">${displayChatId}</span>
+						<span class="d-md-none small text-muted">${displayChatId}</span>
 						<div class="d-md-none mt-1 d-flex gap-1 flex-wrap">
 							${visibleBtn}
 							<button class="btn btn-outline-primary btn-sm" onclick="editChat('${chat.docId}')" title="Sửa"><i class="fas fa-edit"></i></button>
@@ -295,9 +295,9 @@ function renderChatList() {
 						</div>
 					</div>
 				</td>
-				<td class="d-none d-md-table-cell">
+				<td class="d-none d-md-table-cell" style="max-width: 0;">
 					<div class="d-flex align-items-center gap-1">
-						<code class="small" style="max-width: 250px;">${displayChatId}</code>
+						<code class="small">${displayChatId}</code>
 						<button class="btn btn-sm btn-outline-secondary" onclick="copyChatId('${chat.docId}')" title="Sao chép Chat ID">
 							<i class="fas fa-copy"></i>
 						</button>

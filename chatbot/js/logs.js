@@ -103,7 +103,7 @@ function renderLogsTable() {
 			<td class="d-none d-sm-table-cell">${log.webhookName || "Không có"}</td>
 			<td onclick="viewLogDetail('${log.id}')">
 				<div class="small fw-bold text-truncate">${log.message}</div>
-				${log.text ? `<div class="small text-muted text-truncate">${log.text.substring(0, 80)}${log.text.length > 80 ? "..." : ""}</div>` : '<div class="small text-muted fst-italic">Không có nội dung</div>'}
+				${log.text ? `<div class="small text-muted text-break">${log.text.replace(/\n/g, "<br>")}</div>` : '<div class="small text-muted fst-italic">Không có nội dung</div>'}
 			</td>
 			<td class="text-center">
 				<button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteLog('${log.id}')" title="Xóa log này">
