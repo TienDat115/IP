@@ -184,6 +184,24 @@ async function loadMovieDetail(slug) {
         
     } catch (error) {
         console.error('Error loading movie details:', error);
+        
+        const prevSource = localStorage.getItem('previousMovieSource');
+        localStorage.removeItem('previousMovieSource');
+        
+        if (prevSource && prevSource !== currentSourceKey && SOURCES[prevSource]) {
+            localStorage.setItem('movieSource', prevSource);
+            
+            Swal.fire({
+                icon: 'warning',
+                title: 'Không thể chuyển nguồn',
+                text: `Nguồn ${SOURCES[currentSourceKey]?.name || 'hiện tại'} không có phim này. Đã chuyển về nguồn ${SOURCES[prevSource]?.name || 'cũ'}.`,
+                confirmButtonText: 'OK',
+                allowOutsideClick: false,
+            }).then(() => {
+                window.location.reload();
+            });
+            return;
+        }
         showError('Không thể tải thông tin phim. Vui lòng thử lại.');
         hideLoading();
     }

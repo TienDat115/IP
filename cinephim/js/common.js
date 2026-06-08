@@ -47,6 +47,7 @@ let API_BASE = currentSource.base;
 // Function to switch source
 function setSource(sourceKey) {
     if (SOURCES[sourceKey]) {
+        localStorage.setItem('previousMovieSource', currentSourceKey);
         localStorage.setItem('movieSource', sourceKey);
         
         // If on movie detail page, remove episode/server params so it loads history of the new source
