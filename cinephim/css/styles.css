@@ -543,3 +543,45 @@ body:not(.dark) #userDropdown .hover\:bg-gray-600:hover {
 		transition: transform 0.2s ease;
 	}
 }
+
+/* Cinema Mode */
+body.cinema-mode {
+	overflow: hidden !important;
+	background: #000 !important;
+}
+
+body.cinema-mode [data-cinema-hide=true] {
+	display: none !important;
+}
+
+body.cinema-mode #cinemaModeContainer {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100vw !important;
+	height: 100vh !important;
+	z-index: 9999 !important;
+	background: #000 !important;
+	border-radius: 0 !important;
+	overflow: hidden !important;
+}
+
+body.cinema-mode #cinemaModeContainer .relative {
+	padding-bottom: 0 !important;
+	height: 100vh !important;
+	width: 100vw !important;
+}
+
+body.cinema-mode #cinemaModeContainer iframe {
+	width: 100vw !important;
+	height: 100vh !important;
+	object-fit: contain;
+}
+
+body.cinema-mode #cinemaModeToggle {
+	display: none !important;
+}
+
+body.cinema-mode #exitCinemaBtn {
+	display: flex !important;
+}

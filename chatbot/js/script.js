@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById("userEmail").textContent = user.email;
 			// Tải dữ liệu sau khi đăng nhập
 			loadWebhooks();
-			loadLogs();
 			loadRecentWebhooks();
 		} else {
 			// Chưa đăng nhập, chuyển hướng về trang đăng nhập
@@ -357,115 +356,11 @@ async function getWebhookUrls() {
 	}
 }
 
-// Biến toàn cục cho phân trang
-let currentLogIndex = 0;
-let allLogs = [];
 
-// Hàm tải log từ Firebase
-async function loadLogs() {
-	try {
-		const logArea = document.getElementById("logArea");
-		logArea.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
-
-		const logsRef = db.collection("logs").orderBy("timestamp", "desc").limit(50);
-		const querySnapshot = await logsRef.get();
-
-		allLogs = [];
-		querySnapshot.forEach((doc) => {
-			const logData = doc.data();
-			logData.id = doc.id;
-			allLogs.push(logData);
-		});
-
-		if (allLogs.length === 0) {
-			logArea.innerHTML = '<div class="text-muted text-center py-3">Không có dữ liệu nhật ký.</div>';
-		} else {
-			currentLogIndex = 0;
-			displayCurrentLog();
-		}
-	} catch (error) {
-		console.error("Lỗi khi tải log:", error);
-		document.getElementById("logArea").innerHTML = '<div class="alert alert-danger">Đã xảy ra lỗi khi tải nhật ký: ' + error.message + "</div>";
-	}
-}
-
-// Hiển thị log hiện tại
-function displayCurrentLog() {
-	if (allLogs.length === 0) return;
-
-	const logArea = document.getElementById("logArea");
-	const data = allLogs[currentLogIndex];
-
-	// Chuyển đổi timestamp từ Firestore thành string dễ đọc
-	const formatDate = (timestamp) => {
-		let date;
-		if (timestamp && typeof timestamp.toDate === 'function') {
-			// Trường hợp timestamp là đối tượng Firestore Timestamp
-			date = timestamp.toDate();
-		} else if (timestamp instanceof Date) {
-			// Trường hợp timestamp đã là Date object
-			date = timestamp;
-		} else if (typeof timestamp === 'number') {
-			// Trường hợp timestamp là số (timestamp Unix)
-			date = new Date(timestamp);
-		} else {
-			// Trường hợp không xác định, sử dụng Date.now()
-			date = new Date();
-		}
-		return date.toLocaleString('vi-VN', {
-			hour: '2-digit',
-			minute: '2-digit',
-			second: '2-digit',
-			day: '2-digit',
-			month: '2-digit',
-			month: '2-digit',
-			year: 'numeric',
-			hour12: false
-		});
-	};
-
-	let logHTML = `
-				<div class="log-item ${data.isError ? "text-danger" : ""}">
-					<div class="d-flex justify-content-between align-items-center mb-2">
-						<span><strong>${data.isError ? "❌ Lỗi: " : ""}${data.message}</strong></span>
-						<span class="text-muted small">${formatDate(data.timestamp)}</span>
-					</div>
-					<div class="log-content">
-						<div class="log-field"><strong>Webhook:</strong> ${data.webhookName || "Không có"}</div>
-						${data.text ? `<div class="log-field"><strong>Nội dung:</strong><br>${data.text.replace(/\n/g, "<br>")}</div>` : ""}
-					</div>
-				</div>
-			`;
-
-	logArea.innerHTML = logHTML;
-
-	// Cập nhật trạng thái nút điều hướng
-	document.getElementById("prevLog").disabled = currentLogIndex === 0;
-	document.getElementById("nextLog").disabled = currentLogIndex === allLogs.length - 1;
-
-	// Cập nhật thông tin phân trang
-	document.getElementById("logPaginationInfo").textContent = `${currentLogIndex + 1} / ${allLogs.length}`;
-}
-
-// Thêm sự kiện cho nút điều hướng
-document.addEventListener("DOMContentLoaded", function () {
-	document.getElementById("prevLog").addEventListener("click", () => {
-		if (currentLogIndex > 0) {
-			currentLogIndex--;
-			displayCurrentLog();
-		}
-	});
-
-	document.getElementById("nextLog").addEventListener("click", () => {
-		if (currentLogIndex < allLogs.length - 1) {
-			currentLogIndex++;
-			displayCurrentLog();
-		}
-	});
-});
 
 // Hàm thêm log vào Firebase
 async function addLogToFirebase(message, text, webhookName, webhookUrl, isError = false) {
+	if (webhookName === "TEST") return;
 	try {
 		const timestamp = firebase.firestore.Timestamp.now();
 		const logData = {
@@ -484,47 +379,7 @@ async function addLogToFirebase(message, text, webhookName, webhookUrl, isError 
 	}
 }
 
-// Hàm thêm log vào khung nhật ký
-function addLog(message, text, webhookName, webhookUrl, isError = false) {
-	// Nếu là webhook TEST thì chỉ hiển thị không lưu vào Firebase
-	if (webhookName === "TEST") {
-		const newLog = {
-			message: message,
-			text: text,
-			webhookName: webhookName,
-			webhookUrl: webhookUrl,
-			timestamp: new Date(), // Sử dụng timestamp thông thường
-			isError: isError,
-			user: auth.currentUser?.email || "unknown"
-		};
-		allLogs.unshift(newLog);
-		currentLogIndex = 0;
-		displayCurrentLog();
-		return;
-	}
 
-	// Sử dụng timestamp từ Firestore
-	const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-
-	// Tạo đối tượng log mới
-	const newLog = {
-		message: message,
-		text: text,
-		webhookName: webhookName,
-		webhookUrl: webhookUrl,
-		timestamp: timestamp,
-		isError: isError,
-		user: auth.currentUser?.email || "unknown"
-	};
-
-	// Lưu vào Firebase và hiển thị ngay
-	addLogToFirebase(message, text, webhookName, webhookUrl, isError)
-		.then(() => {
-			allLogs.unshift(newLog);
-			currentLogIndex = 0;
-			displayCurrentLog();
-		});
-}
 
 // Chèn văn bản vào textarea
 function insertText(before, after, textareaId = "messageText") {
@@ -616,7 +471,7 @@ async function sendMessage() {
 			if (response.ok) {
 				const sentFilesCount = files.length;
 				const messageText = message ? evaluateExpressions(message) : "";
-				addLog(`✅ Đã gửi tin nhắn với ${sentFilesCount} file thành công!`, messageText, webhookName, webhookUrl);
+				addLogToFirebase(`✅ Đã gửi tin nhắn với ${sentFilesCount} file thành công!`, messageText, webhookName, webhookUrl);
 				addRecentWebhook(selectedWebhookId, webhookName);
 
 				await Swal.fire({
@@ -710,7 +565,7 @@ async function sendMessage() {
 				}
 			}
 
-			addLog(`✅ Đã gửi tin nhắn thành công!`, evaluatedMessage, webhookName, webhookUrl);
+			addLogToFirebase(`✅ Đã gửi tin nhắn thành công!`, evaluatedMessage, webhookName, webhookUrl);
 			addRecentWebhook(selectedWebhookId, webhookName);
 
 			await Swal.fire({
@@ -725,7 +580,7 @@ async function sendMessage() {
 
 	} catch (error) {
 		console.error("Lỗi khi gửi tin nhắn:", error);
-		addLog(`❌ Lỗi khi gửi tin nhắn: ${error.message}`, message, webhookName, webhookUrl, true);
+		addLogToFirebase(`❌ Lỗi khi gửi tin nhắn: ${error.message}`, message, webhookName, webhookUrl, true);
 
 		Swal.fire({
 			icon: "error",
@@ -873,7 +728,7 @@ async function sendEmbedMessage() {
 		});
 
 		if (response.ok) {
-			addLog("✅ Đã gửi tin nhúng thành công!", "", webhookName, webhookUrl);
+			addLogToFirebase("✅ Đã gửi tin nhúng thành công!", "", webhookName, webhookUrl);
 			addRecentWebhook(selectedWebhookId, webhookName);
 			// Xóa form
 			document.getElementById("embedTitle").value = "";
@@ -893,7 +748,7 @@ async function sendEmbedMessage() {
 			});
 		} else {
 			const error = await response.text();
-			addLog(`❌ Lỗi khi gửi tin nhúng: ${error}`, "", webhookName, webhookUrl, true);
+			addLogToFirebase(`❌ Lỗi khi gửi tin nhúng: ${error}`, "", webhookName, webhookUrl, true);
 
 			await Swal.fire({
 				icon: "error",
@@ -902,7 +757,7 @@ async function sendEmbedMessage() {
 			});
 		}
 	} catch (error) {
-		addLog(`❌ Lỗi kết nối: ${error.message}`, "", webhookName, webhookUrl, true);
+		addLogToFirebase(`❌ Lỗi kết nối: ${error.message}`, "", webhookName, webhookUrl, true);
 
 		await Swal.fire({
 			icon: "error",
@@ -1273,188 +1128,6 @@ function showSuccessMessage(message) {
 		showConfirmButton: true,
 		confirmButtonText: "OK",
 	});
-}
-
-// Hàm tải log
-async function downloadLogs() {
-	try {
-		if (!auth.currentUser) {
-			Swal.fire({
-				icon: "error",
-				title: "Lỗi!",
-				text: "Bạn cần đăng nhập để tải log",
-				confirmButtonText: "OK",
-			});
-			return;
-		}
-
-		// Lấy tất cả log của người dùng
-		const logsRef = db.collection("logs");
-		const querySnapshot = await logsRef.where("user", "==", auth.currentUser.email).orderBy("timestamp", "desc").get();
-
-		// Chuẩn bị dữ liệu
-		let logContent = "";
-		querySnapshot.forEach((doc) => {
-			const data = doc.data();
-			const timestamp = new Date(data.timestamp.seconds * 1000 + data.timestamp.nanoseconds / 1000000);
-			logContent += `========================\n`;
-			logContent += `Thời gian: ${timestamp.toLocaleString('vi-VN', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            })}\n`;
-			logContent += `Tin nhắn: ${data.message}\n`;
-			logContent += `Nội dung: ${data.text || ""}\n`;
-			logContent += `Webhook: ${data.webhookName}\n`;
-			logContent += `URL: ${data.webhookUrl}\n`;
-			logContent += `Trạng thái: ${data.isError ? "Lỗi" : "Thành công"}\n`;
-		});
-
-		// Tạo file
-		const blob = new Blob([logContent], { type: "text/plain;charset=utf-8;" });
-		const url = window.URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.setAttribute("href", url);
-		// Định dạng tên file bao gồm ngày giờ phút giây
-		const now = new Date();
-		const formattedDate = now.toISOString().replace(/[:.]/g, "-");
-		a.setAttribute("download", `logs_${formattedDate}.txt`);
-		a.click();
-		window.URL.revokeObjectURL(url);
-	} catch (error) {
-		console.error("Lỗi khi tải log:", error);
-		Swal.fire({
-			icon: "error",
-			title: "Lỗi!",
-			text: error.message,
-			confirmButtonText: "OK",
-		});
-	}
-}
-
-// Hàm xóa log
-async function deleteLogs() {
-	const { value: confirmDelete } = await Swal.fire({
-		title: "Xác nhận xóa",
-		text: "Bạn có chắc chắn muốn xóa tất cả log?",
-		icon: "warning",
-		showCancelButton: true,
-		confirmButtonText: "Xóa",
-		cancelButtonText: "Hủy",
-	});
-
-	if (confirmDelete) {
-		try {
-			// Xóa tất cả log trong Firebase
-			const batch = db.batch();
-			const querySnapshot = await db.collection("logs").get();
-
-			querySnapshot.forEach((doc) => {
-				batch.delete(doc.ref);
-			});
-
-			await batch.commit();
-
-			// Xóa log khỏi giao diện
-			const logArea = document.getElementById("logArea");
-			if (logArea) {
-				logArea.innerHTML = "<div>Hệ thống đã sẵn sàng. Chọn các tùy chọn và gửi tin nhắn.</div>";
-			}
-
-			// Hiển thị thông báo thành công
-			Swal.fire({
-				title: "Thành công!",
-				text: "Tất cả log đã được xóa.",
-				icon: "success",
-			});
-
-			// Load lại log sau 1 giây để đảm bảo cập nhật
-			setTimeout(() => {
-				loadLogs();
-			}, 1000);
-		} catch (error) {
-			console.error("Lỗi khi xóa log:", error);
-			Swal.fire({
-				icon: "error",
-				title: "Lỗi!",
-				text: error.message,
-			});
-		}
-	}
-}
-
-// Hàm xóa log hiện tại
-async function deleteCurrentLog() {
-	if (allLogs.length === 0) {
-		Swal.fire({
-			title: "Không có log nào để xóa",
-			text: "Không tìm thấy log hiện tại để xóa.",
-			icon: "info",
-		});
-		return;
-	}
-
-	const currentLog = allLogs[currentLogIndex];
-	if (!currentLog || !currentLog.id) {
-		Swal.fire({
-			title: "Lỗi",
-			text: "Không tìm thấy thông tin log hiện tại.",
-			icon: "error",
-		});
-		return;
-	}
-
-	try {
-		const result = await Swal.fire({
-			title: "Xác nhận xóa",
-			text: "Bạn có chắc chắn muốn xóa log hiện tại?",
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#d33",
-			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Có, xóa ngay!",
-			cancelButtonText: "Hủy bỏ",
-		});
-
-		if (result.isConfirmed) {
-			// Xóa log hiện tại khỏi Firestore
-			await db.collection("logs").doc(currentLog.id).delete();
-
-			// Xóa log khỏi mảng allLogs
-			allLogs.splice(currentLogIndex, 1);
-
-			// Nếu đây là log cuối cùng, giảm currentLogIndex
-			if (currentLogIndex >= allLogs.length && allLogs.length > 0) {
-				currentLogIndex = allLogs.length - 1;
-			}
-
-			// Cập nhật hiển thị
-			if (allLogs.length === 0) {
-				document.getElementById("logArea").innerHTML = "<div>Không còn log nào.</div>";
-				document.getElementById("logPaginationInfo").textContent = "0/0";
-				document.getElementById("prevLog").disabled = true;
-				document.getElementById("nextLog").disabled = true;
-			} else {
-				displayCurrentLog();
-			}
-
-			Swal.fire({
-				title: "Đã xóa!",
-				text: "Log hiện tại đã được xóa thành công.",
-				icon: "success",
-			});
-		}
-	} catch (error) {
-		console.error("Lỗi khi xóa log hiện tại:", error);
-		Swal.fire({
-			icon: "error",
-			title: "Lỗi!",
-			text: error.message,
-		});
-	}
 }
 
 // Hàm xem trước ảnh đại diện

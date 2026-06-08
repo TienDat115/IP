@@ -97,6 +97,10 @@
 										<option value="">-- Chọn mẫu tin nhắn --</option>
 									</select>
 									<div class="d-flex flex-nowrap gap-2">
+										<a href="SendDiscordMessageLogs.html" class="btn btn-sm btn-outline-info" title="Xem nhật ký hoạt động">
+											<i class="fas fa-history"></i>
+											<span class="d-none d-sm-inline ms-1">Nhật ký</span>
+										</a>
 										<button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadDraft()" title="Tải bản nháp gần nhất">
 											<i class="fas fa-upload"></i>
 											<span class="d-none d-sm-inline ms-1">Tải bản nháp</span>
@@ -179,29 +183,6 @@
 								<button class="btn btn-primary" onclick="scheduleMessage('embed')">Hẹn giờ</button>
 							</div>
 						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="card">
-				<div class="card-header">
-					<span>Nhật Ký Hoạt Động</span>
-				</div>
-				<div id="logContainer" class="card-body">
-					<!-- Thêm nút tải log và xóa log -->
-					<button class="btn btn-primary download-btn" onclick="downloadLogs()"><i class="fas fa-download"></i> Tải log</button>
-					<button class="btn btn-warning download-btn" onclick="deleteCurrentLog()"><i class="fas fa-trash-alt"></i> Xóa log hiện tại</button>
-					<button class="btn btn-danger download-btn" onclick="deleteLogs()"><i class="fas fa-trash"></i> Xóa tất cả log</button>
-					<div id="logArea" class="bg-light p-3" style="min-height: 100px; max-height: 400px; overflow-y: auto; border-radius: 5px; font-family: monospace">
-						<div>Hệ thống đã sẵn sàng. Chọn các tùy chọn và gửi tin nhắn.</div>
-					</div>
-					<!-- Thêm nút điều hướng và thông tin phân trang -->
-					<div class="d-flex justify-content-between align-items-center mt-3">
-						<div>
-							<button id="prevLog" class="btn btn-secondary" disabled><i class="fas fa-chevron-left"></i> Trước</button>
-							<button id="nextLog" class="btn btn-secondary" disabled>Sau <i class="fas fa-chevron-right"></i></button>
-						</div>
-						<div id="logPaginationInfo" class="small text-muted"></div>
 					</div>
 				</div>
 			</div>

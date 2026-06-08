@@ -231,7 +231,7 @@
 		</header>
 
 		<!-- Breadcrumb -->
-		<div class="container mx-auto px-4 py-4">
+		<div id="breadcrumbSection" class="container mx-auto px-4 py-4">
 			<nav class="flex items-center space-x-2 text-sm text-gray-400">
 				<a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
 				<i class="fas fa-chevron-right text-xs"></i>
@@ -253,7 +253,7 @@
 			<div id="movieContent" class="hidden">
 				<div class="space-y-6">
 					<!-- Movie Hero: Poster + Info -->
-					<div class="bg-gray-800 rounded-lg overflow-hidden lg:flex">
+					<div id="movieHeroSection" class="bg-gray-800 rounded-lg overflow-hidden lg:flex">
 						<!-- Poster Column -->
 						<div class="lg:w-1/4 lg:relative">
 							<img id="moviePoster" src="https://via.placeholder.com/400x600/374151/ffffff?text=Loading..." alt="Movie Poster" loading="eager" decoding="async" fetchpriority="high" class="w-full lg:absolute lg:inset-0 lg:h-full lg:object-contain" />
@@ -360,7 +360,12 @@
 					</div>
 
 					<!-- Video Player -->
-					<div class="bg-gray-800 rounded-lg overflow-hidden">
+					<div id="cinemaModeContainer" class="bg-gray-800 rounded-lg overflow-hidden relative group">
+						<!-- Cinema Mode Toggle Button -->
+						<button id="cinemaModeToggle" onclick="toggleCinemaMode()" class="absolute top-2 right-2 z-10 bg-black/60 hover:bg-black/80 text-white px-2.5 py-1.5 rounded-lg text-sm transition opacity-0 group-hover:opacity-100 flex items-center gap-1.5" title="Chế độ rạp phim (Phím tắt: F)">
+							<i class="fas fa-expand"></i>
+							<span class="hidden sm:inline">Rạp phim</span>
+						</button>
 						<div class="relative" style="padding-bottom: 56.25%">
 							<iframe id="videoPlayer" class="absolute top-0 left-0 w-full h-full" src="about:blank" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" scrolling="no"></iframe>
 						</div>
@@ -404,7 +409,7 @@
 					</div>
 
 					<!-- Movie Description -->
-					<div class="bg-gray-800 rounded-lg p-6">
+					<div id="movieDescriptionSection" class="bg-gray-800 rounded-lg p-6">
 						<h3 class="text-xl font-semibold mb-4">Nội dung phim</h3>
 						<div id="movieDescriptionContainer">
 							<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
@@ -413,6 +418,12 @@
 				</div>
 			</div>
 		</main>
+
+		<!-- Exit Cinema Mode Button -->
+		<button id="exitCinemaBtn" onclick="toggleCinemaMode()" class="fixed top-4 right-4 z-[10000] bg-black/60 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-sm transition hidden items-center gap-2">
+			<i class="fas fa-compress"></i>
+			Thoát (ESC)
+		</button>
 
 		<!-- Footer -->
 		<footer class="bg-gray-800 py-8 mt-16">
@@ -560,6 +571,23 @@
 				syncThemeIcons();
 				syncLoginIcons();
 			}, 100);
+
+			// Keyboard shortcut for cinema mode
+			document.addEventListener('keydown', function (e) {
+				if (e.key === 'f' || e.key === 'F') {
+					// Don't trigger if typing in an input
+					if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+						toggleCinemaMode();
+						e.preventDefault();
+					}
+				}
+				if (e.key === 'Escape') {
+					if (document.body.classList.contains('cinema-mode')) {
+						toggleCinemaMode();
+						e.preventDefault();
+					}
+				}
+			});
 		</script>
 	</body>
 </html>

@@ -1470,6 +1470,33 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
     }
 }
 
+// Toggle cinema mode
+function toggleCinemaMode() {
+    const isActive = document.body.classList.toggle('cinema-mode');
+
+    if (isActive) {
+        const hideSelectors = [
+            'header',
+            'footer',
+            '#breadcrumbSection',
+            '#movieHeroSection',
+            '#episodesSection',
+            '#movieDescriptionSection',
+        ];
+
+        hideSelectors.forEach(selector => {
+            const el = document.querySelector(selector);
+            if (el) el.dataset.cinemaHide = 'true';
+        });
+
+        window.scrollTo(0, 0);
+    } else {
+        document.querySelectorAll('[data-cinema-hide="true"]').forEach(el => {
+            delete el.dataset.cinemaHide;
+        });
+    }
+}
+
 // Handle search
 setupSearchListeners();
 
