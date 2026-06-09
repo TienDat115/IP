@@ -574,8 +574,14 @@ function selectServer(serverIndex) {
         selectedButton.classList.remove('bg-gray-700', 'hover:bg-gray-600');
     }
     
+    // Reset to page 1 on server change
+    currentEpisodePage = 1;
+    
     // Update episodes list
     updateEpisodesListForServer(serverIndex);
+    
+    // Update current server index after updating episodes
+    currentServerIndex = serverIndex;
     
     // Update URL with server parameter
     updateUrlWithServer(serverIndex);
