@@ -52,6 +52,7 @@
 					padding: 0 0.5rem;
 				}
 			}
+
 		</style>
 
 		<!-- Structured Data for SEO -->
@@ -253,14 +254,14 @@
 			<div id="movieContent" class="hidden">
 				<div class="space-y-6">
 					<!-- Movie Hero: Poster + Info -->
-					<div id="movieHeroSection" class="bg-gray-800 rounded-lg overflow-hidden lg:flex">
+					<div id="movieHeroSection" class="bg-gray-800 rounded-lg overflow-hidden flex flex-col sm:flex-row">
 						<!-- Poster Column -->
-						<div class="lg:w-1/4 lg:relative">
-							<img id="moviePoster" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Crect width='400' height='600' fill='%23374151'/%3E%3Ctext x='200' y='300' font-family='sans-serif' font-size='16' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3ELoading...%3C/text%3E%3C/svg%3E" alt="Movie Poster" loading="eager" decoding="async" fetchpriority="high" class="w-full lg:absolute lg:inset-0 lg:h-full lg:object-contain" />
+						<div class="sm:w-1/4 sm:relative w-full">
+							<img id="moviePoster" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Crect width='400' height='600' fill='%23374151'/%3E%3Ctext x='200' y='300' font-family='sans-serif' font-size='16' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3ELoading...%3C/text%3E%3C/svg%3E" alt="Movie Poster" loading="eager" decoding="async" fetchpriority="high" class="w-full sm:absolute sm:inset-0 sm:h-full sm:object-contain max-sm:max-h-[35vh] max-sm:object-contain max-sm:bg-gray-900" />
 						</div>
 
 						<!-- Info Column -->
-						<div class="lg:w-3/4 p-6">
+						<div class="sm:flex-1 p-6">
 							<h1 id="movieTitle" class="text-2xl font-bold mb-4">Đang tải...</h1>
 
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
