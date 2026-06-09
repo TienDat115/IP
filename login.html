@@ -2,117 +2,320 @@
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
-		<link rel="icon" type="image/x-icon" href="https://img.icons8.com/ios/50/000000/user-male-circle.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Đăng Nhập - Gửi Tin Nhắn</title>
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<!-- Firebase SDK -->
+		<title>Đăng Nhập - Dịch Vụ Tiện Ích</title>
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-
-		<!-- Firebase configuration -->
 		<script src="js/firebase-config.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 		<style>
-			/* Your existing styles remain unchanged */
+			*, *::before, *::after {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			:root {
+				--primary: #667eea;
+				--primary-dark: #5a67d8;
+				--secondary: #764ba2;
+				--bg: #0f0f1a;
+				--surface: #1a1a2e;
+				--surface-hover: #232340;
+				--text: #e2e8f0;
+				--text-muted: #94a3b8;
+				--border: #2d2d4a;
+				--shadow: 0 4px 6px -1px rgba(0,0,0,.3), 0 2px 4px -2px rgba(0,0,0,.3);
+				--shadow-lg: 0 25px 50px -12px rgba(0,0,0,.5);
+				--radius: 16px;
+				--radius-sm: 10px;
+			}
+
 			body {
-				background-color: #f8f9fa;
-				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+				background: var(--bg);
+				color: var(--text);
+				min-height: 100vh;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				min-height: 100vh;
-				margin: 0;
 				padding: 20px;
+				position: relative;
+				overflow: hidden;
 			}
-			.container {
-				max-width: 400px;
+
+			body::before {
+				content: "";
+				position: fixed;
+				top: -50%;
+				left: -50%;
+				width: 200%;
+				height: 200%;
+				background: radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, .08) 0%, transparent 50%),
+							radial-gradient(ellipse at 80% 50%, rgba(118, 75, 162, .08) 0%, transparent 50%);
+				pointer-events: none;
+				z-index: 0;
 			}
-			.card {
-				border-radius: 10px;
-				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-				border: none;
+
+			::-webkit-scrollbar { width: 6px; }
+			::-webkit-scrollbar-track { background: var(--bg); }
+			::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+			.login-container {
+				position: relative;
+				z-index: 1;
+				width: 100%;
+				max-width: 420px;
+				animation: fadeUp .6s ease;
 			}
-			.card-header {
-				background-color: #0088cc;
-				color: white;
-				font-weight: bold;
-				padding: 12px 20px;
-				border-radius: 10px 10px 0 0;
+
+			.login-card {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow-lg);
+				overflow: hidden;
+			}
+
+			.login-header {
+				padding: 36px 32px 0;
 				text-align: center;
 			}
-			.card-body {
-				padding: 30px;
+
+			.login-header .logo-icon {
+				width: 56px;
+				height: 56px;
+				border-radius: var(--radius-sm);
+				background: linear-gradient(135deg, var(--primary), var(--secondary));
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 26px;
+				color: #fff;
+				margin-bottom: 16px;
 			}
-			.btn-primary {
-				background-color: #0088cc;
-				border: none;
-				padding: 10px;
-				width: 100%;
-				font-weight: 500;
+
+			.login-header h1 {
+				font-size: 22px;
+				font-weight: 700;
+				margin-bottom: 6px;
 			}
-			.btn-primary:hover {
-				background-color: #006699;
+
+			.login-header p {
+				color: var(--text-muted);
+				font-size: 14px;
 			}
-			.form-label {
-				font-weight: 500;
+
+			.login-body {
+				padding: 28px 32px 32px;
+			}
+
+			.form-group {
+				margin-bottom: 20px;
+			}
+
+			.form-group label {
+				display: block;
+				font-size: 13px;
+				font-weight: 600;
 				margin-bottom: 8px;
+				color: var(--text);
 			}
-			.form-control:focus {
-				border-color: #86b7fe;
-				box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+
+			.input-wrapper {
+				position: relative;
+				display: flex;
+				align-items: center;
+				background: var(--bg);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-sm);
+				transition: all .3s;
 			}
-			.text-error {
-				color: #721c24;
-				font-size: 0.9em;
-				margin-top: 5px;
+
+			.input-wrapper:focus-within {
+				border-color: var(--primary);
+				box-shadow: 0 0 0 3px rgba(102, 126, 234, .15);
+			}
+
+			.input-wrapper i {
+				position: absolute;
+				left: 14px;
+				color: var(--text-muted);
+				font-size: 14px;
+				pointer-events: none;
+			}
+
+			.input-wrapper input {
+				width: 100%;
+				padding: 12px 14px 12px 42px;
+				background: transparent;
+				border: none;
+				color: var(--text);
+				font-size: 14px;
+				outline: none;
+				font-family: inherit;
+			}
+
+			.input-wrapper input::placeholder { color: var(--text-muted); }
+			.input-wrapper input:-webkit-autofill,
+			.input-wrapper input:-webkit-autofill:hover,
+			.input-wrapper input:-webkit-autofill:focus {
+				-webkit-text-fill-color: var(--text);
+				-webkit-box-shadow: 0 0 0px 1000px var(--bg) inset;
+				transition: background-color 5000s ease-in-out 0s;
+			}
+
+			.error-text {
+				color: #f87171;
+				font-size: 13px;
+				margin-top: 6px;
+				min-height: 20px;
+			}
+
+			.btn-login {
+				width: 100%;
+				padding: 13px;
+				background: linear-gradient(135deg, var(--primary), var(--secondary));
+				border: none;
+				border-radius: var(--radius-sm);
+				color: #fff;
+				font-size: 15px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all .3s;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				font-family: inherit;
+			}
+
+			.btn-login:hover:not(:disabled) {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(102, 126, 234, .35);
+			}
+
+			.btn-login:active:not(:disabled) {
+				transform: translateY(0);
+			}
+
+			.btn-login:disabled {
+				opacity: .7;
+				cursor: not-allowed;
+			}
+
+			.spinner {
+				display: none;
+				width: 18px;
+				height: 18px;
+				border: 2px solid rgba(255,255,255,.3);
+				border-top-color: #fff;
+				border-radius: 50%;
+				animation: spin .6s linear infinite;
+			}
+
+			.spinner.show { display: inline-block; }
+
+			@keyframes spin {
+				to { transform: rotate(360deg); }
+			}
+
+			.login-footer {
+				text-align: center;
+				margin-top: 20px;
+				font-size: 13px;
+				color: var(--text-muted);
+			}
+
+			.login-footer a {
+				color: var(--primary);
+				text-decoration: none;
+				font-weight: 500;
+			}
+
+			.login-footer a:hover {
+				text-decoration: underline;
+			}
+
+			@keyframes fadeUp {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			@media (max-width: 480px) {
+				.login-header { padding: 28px 24px 0; }
+				.login-body { padding: 24px; }
+				.login-header .logo-icon { width: 48px; height: 48px; font-size: 22px; }
+				.login-header h1 { font-size: 20px; }
 			}
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<div class="card">
-				<div class="card-header">
-					<h4 class="mb-0">Đăng Nhập</h4>
+		<div class="login-container">
+			<div class="login-card">
+				<div class="login-header">
+					<div class="logo-icon">
+						<i class="fas fa-cube"></i>
+					</div>
+					<h1>Đăng Nhập</h1>
+					<p>Đăng nhập để sử dụng các dịch vụ tiện ích</p>
 				</div>
-				<div class="card-body">
+				<div class="login-body">
 					<form id="loginForm">
-						<div class="mb-3">
-							<label for="email" class="form-label">Email</label>
-							<input type="email" class="form-control" id="email" placeholder="Nhập email của bạn" required />
+						<div class="form-group">
+							<label for="email">Email</label>
+							<div class="input-wrapper">
+								<i class="fas fa-envelope"></i>
+								<input type="email" id="email" placeholder="Nhập email của bạn" required autocomplete="email" />
+							</div>
 						</div>
-						<div class="mb-3">
-							<label for="password" class="form-label">Mật khẩu</label>
-							<input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" required />
+						<div class="form-group">
+							<label for="password">Mật khẩu</label>
+							<div class="input-wrapper">
+								<i class="fas fa-lock"></i>
+								<input type="password" id="password" placeholder="Nhập mật khẩu" required autocomplete="current-password" />
+							</div>
 						</div>
-						<div id="errorMessage" class="text-error"></div>
-						<button type="submit" class="btn btn-primary mt-3">
-							<span class="spinner-border spinner-border-sm d-none" id="loginSpinner" role="status" aria-hidden="true"></span>
-							Đăng nhập
+						<div class="error-text" id="errorMessage"></div>
+						<button type="submit" class="btn-login" id="loginButton">
+							<span class="spinner" id="loginSpinner"></span>
+							<span id="loginText">Đăng nhập</span>
 						</button>
 					</form>
+					<div class="login-footer">
+						Chưa có tài khoản? <a href="#">Liên hệ quản trị viên</a>
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
-			// Initialize Firebase
 			firebase.initializeApp(firebaseConfig);
 			const auth = firebase.auth();
 
-			// Handle form submission for email/password login
 			document.getElementById("loginForm").addEventListener("submit", async function (event) {
 				event.preventDefault();
 
 				const email = document.getElementById("email").value;
 				const password = document.getElementById("password").value;
-				const loginButton = document.querySelector("#loginForm button");
+				const button = document.getElementById("loginButton");
 				const spinner = document.getElementById("loginSpinner");
+				const text = document.getElementById("loginText");
 				const errorMessage = document.getElementById("errorMessage");
 
-				loginButton.disabled = true;
-				spinner.classList.remove("d-none");
+				button.disabled = true;
+				spinner.classList.add("show");
+				text.textContent = "Đang đăng nhập...";
 				errorMessage.textContent = "";
 
 				try {
@@ -126,15 +329,16 @@
 						timer: 2000,
 						timerProgressBar: true,
 					}).then(() => {
-						window.location.href = "index.html"; // Consistent redirect
+						window.location.href = "index.html";
 					});
 				} catch (error) {
 					console.error("Lỗi đăng nhập:", error);
-					errorMessage.textContent = getFriendlyErrorMessage(error.code);
+					const msg = getFriendlyErrorMessage(error.code);
+					errorMessage.textContent = msg;
 					Swal.fire({
 						icon: "error",
 						title: "Lỗi",
-						text: getFriendlyErrorMessage(error.code),
+						text: msg,
 						toast: true,
 						position: "top-end",
 						showConfirmButton: false,
@@ -142,12 +346,12 @@
 						timerProgressBar: true,
 					});
 				} finally {
-					loginButton.disabled = false;
-					spinner.classList.add("d-none");
+					button.disabled = false;
+					spinner.classList.remove("show");
+					text.textContent = "Đăng nhập";
 				}
 			});
 
-			// Convert Firebase error codes to user-friendly messages
 			function getFriendlyErrorMessage(errorCode) {
 				switch (errorCode) {
 					case "auth/invalid-email":
@@ -159,18 +363,17 @@
 					case "auth/wrong-password":
 						return "Mật khẩu không đúng.";
 					case "auth/too-many-requests":
-						return "Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau.";
+						return "Quá nhiều lần thử. Vui lòng thử lại sau.";
 					case "auth/network-request-failed":
-						return "Lỗi kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.";
+						return "Lỗi kết nối mạng. Vui lòng thử lại.";
 					default:
 						return "Đã xảy ra lỗi. Vui lòng thử lại.";
 				}
 			}
 
-			// Check auth state and redirect if already logged in
 			auth.onAuthStateChanged((user) => {
 				if (user) {
-					window.location.href = "index.html"; // Consistent redirect
+					window.location.href = "index.html";
 				}
 			});
 		</script>

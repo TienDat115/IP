@@ -2,148 +2,753 @@
 <html lang="vi">
 	<head>
 		<meta charset="UTF-8" />
-		<link rel="icon" type="image/x-icon" href="https://img.icons8.com/ios/50/000000/user-male-circle.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Trang Chủ Dịch Vụ</title>
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<title>Dashboard - Dịch Vụ Tiện Ích</title>
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-
-		<!-- Firebase configuration -->
 		<script src="js/firebase-config.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 		<style>
+			*,
+			*::before,
+			*::after {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			:root {
+				--primary: #667eea;
+				--primary-dark: #5a67d8;
+				--secondary: #764ba2;
+				--bg: #0f0f1a;
+				--surface: #1a1a2e;
+				--surface-hover: #232340;
+				--text: #e2e8f0;
+				--text-muted: #94a3b8;
+				--border: #2d2d4a;
+				--shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+				--radius: 16px;
+				--radius-sm: 10px;
+			}
+
 			body {
-				background-color: #f8f9fa;
-				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				font-family:
+					"Inter",
+					"Segoe UI",
+					system-ui,
+					-apple-system,
+					sans-serif;
+				background: var(--bg);
+				color: var(--text);
+				min-height: 100vh;
+			}
+
+			/* Scrollbar */
+			::-webkit-scrollbar {
+				width: 6px;
+			}
+			::-webkit-scrollbar-track {
+				background: var(--bg);
+			}
+			::-webkit-scrollbar-thumb {
+				background: var(--border);
+				border-radius: 3px;
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background: #3d3d5c;
+			}
+
+			/* Navbar */
+			.navbar {
+				position: sticky;
+				top: 0;
+				z-index: 100;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 24px;
+				height: 70px;
+				background: rgba(15, 15, 26, 0.85);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-bottom: 1px solid var(--border);
+			}
+
+			.nav-left {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				flex-shrink: 0;
+			}
+
+			.logo {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 22px;
+				font-weight: 700;
+				background: linear-gradient(135deg, var(--primary), var(--secondary));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+
+			.logo i {
+				font-size: 26px;
+				background: linear-gradient(135deg, var(--primary), var(--secondary));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+
+			.nav-center {
+				flex: 1;
+				max-width: 420px;
+				margin: 0 24px;
+			}
+
+			.search-box {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-sm);
+				padding: 10px 16px;
+				transition: all 0.3s;
+			}
+
+			.search-box:focus-within {
+				border-color: var(--primary);
+				box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+			}
+
+			.search-box i {
+				color: var(--text-muted);
+				font-size: 14px;
+				flex-shrink: 0;
+			}
+
+			.search-box input {
+				flex: 1;
+				border: none;
+				background: transparent;
+				color: var(--text);
+				font-size: 14px;
+				outline: none;
+			}
+
+			.search-box input::placeholder {
+				color: var(--text-muted);
+			}
+
+			.nav-right {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				flex-shrink: 0;
+			}
+
+			.user-menu {
+				position: relative;
+			}
+
+			.user-btn {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-sm);
+				padding: 6px 12px 6px 6px;
+				cursor: pointer;
+				color: var(--text);
+				transition: all 0.3s;
+			}
+
+			.user-btn:hover {
+				background: var(--surface-hover);
+				border-color: var(--primary);
+			}
+
+			.avatar {
+				width: 34px;
+				height: 34px;
+				border-radius: 8px;
+				background: linear-gradient(135deg, var(--primary), var(--secondary));
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				min-height: 100vh;
-				margin: 0;
-				padding: 20px;
+				font-weight: 600;
+				font-size: 14px;
+				color: #fff;
+				flex-shrink: 0;
 			}
-			.container {
-				max-width: 500px;
+
+			.user-name {
+				font-size: 14px;
+				font-weight: 500;
+				white-space: nowrap;
 			}
-			.card {
-				border-radius: 10px;
-				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+			.user-btn i.fa-chevron-down {
+				font-size: 11px;
+				color: var(--text-muted);
+				transition: transform 0.3s;
+			}
+
+			.user-btn i.fa-chevron-down.open {
+				transform: rotate(180deg);
+			}
+
+			.dropdown-menu {
+				position: absolute;
+				top: calc(100% + 8px);
+				right: 0;
+				min-width: 220px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-sm);
+				box-shadow: var(--shadow-lg);
+				overflow: hidden;
+				z-index: 200;
+				opacity: 0;
+				transform: translateY(-8px);
+				pointer-events: none;
+				transition: all 0.25s ease;
+			}
+
+			.dropdown-menu.show {
+				opacity: 1;
+				transform: translateY(0);
+				pointer-events: auto;
+			}
+
+			.dropdown-header {
+				padding: 14px 16px;
+				font-size: 13px;
+				color: var(--text-muted);
+				border-bottom: 1px solid var(--border);
+			}
+
+			.dropdown-item {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				width: 100%;
+				padding: 12px 16px;
+				background: none;
 				border: none;
+				color: var(--text);
+				font-size: 14px;
+				cursor: pointer;
+				transition: background 0.2s;
+				font-family: inherit;
 			}
-			.card-header {
-				background-color: #0088cc;
-				color: white;
-				font-weight: bold;
-				padding: 12px 20px;
-				border-radius: 10px 10px 0 0;
+
+			.dropdown-item:hover {
+				background: var(--surface-hover);
+			}
+			.dropdown-item i {
+				width: 18px;
 				text-align: center;
+				color: #ef4444;
 			}
-			.card-body {
-				padding: 30px;
+			.dropdown-item:last-child {
+				border-radius: 0 0 var(--radius-sm) var(--radius-sm);
 			}
-			.btn-service {
-				background-color: #0088cc;
-				border: none;
-				padding: 12px;
-				width: 100%;
-				font-weight: 500;
-				margin-bottom: 15px;
-				color: white;
+
+			/* Main */
+			.main-content {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 32px 24px 64px;
 			}
-			.btn-service:hover {
-				background-color: #006699;
+
+			.welcome-section {
+				margin-bottom: 40px;
+				animation: fadeUp 0.6s ease;
 			}
-			.service-group {
-				padding: 15px;
-				margin-bottom: 20px;
-				background-color: #f8f9fa;
-				border-radius: 8px;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+			.welcome-section h1 {
+				font-size: 28px;
+				font-weight: 700;
+				margin-bottom: 6px;
 			}
-			.group-title {
-				color: #495057;
-				margin-bottom: 15px;
-				padding-bottom: 8px;
-				border-bottom: 2px solid #dee2e6;
+
+			.welcome-section p {
+				color: var(--text-muted);
+				font-size: 15px;
 			}
-			.btn-logout {
-				background-color: #dc3545;
-				border: none;
-				padding: 10px;
-				width: 100%;
-				font-weight: 500;
-				color: white;
+
+			/* Section */
+			.service-section {
+				margin-bottom: 36px;
+				animation: fadeUp 0.6s ease both;
 			}
-			.btn-logout:hover {
-				background-color: #c82333;
+
+			.service-section:nth-child(2) {
+				animation-delay: 0.05s;
+			}
+			.service-section:nth-child(3) {
+				animation-delay: 0.1s;
+			}
+			.service-section:nth-child(4) {
+				animation-delay: 0.15s;
+			}
+			.service-section:nth-child(5) {
+				animation-delay: 0.2s;
+			}
+			.service-section:nth-child(6) {
+				animation-delay: 0.25s;
+			}
+
+			.section-header {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				margin-bottom: 18px;
+			}
+
+			.section-icon {
+				width: 40px;
+				height: 40px;
+				border-radius: var(--radius-sm);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 18px;
+				color: #fff;
+				flex-shrink: 0;
+			}
+
+			.section-header h2 {
+				font-size: 18px;
+				font-weight: 600;
+			}
+
+			.cards-grid {
+				display: grid;
+				gap: 16px;
+			}
+
+			.service-section[data-category="chatbot"] .cards-grid {
+				grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+			}
+			.service-section[data-category="dashboard"] .cards-grid {
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+			}
+			.service-section[data-category="jxm"] .cards-grid {
+				grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+			}
+			.service-section[data-category="entertainment"] .cards-grid {
+				grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+			}
+
+			.service-card {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				padding: 18px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				text-decoration: none;
+				color: var(--text);
+				transition: all 0.3s ease;
+				cursor: pointer;
+			}
+
+			.service-card:hover {
+				transform: translateY(-4px);
+				border-color: var(--primary);
+				box-shadow: 0 12px 24px -8px rgba(102, 126, 234, 0.2);
+				background: var(--surface-hover);
+			}
+
+			.service-card .card-icon {
+				width: 50px;
+				height: 50px;
+				border-radius: var(--radius-sm);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 22px;
+				color: #fff;
+				flex-shrink: 0;
+				transition: transform 0.3s ease;
+			}
+
+			.service-card:hover .card-icon {
+				transform: scale(1.1);
+			}
+
+			.service-card .card-info h3 {
+				font-size: 14px;
+				font-weight: 600;
+				margin-bottom: 4px;
+			}
+
+			.service-card .card-info p {
+				font-size: 12px;
+				color: var(--text-muted);
+				line-height: 1.4;
+			}
+
+			/* Search no-results */
+			.no-results {
+				display: none;
+				grid-column: 1 / -1;
+				text-align: center;
+				padding: 40px 20px;
+				color: var(--text-muted);
+			}
+
+			.no-results.show {
+				display: block;
+			}
+			.no-results i {
+				font-size: 40px;
+				margin-bottom: 12px;
+				opacity: 0.5;
+			}
+			.no-results p {
+				font-size: 15px;
+			}
+
+			/* Hidden state for filter */
+			.service-section.hidden-section {
+				display: none;
+			}
+			.service-card.hidden-card {
+				display: none;
+			}
+
+			/* Animations */
+			@keyframes fadeUp {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			/* Responsive */
+			@media (max-width: 768px) {
+				.navbar {
+					padding: 0 16px;
+					height: 60px;
+				}
+
+				.nav-center {
+					margin: 0 12px;
+				}
+
+				.logo span {
+					display: none;
+				}
+
+				.user-name {
+					display: none;
+				}
+
+				.search-box {
+					padding: 8px 12px;
+				}
+
+				.main-content {
+					padding: 24px 16px 48px;
+				}
+
+				.welcome-section h1 {
+					font-size: 22px;
+				}
+
+				.service-section[data-category="chatbot"] .cards-grid,
+				.service-section[data-category="dashboard"] .cards-grid,
+				.service-section[data-category="jxm"] .cards-grid,
+				.service-section[data-category="entertainment"] .cards-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.service-card {
+					padding: 16px;
+				}
+			}
+
+			@media (min-width: 769px) and (max-width: 1024px) {
+				.service-section[data-category="dashboard"] .cards-grid {
+					grid-template-columns: repeat(3, 1fr);
+				}
 			}
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<div class="card">
-				<div class="card-header">
-					<h4 class="mb-0">Dịch Vụ Tiện Ích</h4>
-				</div>
-				<div class="card-body">
-					<p class="text-center mb-4">Chọn dịch vụ bạn muốn sử dụng:</p>
-					<div class="service-buttons">
-						<!-- Nhóm Chatbot -->
-						<div class="service-group">
-							<h5 class="group-title">Công Cụ Chatbot</h5>
-							<a href="chatbot/SendDiscordMessage.html" class="btn btn-service">Gửi Tin Nhắn Discord</a>
-							<a href="chatbot/SendTelegramMessage.html" class="btn btn-service">Gửi Tin Nhắn Telegram</a>
-						</div>
-
-						<!-- Nhóm Bảng Điều Khiển -->
-						<div class="service-group">
-							<h5 class="group-title">Bảng Điều Khiển</h5>
-							<a href="dashboard/music.html" class="btn btn-service">Trình Nghe Nhạc</a>
-							<a href="dashboard/weather.html" class="btn btn-service">Thời Tiết</a>
-							<a href="dashboard/calendar.html" class="btn btn-service">Lịch</a>
-							<a href="dashboard/clock.html" class="btn btn-service">Đồng Hồ</a>
-							<a href="dashboard/network.html" class="btn btn-service">Mạng</a>
-						</div>
-
-						<!-- Nhóm Công Cụ JXM -->
-						<div class="service-group">
-							<h5 class="group-title">Công Cụ JXM</h5>
-							<a href="jxm/calculatetimeframe.html" class="btn btn-service">Tính Thời Gian Mở Cấp</a>
-							<a href="jxm/tool.html" class="btn btn-service">Công Cụ JXM</a>
-						</div>
-
-						<!-- Nhóm Xem Phim -->
-						<div class="service-group">
-							<h5 class="group-title">Xem Phim Online</h5>
-							<a href="cinephim/index.html" class="btn btn-service">CinePhim</a>
-						</div>
-
-						<!-- Nhóm Phòng Trọ -->
-						<div class="service-group">
-							<h5 class="group-title">Phòng Trọ</h5>
-							<a href="phongtro/index.html" class="btn btn-service">Tìm Phòng Trọ</a>
-						</div>
-					</div>
-					<button class="btn btn-logout" onclick="logout()">Đăng Xuất</button>
+		<nav class="navbar">
+			<div class="nav-left">
+				<div class="logo">
+					<i class="fas fa-cube"></i>
+					<span>Dịch Vụ</span>
 				</div>
 			</div>
-		</div>
+			<div class="nav-center">
+				<div class="search-box">
+					<i class="fas fa-search"></i>
+					<input type="text" id="searchInput" placeholder="Tìm kiếm dịch vụ..." oninput="filterServices(this.value)" autocomplete="off" />
+				</div>
+			</div>
+			<div class="nav-right">
+				<div class="user-menu">
+					<button class="user-btn" onclick="toggleUserMenu()">
+						<div class="avatar" id="userAvatar">U</div>
+						<span class="user-name" id="userDisplayName">User</span>
+						<i class="fas fa-chevron-down" id="chevronIcon"></i>
+					</button>
+					<div class="dropdown-menu" id="userDropdown">
+						<div class="dropdown-header">
+							<i class="fas fa-user-circle" style="margin-right: 6px"></i>
+							<span id="userEmail">user@example.com</span>
+						</div>
+						<button class="dropdown-item" onclick="logout()">
+							<i class="fas fa-sign-out-alt"></i>
+							Đăng xuất
+						</button>
+					</div>
+				</div>
+			</div>
+		</nav>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<main class="main-content">
+			<div class="welcome-section">
+				<h1>Chào mừng trở lại 👋</h1>
+				<p>Chọn dịch vụ bạn muốn sử dụng</p>
+			</div>
+
+			<section class="service-section" data-category="chatbot">
+				<div class="section-header">
+					<div class="section-icon" style="background: linear-gradient(135deg, #667eea, #764ba2)">
+						<i class="fas fa-robot"></i>
+					</div>
+					<h2>Công Cụ Chatbot</h2>
+				</div>
+				<div class="cards-grid">
+					<a href="chatbot/SendDiscordMessage.html" class="service-card" data-search="Gửi Tin Nhắn Discord discord">
+						<div class="card-icon" style="background: linear-gradient(135deg, #5865f2, #4752c4)">
+							<i class="fab fa-discord"></i>
+						</div>
+						<div class="card-info">
+							<h3>Gửi Tin Nhắn Discord</h3>
+							<p>Gửi thông báo và tin nhắn qua Discord</p>
+						</div>
+					</a>
+					<a href="chatbot/SendTelegramMessage.html" class="service-card" data-search="Gửi Tin Nhắn Telegram telegram">
+						<div class="card-icon" style="background: linear-gradient(135deg, #0088cc, #006699)">
+							<i class="fab fa-telegram-plane"></i>
+						</div>
+						<div class="card-info">
+							<h3>Gửi Tin Nhắn Telegram</h3>
+							<p>Gửi thông báo và tin nhắn qua Telegram</p>
+						</div>
+					</a>
+				</div>
+			</section>
+
+			<section class="service-section" data-category="dashboard">
+				<div class="section-header">
+					<div class="section-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c)">
+						<i class="fas fa-th-large"></i>
+					</div>
+					<h2>Bảng Điều Khiển</h2>
+				</div>
+				<div class="cards-grid">
+					<a href="dashboard/music.html" class="service-card" data-search="Trình Nghe Nhạc music player">
+						<div class="card-icon" style="background: linear-gradient(135deg, #1db954, #169c46)">
+							<i class="fas fa-music"></i>
+						</div>
+						<div class="card-info">
+							<h3>Trình Nghe Nhạc</h3>
+							<p>Nghe nhạc trực tuyến</p>
+						</div>
+					</a>
+					<a href="dashboard/weather.html" class="service-card" data-search="Thời Tiết weather">
+						<div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe)">
+							<i class="fas fa-cloud-sun"></i>
+						</div>
+						<div class="card-info">
+							<h3>Thời Tiết</h3>
+							<p>Xem dự báo thời tiết</p>
+						</div>
+					</a>
+					<a href="dashboard/calendar.html" class="service-card" data-search="Lịch calendar">
+						<div class="card-icon" style="background: linear-gradient(135deg, #fa709a, #fee140)">
+							<i class="fas fa-calendar-alt"></i>
+						</div>
+						<div class="card-info">
+							<h3>Lịch</h3>
+							<p>Quản lý lịch và sự kiện</p>
+						</div>
+					</a>
+					<a href="dashboard/clock.html" class="service-card" data-search="Đồng Hồ clock">
+						<div class="card-icon" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb)">
+							<i class="fas fa-clock"></i>
+						</div>
+						<div class="card-info">
+							<h3>Đồng Hồ</h3>
+							<p>Xem giờ và hẹn giờ</p>
+						</div>
+					</a>
+					<a href="dashboard/network.html" class="service-card" data-search="Mạng network">
+						<div class="card-icon" style="background: linear-gradient(135deg, #0acffe, #495aff)">
+							<i class="fas fa-network-wired"></i>
+						</div>
+						<div class="card-info">
+							<h3>Mạng</h3>
+							<p>Kiểm tra thông tin mạng</p>
+						</div>
+					</a>
+				</div>
+			</section>
+
+			<section class="service-section" data-category="jxm">
+				<div class="section-header">
+					<div class="section-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7)">
+						<i class="fas fa-tools"></i>
+					</div>
+					<h2>Công Cụ JXM</h2>
+				</div>
+				<div class="cards-grid">
+					<a href="jxm/calculatetimeframe.html" class="service-card" data-search="Tính Thời Gian Mở Cấp timeframe">
+						<div class="card-icon" style="background: linear-gradient(135deg, #fa709a, #fee140)">
+							<i class="fas fa-hourglass-half"></i>
+						</div>
+						<div class="card-info">
+							<h3>Tính Thời Gian Mở Cấp</h3>
+							<p>Tính toán thời gian mở cấp trong game</p>
+						</div>
+					</a>
+					<a href="jxm/tool.html" class="service-card" data-search="Công Cụ JXM jxm tool">
+						<div class="card-icon" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb)">
+							<i class="fas fa-hammer"></i>
+						</div>
+						<div class="card-info">
+							<h3>Công Cụ JXM</h3>
+							<p>Các công cụ hỗ trợ JXM</p>
+						</div>
+					</a>
+				</div>
+			</section>
+
+			<section class="service-section" data-category="entertainment">
+				<div class="section-header">
+					<div class="section-icon" style="background: linear-gradient(135deg, #ffecd2, #fcb69f)">
+						<i class="fas fa-film"></i>
+					</div>
+					<h2>Giải Trí</h2>
+				</div>
+				<div class="cards-grid">
+					<a href="cinephim/index.html?page=1" class="service-card" data-search="CinePhim Xem Phim Online">
+						<div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2)">
+							<i class="fas fa-video"></i>
+						</div>
+						<div class="card-info">
+							<h3>CinePhim</h3>
+							<p>Xem phim online HD miễn phí</p>
+						</div>
+					</a>
+					<a href="phongtro/index.html" class="service-card" data-search="Tìm Phòng Trọ phongtro">
+						<div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe)">
+							<i class="fas fa-building"></i>
+						</div>
+						<div class="card-info">
+							<h3>Tìm Phòng Trọ</h3>
+							<p>Tìm kiếm phòng trọ giá rẻ</p>
+						</div>
+					</a>
+				</div>
+			</section>
+
+			<div class="no-results" id="noResults">
+				<i class="fas fa-search"></i>
+				<p>Không tìm thấy dịch vụ nào</p>
+			</div>
+		</main>
+
 		<script>
-			// Initialize Firebase
 			firebase.initializeApp(firebaseConfig);
 			const auth = firebase.auth();
 
-			// Check auth state and redirect to login if not authenticated
 			auth.onAuthStateChanged((user) => {
 				if (!user) {
 					window.location.href = "login.html";
+					return;
+				}
+				const avatar = document.getElementById("userAvatar");
+				const displayName = document.getElementById("userDisplayName");
+				const email = document.getElementById("userEmail");
+				const initial = (user.email || "U").charAt(0).toUpperCase();
+				avatar.textContent = initial;
+				displayName.textContent = user.email ? user.email.split("@")[0] : "User";
+				email.textContent = user.email || "Không có email";
+			});
+
+			function toggleUserMenu() {
+				const menu = document.getElementById("userDropdown");
+				const icon = document.getElementById("chevronIcon");
+				menu.classList.toggle("show");
+				icon.classList.toggle("open");
+			}
+
+			document.addEventListener("click", (e) => {
+				const menu = document.getElementById("userDropdown");
+				const btn = document.querySelector(".user-btn");
+				if (!btn.contains(e.target) && !menu.contains(e.target)) {
+					menu.classList.remove("show");
+					document.getElementById("chevronIcon").classList.remove("open");
 				}
 			});
 
-			// Handle logout
+			function filterServices(query) {
+				const q = query.toLowerCase().trim();
+				const cards = document.querySelectorAll(".service-card");
+				const sections = document.querySelectorAll(".service-section");
+				const noResults = document.getElementById("noResults");
+				let hasVisible = false;
+
+				cards.forEach((card) => {
+					const searchData = card.getAttribute("data-search") || "";
+					if (!q || searchData.toLowerCase().includes(q)) {
+						card.classList.remove("hidden-card");
+						hasVisible = true;
+					} else {
+						card.classList.add("hidden-card");
+					}
+				});
+
+				sections.forEach((section) => {
+					const visibleCards = section.querySelectorAll(".service-card:not(.hidden-card)");
+					if (visibleCards.length === 0) {
+						section.classList.add("hidden-section");
+					} else {
+						section.classList.remove("hidden-section");
+					}
+				});
+
+				if (q && !hasVisible) {
+					noResults.classList.add("show");
+				} else {
+					noResults.classList.remove("show");
+				}
+			}
+
 			async function logout() {
 				try {
 					await auth.signOut();
