@@ -110,7 +110,8 @@ async function loadMovieDetail(slug) {
             if (currentSourceKey === 'ophim') {
                 // Fix OPhim image paths
                 const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                currentMovie.poster_url = resolveOPhimImageUrl(currentMovie.poster_url || '', pathImage);
+                const seoImage = data.data?.seoOnPage?.seoSchema?.image || data.seoOnPage?.seoSchema?.image || '';
+                currentMovie.poster_url = resolveOPhimImageUrl(seoImage || currentMovie.image || currentMovie.poster_url || '', pathImage);
                 currentMovie.thumb_url = resolveOPhimImageUrl(currentMovie.thumb_url || '', pathImage);
                 
                 // Handle trailer for OPhim

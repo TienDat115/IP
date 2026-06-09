@@ -169,6 +169,20 @@ function getBestImageForOrientation(posterUrl, thumbUrl, preferredOrientation = 
     const thumbOrientation = getImageOrientation(thumbUrl);
     
     if (preferredOrientation === 'vertical') {
+        if (currentSourceKey === 'kkphim') {
+            return posterUrl || thumbUrl;
+        }
+
+        if (currentSourceKey === 'ophim') {
+            if (posterOrientation === 'vertical') {
+                return posterUrl;
+            } else if (thumbOrientation === 'vertical') {
+                return thumbUrl;
+            }
+
+            return posterUrl;
+        }
+
         if (thumbOrientation === 'vertical') {
             return thumbUrl;
         } else if (posterOrientation === 'vertical') {
@@ -207,6 +221,8 @@ function applyPosterOrientationClass(img) {
     if (!img.naturalWidth || !img.naturalHeight) return;
 
     img.classList.remove('film-poster-landscape');
+    if (currentSourceKey === 'ophim') return;
+
     if (img.naturalWidth > img.naturalHeight) {
         img.classList.add('film-poster-landscape');
     }
@@ -911,8 +927,9 @@ function normalizeMovieData(item, pathImage = '') {
     
     // Normalize based on source
     if (currentSourceKey === 'ophim') {
-        let poster_url = resolveOPhimImageUrl(item.poster_url || '', pathImage);
+        let image_url = resolveOPhimImageUrl(item.data?.seoOnPage?.seoSchema?.image || item.seoOnPage?.seoSchema?.image || item.seoSchema?.image || item.image || '', pathImage);
         let thumb_url = resolveOPhimImageUrl(item.thumb_url || '', pathImage);
+        let poster_url = image_url || thumb_url || resolveOPhimImageUrl(item.poster_url || '', pathImage);
         
         return {
             name: item.name || item.title || '',

@@ -284,7 +284,9 @@ async function loadRecentWatchedPosters(recentWatched) {
                 if ((data.status === 'success' || data.status === true) && movieData) {
                     if (currentSourceKey === 'ophim') {
                         const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                        movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
+                        const seoImage = data.data?.seoOnPage?.seoSchema?.image || data.seoOnPage?.seoSchema?.image || '';
+                        movieData.image = seoImage || movieData.image || '';
+                        movieData.poster_url = resolveOPhimImageUrl(movieData.image || movieData.thumb_url || movieData.poster_url || '', pathImage);
                         movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
                     } else if (currentSourceKey === 'kkphim') {
                         const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
