@@ -226,27 +226,50 @@ function applyPosterOrientationClass(img) {
     if (!img.naturalWidth || !img.naturalHeight) return;
 
     img.classList.remove('film-poster-landscape');
-    if (currentSourceKey === 'ophim') return;
 
     if (img.naturalWidth > img.naturalHeight) {
         img.classList.add('film-poster-landscape');
     }
 }
 
-document.addEventListener('load', function(event) {
-    const target = event.target;
-    if (target && target.tagName === 'IMG') {
-        applyPosterOrientationClass(target);
+const posterObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+            if (node.nodeType !== 1) continue;
+            if (node.tagName === 'IMG' && node.classList.contains('film-poster')) {
+                if (node.complete) {
+                    applyPosterOrientationClass(node);
+                } else {
+                    node.addEventListener('load', () => applyPosterOrientationClass(node), { once: true });
+                }
+            }
+            const imgs = node.querySelectorAll?.('img.film-poster') || [];
+            for (const img of imgs) {
+                if (img.complete) {
+                    applyPosterOrientationClass(img);
+                } else {
+                    img.addEventListener('load', () => applyPosterOrientationClass(img), { once: true });
+                }
+            }
+        }
     }
-}, true);
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     const posters = document.querySelectorAll('img.film-poster');
     posters.forEach((img) => {
         if (img.complete) {
             applyPosterOrientationClass(img);
+        } else {
+            img.addEventListener('load', () => applyPosterOrientationClass(img), { once: true });
         }
     });
+    if (document.body) {
+        posterObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
 });
 
 // Initialize Firebase and common functions
@@ -1703,7 +1726,8 @@ function getMovieCardHTML(movie) {
                 <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                      alt="${movie.name || movie.title}" 
                      loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+                     onerror="this.src=placeholderImg(300,450,'No Poster')"
+                     onload="applyPosterOrientationClass(this)">
                 <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                     ${movie.quality || 'HD'}
                 </div>

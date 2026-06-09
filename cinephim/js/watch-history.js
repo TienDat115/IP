@@ -397,13 +397,14 @@ async function loadPosters() {
                 thumbUrl = item.thumb_url || '';
             }
 
-            const imgSrc = posterUrl || thumbUrl || placeholderImg(300, 450, 'No Poster');
+            const imgSrc = getVerticalImage(posterUrl, thumbUrl) || placeholderImg(300, 450, 'No Poster');
 
             posterContainer.innerHTML = `
                 <img src="${imgSrc}" 
                      alt="${item.movieTitle || ''}" 
                      loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src=placeholderImg(300,450,'No Poster')">
+                     onerror="this.src=placeholderImg(300,450,'No Poster')"
+                     onload="applyPosterOrientationClass(this)">
             `;
         } catch (error) {
             console.error('Error loading poster for', item.movieSlug, ':', error);

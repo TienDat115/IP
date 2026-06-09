@@ -306,13 +306,14 @@ async function loadRecentWatchedPosters(recentWatched) {
                 thumbUrl = item.thumb_url || '';
             }
 
-            const imgSrc = posterUrl || thumbUrl || placeholderImg(300, 450, 'No Poster');
+            const imgSrc = getVerticalImage(posterUrl, thumbUrl) || placeholderImg(300, 450, 'No Poster');
 
             posterContainer.innerHTML = `
                 <img src="${imgSrc}" 
                      alt="${item.movieTitle || ''}" 
                      loading="lazy" decoding="async" class="film-poster w-full"
-                             onerror="this.src=placeholderImg(300,450,'No Poster')">
+                     onerror="this.src=placeholderImg(300,450,'No Poster')"
+                     onload="applyPosterOrientationClass(this)">
             `;
         } catch (error) {
             console.error('Error loading poster for recent watched', item.movieSlug, ':', error);
@@ -354,7 +355,8 @@ async function loadPinnedMovies() {
                         <img src="${getVerticalImage(item.poster_url, item.thumb_url)}" 
                              alt="${item.title || item.name}" 
                              loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src=placeholderImg(300,450,'No Poster')">
+                             onerror="this.src=placeholderImg(300,450,'No Poster')"
+                             onload="applyPosterOrientationClass(this)">
                         <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                             HD
                         </div>

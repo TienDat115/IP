@@ -154,7 +154,8 @@ function displayFavoriteMovies(currentMovies, otherFavs = []) {
                     <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
                          alt="${movie.name || movie.title || movie.slug}" 
                          loading="lazy" decoding="async" class="film-poster w-full"
-                         onerror="this.src=placeholderImg(300,450,'No Poster')">
+                         onerror="this.src=placeholderImg(300,450,'No Poster')"
+                         onload="applyPosterOrientationClass(this)">
                     <div class="absolute top-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                         ${movie.quality || 'HD'}
                     </div>
