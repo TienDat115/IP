@@ -205,11 +205,16 @@ function getBestImageForOrientation(posterUrl, thumbUrl, preferredOrientation = 
     return posterUrl;
 }
 
+function placeholderImg(w, h, text, bg = '#374151', fg = '#ffffff') {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="${w}" height="${h}" fill="${bg}"/><text x="${w/2}" y="${h/2}" font-family="sans-serif" font-size="${Math.min(w,h)/12}" fill="${fg}" text-anchor="middle" dominant-baseline="central">${text.replace(/"/g, '&quot;')}</text></svg>`;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
 function getVerticalImage(posterUrl, thumbUrl) {
     return getBestImageForOrientation(posterUrl, thumbUrl, 'vertical') || 
            posterUrl || 
            thumbUrl || 
-           'https://placehold.co/300x450/374151/ffffff?text=No+Poster';
+           placeholderImg(300, 450, 'No Poster');
 }
 
 function getHeroImage(posterUrl, thumbUrl) {

@@ -1207,7 +1207,7 @@ function displayRelatedMovies(movies) {
             <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
              alt="${movie.name || movie.title}" 
              loading="lazy" decoding="async" class="w-full h-48 object-cover"
-             onerror="this.src='https://via.placeholder.com/300x450/374151/ffffff?text=No+Poster'">
+             onerror="this.src=placeholderImg(300,450,'No Poster')">
             <div class="p-3">
                 <h4 class="font-medium text-sm truncate">${movie.name || movie.title}</h4>
                 <p class="text-xs text-gray-400 mt-1">${movie.year || ''}</p>
