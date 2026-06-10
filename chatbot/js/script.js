@@ -798,7 +798,7 @@ const messageTemplates = {
 
 	3: {
 		name: "Thắc Mắc",
-		content: `## ❓ THÔNG BÁO ❓
+		content: `## ❓ CUNG CẤP THÔNG TIN ❓
 		📢 __**Nội Dung:**__ 
 		⚠️ __**Phản Hồi:**__
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
@@ -894,6 +894,11 @@ const messageTemplates = {
 	13: {
 		name: "Lệnh Không Hỗ Trợ",
 		content: `🚫 Lệnh không được hỗ trợ hoặc chưa được kích hoạt tại nhóm này.`,
+	},
+
+	14: {
+		name: "Bổ Sung Thông Tin",
+		content: `# ⚠️ VUI LÒNG TRẢ LỜI CÁC THẮC MẮC VÀ SỬA GỬI LẠI FILE ĐẦY ĐỦ NỘI DUNG (KHÔNG GỬI FILE CHỈ TRẢ LỜI CÁC CÂU HỎI)`,
 	},
 };
 
