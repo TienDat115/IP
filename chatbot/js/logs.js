@@ -59,7 +59,7 @@ function formatDate(timestamp) {
 async function loadLogs() {
 	try {
 		const tbody = document.querySelector("#logsTable tbody");
-		tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+		tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
 
 		const logsRef = db.collection("logs").orderBy("timestamp", "desc");
 		const querySnapshot = await logsRef.get();
@@ -75,7 +75,7 @@ async function loadLogs() {
 		renderPage();
 	} catch (error) {
 		console.error("Lỗi khi tải log:", error);
-		document.querySelector("#logsTable tbody").innerHTML = `<tr><td colspan="6" class="alert alert-danger">Đã xảy ra lỗi khi tải nhật ký: ${error.message}</td></tr>`;
+		document.querySelector("#logsTable tbody").innerHTML = `<tr><td colspan="5" class="alert alert-danger">Đã xảy ra lỗi khi tải nhật ký: ${error.message}</td></tr>`;
 	}
 }
 
@@ -88,7 +88,7 @@ function renderLogsTable() {
 	const tbody = document.querySelector("#logsTable tbody");
 
 	if (allLogs.length === 0) {
-		tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center py-3">Không có dữ liệu nhật ký.</td></tr>';
+		tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Không có dữ liệu nhật ký.</td></tr>';
 		return;
 	}
 
@@ -99,7 +99,6 @@ function renderLogsTable() {
 		<tr class="${log.isError ? "table-danger" : ""}" style="cursor: pointer;">
 			<td class="text-center d-none d-sm-table-cell">${start + index + 1}</td>
 			<td class="text-nowrap small d-none d-md-table-cell">${formatDate(log.timestamp)}</td>
-			<td class="text-center">${log.isError ? '<span class="text-danger" title="Lỗi">❌</span>' : '<span class="text-success" title="Thành công">✅</span>'}</td>
 			<td class="d-none d-sm-table-cell">${log.webhookName || "Không có"}</td>
 			<td onclick="viewLogDetail('${log.id}')">
 				<div class="small fw-bold text-truncate">${log.message}</div>
@@ -189,12 +188,32 @@ function viewLogDetail(logId) {
 				<div class="mb-2"><strong>Trạng thái:</strong><br>${status}</div>
 				<div class="mb-2"><strong>Webhook:</strong><br>${log.webhookName || "Không có"}</div>
 				<div class="mb-2"><strong>Tin nhắn:</strong><br>${log.message}</div>
-				<div class="mb-2"><strong>Nội dung:</strong><br><pre style="white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow-y: auto; background: #f5f5f5; padding: 8px; border-radius: 4px;">${text}</pre></div>
+				<div class="mb-2"><strong>Nội dung:</strong> <button class="btn btn-sm btn-outline-secondary" onclick="copyContent('${encodeURIComponent(text)}')"><i class="fas fa-copy"></i> Copy</button><br><pre style="white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow-y: auto; background: #f5f5f5; padding: 8px; border-radius: 4px;">${text}</pre></div>
 				${log.webhookUrl ? `<div class="mb-2"><strong>URL:</strong><br><small style="word-break: break-all;">${log.webhookUrl}</small></div>` : ""}
 			</div>
 		`,
 		width: "600px",
 		confirmButtonText: "Đóng",
+	});
+}
+
+function copyContent(encodedText) {
+	const text = decodeURIComponent(encodedText);
+	navigator.clipboard.writeText(text).then(() => {
+		Swal.fire({
+			icon: "success",
+			title: "Đã copy!",
+			text: "Nội dung đã được copy vào clipboard.",
+			timer: 1500,
+			showConfirmButton: false,
+		});
+	}).catch(() => {
+		const textarea = document.createElement("textarea");
+		textarea.value = text;
+		document.body.appendChild(textarea);
+		textarea.select();
+		document.execCommand("copy");
+		document.body.removeChild(textarea);
 	});
 }
 
