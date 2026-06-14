@@ -70,6 +70,11 @@
 							</div>
 						</div>
 
+						<!-- Theme Toggle Mobile -->
+						<button onclick="toggleTheme()" class="text-white hover:text-purple-400 transition">
+							<i id="mobileThemeIcon" class="fas fa-moon"></i>
+						</button>
+
 						<!-- Mobile Login Button (shown when not logged in) -->
 						<button id="mobileLoginButton" onclick="toggleLogin()" class="text-white hover:text-purple-400 transition">
 							<i id="mobileLoginIcon" class="fas fa-sign-in-alt"></i>
@@ -86,6 +91,11 @@
 						<a href="countries.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Quốc gia"><i class="fas fa-globe mr-1"></i><span class="nav-text">Quốc gia</span></a>
 						<a href="single-movies.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Phim Lẻ"><i class="fas fa-film mr-1"></i><span class="nav-text">Phim Lẻ</span></a>
 						<a href="sources.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Nguồn phim"><i class="fas fa-link mr-1"></i><span class="nav-text">Nguồn phim</span></a>
+						<!-- Theme Toggle -->
+						<button onclick="toggleTheme()" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Chế độ sáng/tối">
+							<i id="themeIcon" class="fas fa-moon"></i>
+						</button>
+
 						<div id="sourceSwitcherDesktop" class="mr-4"></div>
 						<!-- User Profile Menu (shown when logged in) -->
 						<div id="userProfileMenu" class="relative hidden">

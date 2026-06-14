@@ -110,6 +110,11 @@ body:not(.dark) {
 	color: #111827;
 }
 
+body:not(.dark) .bg-gray-900 {
+	background-color: #f3f4f6;
+	color: #111827;
+}
+
 body:not(.dark) .bg-gray-800 {
 	background-color: #ffffff;
 	color: #111827;
@@ -120,21 +125,45 @@ body:not(.dark) .bg-gray-700 {
 	color: #111827;
 }
 
-body:not(.dark) .bg-gray-900 {
-	background-color: #f3f4f6;
+body:not(.dark) .bg-gray-600 {
+	background-color: #e5e7eb;
 	color: #111827;
 }
 
-body:not(.dark) .text-gray-400 {
-	color: #6b7280;
+body:not(.dark) .text-white {
+	color: #111827;
+}
+
+body:not(.dark) .bg-purple-600,
+body:not(.dark) .bg-red-600,
+body:not(.dark) .bg-yellow-600 {
+	color: #fff;
+}
+
+body:not(.dark) .bg-purple-600 .text-gray-400,
+body:not(.dark) .bg-red-600 .text-gray-400,
+body:not(.dark) .bg-yellow-600 .text-gray-400 {
+	color: rgba(255, 255, 255, 0.75);
 }
 
 body:not(.dark) .text-gray-300 {
 	color: #4b5563;
 }
 
+body:not(.dark) .text-gray-400 {
+	color: #6b7280;
+}
+
 body:not(.dark) .text-gray-500 {
 	color: #6b7280;
+}
+
+body:not(.dark) .text-gray-600 {
+	color: #9ca3af;
+}
+
+body:not(.dark) .border-gray-500 {
+	border-color: #d1d5db;
 }
 
 body:not(.dark) .border-gray-600 {
@@ -151,6 +180,35 @@ body:not(.dark) .hover\:bg-gray-700:hover {
 
 body:not(.dark) .hover\:bg-gray-600:hover {
 	background-color: #e5e7eb;
+}
+
+body:not(.dark) .hover\:bg-gray-500:hover {
+	background-color: #e5e7eb;
+}
+
+body:not(.dark) .hover\:text-white:hover {
+	color: #111827;
+}
+
+body:not(.dark) input::placeholder,
+body:not(.dark) textarea::placeholder {
+	color: #9ca3af !important;
+}
+
+body:not(.dark) .bg-gray-800\/50 {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+body:not(.dark) .bg-gray-800\/50 .text-white {
+	color: #111827;
+}
+
+body:not(.dark) .film-card .bg-gray-800 {
+	background-color: #ffffff;
+}
+
+body:not(.dark) .film-card .text-gray-400 {
+	color: #6b7280;
 }
 
 /* Mobile responsive improvements */
@@ -481,30 +539,37 @@ body:not(.dark) .hover\:bg-gray-600:hover {
 	background-color: rgba(55, 65, 81, 0.5);
 }
 
-/* Light mode styles for dropdown */
-body:not(.dark) #userDropdown {
+/* Light mode styles for dropdowns */
+body:not(.dark) #userDropdown,
+body:not(.dark) #mobileUserDropdown,
+body:not(.dark) .source-dropdown-menu {
 	background-color: #ffffff;
 	border-color: #e5e7eb;
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-body:not(.dark) #userDropdown .border-gray-700 {
+body:not(.dark) #userDropdown .border-gray-700,
+body:not(.dark) #mobileUserDropdown .border-gray-700 {
 	border-color: #e5e7eb;
 }
 
-body:not(.dark) #userDropdown .text-gray-300 {
+body:not(.dark) #userDropdown .text-gray-300,
+body:not(.dark) #mobileUserDropdown .text-gray-300 {
 	color: #6b7280;
 }
 
-body:not(.dark) #userDropdown .text-white {
+body:not(.dark) #userDropdown .text-white,
+body:not(.dark) #mobileUserDropdown .text-white {
 	color: #111827;
 }
 
-body:not(.dark) #userDropdown .hover\:bg-gray-700:hover {
+body:not(.dark) #userDropdown .hover\:bg-gray-700:hover,
+body:not(.dark) #mobileUserDropdown .hover\:bg-gray-700:hover {
 	background-color: #f9fafb;
 }
 
-body:not(.dark) #userDropdown .hover\:bg-gray-600:hover {
+body:not(.dark) #userDropdown .hover\:bg-gray-600:hover,
+body:not(.dark) #mobileUserDropdown .hover\:bg-gray-600:hover {
 	background-color: #f3f4f6;
 }
 
