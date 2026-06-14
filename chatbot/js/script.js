@@ -852,14 +852,13 @@ const messageTemplates = {
 	},
 
 	9: {
-		name: "Nội Dung File Bảo Trì",
-		content: `# [[Điều Chỉnh Xong Gửi Lại File Nội Dung Đã Chỉnh Sửa]]
-		📢 __**Nội Dung:**__ Nội dung file **___** (Lần 1) 
-		⏳ __**Chi Tiết:**__
+		name: "Bổ Sung Nội Dung File",
+		content: `# Mọi Thay Đổi Sẽ Thực Hiện Dựa Trên Bản Võ Lâm Hồng Kông
 
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
+## ** 📄 Ngoại vực VLHS.txt**
+@everyone
+-----------------------------------------------------------------
+# ⚠️ VUI LÒNG TRẢ LỜI CÁC THẮC MẮC VÀ SỬA GỬI LẠI FILE ĐẦY ĐỦ NỘI DUNG (KHÔNG GỬI FILE CHỈ TRẢ LỜI CÁC CÂU HỎI)`,
 	},
 
 	10: {
@@ -1274,6 +1273,7 @@ function createFormattingButtons(textareaId = "messageText") {
 				{ title: "Tiêu Đề", content: "##", prefix: "## ", suffix: "" },
 				{ title: "In đậm + Gạch Dưới", content: "B + U̲", prefix: "__**", suffix: "**__" },
 				{ title: "Thời gian", content: "Time", prefix: "", suffix: "${getCurrentTime()}" },
+				{ title: "*", content: "**", prefix: "*****************************************************************", suffix: "" },
 				{ title: "-", content: "--", prefix: "-----------------------------------------------------------------", suffix: "" },
 				{ title: "=", content: "==", prefix: "==========================================", suffix: "" },
 			],
