@@ -1453,7 +1453,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	document.getElementById("formattingButtons").innerHTML = createFormattingButtons("messageText");
 });
 
-// Hàm lưu bản nháp lên Firebase
+// Hàm lưu bản nháp lên Firebase (hỗ trợ nhiều bản nháp)
 async function saveDraft(textareaId = "messageText") {
 	try {
 		const messageText = document.getElementById(textareaId).value;
@@ -1467,13 +1467,28 @@ async function saveDraft(textareaId = "messageText") {
 			throw new Error("Vui lòng đăng nhập để sử dụng tính năng lưu bản nháp");
 		}
 
-		const draftData = {
+		const { value: draftName } = await Swal.fire({
+			title: 'Lưu bản nháp',
+			input: 'text',
+			inputLabel: 'Nhập tên cho bản nháp',
+			inputPlaceholder: 'VD: Tin nhắn rollback...',
+			showCancelButton: true,
+			confirmButtonText: 'Lưu',
+			cancelButtonText: 'Hủy',
+			inputValidator: (value) => {
+				if (!value) return 'Vui lòng nhập tên bản nháp';
+			}
+		});
+
+		if (!draftName) return;
+
+		await firebase.firestore().collection("drafts").doc(user.uid).collection("items").add({
+			name: draftName,
 			content: messageText,
 			lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
 			userId: user.uid,
-		};
+		});
 
-		await firebase.firestore().collection("drafts").doc(user.uid).set(draftData);
 		showSuccessMessage("Đã lưu bản nháp thành công");
 	} catch (error) {
 		console.error("Lỗi khi lưu bản nháp:", error);
@@ -1485,7 +1500,7 @@ async function saveDraft(textareaId = "messageText") {
 	}
 }
 
-// Hàm tải bản nháp từ Firebase
+// Hàm tải danh sách bản nháp từ Firebase (hiển thị để chọn)
 async function loadDraft(textareaId = "messageText") {
 	try {
 		const user = firebase.auth().currentUser;
@@ -1493,22 +1508,111 @@ async function loadDraft(textareaId = "messageText") {
 			throw new Error("Vui lòng đăng nhập để tải bản nháp");
 		}
 
-		const doc = await firebase.firestore().collection("drafts").doc(user.uid).get();
+		const snapshot = await firebase.firestore()
+			.collection("drafts").doc(user.uid).collection("items")
+			.orderBy("lastUpdated", "desc")
+			.get();
 
-		if (!doc.exists) {
+		if (snapshot.empty) {
 			showSuccessMessage("Không tìm thấy bản nháp nào");
 			return;
 		}
 
-		const draftData = doc.data();
-		document.getElementById(textareaId).value = draftData.content;
-		showSuccessMessage("Đã tải bản nháp thành công");
+		const drafts = [];
+		snapshot.forEach(doc => {
+			drafts.push({ id: doc.id, ...doc.data() });
+		});
+
+		const itemsHtml = drafts.map(draft => `
+			<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+				<button type="button" class="btn btn-outline-primary"
+					onclick="selectDraft('${draft.id}', '${textareaId}')"
+					style="flex: 1; text-align: left; padding: 10px 14px; border-radius: 6px; cursor: pointer;">
+					<div style="font-weight: 600;">${draft.name || 'Bản nháp'}</div>
+					<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${draft.lastUpdated?.toDate ? formatRelativeTime(draft.lastUpdated) : ''}</div>
+				</button>
+				<button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteDraft('${draft.id}')" title="Xóa bản nháp" style="flex-shrink: 0;">
+					<i class="fas fa-trash"></i>
+				</button>
+			</div>
+		`).join('');
+
+		Swal.fire({
+			title: 'Chọn bản nháp',
+			html: `<div style="max-height: 400px; overflow-y: auto;">${itemsHtml}</div>`,
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: 'Đóng',
+			cancelButtonColor: '#6c757d',
+		});
 	} catch (error) {
 		console.error("Lỗi khi tải bản nháp:", error);
 		Swal.fire({
 			icon: "error",
 			title: "Lỗi",
 			text: "Không thể tải bản nháp: " + error.message,
+		});
+	}
+}
+
+// Chọn một bản nháp cụ thể và tải nội dung
+async function selectDraft(draftId, textareaId = "messageText") {
+	try {
+		const user = firebase.auth().currentUser;
+		if (!user) return;
+
+		const doc = await firebase.firestore()
+			.collection("drafts").doc(user.uid).collection("items").doc(draftId).get();
+
+		if (!doc.exists) {
+			showSuccessMessage("Bản nháp không tồn tại");
+			return;
+		}
+
+		Swal.close();
+		document.getElementById(textareaId).value = doc.data().content;
+		showSuccessMessage("Đã tải bản nháp thành công");
+	} catch (error) {
+		console.error("Lỗi khi chọn bản nháp:", error);
+		Swal.fire({
+			icon: "error",
+			title: "Lỗi",
+			text: "Không thể tải bản nháp: " + error.message,
+		});
+	}
+}
+
+// Xóa một bản nháp
+async function deleteDraft(draftId) {
+	try {
+		const user = firebase.auth().currentUser;
+		if (!user) return;
+
+		const { isConfirmed } = await Swal.fire({
+			title: 'Xác nhận xóa',
+			text: 'Bạn có chắc muốn xóa bản nháp này?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#d33',
+			cancelButtonColor: '#3085d6',
+			confirmButtonText: 'Xóa',
+			cancelButtonText: 'Hủy',
+		});
+
+		if (isConfirmed) {
+			await firebase.firestore()
+				.collection("drafts").doc(user.uid).collection("items").doc(draftId).delete();
+
+			// Reload danh sách
+			const textareaId = document.querySelector('[id$="messageText"]') ? 'messageText' : 'messageText';
+			loadDraft(textareaId);
+		}
+	} catch (error) {
+		console.error("Lỗi khi xóa bản nháp:", error);
+		Swal.fire({
+			icon: "error",
+			title: "Lỗi",
+			text: "Không thể xóa bản nháp: " + error.message,
 		});
 	}
 }
