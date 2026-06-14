@@ -993,15 +993,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			e.preventDefault();
 			const textarea = e.target;
 			saveDraft(textarea.id);
-			// Hiển thị thông báo
-			Swal.fire({
-				icon: "success",
-				title: "Đã lưu bản nháp",
-				showConfirmButton: false,
-				timer: 1000,
-				position: "top-end",
-				toast: true,
-			});
 		}
 	});
 
@@ -1467,35 +1458,137 @@ async function saveDraft(textareaId = "messageText") {
 			throw new Error("Vui lòng đăng nhập để sử dụng tính năng lưu bản nháp");
 		}
 
-		const { value: draftName } = await Swal.fire({
-			title: 'Lưu bản nháp',
-			input: 'text',
-			inputLabel: 'Nhập tên cho bản nháp',
-			inputPlaceholder: 'VD: Tin nhắn rollback...',
-			showCancelButton: true,
-			confirmButtonText: 'Lưu',
-			cancelButtonText: 'Hủy',
-			inputValidator: (value) => {
-				if (!value) return 'Vui lòng nhập tên bản nháp';
+		const snapshot = await firebase.firestore()
+			.collection("drafts").doc(user.uid).collection("items")
+			.orderBy("lastUpdated", "desc")
+			.get();
+
+		if (snapshot.empty) {
+			const { value: draftName } = await Swal.fire({
+				title: 'Lưu bản nháp',
+				input: 'text',
+				inputLabel: 'Nhập tên cho bản nháp',
+				inputPlaceholder: 'VD: Tin nhắn rollback...',
+				showCancelButton: true,
+				confirmButtonText: 'Lưu',
+				cancelButtonText: 'Hủy',
+				inputValidator: (value) => {
+					if (!value) return 'Vui lòng nhập tên bản nháp';
+				}
+			});
+
+			if (!draftName) return;
+
+			await firebase.firestore().collection("drafts").doc(user.uid).collection("items").add({
+				name: draftName,
+				content: messageText,
+				lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+				userId: user.uid,
+			});
+
+			showSuccessMessage("Đã lưu bản nháp thành công");
+		} else {
+			const choice = await Swal.fire({
+				title: 'Lưu bản nháp',
+				text: 'Bạn muốn lưu thành bản nháp mới hay ghi đè bản nháp cũ?',
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonText: 'Lưu mới',
+				cancelButtonText: 'Hủy',
+				showDenyButton: true,
+				denyButtonText: 'Ghi đè',
+				denyButtonColor: '#dc3545',
+			});
+
+			if (choice.isDismissed) return;
+
+			if (choice.isConfirmed) {
+				const { value: draftName } = await Swal.fire({
+					title: 'Lưu bản nháp mới',
+					input: 'text',
+					inputLabel: 'Nhập tên cho bản nháp',
+					inputPlaceholder: 'VD: Tin nhắn rollback...',
+					showCancelButton: true,
+					confirmButtonText: 'Lưu',
+					cancelButtonText: 'Hủy',
+					inputValidator: (value) => {
+						if (!value) return 'Vui lòng nhập tên bản nháp';
+					}
+				});
+
+				if (!draftName) return;
+
+				await firebase.firestore().collection("drafts").doc(user.uid).collection("items").add({
+					name: draftName,
+					content: messageText,
+					lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+					userId: user.uid,
+				});
+
+				showSuccessMessage("Đã lưu bản nháp mới thành công");
+			} else if (choice.isDenied) {
+				const drafts = [];
+				snapshot.forEach(doc => {
+					drafts.push({ id: doc.id, ...doc.data() });
+				});
+
+				const itemsHtml = drafts.map(draft => `
+					<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+						<button type="button" class="btn btn-outline-primary"
+							onclick="overwriteDraft('${draft.id}', '${textareaId}')"
+							style="flex: 1; text-align: left; padding: 10px 14px; border-radius: 6px; cursor: pointer;">
+							<div style="font-weight: 600;">${draft.name || 'Bản nháp'}</div>
+							<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${draft.lastUpdated?.toDate ? formatRelativeTime(draft.lastUpdated) : ''}</div>
+						</button>
+					</div>
+				`).join('');
+
+				await Swal.fire({
+					title: 'Chọn bản nháp để ghi đè',
+					html: `<div style="max-height: 400px; overflow-y: auto;">${itemsHtml}</div>`,
+					showConfirmButton: false,
+					showCancelButton: true,
+					cancelButtonText: 'Đóng',
+					cancelButtonColor: '#6c757d',
+				});
 			}
-		});
-
-		if (!draftName) return;
-
-		await firebase.firestore().collection("drafts").doc(user.uid).collection("items").add({
-			name: draftName,
-			content: messageText,
-			lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-			userId: user.uid,
-		});
-
-		showSuccessMessage("Đã lưu bản nháp thành công");
+		}
 	} catch (error) {
 		console.error("Lỗi khi lưu bản nháp:", error);
 		Swal.fire({
 			icon: "error",
 			title: "Lỗi",
 			text: "Không thể lưu bản nháp: " + error.message,
+		});
+	}
+}
+
+async function overwriteDraft(draftId, textareaId = "messageText") {
+	try {
+		const user = firebase.auth().currentUser;
+		if (!user) return;
+
+		const messageText = document.getElementById(textareaId).value;
+		if (!messageText.trim()) {
+			showSuccessMessage("Không có nội dung để ghi đè");
+			return;
+		}
+
+		Swal.close();
+		await firebase.firestore()
+			.collection("drafts").doc(user.uid).collection("items").doc(draftId)
+			.update({
+				content: messageText,
+				lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+			});
+
+		showSuccessMessage("Đã ghi đè bản nháp thành công");
+	} catch (error) {
+		console.error("Lỗi khi ghi đè bản nháp:", error);
+		Swal.fire({
+			icon: "error",
+			title: "Lỗi",
+			text: "Không thể ghi đè bản nháp: " + error.message,
 		});
 	}
 }
