@@ -136,8 +136,23 @@ body:not(.dark) .text-white {
 
 body:not(.dark) .bg-purple-600,
 body:not(.dark) .bg-red-600,
-body:not(.dark) .bg-yellow-600 {
-	color: #fff;
+body:not(.dark) .bg-yellow-600,
+body:not(.dark) .bg-green-600,
+body:not(.dark) .bg-orange-600 {
+	color: #fff !important;
+}
+
+body:not(.dark) .bg-purple-600 *,
+body:not(.dark) .bg-red-600 *,
+body:not(.dark) .bg-yellow-600 *,
+body:not(.dark) .bg-green-600 *,
+body:not(.dark) .bg-orange-600 * {
+	color: #fff !important;
+}
+
+body:not(.dark) [class*="bg-black"],
+body:not(.dark) [class*="bg-black"] * {
+	color: #fff !important;
 }
 
 body:not(.dark) .bg-purple-600 .text-gray-400,
@@ -202,6 +217,31 @@ body:not(.dark) .bg-gray-800\/50 {
 body:not(.dark) .bg-gray-800\/50 .text-white {
 	color: #111827;
 }
+
+body:not(.dark) .bg-gray-700\/50 {
+	background-color: #f3f4f6;
+	border: 1px solid #e5e7eb;
+}
+
+body:not(.dark) .bg-gray-700\/50 input {
+	background-color: #ffffff !important;
+	border-color: #d1d5db !important;
+	color: #111827 !important;
+}
+
+body:not(.dark) #virtualKeyboard {
+	background-color: #ffffff !important;
+	border: 1px solid #e5e7eb !important;
+}
+
+body:not(.dark) #virtualKeyboard button.bg-gray-600:hover {
+	background-color: #d1d5db !important;
+}
+
+#cinemaModeContainer {
+	background-color: #000000 !important;
+}
+
 
 body:not(.dark) .film-card .bg-gray-800 {
 	background-color: #ffffff;
