@@ -789,6 +789,17 @@ function playEpisode(episodeSlug, videoUrl) {
         // Find episode index
         currentEpisodeIndex = findEpisodeIndex(episodeSlug);
         
+        // Calculate which page the episode belongs to
+        const srvIdx = getCurrentServerIndex();
+        const srv = currentMovie.episodes[srvIdx];
+        if (srv) {
+            const items = srv.items || srv.server_data || [];
+            if (items.length > 0) {
+                const reversedIndex = items.length - 1 - currentEpisodeIndex;
+                currentEpisodePage = Math.floor(reversedIndex / episodesPerPage) + 1;
+            }
+        }
+        
         // Log video URL for debugging
         // Update iframe src with embed URL
         iframeElement.src = videoUrl;

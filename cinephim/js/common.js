@@ -1731,9 +1731,9 @@ function getMovieCardHTML(movie) {
                 <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                     ${movie.quality || 'HD'}
                 </div>
-                ${movie.current_episode ? `
+                ${movie.current_episode || movie.year ? `
                     <div class="absolute bottom-2 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">
-                        ${formatEpisodeInfo(movie.current_episode, movie.total_episodes)}
+                        ${movie.current_episode ? formatEpisodeInfo(movie.current_episode, movie.total_episodes) : movie.year}
                     </div>
                 ` : ''}
             </div>
