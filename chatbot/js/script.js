@@ -778,7 +778,7 @@ const messageTemplates = {
 		🆎 Nội Dung: Rollback thất bại
 		💳 Tài Khoản: 
 		👤 ID Nhân Vật: 
-		🖥️ Máy Chủ: Võ Lâm Tây Vực - 
+		🖥️ Máy Chủ: 
 		⚠️ Lý Do: 
 		🕙 Thời gian: \${getCurrentTime()}
 		Vui lòng kiểm tra lại thông tin !
@@ -853,21 +853,11 @@ const messageTemplates = {
 
 	9: {
 		name: "Bổ Sung Nội Dung File",
-		content: `# Mọi Thay Đổi Sẽ Thực Hiện Dựa Trên Bản Võ Lâm Hồng Kông
+		content: `## ** 📄 Ngoại vực VLHS.txt**
 
-## ** 📄 Ngoại vực VLHS.txt**
 @everyone
 -----------------------------------------------------------------
 # ⚠️ VUI LÒNG TRẢ LỜI CÁC THẮC MẮC VÀ SỬA GỬI LẠI FILE ĐẦY ĐỦ NỘI DUNG (KHÔNG GỬI FILE CHỈ TRẢ LỜI CÁC CÂU HỎI)`,
-	},
-
-	10: {
-		name: "Cập Nhật File Hoàn Tất",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Cập nhật hoàn tất nội dung file **___**. Vui lòng kiểm tra lại
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
 	},
 
 	11: {
@@ -876,15 +866,6 @@ const messageTemplates = {
 		📢 __**Nội Dung:**__ 
 
 		💡 __**Phản Hồi:**__ Đổi nhân vật chính và cho phép mua lại gói tuần + Reset Tiêu Phí tháng hoàn tất
-		🕙 __**Thời gian:**__ \${getCurrentTime()}
-		@everyone
-		-----------------------------------------------------------------`,
-	},
-
-	12: {
-		name: "Thêm Gói Quà Event",
-		content: `## 🔔 THÔNG BÁO 🔔
-		📢 __**Nội Dung:**__ Thêm gói **** hoàn tất. Vui lòng kiểm tra lại
 		🕙 __**Thời gian:**__ \${getCurrentTime()}
 		@everyone
 		-----------------------------------------------------------------`,
