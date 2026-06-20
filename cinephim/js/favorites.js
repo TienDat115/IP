@@ -177,44 +177,77 @@ function displayFavoriteMovies(currentMovies, otherFavs = []) {
     }
     
     if (hasOther) {
-        if (hasCurrent) {
+        const sourceColors = {
+            'nguonc': 'blue',
+            'ophim': 'green',
+            'kkphim': 'orange',
+        };
+        const sourceLabels = {
+            'nguonc': 'Nguồn C',
+            'ophim': 'OPhim',
+            'kkphim': 'KKPhim',
+        };
+        
+        const grouped = otherFavs.reduce((acc, fav) => {
+            const key = fav.source || 'unknown';
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(fav);
+            return acc;
+        }, {});
+        
+        const sourceOrder = Object.keys(SOURCES).filter(s => grouped[s]).concat(Object.keys(grouped).filter(s => !SOURCES[s]));
+        
+        let isFirstGroup = !hasCurrent;
+        sourceOrder.forEach(sourceKey => {
+            const group = grouped[sourceKey];
+            if (!group) return;
+            
+            const color = sourceColors[sourceKey] || 'yellow';
+            const label = SOURCES[sourceKey]?.name || sourceLabels[sourceKey] || sourceKey || 'Không rõ';
+            
+            if (!isFirstGroup) {
+                html += `<div class="col-span-full mt-6"></div>`;
+            }
+            isFirstGroup = false;
+            
             html += `
-                <div class="col-span-full mt-6 mb-2">
-                    <h2 class="text-lg font-semibold text-yellow-400">
-                        <i class="fas fa-link mr-2"></i>Phim từ nguồn khác
+                <div class="col-span-full mb-2">
+                    <h2 class="text-lg font-semibold text-${color}-400">
+                        <i class="fas fa-link mr-2"></i>${label}
                     </h2>
-                    <p class="text-sm text-gray-400 mt-1">Chuyển sang nguồn tương ứng để xem các phim này</p>
+                    <p class="text-sm text-gray-400 mt-1">Chuyển sang nguồn ${label} để xem các phim này</p>
                 </div>
             `;
-        }
-        html += otherFavs.map(fav => {
-            const sourceName = fav.source && SOURCES[fav.source] ? SOURCES[fav.source].name : (fav.source || 'Không rõ');
-            const displayName = fav.name || fav.title || fav.slug || 'Phim không xác định';
-            return `
-                <div class="film-card bg-gray-800/50 rounded-lg overflow-hidden border border-gray-700 relative">
-                    <button onclick="event.stopPropagation(); removeFromFavorites('${fav.slug}')" 
-                            class="absolute top-2 right-2 z-10 bg-red-600 hover:bg-red-700 p-2 rounded-full transition">
-                        <i class="fas fa-heart text-white"></i>
-                    </button>
-                    <div class="relative">
-                        <div class="w-full bg-gray-700 flex items-center justify-center" style="aspect-ratio: 2/3">
-                            <i class="fas fa-film text-5xl text-gray-500"></i>
-                        </div>
-                        <div class="absolute top-2 left-2 bg-yellow-600 px-2 py-1 rounded text-xs font-semibold">
-                            <i class="fas fa-link mr-1"></i>${sourceName}
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">${displayName}</h3>
-                        <p class="text-xs text-gray-400">Nguồn: ${sourceName}</p>
-                        <button onclick="event.stopPropagation(); switchToSource('${fav.source || ''}')" 
-                                class="mt-2 w-full bg-yellow-600 hover:bg-yellow-700 text-white text-xs py-2 rounded-lg transition">
-                            <i class="fas fa-exchange-alt mr-1"></i>Chuyển sang ${sourceName}
+            
+            html += group.map(fav => {
+                const displayName = fav.name || fav.title || fav.slug || 'Phim không xác định';
+                const posterImg = fav.poster_url
+                    ? `<img src="${fav.poster_url}" alt="${displayName}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="w-full h-full bg-gray-700 flex items-center justify-center hidden" style="aspect-ratio: 2/3"><i class="fas fa-film text-5xl text-gray-500"></i></div>`
+                    : `<div class="w-full bg-gray-700 flex items-center justify-center" style="aspect-ratio: 2/3"><i class="fas fa-film text-5xl text-gray-500"></i></div>`;
+                return `
+                    <div class="film-card bg-gray-800/50 rounded-lg overflow-hidden border border-gray-700 relative">
+                        <button onclick="event.stopPropagation(); removeFromFavorites('${fav.slug}')" 
+                                class="absolute top-2 right-2 z-10 bg-red-600 hover:bg-red-700 p-2 rounded-full transition">
+                            <i class="fas fa-heart text-white"></i>
                         </button>
+                        <div class="relative">
+                            ${posterImg}
+                            <div class="absolute top-2 left-2 bg-${color}-600 px-2 py-1 rounded text-xs font-semibold">
+                                <i class="fas fa-link mr-1"></i>${label}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-sm mb-2 line-clamp-2">${displayName}</h3>
+                            <p class="text-xs text-gray-400">Nguồn: ${label}</p>
+                            <button onclick="event.stopPropagation(); switchToSource('${fav.source || ''}')" 
+                                    class="mt-2 w-full bg-${color}-600 hover:bg-${color}-700 text-white text-xs py-2 rounded-lg transition">
+                                <i class="fas fa-exchange-alt mr-1"></i>Chuyển sang ${label}
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `;
-        }).join('');
+                `;
+            }).join('');
+        });
     }
     
     container.innerHTML = html;

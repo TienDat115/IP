@@ -1254,12 +1254,13 @@ function toggleFavorite() {
         if (snapshot.empty) {
             // Add to favorites
             const movieData = {
-                slug: currentMovie.slug || '',
-                title: currentMovie.name || currentMovie.title || '',
-                name: currentMovie.name || currentMovie.title || '',
-                source: currentSourceKey || '',
-                addedAt: new Date().toISOString()
-            };
+				slug: currentMovie.slug || "",
+				title: currentMovie.name || currentMovie.title || "",
+				name: currentMovie.name || currentMovie.title || "",
+				source: currentSourceKey || "",
+				poster_url: currentMovie.thumb_url || currentMovie.poster_url || "",
+				addedAt: new Date().toISOString(),
+			};
             
             favoritesRef.add(movieData).then(() => {
                 showSuccess('Đã thêm vào danh sách yêu thích');
