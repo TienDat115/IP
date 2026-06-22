@@ -1277,10 +1277,7 @@ function toggleFavorite() {
             });
             batch.commit().then(() => {
                 showSuccess('Đã xóa khỏi danh sách yêu thích');
-                // Reload page after successful removal
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
+                updateFavoriteButton();
             }).catch((error) => {
                 console.error('Error removing from favorites:', error);
                 showError('Không thể xóa khỏi yêu thích: ' + error.message);
