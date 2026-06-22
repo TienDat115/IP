@@ -174,13 +174,10 @@ function getBestImageForOrientation(posterUrl, thumbUrl, preferredOrientation = 
         }
 
         if (currentSourceKey === 'ophim') {
-            if (posterOrientation === 'vertical') {
-                return posterUrl;
-            } else if (thumbOrientation === 'vertical') {
-                return thumbUrl;
-            }
-
-            return posterUrl;
+            // For OPhim:
+            // posterUrl is mapped to image_url (often a landscape seo image/banner)
+            // thumbUrl is mapped to item.thumb_url (the actual vertical poster)
+            return thumbUrl || posterUrl;
         }
 
         if (thumbOrientation === 'vertical') {
@@ -188,17 +185,21 @@ function getBestImageForOrientation(posterUrl, thumbUrl, preferredOrientation = 
         } else if (posterOrientation === 'vertical') {
             return posterUrl;
         } else {
-            return thumbUrl;
+            return posterUrl || thumbUrl;
         }
     }
     
     if (preferredOrientation === 'horizontal') {
+        if (currentSourceKey === 'ophim') {
+            // For OPhim, posterUrl contains the banner/seo image, which is horizontal
+            return posterUrl || thumbUrl;
+        }
         if (posterOrientation === 'horizontal') {
             return posterUrl;
         } else if (thumbOrientation === 'horizontal') {
             return thumbUrl;
         } else {
-            return posterUrl;
+            return thumbUrl || posterUrl;
         }
     }
     
@@ -227,9 +228,12 @@ function applyPosterOrientationClass(img) {
 
     img.classList.remove('film-poster-landscape');
 
+    // Commented out to maintain consistent portrait aspect ratio for all cards
+    /*
     if (img.naturalWidth > img.naturalHeight) {
         img.classList.add('film-poster-landscape');
     }
+    */
 }
 
 const posterObserver = new MutationObserver((mutations) => {

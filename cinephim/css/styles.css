@@ -17,9 +17,12 @@
 	background-color: #111827;
 }
 
+/* Commented out to maintain consistent 2/3 portrait aspect ratio for all movie cards in grids */
+/*
 .film-poster.film-poster-landscape {
 	aspect-ratio: 16/9;
 }
+*/
 
 /* Pagination styles */
 #pagination,
