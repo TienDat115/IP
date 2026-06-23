@@ -1474,16 +1474,19 @@ async function saveDraft(textareaId = "messageText") {
 				drafts.push({ id: doc.id, ...doc.data() });
 			});
 
-			const itemsHtml = drafts.map(draft => `
-				<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-					<button type="button" class="btn btn-outline-primary"
-						onclick="overwriteDraft('${draft.id}', '${textareaId}')"
-						style="flex: 1; text-align: left; padding: 10px 14px; border-radius: 6px; cursor: pointer;">
-						<div style="font-weight: 600;">${draft.name || 'Bản nháp'}</div>
-						<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${draft.lastUpdated?.toDate ? formatRelativeTime(draft.lastUpdated) : ''}</div>
-					</button>
-				</div>
-			`).join('');
+		const itemsHtml = drafts.map(draft => {
+			const preview = draft.content ? draft.content.substring(0, 30).replace(/\n/g, ' ') + (draft.content.length > 30 ? '...' : '') : '(trống)';
+			return `
+			<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+				<button type="button" class="btn btn-outline-primary"
+					onclick="overwriteDraft('${draft.id}', '${textareaId}')"
+					style="flex: 1; text-align: left; padding: 10px 14px; border-radius: 6px; cursor: pointer;">
+					<div style="font-weight: 600;">${draft.name || 'Bản nháp'}</div>
+					<div style="font-size: 11px; color: #adb5bd; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${preview}</div>
+					<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${draft.lastUpdated?.toDate ? formatRelativeTime(draft.lastUpdated) : ''}</div>
+				</button>
+			</div>
+		`}).join('');
 
 			await Swal.fire({
 				title: 'Chọn bản nháp để ghi đè',
@@ -1604,19 +1607,22 @@ async function loadDraft(textareaId = "messageText") {
 			drafts.push({ id: doc.id, ...doc.data() });
 		});
 
-		const itemsHtml = drafts.map(draft => `
+		const itemsHtml = drafts.map(draft => {
+			const preview = draft.content ? draft.content.substring(0, 30).replace(/\n/g, ' ') + (draft.content.length > 30 ? '...' : '') : '(trống)';
+			return `
 			<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
 				<button type="button" class="btn btn-outline-primary"
 					onclick="selectDraft('${draft.id}', '${textareaId}')"
 					style="flex: 1; text-align: left; padding: 10px 14px; border-radius: 6px; cursor: pointer;">
 					<div style="font-weight: 600;">${draft.name || 'Bản nháp'}</div>
+					<div style="font-size: 11px; color: #adb5bd; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${preview}</div>
 					<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${draft.lastUpdated?.toDate ? formatRelativeTime(draft.lastUpdated) : ''}</div>
 				</button>
 				<button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteDraft('${draft.id}')" title="Xóa bản nháp" style="flex-shrink: 0;">
 					<i class="fas fa-trash"></i>
 				</button>
 			</div>
-		`).join('');
+		`}).join('');
 
 		Swal.fire({
 			title: 'Chọn bản nháp',
