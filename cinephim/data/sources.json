@@ -1,0 +1,56 @@
+[
+  {
+    "name": "NguonC",
+    "tagline": "Phim online Việt Nam",
+    "description": "Nền tảng xem phim online với nhiều phim mới cập nhật liên tục, chất lượng cao.",
+    "status": "Sẵn sàng",
+    "statusColor": "text-green-400",
+    "url": "https://phim.nguonc.com/",
+    "color": "bg-blue-600"
+  },
+  {
+    "name": "OPhim",
+    "tagline": "Xem phim HD",
+    "description": "Website xem phim online với chất lượng HD, nhiều thể loại phim đa dạng.",
+    "status": "Sẵn sàng",
+    "statusColor": "text-green-400",
+    "url": "https://ophim17.cc/",
+    "color": "bg-orange-600"
+  },
+  {
+    "name": "KKPhim",
+    "tagline": "Phim chất lượng cao",
+    "description": "Nền tảng cung cấp phim với chất lượng cao, tốc độ tải nhanh và ổn định.",
+    "status": "Miễn phí",
+    "statusColor": "text-green-400",
+    "url": "https://www.kkphim.vip/",
+    "color": "bg-purple-600"
+  },
+  {
+    "name": "iQIYI",
+    "tagline": "Phim châu Á",
+    "description": "Nền tảng streaming với nhiều phim châu Á, đặc biệt là phim Trung Quốc, Hàn Quốc.",
+    "status": "Premium",
+    "statusColor": "text-purple-400",
+    "url": "https://www.iq.com/",
+    "color": "bg-green-600"
+  },
+  {
+    "name": "YanHH3D",
+    "tagline": "Phim 3D HD",
+    "description": "Chuyên cung cấp phim 3D và HD chất lượng cao với nhiều nội dung độc đáo.",
+    "status": "Miễn phí",
+    "statusColor": "text-green-400",
+    "url": "https://yanhh3d.tv/",
+    "color": "bg-red-600"
+  },
+  {
+    "name": "Siêu Tâm Phim",
+    "tagline": "Phim online Việt Nam",
+    "description": "Website xem phim online miễn phí với nhiều thể loại phim đa dạng, cập nhật liên tục.",
+    "status": "Miễn phí",
+    "statusColor": "text-green-400",
+    "url": "https://www.sieutamphim.pro/",
+    "color": "bg-teal-600"
+  }
+]
