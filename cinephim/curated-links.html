@@ -227,25 +227,52 @@
 					const container = document.getElementById("linksContainer");
 					links.forEach((link, index) => {
 						const card = document.createElement("div");
-						card.className = "bg-gray-800 rounded-lg p-5 hover:bg-gray-750 transition border-l-4 border-teal-500";
+						card.className = "curated-card bg-gray-800 rounded-lg p-5 hover:bg-gray-750 transition border-l-4 border-teal-500";
 						card.innerHTML = `
-							<div class="flex items-start justify-between">
-								<div class="flex-1 min-w-0 mr-4">
-									<h3 class="text-lg font-semibold text-white mb-1">${link.title}</h3>
-									<p class="text-gray-400 text-sm mb-2 truncate">${link.url}</p>
+							<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+								<div class="flex-1 min-w-0">
+									<h3 class="text-base sm:text-lg font-semibold text-white mb-1">${link.title}</h3>
+									<p class="text-gray-400 text-xs sm:text-sm mb-2 truncate">${link.url}</p>
 									<span class="inline-block bg-teal-600 text-xs px-2 py-1 rounded font-medium">${link.source}</span>
 								</div>
-								<div class="flex flex-col items-center space-y-1 flex-shrink-0">
-									<a href="${link.url}" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition whitespace-nowrap w-full text-center">
-										<i class="fas fa-external-link-alt mr-1"></i>Xem phim
-									</a>
-									<div class="flex items-center space-x-1">
-										<input type="text" id="time-${index}" placeholder="00:00" class="w-16 bg-gray-700 text-white text-xs rounded px-1 py-0.5 border border-gray-600 focus:border-purple-500 outline-none text-center" maxlength="5" />
-										<button onclick="saveCuratedTime(${index})" class="bg-green-600 hover:bg-green-700 text-xs px-2 py-0.5 rounded transition" title="Lưu thời gian">
-											<i class="fas fa-save"></i>
-										</button>
+								<div class="flex flex-col items-stretch gap-1 flex-shrink-0 min-w-0 w-full sm:w-auto">
+									<div class="flex flex-row items-center gap-2">
+										<a href="${link.url}" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition whitespace-nowrap text-center flex-1 sm:flex-none">
+											<i class="fas fa-external-link-alt mr-1"></i>Xem phim
+										</a>
+										<div class="flex items-center gap-1 flex-shrink-0">
+											<input type="text" id="time-${index}" placeholder="00:00" class="w-14 sm:w-16 bg-gray-700 text-white text-xs rounded px-1 py-0.5 border border-gray-600 focus:border-purple-500 outline-none text-center" />
+											<button onclick="saveCuratedTime(${index})" class="bg-green-600 hover:bg-green-700 text-xs px-2 py-0.5 rounded transition" title="Lưu thời gian">
+												<i class="fas fa-save"></i>
+											</button>
+											<button onclick="toggleVirtualKeyboard(${index})" class="text-purple-400 hover:text-purple-300 transition text-xs" title="Mở bàn phím ảo">
+												<i class="fas fa-keyboard"></i>
+											</button>
+										</div>
 									</div>
-									<span id="saved-${index}" class="text-green-400 text-xs hidden"><i class="fas fa-check"></i> Đã lưu</span>
+									<div id="kbd-${index}" class="hidden bg-gray-800 rounded-lg p-2 w-full">
+										<div class="grid grid-cols-10 gap-0.5 sm:gap-1 mb-1">
+											<button onclick="kbdInsert(${index},'1')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">1</button>
+											<button onclick="kbdInsert(${index},'2')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">2</button>
+											<button onclick="kbdInsert(${index},'3')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">3</button>
+											<button onclick="kbdInsert(${index},'4')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">4</button>
+											<button onclick="kbdInsert(${index},'5')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">5</button>
+											<button onclick="kbdInsert(${index},'6')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">6</button>
+											<button onclick="kbdInsert(${index},'7')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">7</button>
+											<button onclick="kbdInsert(${index},'8')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">8</button>
+											<button onclick="kbdInsert(${index},'9')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">9</button>
+											<button onclick="kbdInsert(${index},'0')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">0</button>
+										</div>
+										<div class="grid grid-cols-6 gap-0.5 sm:gap-1">
+											<button onclick="kbdInsert(${index},':')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">:</button>
+											<button onclick="kbdInsert(${index},'-')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">-</button>
+											<button onclick="kbdInsert(${index},' ')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">space</button>
+											<button onclick="kbdBackspace(${index})" class="bg-orange-600 hover:bg-orange-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0"><i class="fas fa-backspace"></i></button>
+											<button onclick="kbdClear(${index})" class="bg-red-600 hover:bg-red-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">Xóa hết</button>
+											<button onclick="toggleVirtualKeyboard(${index})" class="bg-purple-600 hover:bg-purple-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">Đóng</button>
+										</div>
+									</div>
+									<span id="saved-${index}" class="text-green-400 text-xs hidden text-center"><i class="fas fa-check"></i> Đã lưu</span>
 								</div>
 							</div>
 						`;
@@ -274,7 +301,7 @@
 					return;
 				}
 
-				const card = timeInput.closest(".bg-gray-800");
+				const card = timeInput.closest(".curated-card");
 				const title = card.querySelector("h3").textContent;
 				const url = card.querySelector("p.truncate").textContent;
 				const docId = encodeURIComponent(url);
@@ -302,7 +329,7 @@
 						const data = doc.data();
 						timeMap[data.url] = data.time;
 					});
-					document.querySelectorAll("#linksContainer .bg-gray-800").forEach((card) => {
+					document.querySelectorAll("#linksContainer .curated-card").forEach((card) => {
 						const url = card.querySelector("p.truncate").textContent;
 						if (timeMap[url]) {
 							const input = card.querySelector("input");
@@ -317,80 +344,42 @@
 			document.addEventListener("cinephim:auth-ready", loadCuratedTimes);
 		</script>
 
-		<!-- Virtual Keyboard -->
-		<div id="virtualKeyboard" class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 p-2 hidden z-50">
-			<div class="max-w-xs mx-auto">
-				<div class="grid grid-cols-4 gap-1.5">
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="1">1</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="2">2</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="3">3</button>
-					<button class="kbd-btn bg-purple-600 hover:bg-purple-700 text-white text-lg font-semibold rounded py-2.5" data-value="done"><i class="fas fa-check"></i></button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="4">4</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="5">5</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="6">6</button>
-					<button class="kbd-btn bg-red-600 hover:bg-red-700 text-white text-lg font-semibold rounded py-2.5" data-value="backspace"><i class="fas fa-delete-left"></i></button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="7">7</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="8">8</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value="9">9</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5" data-value=":">:</button>
-					<button class="kbd-btn bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded py-2.5 col-span-2" data-value="0">0</button>
-					<div></div>
-					<div></div>
-				</div>
-			</div>
-		</div>
-
 		<!-- Virtual Keyboard JavaScript -->
 		<script>
-			let activeTimeInput = null;
+			function toggleVirtualKeyboard(index) {
+				const kbd = document.getElementById("kbd-" + index);
+				kbd.classList.toggle("hidden");
+			}
 
-			document.addEventListener("focusin", function (e) {
-				if (e.target.id && e.target.id.startsWith("time-")) {
-					activeTimeInput = e.target;
-					document.getElementById("virtualKeyboard").classList.remove("hidden");
-				}
-			});
+			function getTimeInput(index) {
+				return document.getElementById("time-" + index);
+			}
 
-			document.addEventListener("focusout", function (e) {
-				if (e.target.id && e.target.id.startsWith("time-")) {
-					setTimeout(() => {
-						if (!document.activeElement || !document.activeElement.closest("#virtualKeyboard")) {
-							document.getElementById("virtualKeyboard").classList.add("hidden");
-							activeTimeInput = null;
-						}
-					}, 150);
-				}
-			});
+			function kbdInsert(index, char) {
+				const input = getTimeInput(index);
+				const start = input.selectionStart;
+				const end = input.selectionEnd;
+				const val = input.value;
+				input.value = val.slice(0, start) + char + val.slice(end);
+				input.selectionStart = input.selectionEnd = start + char.length;
+				input.focus();
+			}
 
-			document.getElementById("virtualKeyboard").addEventListener("click", function (e) {
-				const btn = e.target.closest(".kbd-btn");
-				if (!btn || !activeTimeInput) return;
+			function kbdBackspace(index) {
+				const input = getTimeInput(index);
+				const start = input.selectionStart;
+				if (start === 0) return;
+				const val = input.value;
+				input.value = val.slice(0, start - 1) + val.slice(start);
+				input.selectionStart = input.selectionEnd = start - 1;
+				input.focus();
+			}
 
-				const val = btn.dataset.value;
-				if (val === "done") {
-					activeTimeInput.blur();
-					document.getElementById("virtualKeyboard").classList.add("hidden");
-					activeTimeInput = null;
-					return;
-				}
-
-				if (val === "backspace") {
-					activeTimeInput.value = activeTimeInput.value.replace(":", "").slice(0, -1);
-					if (activeTimeInput.value.length >= 2) {
-						activeTimeInput.value = activeTimeInput.value.slice(0, 2) + ":" + activeTimeInput.value.slice(2);
-					}
-					return;
-				}
-
-				let current = activeTimeInput.value.replace(":", "");
-				if (current.length >= 4) return;
-				current += val;
-				if (current.length >= 2) {
-					activeTimeInput.value = current.slice(0, 2) + ":" + current.slice(2);
-				} else {
-					activeTimeInput.value = current;
-				}
-			});
+			function kbdClear(index) {
+				const input = getTimeInput(index);
+				input.value = "";
+				input.focus();
+			}
 		</script>
 
 		<!-- Mobile Menu JavaScript -->
