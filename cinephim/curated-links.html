@@ -26,6 +26,19 @@
 
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
+		<style>
+			.swal-input-custom { font-size: 14px !important; padding: 10px 12px !important; margin: 6px 0 !important; border-radius: 8px !important; background: #374151 !important; color: #fff !important; border: 1px solid #4b5563 !important; box-shadow: none !important; width: 100% !important; box-sizing: border-box !important; }
+			.swal-input-custom:focus { border-color: #7c3aed !important; outline: none !important; }
+			.swal-input-custom::placeholder { color: #9ca3af !important; }
+			.swal-btn-custom { font-size: 14px !important; padding: 10px 28px !important; border-radius: 8px !important; }
+			.swal-msg-custom { font-size: 12px !important; margin: 4px 0 !important; }
+			@media (max-width: 640px) {
+				.swal2-popup { margin: 8px !important; padding: 16px !important; }
+				.swal2-title { font-size: 18px !important; }
+				.swal-input-custom { font-size: 16px !important; padding: 12px !important; }
+				.swal-btn-custom { font-size: 16px !important; padding: 12px 32px !important; width: 100% !important; }
+			}
+		</style>
 	</head>
 	<body class="bg-gray-900 text-white">
 		<!-- Header -->
@@ -264,18 +277,27 @@
 								<p class="text-gray-400 text-xs sm:text-sm mb-2 truncate">${escapeHtml(link.url)}</p>
 								<span class="inline-block bg-teal-600 text-xs px-2 py-1 rounded font-medium">${escapeHtml(link.source)}</span>
 							</div>
-							<div class="flex flex-col items-stretch gap-1 flex-shrink-0 min-w-0 w-full sm:w-auto">
-								<div class="flex flex-row items-center gap-2">
-									<a href="${escapeHtml(link.url)}" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition whitespace-nowrap text-center flex-1 sm:flex-none">
-										<i class="fas fa-external-link-alt mr-1"></i>Xem phim
-									</a>
-									<div class="flex items-center gap-1 flex-shrink-0">
-										<input type="text" id="time-${link.id}" placeholder="00:00" class="w-14 sm:w-16 bg-gray-700 text-white text-xs rounded px-1 py-0.5 border border-gray-600 focus:border-purple-500 outline-none text-center" />
-										<button onclick="saveCuratedTime('${link.id}')" class="bg-green-600 hover:bg-green-700 text-xs px-2 py-0.5 rounded transition" title="Lưu thời gian">
+							<div class="flex flex-col items-stretch gap-2 flex-shrink-0 min-w-0 w-full sm:w-auto sm:min-w-[220px]">
+								<a href="${escapeHtml(link.url)}" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-lg text-sm transition font-medium text-center">
+									<i class="fas fa-external-link-alt mr-1"></i>Xem phim
+								</a>
+								<div class="flex items-center justify-between gap-1">
+									<div class="flex items-center gap-1">
+										<input type="text" id="time-${link.id}" placeholder="00:00" class="w-12 sm:w-14 bg-gray-700 text-white text-xs rounded px-1 py-1 border border-gray-600 focus:border-purple-500 outline-none text-center" />
+										<button onclick="saveCuratedTime('${link.id}')" class="bg-green-600 hover:bg-green-700 text-xs px-1.5 sm:px-2 py-1 rounded transition" title="Lưu thời gian">
 											<i class="fas fa-save"></i>
 										</button>
-										<button onclick="toggleVirtualKeyboard('${link.id}')" class="text-purple-400 hover:text-purple-300 transition text-xs" title="Mở bàn phím ảo">
+										<button onclick="toggleVirtualKeyboard('${link.id}')" class="text-purple-400 hover:text-purple-300 transition text-xs px-1 py-1" title="Mở bàn phím ảo">
 											<i class="fas fa-keyboard"></i>
+										</button>
+										<span id="saved-${link.id}" class="text-green-400 text-xs hidden"><i class="fas fa-check"></i></span>
+									</div>
+									<div class="flex items-center gap-1">
+										<button onclick="editCuratedLink('${link.id}')" class="text-blue-400 hover:text-blue-300 transition text-xs px-1.5 py-1 rounded border border-blue-500/30 hover:border-blue-400 ${isLoggedIn ? '' : 'hidden'}" title="Sửa thông tin">
+											<i class="fas fa-edit"></i>
+										</button>
+										<button onclick="deleteCuratedLink('${link.id}')" class="text-red-400 hover:text-red-300 transition text-xs px-1.5 py-1 rounded border border-red-500/30 hover:border-red-400 ${isLoggedIn ? '' : 'hidden'}" title="Xóa video">
+											<i class="fas fa-trash-alt"></i>
 										</button>
 									</div>
 								</div>
@@ -301,12 +323,6 @@
 										<button onclick="toggleVirtualKeyboard('${link.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">Đóng</button>
 									</div>
 								</div>
-								<div class="flex items-center justify-between gap-2">
-									<span id="saved-${link.id}" class="text-green-400 text-xs hidden"><i class="fas fa-check"></i> Đã lưu</span>
-									<button onclick="deleteCuratedLink('${link.id}')" class="text-red-400 hover:text-red-300 transition text-xs ml-auto ${isLoggedIn ? '' : 'hidden'}" title="Xóa video">
-										<i class="fas fa-trash-alt"></i> Xóa
-									</button>
-								</div>
 							</div>
 						</div>
 					`;
@@ -324,15 +340,17 @@
 			// --- Add curated link ---
 			async function addCuratedLink() {
 				if (!currentUser) {
-					Swal.fire({ icon: "warning", title: "Chưa đăng nhập", text: "Vui lòng đăng nhập để thêm link!", background: "#1f2937", color: "#fff" });
+					Swal.fire({ icon: "warning", title: "Chưa đăng nhập", text: "Vui lòng đăng nhập để thêm link!", background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed" });
 					return;
 				}
 				const { value: form } = await Swal.fire({
 					title: "Thêm Link Phim",
+					width: "min(90vw, 500px)",
+					padding: "1.25rem",
 					html:
-						'<input id="swal-title" placeholder="Tên phim" class="swal2-input">' +
-						'<input id="swal-url" placeholder="URL phim" class="swal2-input">' +
-						'<input id="swal-source" placeholder="Nguồn (VD: Siêu Tâm Phim)" class="swal2-input">',
+						'<input id="swal-title" placeholder="Tên phim" class="swal2-input swal-input-custom">' +
+						'<input id="swal-url" placeholder="URL phim" class="swal2-input swal-input-custom">' +
+						'<input id="swal-source" placeholder="Nguồn (VD: Siêu Tâm Phim)" class="swal2-input swal-input-custom">',
 					focusConfirm: false,
 					preConfirm: () => {
 						const title = document.getElementById("swal-title").value.trim();
@@ -343,7 +361,11 @@
 						if (!source) { Swal.showValidationMessage("Vui lòng nhập nguồn"); return; }
 						return { title, url, source };
 					},
-					background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed"
+					background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed",
+					customClass: {
+						confirmButton: "swal-btn-custom",
+						validationMessage: "swal-msg-custom"
+					}
 				});
 				if (!form) return;
 				try {
@@ -353,10 +375,10 @@
 						source: form.source,
 						addedAt: firebase.firestore.FieldValue.serverTimestamp(),
 					});
-					Swal.fire({ icon: "success", title: "Đã thêm!", timer: 1500, showConfirmButton: false, background: "#1f2937", color: "#fff" });
+					Swal.fire({ icon: "success", title: "Đã thêm!", timer: 1500, showConfirmButton: false, background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed" });
 					loadCuratedLinks();
 				} catch (err) {
-					Swal.fire({ icon: "error", title: "Lỗi", text: err.message, background: "#1f2937", color: "#fff" });
+					Swal.fire({ icon: "error", title: "Lỗi", text: err.message, background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed" });
 				}
 			}
 
@@ -381,6 +403,50 @@
 					loadCuratedLinks();
 				} catch (err) {
 					Swal.fire({ icon: "error", title: "Lỗi", text: err.message, background: "#1f2937", color: "#fff" });
+				}
+			}
+
+			// --- Edit curated link ---
+			async function editCuratedLink(docId) {
+				if (!currentUser) return;
+				const link = curatedLinks.find((l) => l.id === docId);
+				if (!link) return;
+
+				const { value: form } = await Swal.fire({
+					title: "Sửa thông tin phim",
+					width: "min(90vw, 500px)",
+					padding: "1.25rem",
+					html:
+						`<input id="swal-title" placeholder="Tên phim" class="swal2-input swal-input-custom" value="${escapeHtml(link.title)}">` +
+						`<input id="swal-url" placeholder="URL phim" class="swal2-input swal-input-custom" value="${escapeHtml(link.url)}">` +
+						`<input id="swal-source" placeholder="Nguồn (VD: Siêu Tâm Phim)" class="swal2-input swal-input-custom" value="${escapeHtml(link.source)}">`,
+					focusConfirm: false,
+					preConfirm: () => {
+						const title = document.getElementById("swal-title").value.trim();
+						const url = document.getElementById("swal-url").value.trim();
+						const source = document.getElementById("swal-source").value.trim();
+						if (!title) { Swal.showValidationMessage("Vui lòng nhập tên phim"); return; }
+						if (!url) { Swal.showValidationMessage("Vui lòng nhập URL"); return; }
+						if (!source) { Swal.showValidationMessage("Vui lòng nhập nguồn"); return; }
+						return { title, url, source };
+					},
+					background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed",
+					customClass: {
+						confirmButton: "swal-btn-custom",
+						validationMessage: "swal-msg-custom"
+					}
+				});
+				if (!form) return;
+				try {
+					await db.collection("users").doc(currentUser.uid).collection("curatedLinks").doc(docId).update({
+						title: form.title,
+						url: form.url,
+						source: form.source,
+					});
+					Swal.fire({ icon: "success", title: "Đã cập nhật!", timer: 1500, showConfirmButton: false, background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed" });
+					loadCuratedLinks();
+				} catch (err) {
+					Swal.fire({ icon: "error", title: "Lỗi", text: err.message, background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed" });
 				}
 			}
 
