@@ -202,7 +202,10 @@
 			<!-- Page Title -->
 			<div class="text-center mb-8">
 				<h1 class="text-3xl sm:text-4xl font-bold mb-4"><i class="fas fa-bookmark mr-3 text-purple-400"></i>Link Phim Cố Định</h1>
-				<p class="text-gray-400 max-w-2xl mx-auto">Danh sách các đường dẫn phim cố định, được chọn lọc từ nhiều nguồn khác nhau</p>
+				<p class="text-gray-400 max-w-2xl mx-auto mb-4">Danh sách các đường dẫn phim cố định, được chọn lọc từ nhiều nguồn khác nhau</p>
+				<button id="addLinkBtn" onclick="addCuratedLink()" class="hidden bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition font-medium">
+					<i class="fas fa-plus mr-1"></i>Thêm video
+				</button>
 			</div>
 
 			<!-- Links Container -->
@@ -219,83 +222,178 @@
 		<!-- Scripts -->
 		<script src="js/common.js"></script>
 
-		<!-- Load curated links -->
+		<!-- Load & manage curated links from Firebase -->
 		<script>
-			fetch("data/curated-links.json")
-				.then((res) => res.json())
-				.then((links) => {
-					const container = document.getElementById("linksContainer");
-					links.forEach((link, index) => {
-						const card = document.createElement("div");
-						card.className = "curated-card bg-gray-800 rounded-lg p-5 hover:bg-gray-750 transition border-l-4 border-teal-500";
-						card.innerHTML = `
-							<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-								<div class="flex-1 min-w-0">
-									<h3 class="text-base sm:text-lg font-semibold text-white mb-1">${link.title}</h3>
-									<p class="text-gray-400 text-xs sm:text-sm mb-2 truncate">${link.url}</p>
-									<span class="inline-block bg-teal-600 text-xs px-2 py-1 rounded font-medium">${link.source}</span>
+			let curatedLinks = [];
+
+			async function loadCuratedLinks() {
+				const container = document.getElementById("linksContainer");
+				if (!currentUser) {
+					container.innerHTML = '<p class="text-gray-400 text-center">Vui lòng đăng nhập để xem link phim.</p>';
+					return;
+				}
+				container.innerHTML = '<p class="text-gray-400 text-center"><i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...</p>';
+				try {
+					const snapshot = await db.collection("users").doc(currentUser.uid).collection("curatedLinks").orderBy("addedAt", "desc").get();
+					curatedLinks = [];
+					snapshot.forEach((doc) => {
+						curatedLinks.push({ id: doc.id, ...doc.data() });
+					});
+					renderLinks();
+				} catch (err) {
+					container.innerHTML = '<p class="text-red-400 text-center">Không thể tải danh sách link: ' + err.message + '</p>';
+				}
+			}
+
+			function renderLinks() {
+				const container = document.getElementById("linksContainer");
+				if (curatedLinks.length === 0) {
+					container.innerHTML = '<p class="text-gray-400 text-center">Chưa có link nào.</p>';
+					return;
+				}
+				container.innerHTML = "";
+				curatedLinks.forEach((link) => {
+					const card = document.createElement("div");
+					card.className = "curated-card bg-gray-800 rounded-lg p-5 hover:bg-gray-750 transition border-l-4 border-teal-500";
+					card.dataset.id = link.id;
+					const isLoggedIn = !!currentUser;
+					card.innerHTML = `
+						<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+							<div class="flex-1 min-w-0">
+								<h3 class="text-base sm:text-lg font-semibold text-white mb-1">${escapeHtml(link.title)}</h3>
+								<p class="text-gray-400 text-xs sm:text-sm mb-2 truncate">${escapeHtml(link.url)}</p>
+								<span class="inline-block bg-teal-600 text-xs px-2 py-1 rounded font-medium">${escapeHtml(link.source)}</span>
+							</div>
+							<div class="flex flex-col items-stretch gap-1 flex-shrink-0 min-w-0 w-full sm:w-auto">
+								<div class="flex flex-row items-center gap-2">
+									<a href="${escapeHtml(link.url)}" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition whitespace-nowrap text-center flex-1 sm:flex-none">
+										<i class="fas fa-external-link-alt mr-1"></i>Xem phim
+									</a>
+									<div class="flex items-center gap-1 flex-shrink-0">
+										<input type="text" id="time-${link.id}" placeholder="00:00" class="w-14 sm:w-16 bg-gray-700 text-white text-xs rounded px-1 py-0.5 border border-gray-600 focus:border-purple-500 outline-none text-center" />
+										<button onclick="saveCuratedTime('${link.id}')" class="bg-green-600 hover:bg-green-700 text-xs px-2 py-0.5 rounded transition" title="Lưu thời gian">
+											<i class="fas fa-save"></i>
+										</button>
+										<button onclick="toggleVirtualKeyboard('${link.id}')" class="text-purple-400 hover:text-purple-300 transition text-xs" title="Mở bàn phím ảo">
+											<i class="fas fa-keyboard"></i>
+										</button>
+									</div>
 								</div>
-								<div class="flex flex-col items-stretch gap-1 flex-shrink-0 min-w-0 w-full sm:w-auto">
-									<div class="flex flex-row items-center gap-2">
-										<a href="${link.url}" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm transition whitespace-nowrap text-center flex-1 sm:flex-none">
-											<i class="fas fa-external-link-alt mr-1"></i>Xem phim
-										</a>
-										<div class="flex items-center gap-1 flex-shrink-0">
-											<input type="text" id="time-${index}" placeholder="00:00" class="w-14 sm:w-16 bg-gray-700 text-white text-xs rounded px-1 py-0.5 border border-gray-600 focus:border-purple-500 outline-none text-center" />
-											<button onclick="saveCuratedTime(${index})" class="bg-green-600 hover:bg-green-700 text-xs px-2 py-0.5 rounded transition" title="Lưu thời gian">
-												<i class="fas fa-save"></i>
-											</button>
-											<button onclick="toggleVirtualKeyboard(${index})" class="text-purple-400 hover:text-purple-300 transition text-xs" title="Mở bàn phím ảo">
-												<i class="fas fa-keyboard"></i>
-											</button>
-										</div>
+								<div id="kbd-${link.id}" class="hidden bg-gray-800 rounded-lg p-2 w-full">
+									<div class="grid grid-cols-10 gap-0.5 sm:gap-1 mb-1">
+										<button onclick="kbdInsert('${link.id}','1')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">1</button>
+										<button onclick="kbdInsert('${link.id}','2')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">2</button>
+										<button onclick="kbdInsert('${link.id}','3')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">3</button>
+										<button onclick="kbdInsert('${link.id}','4')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">4</button>
+										<button onclick="kbdInsert('${link.id}','5')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">5</button>
+										<button onclick="kbdInsert('${link.id}','6')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">6</button>
+										<button onclick="kbdInsert('${link.id}','7')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">7</button>
+										<button onclick="kbdInsert('${link.id}','8')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">8</button>
+										<button onclick="kbdInsert('${link.id}','9')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">9</button>
+										<button onclick="kbdInsert('${link.id}','0')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">0</button>
 									</div>
-									<div id="kbd-${index}" class="hidden bg-gray-800 rounded-lg p-2 w-full">
-										<div class="grid grid-cols-10 gap-0.5 sm:gap-1 mb-1">
-											<button onclick="kbdInsert(${index},'1')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">1</button>
-											<button onclick="kbdInsert(${index},'2')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">2</button>
-											<button onclick="kbdInsert(${index},'3')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">3</button>
-											<button onclick="kbdInsert(${index},'4')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">4</button>
-											<button onclick="kbdInsert(${index},'5')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">5</button>
-											<button onclick="kbdInsert(${index},'6')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">6</button>
-											<button onclick="kbdInsert(${index},'7')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">7</button>
-											<button onclick="kbdInsert(${index},'8')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">8</button>
-											<button onclick="kbdInsert(${index},'9')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">9</button>
-											<button onclick="kbdInsert(${index},'0')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">0</button>
-										</div>
-										<div class="grid grid-cols-6 gap-0.5 sm:gap-1">
-											<button onclick="kbdInsert(${index},':')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">:</button>
-											<button onclick="kbdInsert(${index},'-')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">-</button>
-											<button onclick="kbdInsert(${index},' ')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">space</button>
-											<button onclick="kbdBackspace(${index})" class="bg-orange-600 hover:bg-orange-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0"><i class="fas fa-backspace"></i></button>
-											<button onclick="kbdClear(${index})" class="bg-red-600 hover:bg-red-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">Xóa hết</button>
-											<button onclick="toggleVirtualKeyboard(${index})" class="bg-purple-600 hover:bg-purple-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">Đóng</button>
-										</div>
+									<div class="grid grid-cols-6 gap-0.5 sm:gap-1">
+										<button onclick="kbdInsert('${link.id}',':')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">:</button>
+										<button onclick="kbdInsert('${link.id}','-')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">-</button>
+										<button onclick="kbdInsert('${link.id}',' ')" class="bg-gray-600 hover:bg-gray-500 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">space</button>
+										<button onclick="kbdBackspace('${link.id}')" class="bg-orange-600 hover:bg-orange-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0"><i class="fas fa-backspace"></i></button>
+										<button onclick="kbdClear('${link.id}')" class="bg-red-600 hover:bg-red-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">Xóa hết</button>
+										<button onclick="toggleVirtualKeyboard('${link.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-0.5 sm:px-1 py-0.5 rounded text-xs min-w-0">Đóng</button>
 									</div>
-									<span id="saved-${index}" class="text-green-400 text-xs hidden text-center"><i class="fas fa-check"></i> Đã lưu</span>
+								</div>
+								<div class="flex items-center justify-between gap-2">
+									<span id="saved-${link.id}" class="text-green-400 text-xs hidden"><i class="fas fa-check"></i> Đã lưu</span>
+									<button onclick="deleteCuratedLink('${link.id}')" class="text-red-400 hover:text-red-300 transition text-xs ml-auto ${isLoggedIn ? '' : 'hidden'}" title="Xóa video">
+										<i class="fas fa-trash-alt"></i> Xóa
+									</button>
 								</div>
 							</div>
-						`;
-						container.appendChild(card);
-					});
-				})
-				.catch((err) => {
-					document.getElementById("linksContainer").innerHTML = '<p class="text-red-400 text-center">Không thể tải danh sách link.</p>';
+						</div>
+					`;
+					container.appendChild(card);
 				});
-		</script>
+				loadCuratedTimes();
+			}
 
-		<!-- Save & load curated time from Firebase -->
-		<script>
-			async function saveCuratedTime(index) {
-				const timeInput = document.getElementById("time-" + index);
-				const savedEl = document.getElementById("saved-" + index);
+			function escapeHtml(str) {
+				const div = document.createElement("div");
+				div.textContent = str;
+				return div.innerHTML;
+			}
+
+			// --- Add curated link ---
+			async function addCuratedLink() {
+				if (!currentUser) {
+					Swal.fire({ icon: "warning", title: "Chưa đăng nhập", text: "Vui lòng đăng nhập để thêm link!", background: "#1f2937", color: "#fff" });
+					return;
+				}
+				const { value: form } = await Swal.fire({
+					title: "Thêm Link Phim",
+					html:
+						'<input id="swal-title" placeholder="Tên phim" class="swal2-input">' +
+						'<input id="swal-url" placeholder="URL phim" class="swal2-input">' +
+						'<input id="swal-source" placeholder="Nguồn (VD: Siêu Tâm Phim)" class="swal2-input">',
+					focusConfirm: false,
+					preConfirm: () => {
+						const title = document.getElementById("swal-title").value.trim();
+						const url = document.getElementById("swal-url").value.trim();
+						const source = document.getElementById("swal-source").value.trim();
+						if (!title) { Swal.showValidationMessage("Vui lòng nhập tên phim"); return; }
+						if (!url) { Swal.showValidationMessage("Vui lòng nhập URL"); return; }
+						if (!source) { Swal.showValidationMessage("Vui lòng nhập nguồn"); return; }
+						return { title, url, source };
+					},
+					background: "#1f2937", color: "#fff", confirmButtonColor: "#7c3aed"
+				});
+				if (!form) return;
+				try {
+					await db.collection("users").doc(currentUser.uid).collection("curatedLinks").add({
+						title: form.title,
+						url: form.url,
+						source: form.source,
+						addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+					});
+					Swal.fire({ icon: "success", title: "Đã thêm!", timer: 1500, showConfirmButton: false, background: "#1f2937", color: "#fff" });
+					loadCuratedLinks();
+				} catch (err) {
+					Swal.fire({ icon: "error", title: "Lỗi", text: err.message, background: "#1f2937", color: "#fff" });
+				}
+			}
+
+			// --- Delete curated link ---
+			async function deleteCuratedLink(docId) {
+				if (!currentUser) return;
+				const result = await Swal.fire({
+					title: "Xóa video?",
+					text: "Bạn có chắc muốn xóa video này?",
+					icon: "warning",
+					showCancelButton: true,
+					confirmButtonColor: "#dc2626",
+					cancelButtonColor: "#6b7280",
+					confirmButtonText: "Xóa",
+					cancelButtonText: "Hủy",
+					background: "#1f2937", color: "#fff"
+				});
+				if (!result.isConfirmed) return;
+				try {
+					await db.collection("users").doc(currentUser.uid).collection("curatedLinks").doc(docId).delete();
+					Swal.fire({ icon: "success", title: "Đã xóa!", timer: 1500, showConfirmButton: false, background: "#1f2937", color: "#fff" });
+					loadCuratedLinks();
+				} catch (err) {
+					Swal.fire({ icon: "error", title: "Lỗi", text: err.message, background: "#1f2937", color: "#fff" });
+				}
+			}
+
+			// --- Save curated time ---
+			async function saveCuratedTime(docId) {
+				const timeInput = document.getElementById("time-" + docId);
+				const savedEl = document.getElementById("saved-" + docId);
 				const timeValue = timeInput.value.trim();
 
 				if (!timeValue) {
 					Swal.fire({ icon: "warning", title: "Chưa nhập thời gian", text: "Vui lòng nhập thời gian (VD: 01:30)", background: "#1f2937", color: "#fff" });
 					return;
 				}
-
 				if (!currentUser) {
 					Swal.fire({ icon: "warning", title: "Chưa đăng nhập", text: "Vui lòng đăng nhập để lưu thời gian!", background: "#1f2937", color: "#fff" });
 					return;
@@ -304,13 +402,11 @@
 				const card = timeInput.closest(".curated-card");
 				const title = card.querySelector("h3").textContent;
 				const url = card.querySelector("p.truncate").textContent;
-				const docId = encodeURIComponent(url);
+				const timeDocId = encodeURIComponent(url);
 
 				try {
-					await db.collection("users").doc(currentUser.uid).collection("curatedTimes").doc(docId).set({
-						title: title,
-						url: url,
-						time: timeValue,
+					await db.collection("users").doc(currentUser.uid).collection("curatedTimes").doc(timeDocId).set({
+						title, url, time: timeValue,
 						savedAt: firebase.firestore.FieldValue.serverTimestamp(),
 					});
 					savedEl.classList.remove("hidden");
@@ -320,6 +416,7 @@
 				}
 			}
 
+			// --- Load saved times ---
 			async function loadCuratedTimes() {
 				if (!currentUser) return;
 				try {
@@ -341,22 +438,17 @@
 				}
 			}
 
-			document.addEventListener("cinephim:auth-ready", loadCuratedTimes);
-		</script>
-
-		<!-- Virtual Keyboard JavaScript -->
-		<script>
-			function toggleVirtualKeyboard(index) {
-				const kbd = document.getElementById("kbd-" + index);
-				kbd.classList.toggle("hidden");
+			// --- Virtual keyboard ---
+			function toggleVirtualKeyboard(id) {
+				const kbd = document.getElementById("kbd-" + id);
+				if (kbd) kbd.classList.toggle("hidden");
 			}
-
-			function getTimeInput(index) {
-				return document.getElementById("time-" + index);
+			function getTimeInput(id) {
+				return document.getElementById("time-" + id);
 			}
-
-			function kbdInsert(index, char) {
-				const input = getTimeInput(index);
+			function kbdInsert(id, char) {
+				const input = getTimeInput(id);
+				if (!input) return;
 				const start = input.selectionStart;
 				const end = input.selectionEnd;
 				const val = input.value;
@@ -364,9 +456,9 @@
 				input.selectionStart = input.selectionEnd = start + char.length;
 				input.focus();
 			}
-
-			function kbdBackspace(index) {
-				const input = getTimeInput(index);
+			function kbdBackspace(id) {
+				const input = getTimeInput(id);
+				if (!input) return;
 				const start = input.selectionStart;
 				if (start === 0) return;
 				const val = input.value;
@@ -374,12 +466,27 @@
 				input.selectionStart = input.selectionEnd = start - 1;
 				input.focus();
 			}
-
-			function kbdClear(index) {
-				const input = getTimeInput(index);
+			function kbdClear(id) {
+				const input = getTimeInput(id);
+				if (!input) return;
 				input.value = "";
 				input.focus();
 			}
+
+			function updateAuthUI() {
+				const btns = document.querySelectorAll(".curated-card .fa-trash-alt");
+				btns.forEach((btn) => {
+					btn.closest("button").classList.toggle("hidden", !currentUser);
+				});
+				const addBtn = document.getElementById("addLinkBtn");
+				if (addBtn) addBtn.classList.toggle("hidden", !currentUser);
+			}
+
+			// Init
+			document.addEventListener("cinephim:auth-ready", () => {
+				updateAuthUI();
+				if (currentUser) loadCuratedLinks();
+			});
 		</script>
 
 		<!-- Mobile Menu JavaScript -->

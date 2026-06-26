@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8" />
+	<title>Seed dữ liệu lên Firebase</title>
+	<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+	<script src="js/firebase-config.js"></script>
+	<script>const db = firebase.firestore();</script>
+	<style>
+		body { font-family: sans-serif; background: #111; color: #fff; padding: 2rem; }
+		pre { background: #222; padding: 1rem; border-radius: 8px; overflow: auto; max-height: 300px; }
+		button { background: #7c3aed; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+		button:hover { background: #6d28d9; }
+		#status { margin-top: 1rem; padding: 1rem; border-radius: 8px; }
+	</style>
+</head>
+<body>
+	<h1>Seed dữ liệu curated-links lên Firebase</h1>
+	<p>Bấm nút để đưa dữ liệu từ file JSON lên Firestore collection <code>curatedLinks</code>.</p>
+	<div id="authSection">
+		<p id="userStatus" style="color:#a78bfa">Đang kiểm tra đăng nhập...</p>
+		<button id="loginBtn" onclick="login()" style="display:none">Đăng nhập</button>
+		<button id="logoutBtn" onclick="logout()" style="display:none">Đăng xuất</button>
+	</div>
+	<br/>
+	<button id="seedBtn" onclick="seedData()" disabled>Chạy seed (cần đăng nhập)</button>
+	<div id="status"></div>
+	<pre id="log"></pre>
+
+	<script>
+		let currentUser = null;
+
+		firebase.auth().onAuthStateChanged(function(user) {
+			currentUser = user;
+			const status = document.getElementById('userStatus');
+			const loginBtn = document.getElementById('loginBtn');
+			const logoutBtn = document.getElementById('logoutBtn');
+			const seedBtn = document.getElementById('seedBtn');
+			if (user) {
+				status.textContent = 'Đã đăng nhập: ' + user.email;
+				loginBtn.style.display = 'none';
+				logoutBtn.style.display = 'inline-block';
+				seedBtn.disabled = false;
+				seedBtn.textContent = 'Chạy seed';
+			} else {
+				status.textContent = 'Chưa đăng nhập';
+				loginBtn.style.display = 'inline-block';
+				logoutBtn.style.display = 'none';
+				seedBtn.disabled = true;
+				seedBtn.textContent = 'Chạy seed (cần đăng nhập)';
+			}
+		});
+
+		function login() {
+			const email = prompt('Email:');
+			if (!email) return;
+			const pass = prompt('Mật khẩu:');
+			if (!pass) return;
+			firebase.auth().signInWithEmailAndPassword(email, pass)
+				.catch(err => alert('Lỗi đăng nhập: ' + err.message));
+		}
+
+		function logout() {
+			firebase.auth().signOut();
+		}
+
+		async function seedData() {
+			const btn = document.querySelector('button');
+			btn.disabled = true;
+			btn.textContent = 'Đang chạy...';
+			const log = document.getElementById('log');
+			const status = document.getElementById('status');
+
+			try {
+				const res = await fetch('cinephim/data/curated-links.json');
+				const links = await res.json();
+				log.textContent += 'Đã đọc ' + links.length + ' link từ JSON\n';
+
+				if (!currentUser) {
+					status.innerHTML = '<span style="color:#ef4444">Cần đăng nhập trước!</span>';
+					return;
+				}
+				let count = 0;
+				for (const link of links) {
+					const existing = await db.collection('users').doc(currentUser.uid).collection('curatedLinks')
+						.where('url', '==', link.url)
+						.get();
+
+					if (existing.empty) {
+						await db.collection('users').doc(currentUser.uid).collection('curatedLinks').add({
+							title: link.title,
+							url: link.url,
+							source: link.source,
+							addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+						});
+						count++;
+						log.textContent += '  + ' + link.title + '\n';
+					} else {
+						log.textContent += '  = ' + link.title + ' (đã tồn tại)\n';
+					}
+				}
+
+				status.innerHTML = '<span style="color:#22c55e">Hoàn tất! Đã thêm ' + count + ' link mới.</span>';
+			} catch (err) {
+				status.innerHTML = '<span style="color:#ef4444">Lỗi: ' + err.message + '</span>';
+				log.textContent += 'LỖI: ' + err.message + '\n';
+			}
+
+			btn.disabled = false;
+			btn.textContent = 'Chạy seed';
+		}
+	</script>
+</body>
+</html>
