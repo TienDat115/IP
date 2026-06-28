@@ -65,7 +65,7 @@ function renderLinks() {
 					</a>
 					<div class="flex items-center justify-between gap-1">
 						<div class="flex items-center gap-1">
-							<input type="text" id="time-${link.id}" placeholder="00:00" class="w-12 sm:w-14 bg-gray-700 text-white text-xs rounded px-1 py-1 border border-gray-600 focus:border-purple-500 outline-none text-center" />
+							<input type="text" id="time-${link.id}" placeholder="00:00" class="w-16 sm:w-20 bg-gray-700 text-white text-xs rounded px-1 py-1 border border-gray-600 focus:border-purple-500 outline-none text-center" onkeydown="if(event.key==='Enter')saveCuratedTime('${link.id}')" />
 							<button onclick="saveCuratedTime('${link.id}')" class="bg-green-600 hover:bg-green-700 text-xs px-1.5 sm:px-2 py-1 rounded transition" title="Lưu thời gian">
 								<i class="fas fa-save"></i>
 							</button>
@@ -304,10 +304,6 @@ async function saveCuratedTime(docId) {
 	const savedEl = document.getElementById("saved-" + docId);
 	const timeValue = timeInput.value.trim();
 
-	if (!timeValue) {
-		Swal.fire({ icon: "warning", title: "Chưa nhập thời gian", text: "Vui lòng nhập thời gian (VD: 01:30)", background: "#1f2937", color: "#fff" });
-		return;
-	}
 	if (!currentUser) {
 		Swal.fire({ icon: "warning", title: "Chưa đăng nhập", text: "Vui lòng đăng nhập để lưu thời gian!", background: "#1f2937", color: "#fff" });
 		return;
