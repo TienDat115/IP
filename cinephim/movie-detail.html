@@ -242,7 +242,7 @@
 		</header>
 
 		<!-- Breadcrumb -->
-		<div id="breadcrumbSection" class="container mx-auto px-4 py-4">
+		<div id="breadcrumbSection" class="container mx-auto px-3 sm:px-4 py-2 sm:py-4">
 			<nav class="flex items-center space-x-2 text-sm text-gray-400">
 				<a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
 				<i class="fas fa-chevron-right text-xs"></i>
@@ -253,7 +253,7 @@
 		</div>
 
 		<!-- Main Content -->
-		<main class="container mx-auto px-4 py-8">
+		<main class="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
 			<!-- Loading -->
 			<div id="loading" class="text-center py-12">
 				<div class="loading-spinner mx-auto"></div>
@@ -262,7 +262,7 @@
 
 			<!-- Movie Content -->
 			<div id="movieContent" class="hidden">
-				<div class="space-y-6">
+				<div class="space-y-4 sm:space-y-6">
 					<!-- Movie Hero: Poster + Info -->
 					<div id="movieHeroSection" class="bg-gray-800 rounded-lg overflow-hidden flex flex-col sm:flex-row">
 						<!-- Poster Column -->
@@ -271,10 +271,10 @@
 						</div>
 
 						<!-- Info Column -->
-						<div class="sm:flex-1 p-6">
-							<h1 id="movieTitle" class="text-2xl font-bold mb-4">Đang tải...</h1>
+						<div class="sm:flex-1 p-4 sm:p-6">
+							<h1 id="movieTitle" class="text-lg sm:text-2xl font-bold mb-3 sm:mb-4">Đang tải...</h1>
 
-							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
 								<div class="flex items-center">
 									<i class="fas fa-calendar-alt w-5 text-purple-400"></i>
 									<span class="ml-3" id="movieYear">Năm</span>
@@ -293,7 +293,7 @@
 								</div>
 							</div>
 
-							<div class="space-y-2 mb-6">
+							<div class="space-y-2 mb-4 sm:mb-6">
 								<div class="flex items-start">
 									<i class="fas fa-user w-5 text-purple-400 mt-0.5"></i>
 									<span class="ml-3" id="movieCasts">Đang tải...</span>
@@ -305,9 +305,9 @@
 							</div>
 
 							<!-- Action Buttons -->
-							<div class="flex flex-col sm:flex-row gap-3 mb-6">
-								<button onclick="toggleFavorite()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-heart mr-2"></i>Thêm vào yêu thích</button>
-								<button onclick="togglePinMovie()" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-4 rounded-lg transition"><i class="fas fa-thumbtack mr-2"></i>Ghim phim</button>
+							<div class="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
+								<button onclick="toggleFavorite()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-sm sm:text-base transition"><i class="fas fa-heart mr-2"></i>Yêu thích</button>
+								<button onclick="togglePinMovie()" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-sm sm:text-base transition"><i class="fas fa-thumbtack mr-2"></i>Ghim phim</button>
 							</div>
 
 							<!-- Watch Time Note -->
@@ -383,17 +383,17 @@
 					</div>
 
 					<!-- Episodes Section -->
-					<div id="episodesSection" class="bg-gray-800 rounded-lg p-6">
+					<div id="episodesSection" class="bg-gray-800 rounded-lg p-4 sm:p-6">
 						<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-							<h3 class="text-xl font-semibold">Danh sách tập</h3>
-							<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition whitespace-nowrap"><i class="fas fa-history mr-2"></i>Lịch sử xem</button>
+							<h3 class="text-lg sm:text-xl font-semibold">Danh sách tập</h3>
+							<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition whitespace-nowrap"><i class="fas fa-history mr-1 sm:mr-2"></i>Lịch sử xem</button>
 						</div>
 
 						<!-- Episode Navigation Buttons -->
 						<div class="flex justify-between items-center mb-4">
-							<button onclick="playPreviousEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center"><i class="fas fa-chevron-left mr-2"></i>Tập trước</button>
-							<span id="currentEpisodeDisplay" class="text-white font-medium">Chưa chọn tập</span>
-							<button onclick="playNextEpisode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center">Tập sau<i class="fas fa-chevron-right ml-2"></i></button>
+							<button onclick="playPreviousEpisode()" class="bg-gray-700 hover:bg-gray-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center"><i class="fas fa-chevron-left mr-1 sm:mr-2"></i><span class="hidden sm:inline">Tập trước</span><span class="sm:hidden">Trước</span></button>
+							<span id="currentEpisodeDisplay" class="text-sm sm:text-base text-white font-medium">Chưa chọn tập</span>
+							<button onclick="playNextEpisode()" class="bg-gray-700 hover:bg-gray-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center"><span class="hidden sm:inline">Tập sau</span><span class="sm:hidden">Sau</span><i class="fas fa-chevron-right ml-1 sm:ml-2"></i></button>
 						</div>
 
 						<!-- Watch History Section - Hidden by default -->
@@ -420,8 +420,8 @@
 					</div>
 
 					<!-- Movie Description -->
-					<div id="movieDescriptionSection" class="bg-gray-800 rounded-lg p-6">
-						<h3 class="text-xl font-semibold mb-4">Nội dung phim</h3>
+					<div id="movieDescriptionSection" class="bg-gray-800 rounded-lg p-4 sm:p-6">
+						<h3 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Nội dung phim</h3>
 						<div id="movieDescriptionContainer">
 							<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
 						</div>
@@ -437,7 +437,7 @@
 		</button>
 
 		<!-- Footer -->
-		<footer class="bg-gray-800 py-8 mt-16">
+		<footer class="bg-gray-800 py-6 sm:py-8 mt-8 sm:mt-16">
 			<div class="container mx-auto px-4 text-center">
 				<p class="text-gray-400">2026 CinePhim. Xem phim online miễn phí với chất lượng HD.</p>
 			</div>
