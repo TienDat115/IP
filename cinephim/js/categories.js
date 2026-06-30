@@ -7,31 +7,6 @@ let totalPages = 1;
 let categoryNameMap = {};
 let categoriesLoaded = false;
 
-// NguonC fallback categories list (no API endpoint available)
-const NGONC_CATEGORIES = [
-    { slug: 'hanh-dong', name: 'Hành Động' },
-    { slug: 'phieu-luu', name: 'Phiêu Lưu' },
-    { slug: 'hoat-hinh', name: 'Hoạt Hình' },
-    { slug: 'phim-hai', name: 'Hài' },
-    { slug: 'hinh-su', name: 'Hình Sự' },
-    { slug: 'tai-lieu', name: 'Tài Liệu' },
-    { slug: 'chinh-kich', name: 'Chính Kịch' },
-    { slug: 'gia-dinh', name: 'Gia Đình' },
-    { slug: 'gia-tuong', name: 'Giả Tưởng' },
-    { slug: 'lich-su', name: 'Lịch Sử' },
-    { slug: 'kinh-di', name: 'Kinh Dị' },
-    { slug: 'phim-nhac', name: 'Nhạc' },
-    { slug: 'bi-an', name: 'Bí Ẩn' },
-    { slug: 'lang-man', name: 'Lãng Mạn' },
-    { slug: 'khoa-hoc-vien-tuong', name: 'Khoa Học Viễn Tưởng' },
-    { slug: 'gay-can', name: 'Gây Cấn' },
-    { slug: 'chien-tranh', name: 'Chiến Tranh' },
-    { slug: 'mien-tay', name: 'Miền Tây' },
-    { slug: 'co-trang', name: 'Cổ Trang' },
-    { slug: 'tam-ly', name: 'Tâm Lý' },
-    { slug: 'tinh-cam', name: 'Tình Cảm' },
-    { slug: 'phim-18', name: 'Phim 18+' }
-];
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', async function() {

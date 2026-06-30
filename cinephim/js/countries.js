@@ -4,38 +4,6 @@ let currentCountry = '';
 let totalPages = 1;
 let countryNameMap = {};
 
-// NguonC fallback countries list (no API endpoint available)
-const NGUONC_COUNTRIES = [
-    { slug: 'au-my', name: 'Âu Mỹ' },
-    { slug: 'anh', name: 'Anh' },
-    { slug: 'trung-quoc', name: 'Trung Quốc' },
-    { slug: 'indonesia', name: 'Indonesia' },
-    { slug: 'viet-nam', name: 'Việt Nam' },
-    { slug: 'argentina', name: 'Argentina' },
-    { slug: 'ao', name: 'Áo' },
-    { slug: 'uc', name: 'Úc' },
-    { slug: 'bangladesh', name: 'Bangladesh' },
-    { slug: 'thuy-si', name: 'Thụy Sĩ' },
-    { slug: 'bo-bien-nga', name: 'Bờ Biển Ngà' },
-    { slug: 'chile', name: 'Chile' },
-    { slug: 'colombia', name: 'Colombia' },
-    { slug: 'costa-rica', name: 'Costa Rica' },
-    { slug: 'duc', name: 'Đức' },
-    { slug: 'dan-mach', name: 'Đan Mạch' },
-    { slug: 'tay-ban-nha', name: 'Tây Ban Nha' },
-    { slug: 'phap', name: 'Pháp' },
-    { slug: 'greenland', name: 'Greenland' },
-    { slug: 'hong-kong', name: 'Hồng Kông' },
-    { slug: 'han-quoc', name: 'Hàn Quốc' },
-    { slug: 'nhat-ban', name: 'Nhật Bản' },
-    { slug: 'thai-lan', name: 'Thái Lan' },
-    { slug: 'dai-loan', name: 'Đài Loan' },
-    { slug: 'nga', name: 'Nga' },
-    { slug: 'ha-lan', name: 'Hà Lan' },
-    { slug: 'quoc-gia-khac', name: 'Quốc gia khác' },
-    { slug: 'philippines', name: 'Philippines' },
-    { slug: 'an-do', name: 'Ấn Độ' }
-];
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
