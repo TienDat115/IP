@@ -16,24 +16,10 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 		<link rel="stylesheet" href="css/styles.css" />
 		<style>
-			/* Fix pagination overflow */
-			#pagination {
-				max-width: 100%;
-				overflow-x: auto;
-				justify-content: center;
-				flex-wrap: nowrap !important;
-				padding: 0 1rem;
-			}
-
-			/* Mobile button icons only */
 			@media (max-width: 639px) {
 				#watchHistoryGrid {
 					grid-template-columns: repeat(2, 1fr);
 				}
-				#pagination {
-					padding: 0 0.5rem;
-				}
-				/* Hide text and center icon on mobile */
 				.hidden.sm\:inline + i {
 					margin-right: 0 !important;
 				}

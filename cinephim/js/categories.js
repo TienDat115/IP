@@ -193,37 +193,9 @@ async function loadMoviesByCategory(category, page = 1) {
     }
 }
 
-// Format episode information
-// Display movies
-function displayMovies(movies) {
-    const moviesGrid = document.getElementById('moviesGrid');
-    
-    if (!movies || movies.length === 0) {
-        showPageNoResults();
-        return;
-    }
-    
-    moviesGrid.innerHTML = movies.map(movie => getMovieCardHTML(movie)).join('');
-}
-
 // Update pagination
 function updatePagination(paginate) {
-    const paginationContainer = document.getElementById('pagination');
-    if (!paginationContainer) return;
-    
-    let paginationData = paginate;
-    if (paginate && paginate.paginate) {
-        paginationData = paginate.paginate;
-    }
-    if (!paginationData) {
-        paginationData = { current_page: currentPage || 1, total_page: 5, total_items: 50 };
-    }
-    
-    const current = currentPage || paginationData.current_page || 1;
-    const total = paginationData.total_page || 1;
-    const onClick = `loadMoviesByCategory('${currentCategory}', {page})`;
-    
-    paginationContainer.innerHTML = getPaginationHTML(current, total, onClick);
+    _renderPagination(paginate, `loadMoviesByCategory('${currentCategory}', {page})`);
 }
 
 // Get category display name

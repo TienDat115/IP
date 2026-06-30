@@ -78,22 +78,13 @@ async function loadSingleMovies(page = 1) {
     }
 }
 
-// Format episode information
-// Display movies
-function displayMovies(movies) {
-    const moviesGrid = document.getElementById('moviesGrid');
-    if (!movies || movies.length === 0) { showPageNoResults(); return; }
-    moviesGrid.innerHTML = movies.map(movie => getMovieCardHTML(movie)).join('');
-}
-
 // Update pagination
 function updatePagination(paginate) {
-    const paginationContainer = document.getElementById('pagination');
-    if (!paginate) { paginationContainer.innerHTML = ''; return; }
+    if (!paginate) { document.getElementById('pagination').innerHTML = ''; return; }
     const { current_page: current, total_page: total } = paginate;
     currentPage = current;
     totalPages = total;
-    paginationContainer.innerHTML = getPaginationHTML(current, total, `loadSingleMovies({page})`);
+    _renderPagination(paginate, 'loadSingleMovies({page})');
     const url = new URL(window.location);
     url.searchParams.set('page', current);
     window.history.pushState({}, '', url);

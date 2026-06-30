@@ -163,35 +163,9 @@ async function searchMovies(keyword, page = 1) {
     }
 }
 
-// Format episode information
-// Display movies
-function displayMovies(movies) {
-    const container = document.getElementById('moviesContainer');
-    if (!container) return;
-    if (!movies || movies.length === 0) {
-        container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400">Không có phim nào để hiển thị</div>';
-        return;
-    }
-    container.innerHTML = movies.map(movie => getMovieCardHTML(movie)).join('');
-}
-
 // Display pagination
 function displayPagination(pagination) {
-    const container = document.getElementById('pagination');
-    if (!container) return;
-    
-    let paginationData = pagination;
-    if (pagination && pagination.paginate) {
-        paginationData = pagination.paginate;
-    }
-    if (!paginationData) {
-        paginationData = { current_page: currentPage || 1, total_page: 5, total_items: 50 };
-    }
-    
-    const current_page = currentPage || paginationData.current_page || 1;
-    const total_page = paginationData.total_page || 1;
-    
-    container.innerHTML = getPaginationHTML(current_page, total_page, 'changePage({page})');
+    _renderPagination(pagination, 'changePage({page})');
 }
 
 // Change page

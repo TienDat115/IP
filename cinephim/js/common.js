@@ -1787,6 +1787,27 @@ function showPageLoading(show) {
     if (moviesContainer) moviesContainer.classList.toggle('hidden', show);
 }
 
+function displayMovies(movies) {
+    const grid = document.getElementById('moviesGrid');
+    if (!grid) return;
+    if (!movies || movies.length === 0) {
+        showPageNoResults();
+        return;
+    }
+    hidePageNoResults();
+    grid.innerHTML = movies.map(movie => getMovieCardHTML(movie)).join('');
+}
+
+function _renderPagination(paginationData, onClickTemplate) {
+    const container = document.getElementById('pagination');
+    if (!container) return;
+    if (!paginationData) { container.innerHTML = ''; return; }
+    const p = normalizePagination(paginationData) || paginationData;
+    const current = p.current_page || 1;
+    const total = p.total_page || 1;
+    container.innerHTML = getPaginationHTML(current, total, onClickTemplate);
+}
+
 function showPageNoResults() {
     const noResults = document.getElementById('noResults');
     const moviesContainer = document.getElementById('moviesContainer');
