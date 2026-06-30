@@ -454,6 +454,84 @@ async function toggleLogin() {
     }
 }
 
+// Sync theme icons between desktop and mobile
+function syncThemeIcons() {
+    const desktopIcon = document.getElementById("themeIcon");
+    const mobileIcon = document.getElementById("mobileThemeIcon");
+    if (desktopIcon && mobileIcon) {
+        mobileIcon.className = desktopIcon.classList.contains("fa-moon")
+            ? "fas fa-moon"
+            : "fas fa-sun";
+    }
+}
+
+// Sync login icons between desktop and mobile
+function syncLoginIcons() {
+    const desktopIcon = document.getElementById("loginIcon");
+    const mobileIcon = document.getElementById("mobileLoginIcon");
+    const desktopText = document.getElementById("loginText");
+    if (desktopIcon && mobileIcon) {
+        mobileIcon.className = desktopIcon.className;
+        mobileIcon.className = desktopText && desktopText.textContent === "Đăng xuất"
+            ? "fas fa-sign-out-alt"
+            : "fas fa-sign-in-alt";
+    }
+}
+
+// Override toggleTheme to sync icons
+if (window.toggleTheme) {
+    const originalToggleTheme = window.toggleTheme;
+    window.toggleTheme = function () {
+        originalToggleTheme();
+        syncThemeIcons();
+    };
+}
+
+// Override toggleLogin to sync icons
+if (window.toggleLogin) {
+    const originalToggleLogin = window.toggleLogin;
+    window.toggleLogin = function () {
+        originalToggleLogin();
+        syncLoginIcons();
+    };
+}
+
+// Initialize common page UI (mobile menu, search sync, icon sync)
+function initPageSync() {
+    const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener("click", toggleMobileMenu);
+    }
+
+    document.addEventListener("click", function (e) {
+        if (mobileMenu && !mobileMenu.classList.contains("hidden")) {
+            if (!mobileMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                closeMobileMenu();
+            }
+        }
+    });
+
+    const mobileSearchInput = document.getElementById("mobileSearchInput");
+    const desktopSearchInput = document.getElementById("searchInput");
+    if (mobileSearchInput && desktopSearchInput) {
+        mobileSearchInput.addEventListener("input", function (e) {
+            desktopSearchInput.value = e.target.value;
+            const event = new Event("input");
+            desktopSearchInput.dispatchEvent(event);
+        });
+        desktopSearchInput.addEventListener("input", function (e) {
+            mobileSearchInput.value = e.target.value;
+        });
+    }
+
+    setTimeout(function () {
+        syncThemeIcons();
+        syncLoginIcons();
+    }, 100);
+}
+
 // Show login modal
 function showLoginModal() {
     const modal = document.getElementById('loginModal');
