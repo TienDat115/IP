@@ -6,6 +6,8 @@ let categoryNameMap = {};
 let countryNameMap = {};
 let selectedCategories = [];
 let selectedCountries = [];
+let selectedYears = [];
+let yearNameMap = {};
 let combinedMovies = [];
 let combinedTotalPages = 1;
 let isCombinedMode = false;
@@ -13,13 +15,14 @@ const COMBINED_PER_PAGE = 24;
 
 
 document.addEventListener('DOMContentLoaded', async function() {
-    await Promise.all([loadCategories(), loadCountries()]);
+    await Promise.all([loadCategories(), loadCountries(), loadYears()]);
     setupEventListeners();
     setupSearchListeners();
 
     const urlParams = new URLSearchParams(window.location.search);
     const cats = urlParams.get('category');
     const countries = urlParams.get('country');
+    const years = urlParams.get('year');
     const page = urlParams.get('page');
 
     if (cats) {
@@ -46,8 +49,20 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
     }
+    if (years) {
+        years.split(',').forEach(slug => {
+            slug = slug.trim();
+            if (slug && yearNameMap[slug]) {
+                const chip = document.querySelector(`.chip-btn[data-group="year"][data-value="${slug}"]`);
+                if (chip) {
+                    chip.classList.add('selected');
+                    selectedYears.push(slug);
+                }
+            }
+        });
+    }
 
-    if (selectedCategories.length > 0 || selectedCountries.length > 0) {
+    if (selectedCategories.length > 0 || selectedCountries.length > 0 || selectedYears.length > 0) {
         const p = page ? parseInt(page) : 1;
         applyFilters(p);
     }
@@ -148,6 +163,21 @@ async function loadCountries() {
 }
 
 
+function loadYears() {
+    const container = document.getElementById('yearsContainer');
+    if (!container) return;
+
+    const years = NGONC_YEARS;
+
+    yearNameMap = {};
+    years.forEach(y => { yearNameMap[y.slug] = y.name; });
+
+    container.innerHTML = years.map(y => `
+        <button class="chip-btn" data-group="year" data-value="${y.slug}">${y.name}</button>
+    `).join('');
+}
+
+
 function setupEventListeners() {
     document.getElementById('categoriesContainer')?.addEventListener('click', function(e) {
         const chip = e.target.closest('.chip-btn');
@@ -177,14 +207,28 @@ function setupEventListeners() {
         }
     });
 
+    document.getElementById('yearsContainer')?.addEventListener('click', function(e) {
+        const chip = e.target.closest('.chip-btn');
+        if (!chip || chip.dataset.group !== 'year') return;
+
+        const value = chip.dataset.value;
+        if (chip.classList.contains('selected')) {
+            chip.classList.remove('selected');
+            selectedYears = selectedYears.filter(v => v !== value);
+        } else {
+            chip.classList.add('selected');
+            selectedYears.push(value);
+        }
+    });
+
     document.getElementById('applyFilterBtn')?.addEventListener('click', () => applyFilters());
     document.getElementById('clearFilterBtn')?.addEventListener('click', clearFilters);
 }
 
 
 function applyFilters(page = 1) {
-    if (selectedCategories.length === 0 && selectedCountries.length === 0) {
-        showWarning('Vui lòng chọn ít nhất thể loại hoặc quốc gia.');
+    if (selectedCategories.length === 0 && selectedCountries.length === 0 && selectedYears.length === 0) {
+        showWarning('Vui lòng chọn ít nhất thể loại, quốc gia hoặc năm.');
         return;
     }
 
@@ -193,13 +237,16 @@ function applyFilters(page = 1) {
     else url.searchParams.delete('category');
     if (selectedCountries.length > 0) url.searchParams.set('country', selectedCountries.join(','));
     else url.searchParams.delete('country');
+    if (selectedYears.length > 0) url.searchParams.set('year', selectedYears.join(','));
+    else url.searchParams.delete('year');
     url.searchParams.set('page', page);
     window.history.pushState({}, '', url);
 
     const catNames = selectedCategories.map(s => getCategoryDisplayName(s)).filter(Boolean);
     const ctryNames = selectedCountries.map(s => getCountryDisplayName(s)).filter(Boolean);
-    document.title = buildPageTitle(catNames, ctryNames);
-    updateBreadcrumb(catNames, ctryNames);
+    const yearNames = selectedYears.map(s => getYearDisplayName(s)).filter(Boolean);
+    document.title = buildPageTitle(catNames, ctryNames, yearNames);
+    updateBreadcrumb(catNames, ctryNames, yearNames);
 
     loadFilteredMovies(page);
 }
@@ -208,6 +255,7 @@ function applyFilters(page = 1) {
 function clearFilters() {
     selectedCategories = [];
     selectedCountries = [];
+    selectedYears = [];
     combinedMovies = [];
     isCombinedMode = false;
     combinedTotalPages = 1;
@@ -216,6 +264,7 @@ function clearFilters() {
     const url = new URL(window.location);
     url.searchParams.delete('category');
     url.searchParams.delete('country');
+    url.searchParams.delete('year');
     url.searchParams.delete('page');
     window.history.pushState({}, '', url);
 
@@ -228,9 +277,10 @@ function clearFilters() {
 
 
 async function loadFilteredMovies(page = 1) {
-    if (selectedCategories.length === 0 && selectedCountries.length === 0) return;
+    if (selectedCategories.length === 0 && selectedCountries.length === 0 && selectedYears.length === 0) return;
 
-    const isMulti = selectedCategories.length > 1 || selectedCountries.length > 1 || (selectedCategories.length > 0 && selectedCountries.length > 0);
+    const totalSelections = selectedCategories.length + selectedCountries.length + selectedYears.length;
+    const isMulti = totalSelections !== 1;
 
     try {
         showPageLoading(true);
@@ -245,15 +295,22 @@ async function loadFilteredMovies(page = 1) {
 
         if (!isMulti) {
             // Single dimension: use normal API call with pagination
-            if (selectedCategories.length === 1 && selectedCountries.length === 0) {
+            if (selectedCategories.length === 1 && selectedCountries.length === 0 && selectedYears.length === 0) {
                 let endpoint = buildCategoryEndpoint(selectedCategories[0]);
                 data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
                 if (data.status === 'success' || data.status === true) {
                     const pathImage = getPathImage(data);
                     movies = extractMovies(data, pathImage);
                 }
-            } else if (selectedCountries.length === 1 && selectedCategories.length === 0) {
+            } else if (selectedCountries.length === 1 && selectedCategories.length === 0 && selectedYears.length === 0) {
                 let endpoint = buildCountryEndpoint(selectedCountries[0]);
+                data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
+                if (data.status === 'success' || data.status === true) {
+                    const pathImage = getPathImage(data);
+                    movies = extractMovies(data, pathImage);
+                }
+            } else if (selectedYears.length === 1 && selectedCategories.length === 0 && selectedCountries.length === 0) {
+                let endpoint = buildYearEndpoint(selectedYears[0]);
                 data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
                 if (data.status === 'success' || data.status === true) {
                     const pathImage = getPathImage(data);
@@ -280,6 +337,11 @@ async function loadFilteredMovies(page = 1) {
             if (selectedCategories.length > 0) {
                 for (const cat of selectedCategories) {
                     let ep = buildCategoryEndpoint(cat);
+                    endpoints.push(getApiUrl(`${API_BASE}${ep}`));
+                }
+            } else if (selectedYears.length > 0) {
+                for (const year of selectedYears) {
+                    let ep = buildYearEndpoint(year);
                     endpoints.push(getApiUrl(`${API_BASE}${ep}`));
                 }
             } else if (selectedCountries.length > 0) {
@@ -325,10 +387,19 @@ async function loadFilteredMovies(page = 1) {
                 }
             }
 
-            if (selectedCategories.length > 0 && selectedCountries.length > 0) {
+            if (selectedCountries.length > 0) {
                 for (let i = allMovies.length - 1; i >= 0; i--) {
                     const movie = allMovies[i];
                     if (!movie.country || !Array.isArray(movie.country) || !movie.country.some(c => selectedCountries.includes(c.slug))) {
+                        allMovies.splice(i, 1);
+                    }
+                }
+            }
+
+            if (selectedYears.length > 0) {
+                for (let i = allMovies.length - 1; i >= 0; i--) {
+                    const movie = allMovies[i];
+                    if (!selectedYears.includes(String(movie.year))) {
                         allMovies.splice(i, 1);
                     }
                 }
@@ -353,7 +424,9 @@ async function loadFilteredMovies(page = 1) {
                 return;
             }
 
-            if (selectedCategories.length > 0 && selectedCountries.length > 0) {
+            if ((selectedCategories.length > 0 && selectedCountries.length > 0) ||
+                    (selectedCategories.length > 0 && selectedYears.length > 0) ||
+                    (selectedCountries.length > 0 && selectedYears.length > 0)) {
                 showMultiFilterNotice();
             }
         }
@@ -378,6 +451,12 @@ function buildCountryEndpoint(country) {
     if (currentSourceKey === 'nguonc') return `/films/quoc-gia/${country}`;
     if (currentSourceKey === 'kkphim') return `/v1/api/quoc-gia/${country}`;
     return `${currentSource.endpoints.country}/${country}`;
+}
+
+function buildYearEndpoint(year) {
+    if (currentSourceKey === 'nguonc') return `/films/nam-phat-hanh/${year}`;
+    if (currentSourceKey === 'kkphim') return `/v1/api/nam/${year}`;
+    return `/nam-phat-hanh/${year}`;
 }
 
 function getPathImage(data) {
@@ -437,17 +516,22 @@ function getCountryDisplayName(slug) {
     return slug ? (countryNameMap[slug] || slug) : '';
 }
 
+function getYearDisplayName(slug) {
+    return slug ? (yearNameMap[slug] || slug) : '';
+}
 
-function buildPageTitle(catNames, ctryNames) {
+
+function buildPageTitle(catNames, ctryNames, yearNames) {
     const parts = [];
     if (catNames.length > 0) parts.push(catNames.join(', '));
     if (ctryNames.length > 0) parts.push(ctryNames.join(', '));
+    if (yearNames.length > 0) parts.push(`Năm ${yearNames.join(', ')}`);
     if (parts.length > 0) return `Phim ${parts.join(' - ')} - CinePhim`;
     return 'Tìm Phim Nâng Cao - CinePhim';
 }
 
 
-function updateBreadcrumb(catNames, ctryNames) {
+function updateBreadcrumb(catNames, ctryNames, yearNames) {
     const breadcrumbContainer = document.getElementById('breadcrumb');
     if (!breadcrumbContainer) return;
 
@@ -471,6 +555,13 @@ function updateBreadcrumb(catNames, ctryNames) {
         `;
     }
 
+    if (yearNames.length > 0) {
+        html += `
+            <i class="fas fa-chevron-right text-xs"></i>
+            <span class="text-white">Năm ${yearNames.join(', ')}</span>
+        `;
+    }
+
     breadcrumbContainer.innerHTML = html;
 }
 
@@ -479,8 +570,8 @@ function showMultiFilterNotice() {
     const notice = document.getElementById('filterNotice');
     const noticeText = document.getElementById('filterNoticeText');
     if (!notice || !noticeText) return;
-    if (currentSourceKey === 'nguonc') {
-        noticeText.innerHTML = `Nguồn NguonC không hỗ trợ lọc theo quốc gia. Chỉ hiển thị kết quả theo thể loại đã chọn.`;
+    if (currentSourceKey === 'nguonc' && selectedCountries.length > 0) {
+        noticeText.innerHTML = `Nguồn NguonC không hỗ trợ lọc theo quốc gia. Chỉ hiển thị kết quả theo tiêu chí còn lại.`;
     } else {
         noticeText.innerHTML = `Đã kết hợp kết quả từ nhiều bộ lọc.`;
     }

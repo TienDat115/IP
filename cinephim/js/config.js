@@ -127,6 +127,8 @@ const NGONC_CATEGORIES = [
     { slug: 'phim-18', name: 'Phim 18+' }
 ];
 
+const CURRENT_YEAR = 2026;
+
 // NguonC fallback countries list (scraped from nguonc.com menu)
 const NGUONC_COUNTRIES = [
     { slug: 'au-my', name: 'Âu Mỹ' },
@@ -146,3 +148,11 @@ const NGUONC_COUNTRIES = [
     { slug: 'an-do', name: 'Ấn Độ' },
     { slug: 'quoc-gia-khac', name: 'Quốc gia khác' }
 ];
+
+const NGONC_YEARS = (() => {
+    const years = [];
+    for (let y = CURRENT_YEAR; y >= 1990; y--) {
+        years.push({ slug: String(y), name: String(y) });
+    }
+    return years;
+})();
