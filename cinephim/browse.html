@@ -27,43 +27,64 @@
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
 		<style>
-			@media (max-width: 639px) {
-				.filter-grid { grid-template-columns: repeat(2, 1fr); }
-			}
-			@media (min-width: 640px) and (max-width: 767px) {
-				.filter-grid { grid-template-columns: repeat(3, 1fr); }
-			}
-			@media (min-width: 768px) and (max-width: 1023px) {
-				.filter-grid { grid-template-columns: repeat(4, 1fr); }
-			}
-			@media (min-width: 1024px) and (max-width: 1279px) {
-				.filter-grid { grid-template-columns: repeat(5, 1fr); }
-			}
-			@media (min-width: 1280px) {
-				.filter-grid { grid-template-columns: repeat(6, 1fr); }
+			.filter-panel {
+				background: #1f2937;
+				border-radius: 12px;
+				padding: 24px;
 			}
 
-			input[type="radio"]:checked + span {
-				background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-				color: white;
+			.filter-row {
+				display: flex;
+				align-items: flex-start;
+				gap: 12px;
+				margin-bottom: 16px;
+			}
+
+			.filter-row:last-of-type {
+				margin-bottom: 0;
+			}
+
+			.filter-label {
+				min-width: 90px;
+				padding-top: 6px;
+				font-size: 0.875rem;
+				font-weight: 500;
+				color: #9ca3af;
+				flex-shrink: 0;
+			}
+
+			.chip-btn {
+				padding: 6px 16px;
+				border-radius: 9999px;
+				font-size: 0.8125rem;
+				cursor: pointer;
+				background: #374151;
+				color: #d1d5db;
+				border: 1px solid transparent;
+				transition: all 0.15s;
+				user-select: none;
+			}
+
+			.chip-btn:hover {
+				border-color: #8b5cf6;
+				background: #4b5563;
+			}
+
+			.chip-btn.selected {
+				background: #8b5cf6;
+				color: #fff;
 				font-weight: 600;
-				box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
-				transform: scale(1.05);
+				border-color: #8b5cf6;
 			}
 
-			input[type="radio"]:checked {
-				background-color: #8b5cf6;
-				border-color: #6366f1;
-				box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-			}
-
-			input[type="radio"]:hover + span {
-				background-color: rgba(107, 114, 128, 0.1);
-			}
-
-			input[type="radio"]:hover {
-				background-color: rgba(107, 114, 128, 0.2);
-				border-color: #6366f1;
+			@media (max-width: 639px) {
+				.filter-row {
+					flex-direction: column;
+					gap: 8px;
+				}
+				.filter-label {
+					min-width: auto;
+				}
 			}
 		</style>
 
@@ -217,31 +238,37 @@
 				<p class="text-gray-400 max-w-2xl mx-auto">Kết hợp thể loại và quốc gia để tìm phim chính xác hơn</p>
 			</div>
 
-			<!-- Category Selection -->
-			<div class="bg-gray-800 rounded-lg p-6 mb-6">
-				<div class="flex flex-col gap-4">
-					<div class="w-full">
-						<label class="block text-sm font-medium text-gray-300 mb-2"><i class="fas fa-list mr-1 text-purple-400"></i> Chọn thể loại:</label>
-						<div id="categoriesContainer" class="filter-grid grid gap-3 bg-gray-700 p-4 rounded-lg" style="display:grid">
-							<!-- Categories will be loaded dynamically -->
-						</div>
+			<!-- Filter Panel -->
+			<div class="filter-panel mb-8">
+				<h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+					<i class="fas fa-filter text-purple-400"></i> Bộ lọc
+				</h3>
+
+				<div class="filter-row">
+					<span class="filter-label"><i class="fas fa-list mr-1 text-purple-400"></i> Thể loại:</span>
+					<div id="categoriesContainer" class="flex flex-wrap gap-2">
+						<!-- Categories will be loaded dynamically -->
 					</div>
+				</div>
+
+				<div class="filter-row">
+					<span class="filter-label"><i class="fas fa-globe mr-1 text-purple-400"></i> Quốc gia:</span>
+					<div id="countriesContainer" class="flex flex-wrap gap-2">
+						<!-- Countries will be loaded dynamically -->
+					</div>
+				</div>
+
+				<div class="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-700">
+					<button id="applyFilterBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-8 rounded-lg transition flex items-center gap-2">
+						<i class="fas fa-search"></i> Lọc kết quả
+					</button>
+					<button id="clearFilterBtn" class="bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-2.5 px-8 rounded-lg transition flex items-center gap-2">
+						<i class="fas fa-times"></i> Đóng
+					</button>
 				</div>
 			</div>
 
-			<!-- Country Selection -->
-			<div class="bg-gray-800 rounded-lg p-6 mb-8">
-				<div class="flex flex-col gap-4">
-					<div class="w-full">
-						<label class="block text-sm font-medium text-gray-300 mb-2"><i class="fas fa-globe mr-1 text-purple-400"></i> Chọn quốc gia:</label>
-						<div id="countriesContainer" class="filter-grid grid gap-3 bg-gray-700 p-4 rounded-lg" style="display:grid">
-							<!-- Countries will be loaded dynamically -->
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Filter Notice (shown when both filters active) -->
+			<!-- Filter Notice -->
 			<div id="filterNotice" class="text-center text-sm text-gray-400 mb-4 hidden">
 				<i class="fas fa-info-circle mr-1 text-purple-400"></i>
 				<span id="filterNoticeText"></span>

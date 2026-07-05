@@ -1,12 +1,15 @@
 // CinePhim - Browse (Advanced Search) Page JavaScript
 
 let currentPage = 1;
-let currentCategory = '';
-let currentCountry = '';
 let totalPages = 1;
 let categoryNameMap = {};
 let countryNameMap = {};
-let lastCheckedRadios = {};
+let selectedCategories = [];
+let selectedCountries = [];
+let combinedMovies = [];
+let combinedTotalPages = 1;
+let isCombinedMode = false;
+const COMBINED_PER_PAGE = 24;
 
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -15,27 +18,38 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupSearchListeners();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category');
-    const country = urlParams.get('country');
+    const cats = urlParams.get('category');
+    const countries = urlParams.get('country');
     const page = urlParams.get('page');
 
-    if (category) {
-        const radio = document.querySelector(`input[name="category"][value="${category}"]`);
-        if (radio) {
-            radio.checked = true;
-            lastCheckedRadios.category = radio;
-        }
+    if (cats) {
+        cats.split(',').forEach(slug => {
+            slug = slug.trim();
+            if (slug && categoryNameMap[slug]) {
+                const chip = document.querySelector(`.chip-btn[data-group="category"][data-value="${slug}"]`);
+                if (chip) {
+                    chip.classList.add('selected');
+                    selectedCategories.push(slug);
+                }
+            }
+        });
     }
-    if (country) {
-        const radio = document.querySelector(`input[name="country"][value="${country}"]`);
-        if (radio) {
-            radio.checked = true;
-            lastCheckedRadios.country = radio;
-        }
+    if (countries) {
+        countries.split(',').forEach(slug => {
+            slug = slug.trim();
+            if (slug && countryNameMap[slug]) {
+                const chip = document.querySelector(`.chip-btn[data-group="country"][data-value="${slug}"]`);
+                if (chip) {
+                    chip.classList.add('selected');
+                    selectedCountries.push(slug);
+                }
+            }
+        });
     }
 
-    if (category || country) {
-        loadFilteredMovies(page ? parseInt(page) : 1);
+    if (selectedCategories.length > 0 || selectedCountries.length > 0) {
+        const p = page ? parseInt(page) : 1;
+        applyFilters(p);
     }
 });
 
@@ -82,10 +96,7 @@ async function loadCategories() {
     categories.forEach(cat => { categoryNameMap[cat.slug] = cat.name; });
 
     container.innerHTML = categories.map(cat => `
-        <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
-            <input type="radio" name="category" value="${cat.slug}" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
-            <span class="text-white">${cat.name}</span>
-        </label>
+        <button class="chip-btn" data-group="category" data-value="${cat.slug}">${cat.name}</button>
     `).join('');
 }
 
@@ -132,189 +143,219 @@ async function loadCountries() {
     countries.forEach(c => { countryNameMap[c.slug] = c.name; });
 
     container.innerHTML = countries.map(c => `
-        <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-600 p-2 rounded transition">
-            <input type="radio" name="country" value="${c.slug}" class="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-purple-500" />
-            <span class="text-white">${c.name}</span>
-        </label>
+        <button class="chip-btn" data-group="country" data-value="${c.slug}">${c.name}</button>
     `).join('');
 }
 
 
-function updateRadioGroup(group) {
-    const container = group === 'category'
-        ? document.getElementById('categoriesContainer')
-        : document.getElementById('countriesContainer');
-    if (!container) return;
-    const labels = container.querySelectorAll('label');
-    labels.forEach(label => {
-        const radio = label.querySelector('input[type="radio"]');
-        if (!radio) return;
-        const isChecked = lastCheckedRadios[group] === radio;
-        radio.checked = isChecked;
-    });
-}
-
 function setupEventListeners() {
     document.getElementById('categoriesContainer')?.addEventListener('click', function(e) {
-        const label = e.target.closest('label');
-        if (!label) return;
-        const radio = label.querySelector('input[type="radio"]');
-        if (!radio) return;
-        e.preventDefault();
+        const chip = e.target.closest('.chip-btn');
+        if (!chip || chip.dataset.group !== 'category') return;
 
-        if (lastCheckedRadios.category === radio) {
-            lastCheckedRadios.category = null;
+        const value = chip.dataset.value;
+        if (chip.classList.contains('selected')) {
+            chip.classList.remove('selected');
+            selectedCategories = selectedCategories.filter(v => v !== value);
         } else {
-            lastCheckedRadios.category = radio;
+            chip.classList.add('selected');
+            selectedCategories.push(value);
         }
-        updateRadioGroup('category');
-        loadFilteredMovies(1);
     });
 
     document.getElementById('countriesContainer')?.addEventListener('click', function(e) {
-        const label = e.target.closest('label');
-        if (!label) return;
-        const radio = label.querySelector('input[type="radio"]');
-        if (!radio) return;
-        e.preventDefault();
+        const chip = e.target.closest('.chip-btn');
+        if (!chip || chip.dataset.group !== 'country') return;
 
-        if (lastCheckedRadios.country === radio) {
-            lastCheckedRadios.country = null;
+        const value = chip.dataset.value;
+        if (chip.classList.contains('selected')) {
+            chip.classList.remove('selected');
+            selectedCountries = selectedCountries.filter(v => v !== value);
         } else {
-            lastCheckedRadios.country = radio;
+            chip.classList.add('selected');
+            selectedCountries.push(value);
         }
-        updateRadioGroup('country');
-        loadFilteredMovies(1);
     });
+
+    document.getElementById('applyFilterBtn')?.addEventListener('click', () => applyFilters());
+    document.getElementById('clearFilterBtn')?.addEventListener('click', clearFilters);
+}
+
+
+function applyFilters(page = 1) {
+    if (selectedCategories.length === 0 && selectedCountries.length === 0) {
+        showWarning('Vui lòng chọn ít nhất thể loại hoặc quốc gia.');
+        return;
+    }
+
+    const url = new URL(window.location);
+    if (selectedCategories.length > 0) url.searchParams.set('category', selectedCategories.join(','));
+    else url.searchParams.delete('category');
+    if (selectedCountries.length > 0) url.searchParams.set('country', selectedCountries.join(','));
+    else url.searchParams.delete('country');
+    url.searchParams.set('page', page);
+    window.history.pushState({}, '', url);
+
+    const catNames = selectedCategories.map(s => getCategoryDisplayName(s)).filter(Boolean);
+    const ctryNames = selectedCountries.map(s => getCountryDisplayName(s)).filter(Boolean);
+    document.title = buildPageTitle(catNames, ctryNames);
+    updateBreadcrumb(catNames, ctryNames);
+
+    loadFilteredMovies(page);
+}
+
+
+function clearFilters() {
+    selectedCategories = [];
+    selectedCountries = [];
+    combinedMovies = [];
+    isCombinedMode = false;
+    combinedTotalPages = 1;
+    document.querySelectorAll('.chip-btn.selected').forEach(el => el.classList.remove('selected'));
+
+    const url = new URL(window.location);
+    url.searchParams.delete('category');
+    url.searchParams.delete('country');
+    url.searchParams.delete('page');
+    window.history.pushState({}, '', url);
+
+    document.getElementById('moviesGrid').innerHTML = '';
+    document.getElementById('pagination').innerHTML = '';
+    hideFilterNotice();
+    document.title = 'Tìm Phim Nâng Cao - CinePhim';
+    updateBreadcrumb();
 }
 
 
 async function loadFilteredMovies(page = 1) {
-    const selectedCategory = document.querySelector('input[name="category"]:checked');
-    const category = selectedCategory ? selectedCategory.value : '';
-    const selectedCountry = document.querySelector('input[name="country"]:checked');
-    const country = selectedCountry ? selectedCountry.value : '';
+    if (selectedCategories.length === 0 && selectedCountries.length === 0) return;
 
-    if (!category && !country) {
-        document.getElementById('moviesGrid').innerHTML = '';
-        document.getElementById('pagination').innerHTML = '';
-        hideFilterNotice();
-        return;
-    }
+    const isMulti = selectedCategories.length > 1 || selectedCountries.length > 1 || (selectedCategories.length > 0 && selectedCountries.length > 0);
 
     try {
         showPageLoading(true);
         hidePageNoResults();
         hideFilterNotice();
 
-        currentCategory = category;
-        currentCountry = country;
         currentPage = page;
-
-        const url = new URL(window.location);
-        if (category) url.searchParams.set('category', category);
-        else url.searchParams.delete('category');
-        if (country) url.searchParams.set('country', country);
-        else url.searchParams.delete('country');
-        url.searchParams.set('page', page);
-        window.history.pushState({}, '', url);
-
         window.scrollTo(0, 0);
 
         let movies = [];
-        let pagination = null;
         let data = null;
 
-        if (category && country) {
-            if (currentSourceKey === 'nguonc') {
-                showSourceUnsupportedNotice();
-                let endpoint = `/films/the-loai/${category}`;
+        if (!isMulti) {
+            // Single dimension: use normal API call with pagination
+            if (selectedCategories.length === 1 && selectedCountries.length === 0) {
+                let endpoint = buildCategoryEndpoint(selectedCategories[0]);
                 data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
                 if (data.status === 'success' || data.status === true) {
-                    const pathImage = data.pathImage || '';
-                    movies = (data.items || []).map(item => normalizeMovieData(item, pathImage));
-                    pagination = normalizePagination(data);
+                    const pathImage = getPathImage(data);
+                    movies = extractMovies(data, pathImage);
                 }
-            } else {
-                let endpoint = `${currentSource.endpoints.category}/${category}`;
-                if (currentSourceKey === 'kkphim') {
-                    endpoint = `/v1/api/the-loai/${category}`;
-                }
-
+            } else if (selectedCountries.length === 1 && selectedCategories.length === 0) {
+                let endpoint = buildCountryEndpoint(selectedCountries[0]);
                 data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
-
                 if (data.status === 'success' || data.status === true) {
-                    const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                    const allMovies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
-                    pagination = normalizePagination(data);
-
-                    movies = allMovies.filter(movie => {
-                        return movie.country && movie.country.some(c => c.slug === country);
-                    });
-
-                    showFilterNotice(category, country);
+                    const pathImage = getPathImage(data);
+                    movies = extractMovies(data, pathImage);
                 }
             }
 
-        } else if (category) {
-            let endpoint = `${currentSource.endpoints.category}/${category}`;
-            if (currentSourceKey === 'nguonc') {
-                endpoint = `/films/the-loai/${category}`;
-            } else if (currentSourceKey === 'kkphim') {
-                endpoint = `/v1/api/the-loai/${category}`;
-            }
-
-            data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
-
-            if (data.status === 'success' || data.status === true) {
-                const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
-                pagination = normalizePagination(data);
-            }
-
-        } else if (country) {
-            let endpoint = `${currentSource.endpoints.country}/${country}`;
-            if (currentSourceKey === 'nguonc') {
-                endpoint = `/films/quoc-gia/${country}`;
-            } else if (currentSourceKey === 'kkphim') {
-                endpoint = `/v1/api/quoc-gia/${country}`;
-            }
-
-            data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
-
-            if (data.status === 'success' || data.status === true) {
-                const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
-                pagination = normalizePagination(data);
-            }
-        }
-
-        if (data && (data.status === 'success' || data.status === true)) {
-            if (movies.length > 0) {
-                displayMovies(movies);
+            if (data && (data.status === 'success' || data.status === true)) {
+                if (movies.length > 0) {
+                    displayMovies(movies);
+                } else {
+                    showPageNoResults();
+                }
+                updatePagination(data);
             } else {
                 showPageNoResults();
             }
 
-            updatePagination(pagination);
-
-            const catName = getCategoryDisplayName(category);
-            const ctryName = getCountryDisplayName(country);
-            document.title = buildPageTitle(catName, ctryName);
-            updateBreadcrumb(catName, ctryName);
-
-            setTimeout(() => {
-                const moviesContainer = document.getElementById('moviesContainer');
-                if (moviesContainer) {
-                    const header = document.querySelector('header');
-                    const headerHeight = header ? header.offsetHeight : 0;
-                    const top = moviesContainer.getBoundingClientRect().top + window.pageYOffset - headerHeight - 10;
-                    window.scrollTo({ top, behavior: 'smooth' });
-                }
-            }, 100);
-
         } else {
-            showPageNoResults();
+            isCombinedMode = true;
+            combinedMovies = [];
+            let endpoints = [];
+
+            if (selectedCategories.length > 0) {
+                for (const cat of selectedCategories) {
+                    let ep = buildCategoryEndpoint(cat);
+                    endpoints.push(getApiUrl(`${API_BASE}${ep}`));
+                }
+            } else if (selectedCountries.length > 0) {
+                for (const country of selectedCountries) {
+                    let ep = buildCountryEndpoint(country);
+                    endpoints.push(getApiUrl(`${API_BASE}${ep}`));
+                }
+            }
+
+            // Fetch page 1 first to get total pages
+            const page1Results = await Promise.all(endpoints.map(url => fetchJSONCached(`${url}?page=1`).catch(() => null)));
+            let maxTotalPages = 1;
+            const totalPagesPerEndpoint = page1Results.map(res => {
+                if (res && (res.status === 'success' || res.status === true)) {
+                    const paginate = normalizePagination(res);
+                    return paginate ? paginate.total_page : 1;
+                }
+                return 1;
+            });
+            maxTotalPages = Math.max(...totalPagesPerEndpoint, 1);
+
+            const allMovies = [];
+            for (const res of page1Results) {
+                if (res && (res.status === 'success' || res.status === true)) {
+                    const pathImage = getPathImage(res);
+                    const items = extractMovies(res, pathImage);
+                    allMovies.push(...items);
+                }
+            }
+            // Fetch all remaining pages in parallel
+            const remainingPromises = [];
+            for (let p = 2; p <= maxTotalPages; p++) {
+                for (const url of endpoints) {
+                    remainingPromises.push(fetchJSONCached(`${url}?page=${p}`).catch(() => null));
+                }
+            }
+            const remainingResults = await Promise.all(remainingPromises);
+            for (const res of remainingResults) {
+                if (res && (res.status === 'success' || res.status === true)) {
+                    const pathImage = getPathImage(res);
+                    const items = extractMovies(res, pathImage);
+                    allMovies.push(...items);
+                }
+            }
+
+            if (selectedCategories.length > 0 && selectedCountries.length > 0) {
+                for (let i = allMovies.length - 1; i >= 0; i--) {
+                    const movie = allMovies[i];
+                    if (!movie.country || !Array.isArray(movie.country) || !movie.country.some(c => selectedCountries.includes(c.slug))) {
+                        allMovies.splice(i, 1);
+                    }
+                }
+            }
+
+            const seen = new Set();
+            combinedMovies = allMovies.filter(m => {
+                if (seen.has(m.slug)) return false;
+                seen.add(m.slug);
+                return true;
+            });
+
+            combinedTotalPages = Math.max(1, Math.ceil(combinedMovies.length / COMBINED_PER_PAGE));
+
+            if (combinedMovies.length > 0) {
+                currentPage = page;
+                renderCombinedPage(page);
+            } else {
+                showPageNoResults();
+                document.getElementById('pagination').innerHTML = '';
+                showPageLoading(false);
+                return;
+            }
+
+            if (selectedCategories.length > 0 && selectedCountries.length > 0) {
+                showMultiFilterNotice();
+            }
         }
 
         showPageLoading(false);
@@ -327,7 +368,29 @@ async function loadFilteredMovies(page = 1) {
 }
 
 
-function updatePagination(paginate) {
+function buildCategoryEndpoint(category) {
+    if (currentSourceKey === 'nguonc') return `/films/the-loai/${category}`;
+    if (currentSourceKey === 'kkphim') return `/v1/api/the-loai/${category}`;
+    return `${currentSource.endpoints.category}/${category}`;
+}
+
+function buildCountryEndpoint(country) {
+    if (currentSourceKey === 'nguonc') return `/films/quoc-gia/${country}`;
+    if (currentSourceKey === 'kkphim') return `/v1/api/quoc-gia/${country}`;
+    return `${currentSource.endpoints.country}/${country}`;
+}
+
+function getPathImage(data) {
+    return data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
+}
+
+function extractMovies(data, pathImage) {
+    return (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
+}
+
+
+function updatePagination(data) {
+    const paginate = normalizePagination(data);
     if (!paginate) { document.getElementById('pagination').innerHTML = ''; return; }
     const { current_page: current, total_page: total } = paginate;
     currentPage = current;
@@ -336,6 +399,33 @@ function updatePagination(paginate) {
     const url = new URL(window.location);
     url.searchParams.set('page', current);
     window.history.pushState({}, '', url);
+}
+
+
+function renderCombinedPage(page) {
+    currentPage = page;
+    const start = (page - 1) * COMBINED_PER_PAGE;
+    const end = start + COMBINED_PER_PAGE;
+    const pageMovies = combinedMovies.slice(start, end);
+
+    if (pageMovies.length > 0) {
+        displayMovies(pageMovies);
+    } else {
+        showPageNoResults();
+    }
+
+    const url = new URL(window.location);
+    url.searchParams.set('page', page);
+    window.history.pushState({}, '', url);
+
+    const container = document.getElementById('pagination');
+    if (container) {
+        if (combinedTotalPages <= 1) {
+            container.innerHTML = '';
+        } else {
+            container.innerHTML = getPaginationHTML(currentPage, combinedTotalPages, 'renderCombinedPage({page})');
+        }
+    }
 }
 
 
@@ -348,15 +438,16 @@ function getCountryDisplayName(slug) {
 }
 
 
-function buildPageTitle(catName, ctryName) {
-    if (catName && ctryName) return `Phim ${catName} ${ctryName} - CinePhim`;
-    if (catName) return `Phim ${catName} - CinePhim`;
-    if (ctryName) return `Phim ${ctryName} - CinePhim`;
+function buildPageTitle(catNames, ctryNames) {
+    const parts = [];
+    if (catNames.length > 0) parts.push(catNames.join(', '));
+    if (ctryNames.length > 0) parts.push(ctryNames.join(', '));
+    if (parts.length > 0) return `Phim ${parts.join(' - ')} - CinePhim`;
     return 'Tìm Phim Nâng Cao - CinePhim';
 }
 
 
-function updateBreadcrumb(catName, ctryName) {
+function updateBreadcrumb(catNames, ctryNames) {
     const breadcrumbContainer = document.getElementById('breadcrumb');
     if (!breadcrumbContainer) return;
 
@@ -366,17 +457,17 @@ function updateBreadcrumb(catName, ctryName) {
         <span class="text-white">Tìm phim nâng cao</span>
     `;
 
-    if (catName) {
+    if (catNames.length > 0) {
         html += `
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-white">${catName}</span>
+            <span class="text-white">${catNames.join(', ')}</span>
         `;
     }
 
-    if (ctryName) {
+    if (ctryNames.length > 0) {
         html += `
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-white">${ctryName}</span>
+            <span class="text-white">${ctryNames.join(', ')}</span>
         `;
     }
 
@@ -384,23 +475,15 @@ function updateBreadcrumb(catName, ctryName) {
 }
 
 
-function showFilterNotice(category, country) {
+function showMultiFilterNotice() {
     const notice = document.getElementById('filterNotice');
     const noticeText = document.getElementById('filterNoticeText');
     if (!notice || !noticeText) return;
-
-    const catName = getCategoryDisplayName(category);
-    const ctryName = getCountryDisplayName(country);
-    noticeText.textContent = `Đang lọc phim "${catName}" từ "${ctryName}" (trang ${currentPage}). Kết quả hiển thị trong phạm vi trang hiện tại.`;
-    notice.classList.remove('hidden');
-}
-
-function showSourceUnsupportedNotice() {
-    const notice = document.getElementById('filterNotice');
-    const noticeText = document.getElementById('filterNoticeText');
-    if (!notice || !noticeText) return;
-
-    noticeText.innerHTML = `Nguồn <strong>${currentSource.name}</strong> không hỗ trợ lọc kết hợp. Chỉ hiển thị kết quả theo thể loại. Vui lòng đổi sang nguồn <strong>OPhim</strong> hoặc <strong>KKPhim</strong> ở góc trên bên phải.`;
+    if (currentSourceKey === 'nguonc') {
+        noticeText.innerHTML = `Nguồn NguonC không hỗ trợ lọc theo quốc gia. Chỉ hiển thị kết quả theo thể loại đã chọn.`;
+    } else {
+        noticeText.innerHTML = `Đã kết hợp kết quả từ nhiều bộ lọc.`;
+    }
     notice.classList.remove('hidden');
 }
 
