@@ -395,6 +395,25 @@ function insertText(before, after, textareaId = "messageText") {
 	const newCursorPos = start + before.length;
 	textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
 	textarea.focus();
+
+	updateCharCount(textarea);
+}
+
+function updateCharCount(textarea) {
+	if (!textarea) textarea = document.getElementById('messageText');
+	if (!textarea) return;
+	const count = textarea.value.length;
+	const el = document.getElementById('charCount');
+	if (!el) return;
+	el.textContent = `${count} / 2000`;
+	el.className = 'ms-2';
+	if (count > 2000) {
+		el.classList.add('text-danger', 'fw-bold');
+	} else if (count > 1800) {
+		el.classList.add('text-warning');
+	} else {
+		el.classList.add('text-muted');
+	}
 }
 
 // Lấy thởi gian hiện tại
@@ -985,12 +1004,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 async function scheduleMessage(type = "message") {
-	const { value: minutes } = await Swal.fire({
+	const { value: seconds } = await Swal.fire({
 		title: "Hẹn giờ gửi tin nhắn",
 		input: "number",
-		inputLabel: "Nhập số phút hẹn giờ",
-		inputPlaceholder: "Nhập số phút (tối thiểu 1 phút)",
-		inputValue: "5",
+		inputLabel: "Nhập số giây hẹn giờ",
+		inputPlaceholder: "Nhập số giây (tối thiểu 1 giây)",
+		inputValue: "10",
 		inputAttributes: {
 			min: "1",
 			step: "1",
@@ -1000,16 +1019,16 @@ async function scheduleMessage(type = "message") {
 		confirmButtonText: "Xác nhận",
 		inputValidator: (value) => {
 			if (!value || parseInt(value) < 1) {
-				return "Vui lòng nhập số phút hợp lệ (từ 1 phút trở lên)";
+				return "Vui lòng nhập số giây hợp lệ (từ 1 giây trở lên)";
 			}
 		},
 	});
 
-	if (!minutes) return;
+	if (!seconds) return;
 
-	const minutesNum = parseInt(minutes);
+	const secondsNum = parseInt(seconds);
 	const now = new Date();
-	const scheduledTime = new Date(now.getTime() + minutesNum * 60000);
+	const scheduledTime = new Date(now.getTime() + secondsNum * 1000);
 
 	// Xác định loại tin nhắn
 	let messageType = "tin nhắn";
@@ -1017,7 +1036,7 @@ async function scheduleMessage(type = "message") {
 
 	const { isConfirmed } = await Swal.fire({
 		title: "Xác nhận hẹn giờ",
-		html: `Bạn có chắc muốn gửi ${messageType} sau <b>${minutesNum} phút</b>?<br>(Lúc ${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")})`,
+		html: `Bạn có chắc muốn gửi ${messageType} sau <b>${secondsNum} giây</b>?<br>(Lúc ${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}:${scheduledTime.getSeconds().toString().padStart(2, "0")})`,
 		icon: "question",
 		showCancelButton: true,
 		confirmButtonText: "Xác nhận",
@@ -1026,26 +1045,24 @@ async function scheduleMessage(type = "message") {
 	});
 
 	if (isConfirmed) {
-		let timeLeft = minutesNum * 60; // Chuyển đổi sang giây
+		let timeLeft = secondsNum;
 		let timerInterval;
 		let isCancelled = false;
 
 		// Hàm cập nhật giao diện đếm ngược
 		const updateTimer = () => {
 			timeLeft--;
-			const minutesLeft = Math.floor(timeLeft / 60);
-			const secondsLeft = timeLeft % 60;
 
 			swal.update({
 				html: `
 								<div class="text-center">
 									<h4>Đang đếm ngược để gửi ${messageType}</h4>
 									<div class="my-3">
-										<strong>${minutesLeft}:${secondsLeft.toString().padStart(2, "0")}</strong>
+										<strong>${timeLeft}s</strong>
 									</div>
-									<progress value="${timeLeft}" max="${minutesNum * 60}" style="width: 100%; height: 20px;"></progress>
+									<progress value="${timeLeft}" max="${secondsNum}" style="width: 100%; height: 20px;"></progress>
 									<div class="mt-2">
-										<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}</b></small>
+										<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}:${scheduledTime.getSeconds().toString().padStart(2, "0")}</b></small>
 									</div>
 								</div>
 							`,
@@ -1073,11 +1090,11 @@ async function scheduleMessage(type = "message") {
 							<div class="text-center">
 								<h4>Đang đếm ngược để gửi ${messageType}</h4>
 								<div class="my-3">
-									<strong>${minutesNum}:00</strong>
+									<strong>${secondsNum}s</strong>
 								</div>
-								<progress value="${minutesNum * 60}" max="${minutesNum * 60}" style="width: 100%; height: 20px;"></progress>
+								<progress value="${secondsNum}" max="${secondsNum}" style="width: 100%; height: 20px;"></progress>
 								<div class="mt-2">
-									<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}</b></small>
+									<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}:${scheduledTime.getSeconds().toString().padStart(2, "0")}</b></small>
 								</div>
 							</div>
 						`,
@@ -1423,6 +1440,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	initTemplateDropdown();
 	// Tạo các nút định dạng cho tab tin nhắn
 	document.getElementById("formattingButtons").innerHTML = createFormattingButtons("messageText");
+	updateCharCount(document.getElementById('messageText'));
 });
 
 // Hàm lưu bản nháp lên Firebase (hỗ trợ nhiều bản nháp)
@@ -1484,6 +1502,9 @@ async function saveDraft(textareaId = "messageText") {
 					<div style="font-weight: 600;">${draft.name || 'Bản nháp'}</div>
 					<div style="font-size: 11px; color: #adb5bd; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${preview}</div>
 					<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${draft.lastUpdated?.toDate ? formatRelativeTime(draft.lastUpdated) : ''}</div>
+				</button>
+				<button type="button" class="btn btn-sm btn-outline-secondary" onclick="renameDraft('${draft.id}')" title="Sửa tên" style="flex-shrink: 0;">
+					<i class="fas fa-pen"></i>
 				</button>
 			</div>
 		`}).join('');
@@ -1618,6 +1639,9 @@ async function loadDraft(textareaId = "messageText") {
 					<div style="font-size: 11px; color: #adb5bd; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${preview}</div>
 					<div style="font-size: 12px; color: #6c757d; margin-top: 4px;">${draft.lastUpdated?.toDate ? formatRelativeTime(draft.lastUpdated) : ''}</div>
 				</button>
+				<button type="button" class="btn btn-sm btn-outline-secondary" onclick="renameDraft('${draft.id}')" title="Sửa tên" style="flex-shrink: 0;">
+					<i class="fas fa-pen"></i>
+				</button>
 				<button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteDraft('${draft.id}')" title="Xóa bản nháp" style="flex-shrink: 0;">
 					<i class="fas fa-trash"></i>
 				</button>
@@ -1658,6 +1682,7 @@ async function selectDraft(draftId, textareaId = "messageText") {
 
 		Swal.close();
 		document.getElementById(textareaId).value = doc.data().content;
+		updateCharCount(document.getElementById(textareaId));
 		showSuccessMessage("Đã tải bản nháp thành công");
 	} catch (error) {
 		console.error("Lỗi khi chọn bản nháp:", error);
@@ -1700,6 +1725,50 @@ async function deleteDraft(draftId) {
 			icon: "error",
 			title: "Lỗi",
 			text: "Không thể xóa bản nháp: " + error.message,
+		});
+	}
+}
+
+// Sửa tên bản nháp
+async function renameDraft(draftId) {
+	try {
+		const user = firebase.auth().currentUser;
+		if (!user) return;
+
+		const doc = await firebase.firestore()
+			.collection("drafts").doc(user.uid).collection("items").doc(draftId).get();
+		if (!doc.exists) return;
+
+		const currentName = doc.data().name || '';
+
+		const { value: newName } = await Swal.fire({
+			title: 'Sửa tên bản nháp',
+			input: 'text',
+			inputLabel: 'Nhập tên mới',
+			inputValue: currentName,
+			showCancelButton: true,
+			confirmButtonText: 'Lưu',
+			cancelButtonText: 'Hủy',
+			inputValidator: (value) => {
+				if (!value) return 'Vui lòng nhập tên bản nháp';
+			}
+		});
+
+		if (!newName || newName === currentName) return;
+
+		await firebase.firestore()
+			.collection("drafts").doc(user.uid).collection("items").doc(draftId)
+			.update({ name: newName });
+
+		// Reload danh sách
+		const textareaId = document.querySelector('[id$="messageText"]') ? 'messageText' : 'messageText';
+		loadDraft(textareaId);
+	} catch (error) {
+		console.error("Lỗi khi sửa tên bản nháp:", error);
+		Swal.fire({
+			icon: "error",
+			title: "Lỗi",
+			text: "Không thể sửa tên bản nháp: " + error.message,
 		});
 	}
 }

@@ -111,7 +111,10 @@
 										</button>
 									</div>
 								</div>
-								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..."></textarea>
+								<div class="d-flex justify-content-end align-items-center mt-1 mb-1">
+									<small id="charCount" class="text-muted">0 / 2000</small>
+								</div>
+								<textarea class="form-control" id="messageText" rows="10" placeholder="Nhập nội dung tin nhắn..." oninput="updateCharCount(this)"></textarea>
 								<div id="formattingButtons"></div>
 							</div>
 
