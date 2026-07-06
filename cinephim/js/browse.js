@@ -288,7 +288,14 @@ async function loadFilteredMovies(page = 1) {
         hideFilterNotice();
 
         currentPage = page;
-        window.scrollTo(0, 0);
+        setTimeout(() => {
+            const target = document.getElementById('moviesContainer');
+            if (target) {
+                const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+            }
+        }, 100);
 
         let movies = [];
         let data = null;
@@ -489,6 +496,14 @@ function renderCombinedPage(page) {
 
     if (pageMovies.length > 0) {
         displayMovies(pageMovies);
+        setTimeout(() => {
+            const target = document.getElementById('moviesContainer');
+            if (target) {
+                const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+            }
+        }, 100);
     } else {
         showPageNoResults();
     }

@@ -78,12 +78,22 @@
 			}
 
 			@media (max-width: 639px) {
+				.filter-panel {
+					padding: 14px;
+					border-radius: 8px;
+				}
 				.filter-row {
 					flex-direction: column;
-					gap: 8px;
+					gap: 6px;
+					margin-bottom: 12px;
 				}
 				.filter-label {
 					min-width: auto;
+					font-size: 0.8rem;
+				}
+				.chip-btn {
+					padding: 4px 11px;
+					font-size: 0.75rem;
 				}
 			}
 		</style>
@@ -265,11 +275,11 @@
 					</div>
 				</div>
 
-				<div class="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-700">
-					<button id="applyFilterBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-8 rounded-lg transition flex items-center gap-2">
+				<div class="flex justify-center gap-3 sm:gap-4 mt-5 pt-4 border-t border-gray-700">
+					<button id="applyFilterBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 sm:py-2.5 px-5 sm:px-8 text-sm sm:text-base rounded-lg transition flex items-center gap-2">
 						<i class="fas fa-search"></i> Lọc kết quả
 					</button>
-					<button id="clearFilterBtn" class="bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-2.5 px-8 rounded-lg transition flex items-center gap-2">
+					<button id="clearFilterBtn" class="bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-2 sm:py-2.5 px-5 sm:px-8 text-sm sm:text-base rounded-lg transition flex items-center gap-2">
 						<i class="fas fa-times"></i> Đóng
 					</button>
 				</div>
