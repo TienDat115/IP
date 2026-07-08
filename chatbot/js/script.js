@@ -1047,67 +1047,42 @@ async function scheduleMessage(type = "message") {
 	if (isConfirmed) {
 		let timeLeft = secondsNum;
 		let timerInterval;
-		let isCancelled = false;
 
-		// Hàm cập nhật giao diện đếm ngược
-		const updateTimer = () => {
-			timeLeft--;
-
-			swal.update({
-				html: `
-								<div class="text-center">
-									<h4>Đang đếm ngược để gửi ${messageType}</h4>
-									<div class="my-3">
-										<strong>${timeLeft}s</strong>
-									</div>
-									<progress value="${timeLeft}" max="${secondsNum}" style="width: 100%; height: 20px;"></progress>
-									<div class="mt-2">
-										<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}:${scheduledTime.getSeconds().toString().padStart(2, "0")}</b></small>
-									</div>
-								</div>
-							`,
-			});
-
-			if (timeLeft <= 0) {
-				clearInterval(timerInterval);
-				if (!isCancelled) {
-					swal.close();
-					// Gọi hàm gửi tin nhắn tương ứng với loại
-					if (type === "embed") {
-						sendEmbedMessage();
-					} else {
-						sendMessage();
-					}
-					showSuccessMessage(`Đã gửi ${messageType} theo lịch hẹn`);
-				}
-			}
-		};
-
-		// Hiển thị hộp thoại đếm ngược
-		swal.fire({
-			title: `Đã đặt lịch gửi ${messageType}`,
+		Swal.fire({
+			icon: "info",
+			title: `Hẹn giờ ${messageType}`,
 			html: `
-							<div class="text-center">
-								<h4>Đang đếm ngược để gửi ${messageType}</h4>
-								<div class="my-3">
-									<strong>${secondsNum}s</strong>
-								</div>
-								<progress value="${secondsNum}" max="${secondsNum}" style="width: 100%; height: 20px;"></progress>
-								<div class="mt-2">
-									<small>${messageType.charAt(0).toUpperCase() + messageType.slice(1)} sẽ được gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}:${scheduledTime.getSeconds().toString().padStart(2, "0")}</b></small>
-								</div>
-							</div>
-						`,
+				<div class="text-center">
+					<div style="font-size:2rem;font-weight:bold" id="countdownDisplay">${timeLeft}s</div>
+					<small>Gửi lúc: <b>${scheduledTime.getHours()}:${scheduledTime.getMinutes().toString().padStart(2, "0")}:${scheduledTime.getSeconds().toString().padStart(2, "0")}</b></small>
+				</div>
+			`,
 			showConfirmButton: false,
-			showCloseButton: false,
-			allowOutsideClick: false,
+			showCloseButton: true,
+			timer: secondsNum * 1000,
+			timerProgressBar: true,
+			position: "top-end",
+			toast: true,
 			didOpen: () => {
-				timerInterval = setInterval(updateTimer, 1000);
+				timerInterval = setInterval(() => {
+					timeLeft--;
+					const display = document.getElementById("countdownDisplay");
+					if (display) display.textContent = `${timeLeft}s`;
+					if (timeLeft <= 0) clearInterval(timerInterval);
+				}, 1000);
 			},
 			willClose: () => {
-				isCancelled = true;
 				clearInterval(timerInterval);
 			},
+		}).then((result) => {
+			if (result.dismiss === Swal.DismissReason.timer) {
+				if (type === "embed") {
+					sendEmbedMessage();
+				} else {
+					sendMessage();
+				}
+				showSuccessMessage(`Đã gửi ${messageType} theo lịch hẹn`);
+			}
 		});
 	}
 }
