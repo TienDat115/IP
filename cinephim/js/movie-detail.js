@@ -5,6 +5,24 @@ let currentServerIndex = 0;
 let currentEpisodePage = 1;
 let episodesPerPage = 50;
 
+function copyMovieAPI() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('slug');
+    if (!slug) return;
+    const url = getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`);
+    navigator.clipboard.writeText(url).then(() => {
+        Swal.fire({ icon: 'success', title: 'Đã copy API!', text: url, timer: 2000, showConfirmButton: false, background: '#1f2937', color: '#fff' });
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        Swal.fire({ icon: 'success', title: 'Đã copy API!', text: url, timer: 2000, showConfirmButton: false, background: '#1f2937', color: '#fff' });
+    });
+}
+
 // Helper to convert Youtube URL to embed URL
 function convertYoutubeToEmbed(url) {
     if (!url) return '';

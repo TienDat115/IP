@@ -1744,6 +1744,7 @@ function getMovieCardHTML(movie) {
                 <p class="text-gray-400 text-xs mb-2">${movie.year || movie.time || ''}</p>
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-gray-500">${getCountryFromCategory(movie.category) || ''}</span>
+
                 </div>
             </div>
         </div>
