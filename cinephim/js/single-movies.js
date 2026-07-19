@@ -29,9 +29,6 @@ async function loadSingleMovies(page = 1) {
         
         currentPage = page;
         
-        // Scroll to top when changing page
-        window.scrollTo(0, 0);
-        
         let endpoint = `/danh-sach/phim-le`;
         if (currentSourceKey === 'nguonc') {
             endpoint = `/films/danh-sach/phim-le`;
@@ -52,24 +49,20 @@ async function loadSingleMovies(page = 1) {
             // Update page title
             document.title = `Phim Lẻ - CinePhim`;
             
-            // Scroll to movies container after loading new page
-            if (page > 1) {
-                setTimeout(() => {
-                    const moviesGrid = document.getElementById('moviesGrid');
-                    if (moviesGrid) {
-                        moviesGrid.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'start' 
-                        });
-                    }
-                }, 100);
-            }
-            
         } else {
             showPageNoResults();
         }
         
         showPageLoading(false);
+        
+        setTimeout(() => {
+            const target = document.getElementById('moviesContainer');
+            if (target) {
+                const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+            }
+        }, 100);
         
     } catch (error) {
         console.error('Error loading single movies:', error);

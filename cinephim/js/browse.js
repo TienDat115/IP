@@ -288,14 +288,6 @@ async function loadFilteredMovies(page = 1) {
         hideFilterNotice();
 
         currentPage = page;
-        setTimeout(() => {
-            const target = document.getElementById('moviesContainer');
-            if (target) {
-                const headerHeight = document.querySelector('header')?.offsetHeight || 60;
-                const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
-                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-            }
-        }, 100);
 
         let movies = [];
         let data = null;
@@ -328,6 +320,14 @@ async function loadFilteredMovies(page = 1) {
             if (data && (data.status === 'success' || data.status === true)) {
                 if (movies.length > 0) {
                     displayMovies(movies);
+                    setTimeout(() => {
+                        const target = document.getElementById('moviesContainer');
+                        if (target) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                            const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                        }
+                    }, 100);
                 } else {
                     showPageNoResults();
                 }
