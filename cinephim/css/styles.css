@@ -711,3 +711,44 @@ body.cinema-mode #cinemaModeToggle {
 body.cinema-mode #exitCinemaBtn {
 	display: flex !important;
 }
+
+/* Bottom Navigation Bar */
+.bottom-nav-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 4px 8px;
+	color: #9ca3af;
+	transition: color 0.2s;
+	text-decoration: none;
+	min-width: 0;
+}
+.bottom-nav-item i {
+	font-size: 1.125rem;
+	line-height: 1.5;
+}
+.bottom-nav-item span {
+	font-size: 0.625rem;
+	line-height: 1;
+	margin-top: 2px;
+}
+.bottom-nav-item.active {
+	color: #a78bfa;
+}
+
+@media (max-width: 640px) {
+	body {
+		padding-bottom: 56px;
+	}
+}
+
+body:not(.dark) .bottom-nav-item {
+	color: #6b7280;
+}
+body:not(.dark) .bottom-nav-item.active {
+	color: #7c3aed;
+}
+body:not(.dark) #bottomNav {
+	background-color: rgba(255, 255, 255, 0.95);
+	border-color: #e5e7eb;
+}

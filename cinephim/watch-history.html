@@ -50,9 +50,6 @@
 		<header class="bg-gray-800 shadow-lg sticky top-0 z-50">
 			<nav class="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
 				<div class="sm:hidden flex items-center justify-between w-full">
-					<button id="mobileMenuToggle" class="text-white hover:text-purple-400 transition">
-						<i class="fas fa-bars text-xl"></i>
-					</button>
 					<a href="index.html" class="text-lg font-bold text-purple-400 hover:text-purple-300 transition"><i class="fas fa-film mr-1"></i>CinePhim</a>
 					<div class="flex items-center space-x-2">
 						<!-- Mobile User Profile Menu (shown when logged in) -->
@@ -175,13 +172,7 @@
 						</button>
 					</div>
 				</div>
-				<div id="mobileMenu" class="hidden sm:hidden mt-2 bg-gray-700 rounded-lg p-2">
-					<div class="grid grid-cols-2 gap-2">
-						<a href="index.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-home mr-1"></i>Trang chủ</a>
-						<a href="single-movies.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-film mr-1"></i>Phim Lẻ</a>
-						<a href="sources.html" onclick="closeMobileMenu()" class="bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded text-sm transition"><i class="fas fa-link mr-1"></i>Nguồn phim</a>
-					</div>
-				</div>
+
 			</nav>
 		</header>
 
@@ -302,5 +293,15 @@
 		<script src="js/common.js"></script>
 		<script src="js/watch-history.js"></script>
 		<script>initPageSync();</script>
+
+		<!-- Mobile Bottom Navigation -->
+		<nav id="bottomNav" class="sm:hidden fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur border-t border-gray-700 z-50 px-2">
+			<div class="flex items-center justify-around py-1 max-w-lg mx-auto">
+				<a href="index.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Trang chủ</span></a>
+				<a href="browse.html" class="bottom-nav-item"><i class="fas fa-search"></i><span>Tìm nâng cao</span></a>
+				<a href="single-movies.html" class="bottom-nav-item"><i class="fas fa-film"></i><span>Phim Lẻ</span></a>
+				<a href="sources.html" class="bottom-nav-item"><i class="fas fa-link"></i><span>Nguồn phim</span></a>
+			</div>
+		</nav>
 	</body>
 </html>

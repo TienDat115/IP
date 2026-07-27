@@ -395,23 +395,8 @@ if (window.toggleLogin) {
     };
 }
 
-// Initialize common page UI (mobile menu, search sync, icon sync)
+// Initialize common page UI (bottom nav, search sync, icon sync)
 function initPageSync() {
-    const mobileMenuToggle = document.getElementById("mobileMenuToggle");
-    const mobileMenu = document.getElementById("mobileMenu");
-
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener("click", toggleMobileMenu);
-    }
-
-    document.addEventListener("click", function (e) {
-        if (mobileMenu && !mobileMenu.classList.contains("hidden")) {
-            if (!mobileMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                closeMobileMenu();
-            }
-        }
-    });
-
     const mobileSearchInput = document.getElementById("mobileSearchInput");
     const desktopSearchInput = document.getElementById("searchInput");
     if (mobileSearchInput && desktopSearchInput) {
@@ -425,10 +410,23 @@ function initPageSync() {
         });
     }
 
+    highlightBottomNav();
+
     setTimeout(function () {
         syncThemeIcons();
         syncLoginIcons();
     }, 100);
+}
+
+function highlightBottomNav() {
+    const navItems = document.querySelectorAll('.bottom-nav-item');
+    const path = window.location.pathname.split('/').pop() || 'index.html';
+    navItems.forEach(function (item) {
+        const href = item.getAttribute('href');
+        if (href === path) {
+            item.classList.add('active');
+        }
+    });
 }
 
 // Show login modal
@@ -1172,21 +1170,6 @@ function getCountryFromCategory(category) {
         }
     }
     return '';
-}
-
-// Mobile menu functions
-function toggleMobileMenu() {
-    const mobileMenu = document.getElementById('mobileMenu');
-    if (mobileMenu) {
-        mobileMenu.classList.toggle("hidden");
-    }
-}
-
-function closeMobileMenu() {
-    const mobileMenu = document.getElementById('mobileMenu');
-    if (mobileMenu) {
-        mobileMenu.classList.add("hidden");
-    }
 }
 
 // Play episode from history
