@@ -52,16 +52,42 @@ const COLLECTIONS = [
 	{ key: 'watchTimeNotes', label: 'Ghi chú phim', icon: 'fa-sticky-note', iconColor: 'text-yellow-400', orderField: 'createdAt' },
 ];
 
+const GLOBAL_COLLECTIONS = [
+	{ key: 'sources', label: 'Nguồn phim', icon: 'fa-link', iconColor: 'text-purple-400', orderField: 'order', orderDir: 'asc', allowAdd: true },
+];
+
+function getCollectionRef(colKey) {
+	const isGlobal = GLOBAL_COLLECTIONS.some(c => c.key === colKey);
+	return isGlobal ? db.collection(colKey) : db.collection('users').doc(currentUser.uid).collection(colKey);
+}
+
 async function renderAdmin() {
 	const container = document.getElementById('mainContent');
 	container.innerHTML = `
 		<div class="flex items-center justify-between mb-6">
-			<h2 class="text-xl font-semibold"><i class="fas fa-folder-open mr-2 text-purple-400"></i>Dữ liệu người dùng</h2>
+			<h2 class="text-xl font-semibold"><i class="fas fa-folder-open mr-2 text-purple-400"></i>Quản lý dữ liệu Firebase</h2>
 			<div class="flex gap-2">
 				<button onclick="renderAdmin()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm transition"><i class="fas fa-sync-alt mr-1"></i>Làm mới</button>
 				<button onclick="showUserDocEditor()" class="bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded-lg text-sm transition"><i class="fas fa-user-cog mr-1"></i>User fields</button>
 			</div>
 		</div>
+		<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3"><i class="fas fa-globe mr-1"></i>Dữ liệu chung</h3>
+		<div id="globalCollectionsContainer" class="space-y-3 mb-8">
+			${GLOBAL_COLLECTIONS.map(c => `
+				<details class="collection-card" data-collection="${c.key}">
+					<summary>
+						<i class="fas ${c.icon} ${c.iconColor}"></i>
+						${c.label}
+						${c.allowAdd ? `<button onclick="event.stopPropagation(); addSource(); return false;" class="btn-add" title="Thêm mới"><i class="fas fa-plus mr-1"></i>Thêm</button>` : ''}
+						<span class="count-badge" id="count-${c.key}">...</span>
+					</summary>
+					<div id="content-${c.key}" class="min-h-[40px]">
+						<div class="text-center py-6 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...</div>
+					</div>
+				</details>
+			`).join('')}
+		</div>
+		<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3"><i class="fas fa-user mr-1"></i>Dữ liệu người dùng</h3>
 		<div id="collectionsContainer" class="space-y-3">
 			${COLLECTIONS.map(c => `
 				<details class="collection-card" data-collection="${c.key}">
@@ -76,6 +102,9 @@ async function renderAdmin() {
 				</details>
 			`).join('')}
 		</div>`;
+	for (const c of GLOBAL_COLLECTIONS) {
+		loadCollection(c.key, c.label);
+	}
 	for (const c of COLLECTIONS) {
 		loadCollection(c.key, c.label);
 	}
@@ -84,11 +113,11 @@ async function renderAdmin() {
 async function loadCollection(colKey, colLabel) {
 	const contentEl = document.getElementById('content-' + colKey);
 	const countEl = document.getElementById('count-' + colKey);
-	const col = COLLECTIONS.find(c => c.key === colKey);
+	const col = COLLECTIONS.find(c => c.key === colKey) || GLOBAL_COLLECTIONS.find(c => c.key === colKey);
 	try {
-		let query = db.collection('users').doc(currentUser.uid).collection(colKey);
+		let query = getCollectionRef(colKey);
 		if (col?.orderField) {
-			query = query.orderBy(col.orderField, 'desc');
+			query = query.orderBy(col.orderField, col.orderDir || 'desc');
 		}
 		const snapshot = await query.get();
 		const docs = [];
@@ -160,7 +189,7 @@ function getFieldType(v) {
 }
 
 async function editDoc(colKey, docId) {
-	const docRef = db.collection('users').doc(currentUser.uid).collection(colKey).doc(docId);
+	const docRef = getCollectionRef(colKey).doc(docId);
 	let doc;
 	try {
 		const snap = await docRef.get();
@@ -238,11 +267,86 @@ async function deleteDoc(colKey, docId) {
 	});
 	if (!result.isConfirmed) return;
 	try {
-		await db.collection('users').doc(currentUser.uid).collection(colKey).doc(docId).delete();
+		await getCollectionRef(colKey).doc(docId).delete();
 		showStatus('Đã xóa!', 'success');
 		loadCollection(colKey);
 	} catch (err) {
 		showStatus('Lỗi xóa: ' + err.message, 'error');
+	}
+}
+
+const SOURCE_COLORS = [
+	{ value: 'bg-blue-600', label: 'Xanh dương' },
+	{ value: 'bg-orange-600', label: 'Cam' },
+	{ value: 'bg-purple-600', label: 'Tím' },
+	{ value: 'bg-green-600', label: 'Xanh lá' },
+	{ value: 'bg-red-600', label: 'Đỏ' },
+	{ value: 'bg-teal-600', label: 'Teal' },
+	{ value: 'bg-pink-600', label: 'Hồng' },
+	{ value: 'bg-indigo-600', label: 'Indigo' }
+];
+
+const SOURCE_STATUS_COLORS = [
+	{ value: 'text-green-400', label: 'Xanh lá' },
+	{ value: 'text-purple-400', label: 'Tím' },
+	{ value: 'text-blue-400', label: 'Xanh dương' },
+	{ value: 'text-orange-400', label: 'Cam' },
+	{ value: 'text-red-400', label: 'Đỏ' },
+	{ value: 'text-teal-400', label: 'Teal' },
+	{ value: 'text-yellow-400', label: 'Vàng' },
+	{ value: 'text-gray-400', label: 'Xám' }
+];
+
+async function addSource() {
+	const html =
+		'<input id="swal-name" placeholder="Tên nguồn (VD: NguonC)" class="swal2-input swal-input-custom">' +
+		'<input id="swal-tagline" placeholder="Tagline (VD: Phim online Việt Nam)" class="swal2-input swal-input-custom">' +
+		'<textarea id="swal-description" placeholder="Mô tả" class="swal2-textarea swal-input-custom" rows="2"></textarea>' +
+		'<input id="swal-status" placeholder="Trạng thái (VD: Sẵn sàng)" class="swal2-input swal-input-custom">' +
+		'<select id="swal-statusColor" class="swal2-input swal-input-custom">' + SOURCE_STATUS_COLORS.map(o => `<option value="${o.value}">${o.label}</option>`).join('') + '</select>' +
+		'<input id="swal-url" placeholder="URL nguồn (VD: https://phim.nguonc.com/)" class="swal2-input swal-input-custom">' +
+		'<select id="swal-color" class="swal2-input swal-input-custom">' + SOURCE_COLORS.map(o => `<option value="${o.value}">${o.label}</option>`).join('') + '</select>';
+
+	const { value: form } = await Swal.fire({
+		title: 'Thêm nguồn phim',
+		width: 'min(90vw, 500px)',
+		padding: '1.25rem',
+		html,
+		focusConfirm: false,
+		showCancelButton: true,
+		confirmButtonText: 'Lưu',
+		cancelButtonText: 'Hủy',
+		preConfirm: () => {
+			const name = document.getElementById('swal-name').value.trim();
+			const url = document.getElementById('swal-url').value.trim();
+			if (!name) { Swal.showValidationMessage('Vui lòng nhập tên nguồn'); return; }
+			if (!url) { Swal.showValidationMessage('Vui lòng nhập URL'); return; }
+			return {
+				name,
+				tagline: document.getElementById('swal-tagline').value.trim(),
+				description: document.getElementById('swal-description').value.trim(),
+				status: document.getElementById('swal-status').value.trim(),
+				statusColor: document.getElementById('swal-statusColor').value,
+				url,
+				color: document.getElementById('swal-color').value
+			};
+		},
+		background: '#1f2937', color: '#fff', confirmButtonColor: '#7c3aed',
+		customClass: { confirmButton: 'swal-btn-custom', cancelButton: 'swal-btn-custom' }
+	});
+	if (!form) return;
+	try {
+		const snapshot = await db.collection('sources').get();
+		let maxOrder = -1;
+		snapshot.forEach(doc => {
+			const order = doc.data().order;
+			if (typeof order === 'number' && order > maxOrder) maxOrder = order;
+		});
+		await db.collection('sources').add({ ...form, order: maxOrder + 1 });
+		showStatus('Đã thêm nguồn!', 'success');
+		loadCollection('sources');
+	} catch (err) {
+		showStatus('Lỗi thêm: ' + err.message, 'error');
 	}
 }
 
