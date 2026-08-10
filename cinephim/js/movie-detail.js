@@ -174,6 +174,12 @@ async function loadMovieDetail(slug) {
                     currentMovie.episodes = data.episodes;
                 }
             }
+
+            if (currentSourceKey === 'vsmov') {
+                if (data.episodes) {
+                    currentMovie.episodes = data.episodes;
+                }
+            }
             
             await displayMovieDetails();
             updatePageMeta();
@@ -489,6 +495,12 @@ function autoPlayLatestEpisode() {
                 if (latestEpisode.episodeSlug_kkphim) {
                     targetEpisodeSlug = latestEpisode.episodeSlug_kkphim;
                     targetServerIndex = latestEpisode.serverIndex_kkphim !== undefined ? latestEpisode.serverIndex_kkphim : 0;
+                    hasSourceHistory = true;
+                }
+            } else if (currentSourceKey === 'vsmov') {
+                if (latestEpisode.episodeSlug_vsmov) {
+                    targetEpisodeSlug = latestEpisode.episodeSlug_vsmov;
+                    targetServerIndex = latestEpisode.serverIndex_vsmov !== undefined ? latestEpisode.serverIndex_vsmov : 0;
                     hasSourceHistory = true;
                 }
             }
@@ -925,6 +937,11 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
             historyItem.episodeSlug_kkphim = episodeSlug;
             historyItem.serverIndex_kkphim = serverIndex;
             historyItem.serverName_kkphim = serverName;
+        } else if (currentSourceKey === 'vsmov') {
+            historyItem.videoUrl_vsmov = historyItem.videoUrl;
+            historyItem.episodeSlug_vsmov = episodeSlug;
+            historyItem.serverIndex_vsmov = serverIndex;
+            historyItem.serverName_vsmov = serverName;
         }
     }
     
@@ -1206,7 +1223,7 @@ async function loadRelatedMovies() {
         let endpoint = `/films/category/${categorySlug}`;
         if (currentSourceKey === 'kkphim') {
             endpoint = `/v1/api/the-loai/${categorySlug}`;
-        } else if (currentSourceKey === 'ophim') {
+        } else if (currentSourceKey === 'ophim' || currentSourceKey === 'vsmov') {
             endpoint = `/the-loai/${categorySlug}`;
         }
 
@@ -1481,6 +1498,8 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
                 savedVideoUrl = historyItem.videoUrl_ophim;
             } else if (currentSourceKey === 'kkphim') {
                 savedVideoUrl = historyItem.videoUrl_kkphim;
+            } else if (currentSourceKey === 'vsmov') {
+                savedVideoUrl = historyItem.videoUrl_vsmov;
             }
         } else if (historyItem) {
             savedVideoUrl = historyItem.videoUrl;
@@ -1498,6 +1517,8 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
                     // Load đúng videoUrl đã lưu của OPhim
                     videoUrlToPlay = savedVideoUrl || episodeUrl;
                 } else if (currentSourceKey === 'kkphim') {
+                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                } else if (currentSourceKey === 'vsmov') {
                     videoUrlToPlay = savedVideoUrl || episodeUrl;
                 } else {
                     videoUrlToPlay = savedVideoUrl || episodeUrl;

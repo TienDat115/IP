@@ -34,6 +34,17 @@ const SOURCES = {
             category: '/the-loai',
             country: '/quoc-gia'
         }
+    },
+    vsmov: {
+        name: 'VSMOV',
+        base: 'https://vsmov.com/api',
+        endpoints: {
+            new: '/danh-sach/phim-moi-cap-nhat',
+            search: '/tim-kiem',
+            detail: '/phim',
+            category: '/the-loai',
+            country: '/quoc-gia'
+        }
     }
 };
 

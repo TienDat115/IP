@@ -181,11 +181,13 @@ function displayFavoriteMovies(currentMovies, otherFavs = []) {
             'nguonc': 'blue',
             'ophim': 'green',
             'kkphim': 'orange',
+            'vsmov': 'purple',
         };
         const sourceLabels = {
             'nguonc': 'Nguồn C',
             'ophim': 'OPhim',
             'kkphim': 'KKPhim',
+            'vsmov': 'VSMOV',
         };
         
         const grouped = otherFavs.reduce((acc, fav) => {

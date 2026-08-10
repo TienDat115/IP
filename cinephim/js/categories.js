@@ -36,7 +36,7 @@ async function loadCategories() {
 
     let categories = [];
 
-    if (currentSourceKey === 'ophim') {
+    if (currentSourceKey === 'ophim' || currentSourceKey === 'vsmov') {
         try {
             const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.category}`));
             if (data.status === 'success' && data.data?.items) {

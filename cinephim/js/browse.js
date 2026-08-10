@@ -75,7 +75,7 @@ async function loadCategories() {
 
     let categories = [];
 
-    if (currentSourceKey === 'ophim') {
+    if (currentSourceKey === 'ophim' || currentSourceKey === 'vsmov') {
         try {
             const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.category}`));
             if (data.status === 'success' && data.data?.items) {
@@ -122,7 +122,7 @@ async function loadCountries() {
 
     let countries = [];
 
-    if (currentSourceKey === 'ophim') {
+    if (currentSourceKey === 'ophim' || currentSourceKey === 'vsmov') {
         try {
             const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.country}`));
             if (data.status === 'success' && data.data?.items) {
@@ -463,6 +463,7 @@ function buildCountryEndpoint(country) {
 function buildYearEndpoint(year) {
     if (currentSourceKey === 'nguonc') return `/films/nam-phat-hanh/${year}`;
     if (currentSourceKey === 'kkphim') return `/v1/api/nam/${year}`;
+    if (currentSourceKey === 'vsmov') return `/nam/${year}`;
     return `/nam-phat-hanh/${year}`;
 }
 

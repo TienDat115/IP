@@ -47,7 +47,7 @@ async function loadCountries() {
 
     let countries = [];
 
-    if (currentSourceKey === 'ophim') {
+    if (currentSourceKey === 'ophim' || currentSourceKey === 'vsmov') {
         try {
             const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.country}`));
             if (data.status === 'success' && data.data?.items) {

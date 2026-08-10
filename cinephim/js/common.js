@@ -970,6 +970,21 @@ function normalizeMovieData(item, pathImage = '') {
         };
     }
     
+    if (currentSourceKey === 'vsmov') {
+        return {
+            name: item.name || item.title || '',
+            slug: item.slug || '',
+            poster_url: item.poster_url || '',
+            thumb_url: item.thumb_url || '',
+            quality: item.quality || 'HD',
+            current_episode: item.episode_current || item.current_episode || '',
+            total_episodes: item.episode_total || item.total_episodes || '',
+            year: item.year || '',
+            category: item.category || [],
+            country: item.country || []
+        };
+    }
+    
     // NguonC is already in the expected format, but let's ensure consistency
     return {
         name: item.name || item.title || '',
@@ -998,6 +1013,17 @@ function normalizePagination(data) {
     }
     
     if (currentSourceKey === 'kkphim') {
+        const p = data.pagination || data.data?.params?.pagination || data.params?.pagination;
+        if (!p) return null;
+        return {
+            current_page: p.currentPage,
+            total_page: p.totalPages || Math.ceil(p.totalItems / p.totalItemsPerPage) || 1,
+            total_items: p.totalItems,
+            per_page: p.totalItemsPerPage
+        };
+    }
+    
+    if (currentSourceKey === 'vsmov') {
         const p = data.pagination || data.data?.params?.pagination || data.params?.pagination;
         if (!p) return null;
         return {
