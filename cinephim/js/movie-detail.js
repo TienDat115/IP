@@ -71,7 +71,8 @@ function scrollToVideo() {
 }
 
 // Initialize page when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     initializePage();
 });
 
@@ -125,12 +126,14 @@ async function loadMovieDetail(slug) {
         
         if (data.status === 'success' || data.status === true) {
             currentMovie = data.movie || data.item || data.data?.item;
+            if (currentMovie) {
+                const norm = normalizeMovieData(currentMovie);
+                if (norm) {
+                    currentMovie.poster_url = norm.poster_url;
+                    currentMovie.thumb_url = norm.thumb_url;
+                }
+            }
             if (currentSourceKey === 'ophim') {
-                // Fix OPhim image paths
-                const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                const seoImage = data.data?.seoOnPage?.seoSchema?.image || data.seoOnPage?.seoSchema?.image || '';
-                currentMovie.poster_url = resolveOPhimImageUrl(seoImage || currentMovie.image || currentMovie.poster_url || '', pathImage);
-                currentMovie.thumb_url = resolveOPhimImageUrl(currentMovie.thumb_url || '', pathImage);
                 
                 // Handle trailer for OPhim
                 const isTrailer = (currentMovie.status && currentMovie.status.toLowerCase() === 'trailer') || 
@@ -167,9 +170,6 @@ async function loadMovieDetail(slug) {
             }
             
             if (currentSourceKey === 'kkphim') {
-                const pathImageKK = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                currentMovie.poster_url = resolveKKPhimImageUrl(currentMovie.poster_url || '', pathImageKK);
-                currentMovie.thumb_url = resolveKKPhimImageUrl(currentMovie.thumb_url || '', pathImageKK);
                 if (data.episodes) {
                     currentMovie.episodes = data.episodes;
                 }
@@ -279,7 +279,7 @@ async function displayMovieDetails() {
 
     // Update basic info
     document.getElementById('movieTitle').textContent = currentMovie.name || currentMovie.title || 'Không có tiêu đề';
-    document.getElementById('moviePoster').src = getHeroImage(currentMovie.poster_url, currentMovie.thumb_url);
+    document.getElementById('moviePoster').src = getHeroImage(currentMovie.poster_url);
     document.getElementById('moviePoster').alt = currentMovie.name || currentMovie.title || '';
     
     // Update movie info
@@ -387,7 +387,7 @@ function updateStructuredData() {
         "name": currentMovie.name || currentMovie.title || 'Không có tiêu đề',
         "description": stripHtml(currentMovie.content || currentMovie.description || 'Không có mô tả.'),
         "url": window.location.href,
-        "image": getHeroImage(currentMovie.poster_url, currentMovie.thumb_url),
+        "image": getHeroImage(currentMovie.poster_url),
         "datePublished": currentMovie.year ? `${currentMovie.year}-01-01` : '',
         "director": currentMovie.director ? {
             "@type": "Person",
@@ -440,7 +440,7 @@ function updatePageMeta() {
     // Update Open Graph tags
     document.getElementById('ogTitle').content = title;
     document.getElementById('ogDescription').content = description;
-    document.getElementById('ogImage').content = getHeroImage(currentMovie.poster_url, currentMovie.thumb_url);
+    document.getElementById('ogImage').content = getHeroImage(currentMovie.poster_url);
 }
 
 // Auto-play episode from URL or latest watched from history
@@ -1230,7 +1230,7 @@ async function loadRelatedMovies() {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=1`));
 
         if (data.status === 'success' || data.status === true) {
-            const items = data.items || data.data?.items || [];
+            const items = (data.items || data.data?.items || []).map(item => normalizeMovieData(item));
             displayRelatedMovies(items);
         }
 
@@ -1256,7 +1256,7 @@ function displayRelatedMovies(movies) {
 
     relatedMoviesContainer.innerHTML = relatedMovies.map(movie => `
         <div class="bg-gray-700 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="showMovieDetail('${movie.slug}')">
-            <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+            <img src="${getVerticalImage(movie.poster_url)}" 
              alt="${movie.name || movie.title}" 
              loading="lazy" decoding="async" class="w-full h-48 object-cover"
              onerror="this.src=placeholderImg(300,450,'No Poster')">
@@ -1293,7 +1293,7 @@ function toggleFavorite() {
 				title: currentMovie.name || currentMovie.title || "",
 				name: currentMovie.name || currentMovie.title || "",
 				source: currentSourceKey || "",
-				poster_url: currentMovie.thumb_url || currentMovie.poster_url || "",
+				poster_url: currentMovie.poster_url || "",
 				addedAt: new Date().toISOString(),
 			};
             

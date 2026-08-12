@@ -10,6 +10,7 @@ let categoriesLoaded = false;
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     await loadCategories();
     setupEventListeners();
     setupSearchListeners();
@@ -130,8 +131,7 @@ async function loadMoviesByCategory(category, page = 1) {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
         
         if (data.status === 'success' || data.status === true) {
-            const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
+            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item));
             displayMovies(movies);
             
             const pagination = normalizePagination(data);

@@ -3,7 +3,8 @@ let currentPage = 1;
 let totalPages = 1;
 
 // Initialize page when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     setupSearchListeners();
     initializePage();
 });
@@ -39,8 +40,7 @@ async function loadSingleMovies(page = 1) {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
         
         if (data.status === 'success' || data.status === true) {
-            const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
+            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item));
             displayMovies(movies);
             
             const pagination = normalizePagination(data);

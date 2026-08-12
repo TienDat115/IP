@@ -15,6 +15,7 @@ const COMBINED_PER_PAGE = 24;
 
 
 document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     await Promise.all([loadCategories(), loadCountries(), loadYears()]);
     setupEventListeners();
     setupSearchListeners();
@@ -298,22 +299,19 @@ async function loadFilteredMovies(page = 1) {
                 let endpoint = buildCategoryEndpoint(selectedCategories[0]);
                 data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
                 if (data.status === 'success' || data.status === true) {
-                    const pathImage = getPathImage(data);
-                    movies = extractMovies(data, pathImage);
+                    movies = extractMovies(data);
                 }
             } else if (selectedCountries.length === 1 && selectedCategories.length === 0 && selectedYears.length === 0) {
                 let endpoint = buildCountryEndpoint(selectedCountries[0]);
                 data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
                 if (data.status === 'success' || data.status === true) {
-                    const pathImage = getPathImage(data);
-                    movies = extractMovies(data, pathImage);
+                    movies = extractMovies(data);
                 }
             } else if (selectedYears.length === 1 && selectedCategories.length === 0 && selectedCountries.length === 0) {
                 let endpoint = buildYearEndpoint(selectedYears[0]);
                 data = await fetchJSONCached(getApiUrl(`${API_BASE}${endpoint}?page=${page}`));
                 if (data.status === 'success' || data.status === true) {
-                    const pathImage = getPathImage(data);
-                    movies = extractMovies(data, pathImage);
+                    movies = extractMovies(data);
                 }
             }
 
@@ -373,8 +371,7 @@ async function loadFilteredMovies(page = 1) {
             const allMovies = [];
             for (const res of page1Results) {
                 if (res && (res.status === 'success' || res.status === true)) {
-                    const pathImage = getPathImage(res);
-                    const items = extractMovies(res, pathImage);
+                    const items = extractMovies(res);
                     allMovies.push(...items);
                 }
             }
@@ -388,8 +385,7 @@ async function loadFilteredMovies(page = 1) {
             const remainingResults = await Promise.all(remainingPromises);
             for (const res of remainingResults) {
                 if (res && (res.status === 'success' || res.status === true)) {
-                    const pathImage = getPathImage(res);
-                    const items = extractMovies(res, pathImage);
+                    const items = extractMovies(res);
                     allMovies.push(...items);
                 }
             }
@@ -467,12 +463,8 @@ function buildYearEndpoint(year) {
     return `/nam-phat-hanh/${year}`;
 }
 
-function getPathImage(data) {
-    return data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-}
-
-function extractMovies(data, pathImage) {
-    return (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
+function extractMovies(data) {
+    return (data.items || data.data?.items || []).map(item => normalizeMovieData(item));
 }
 
 

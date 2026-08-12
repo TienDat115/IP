@@ -1,6 +1,7 @@
 // CinePhim - Favorites Page JavaScript
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     loadFavorites();
     setupEventListeners();
     document.addEventListener('cinephim:auth-ready', () => {
@@ -72,15 +73,6 @@ async function loadFavorites() {
                         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`));
                         const movieData = data.movie || data.item || data.data?.item;
                         if ((data.status === 'success' || data.status === true) && movieData) {
-                            if (currentSourceKey === 'ophim') {
-                                const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                                movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
-                                movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
-                            } else if (currentSourceKey === 'kkphim') {
-                                const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                                movieData.poster_url = resolveKKPhimImageUrl(movieData.poster_url || '', pathImage);
-                                movieData.thumb_url = resolveKKPhimImageUrl(movieData.thumb_url || '', pathImage);
-                            }
                             currentMovies.push(normalizeMovieData(movieData));
                         } else {
                             otherFavs.push(fav);
@@ -151,11 +143,10 @@ function displayFavoriteMovies(currentMovies, otherFavs = []) {
                     <i class="fas fa-heart text-white"></i>
                 </button>
                 <div class="relative">
-                    <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+                    <img src="${getVerticalImage(movie.poster_url)}" 
                          alt="${movie.name || movie.title || movie.slug}" 
                          loading="lazy" decoding="async" class="film-poster w-full"
-                         onerror="this.src=placeholderImg(300,450,'No Poster')"
-                         onload="applyPosterOrientationClass(this)">
+                         onerror="this.src=placeholderImg(300,450,'No Poster')">
                     <div class="absolute top-2 left-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                         ${movie.quality || 'HD'}
                     </div>

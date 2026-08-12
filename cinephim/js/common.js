@@ -14,169 +14,22 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 // Image Helper Functions
-function getImageOrientation(url) {
-    if (!url) return 'unknown';
-    
-    const verticalPatterns = [
-        /poster/i,
-        /\/post\//i,
-        /\/poster-/i,
-        /-poster\./i,
-        /_poster\./i,
-        /\/images\/Post\//i,
-        /300x450/i,
-        /200x300/i,
-        /400x600/i,
-        /vertical/i
-    ];
-    
-    const horizontalPatterns = [
-        /thumb/i,
-        /thumbnail/i,
-        /\/thumb\//i,
-        /-thumb\./i,
-        /_thumb\./i,
-        /\/images\/Thumb\//i,
-        /16x9/i,
-        /1280x720/i,
-        /1920x1080/i,
-        /horizontal/i,
-        /landscape/i
-    ];
-    
-    for (const pattern of verticalPatterns) {
-        if (pattern.test(url)) {
-            return 'vertical';
-        }
-    }
-    
-    for (const pattern of horizontalPatterns) {
-        if (pattern.test(url)) {
-            return 'horizontal';
-        }
-    }
-    
-    return 'unknown';
-}
-
-function getBestImageForOrientation(posterUrl, thumbUrl, preferredOrientation = 'vertical') {
-    if (!posterUrl && !thumbUrl) return null;
-    if (posterUrl && !thumbUrl) return posterUrl;
-    if (!posterUrl && thumbUrl) return thumbUrl;
-    
-    const posterOrientation = getImageOrientation(posterUrl);
-    const thumbOrientation = getImageOrientation(thumbUrl);
-    
-    if (preferredOrientation === 'vertical') {
-        if (currentSourceKey === 'kkphim') {
-            return posterUrl || thumbUrl;
-        }
-
-        if (currentSourceKey === 'ophim') {
-            // For OPhim:
-            // posterUrl is mapped to image_url (often a landscape seo image/banner)
-            // thumbUrl is mapped to item.thumb_url (the actual vertical poster)
-            return thumbUrl || posterUrl;
-        }
-
-        if (thumbOrientation === 'vertical') {
-            return thumbUrl;
-        } else if (posterOrientation === 'vertical') {
-            return posterUrl;
-        } else {
-            return posterUrl || thumbUrl;
-        }
-    }
-    
-    if (preferredOrientation === 'horizontal') {
-        if (currentSourceKey === 'ophim') {
-            // For OPhim, posterUrl contains the banner/seo image, which is horizontal
-            return posterUrl || thumbUrl;
-        }
-        if (posterOrientation === 'horizontal') {
-            return posterUrl;
-        } else if (thumbOrientation === 'horizontal') {
-            return thumbUrl;
-        } else {
-            return thumbUrl || posterUrl;
-        }
-    }
-    
-    return posterUrl;
-}
-
 function placeholderImg(w, h, text, bg = '#374151', fg = '#ffffff') {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="${w}" height="${h}" fill="${bg}"/><text x="${w/2}" y="${h/2}" font-family="sans-serif" font-size="${Math.min(w,h)/12}" fill="${fg}" text-anchor="middle" dominant-baseline="central">${text.replace(/"/g, '&quot;')}</text></svg>`;
     return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
 
-function getVerticalImage(posterUrl, thumbUrl) {
-    return getBestImageForOrientation(posterUrl, thumbUrl, 'vertical') || 
-           posterUrl || 
-           thumbUrl || 
-           placeholderImg(300, 450, 'No Poster');
+function getVerticalImage(imageUrl) {
+    return imageUrl || placeholderImg(300, 450, 'No Poster');
 }
 
-function getHeroImage(posterUrl, thumbUrl) {
-    return getVerticalImage(posterUrl, thumbUrl);
+function getHeroImage(imageUrl) {
+    return getVerticalImage(imageUrl);
 }
-
-function applyPosterOrientationClass(img) {
-    if (!img || !img.classList || !img.classList.contains('film-poster')) return;
-    if (!img.naturalWidth || !img.naturalHeight) return;
-
-    img.classList.remove('film-poster-landscape');
-
-    // Commented out to maintain consistent portrait aspect ratio for all cards
-    /*
-    if (img.naturalWidth > img.naturalHeight) {
-        img.classList.add('film-poster-landscape');
-    }
-    */
-}
-
-const posterObserver = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-            if (node.nodeType !== 1) continue;
-            if (node.tagName === 'IMG' && node.classList.contains('film-poster')) {
-                if (node.complete) {
-                    applyPosterOrientationClass(node);
-                } else {
-                    node.addEventListener('load', () => applyPosterOrientationClass(node), { once: true });
-                }
-            }
-            const imgs = node.querySelectorAll?.('img.film-poster') || [];
-            for (const img of imgs) {
-                if (img.complete) {
-                    applyPosterOrientationClass(img);
-                } else {
-                    img.addEventListener('load', () => applyPosterOrientationClass(img), { once: true });
-                }
-            }
-        }
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const posters = document.querySelectorAll('img.film-poster');
-    posters.forEach((img) => {
-        if (img.complete) {
-            applyPosterOrientationClass(img);
-        } else {
-            img.addEventListener('load', () => applyPosterOrientationClass(img), { once: true });
-        }
-    });
-    if (document.body) {
-        posterObserver.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
-});
 
 // Initialize Firebase and common functions
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     // Render source switcher if container exists
     renderSourceSwitcher();
 
@@ -853,6 +706,8 @@ async function toggleFavorite(slug) {
             title: slug, // Use slug as title fallback
             name: slug, // Use slug as name fallback
             source: currentSourceKey,
+            poster_url: window.currentMoviePosterUrl || '',
+            thumb_url: window.currentMovieThumbUrl || '',
             addedAt: new Date().toISOString()
         };
         favorites.unshift(movieData);
@@ -887,7 +742,7 @@ function resolveOPhimImageUrl(url, pathImageFromApi = '') {
     if (url.startsWith('http')) return url;
     
     // Default CDN domain
-    let cdnDomain = 'https://img.ophim.live';
+    let cdnDomain = (SOURCES.ophim && SOURCES.ophim.image_cdn) ? SOURCES.ophim.image_cdn : 'https://img.ophim.live';
     
     // Try to extract cdn domain from pathImageFromApi if it is valid
     if (pathImageFromApi && typeof pathImageFromApi === 'string' && pathImageFromApi.startsWith('http')) {
@@ -911,7 +766,7 @@ function resolveKKPhimImageUrl(url, pathImageFromApi = '') {
     if (!url) return '';
     if (url.startsWith('http')) return url;
 
-    let cdnDomain = 'https://phimimg.com';
+    let cdnDomain = (SOURCES.kkphim && SOURCES.kkphim.image_cdn) ? SOURCES.kkphim.image_cdn : 'https://phimimg.com';
 
     if (pathImageFromApi && typeof pathImageFromApi === 'string' && pathImageFromApi.startsWith('http')) {
         cdnDomain = pathImageFromApi.replace(/\/$/, '');
@@ -927,16 +782,30 @@ function stripHtml(str) {
     if (!str) return '';
     return str.replace(/<[^>]*>/g, '');
 }
+// Get raw image link based on source config (single image_field decides the API field)
+function getRawImageUrl(item, sourceKey = currentSourceKey) {
+    if (!item) return '';
+    let sourceConfig = SOURCES[sourceKey] || {};
+    let fieldName = sourceConfig.image_field || '';
+    
+    if (fieldName) {
+        return item[fieldName] || '';
+    }
+    
+    return item.thumb_url || item.poster_url || '';
+}
 
 // Data Normalization Helpers
-function normalizeMovieData(item, pathImage = '') {
+function normalizeMovieData(item) {
     if (!item) return null;
+    
+    let rawPoster = getRawImageUrl(item, currentSourceKey);
+    let rawThumb = rawPoster;
     
     // Normalize based on source
     if (currentSourceKey === 'ophim') {
-        let image_url = resolveOPhimImageUrl(item.data?.seoOnPage?.seoSchema?.image || item.seoOnPage?.seoSchema?.image || item.seoSchema?.image || item.image || '', pathImage);
-        let thumb_url = resolveOPhimImageUrl(item.thumb_url || '', pathImage);
-        let poster_url = image_url || thumb_url || resolveOPhimImageUrl(item.poster_url || '', pathImage);
+        let poster_url = resolveOPhimImageUrl(rawPoster);
+        let thumb_url = resolveOPhimImageUrl(rawThumb);
         
         return {
             name: item.name || item.title || '',
@@ -953,8 +822,8 @@ function normalizeMovieData(item, pathImage = '') {
     }
     
     if (currentSourceKey === 'kkphim') {
-        let poster_url = resolveKKPhimImageUrl(item.poster_url || '', pathImage);
-        let thumb_url = resolveKKPhimImageUrl(item.thumb_url || '', pathImage);
+        let poster_url = resolveKKPhimImageUrl(rawPoster);
+        let thumb_url = resolveKKPhimImageUrl(rawThumb);
 
         return {
             name: item.name || item.title || '',
@@ -974,8 +843,8 @@ function normalizeMovieData(item, pathImage = '') {
         return {
             name: item.name || item.title || '',
             slug: item.slug || '',
-            poster_url: item.poster_url || '',
-            thumb_url: item.thumb_url || '',
+            poster_url: rawPoster,
+            thumb_url: rawThumb,
             quality: item.quality || 'HD',
             current_episode: item.episode_current || item.current_episode || '',
             total_episodes: item.episode_total || item.total_episodes || '',
@@ -989,8 +858,8 @@ function normalizeMovieData(item, pathImage = '') {
     return {
         name: item.name || item.title || '',
         slug: item.slug || '',
-        poster_url: item.poster_url || '',
-        thumb_url: item.thumb_url || '',
+        poster_url: rawPoster,
+        thumb_url: rawThumb,
         quality: item.quality || 'HD',
         current_episode: item.current_episode || '',
         total_episodes: item.total_episodes || '',
@@ -1479,7 +1348,8 @@ function loadHLSPlayer() {
 }
 
 // Close modal when clicking outside
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     const movieModal = document.getElementById('movieModal');
     if (movieModal) {
         movieModal.addEventListener('click', function(e) {
@@ -1734,11 +1604,10 @@ function getMovieCardHTML(movie) {
     return `
         <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer" onclick="showMovieDetail('${movie.slug}')">
             <div class="relative">
-                <img src="${getVerticalImage(movie.poster_url, movie.thumb_url)}" 
+                <img src="${getVerticalImage(movie.poster_url)}" 
                      alt="${movie.name || movie.title}" 
                      loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src=placeholderImg(300,450,'No Poster')"
-                     onload="applyPosterOrientationClass(this)">
+                     onerror="this.src=placeholderImg(300,450,'No Poster')">
                 <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                     ${movie.quality || 'HD'}
                 </div>

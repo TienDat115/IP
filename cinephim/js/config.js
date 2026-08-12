@@ -1,59 +1,24 @@
 // CinePhim - Configuration & Constants
 
 // API Configuration
-const SOURCES = {
-    nguonc: {
-        name: 'NguonC',
-        base: 'https://phim.nguonc.com/api',
-        endpoints: {
-            new: '/films/phim-moi-cap-nhat',
-            search: '/films/search',
-            detail: '/film',
-            category: '/categories',
-            country: '/countries'
-        }
-    },
-    ophim: {
-        name: 'OPhim',
-        base: 'https://ophim1.com/v1/api',
-        endpoints: {
-            new: '/danh-sach/phim-moi-cap-nhat',
-            search: '/tim-kiem',
-            detail: '/phim',
-            category: '/the-loai',
-            country: '/quoc-gia'
-        }
-    },
-    kkphim: {
-        name: 'KKPhim',
-        base: 'https://phimapi.com',
-        endpoints: {
-            new: '/danh-sach/phim-moi-cap-nhat',
-            search: '/v1/api/tim-kiem',
-            detail: '/phim',
-            category: '/the-loai',
-            country: '/quoc-gia'
-        }
-    },
-    vsmov: {
-        name: 'VSMOV',
-        base: 'https://vsmov.com/api',
-        endpoints: {
-            new: '/danh-sach/phim-moi-cap-nhat',
-            search: '/tim-kiem',
-            detail: '/phim',
-            category: '/the-loai',
-            country: '/quoc-gia'
-        }
-    }
-};
-
-// Current source management
+let SOURCES = {};
 let currentSourceKey = localStorage.getItem('movieSource') || 'nguonc';
-if (!SOURCES[currentSourceKey]) currentSourceKey = 'nguonc';
+let currentSource = null;
+let API_BASE = '';
 
-let currentSource = SOURCES[currentSourceKey];
-let API_BASE = currentSource.base;
+const appConfigPromise = fetch('js/api-sources.json?t=' + Date.now())
+    .then(res => res.json())
+    .then(data => {
+        SOURCES = data.SOURCES || data; // handle both structures just in case
+        if (!SOURCES[currentSourceKey]) currentSourceKey = 'nguonc';
+        currentSource = SOURCES[currentSourceKey];
+        API_BASE = currentSource.base;
+    })
+    .catch(err => console.error("Failed to load api-sources.json:", err));
+
+window.ensureConfigReady = async function() {
+    await appConfigPromise;
+};
 
 // Function to switch source
 function setSource(sourceKey) {

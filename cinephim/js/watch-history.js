@@ -5,7 +5,8 @@ let currentPage = 1;
 const itemsPerPage = 10;
 let totalPages = 1;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     // Check for page parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
@@ -375,15 +376,6 @@ async function loadPosters() {
                 const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
                 const movieData = data.movie || data.item || data.data?.item;
                 if ((data.status === 'success' || data.status === true) && movieData) {
-                    if (currentSourceKey === 'ophim') {
-                        const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                        movieData.poster_url = resolveOPhimImageUrl(movieData.poster_url || '', pathImage);
-                        movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
-                    } else if (currentSourceKey === 'kkphim') {
-                        const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                        movieData.poster_url = resolveKKPhimImageUrl(movieData.poster_url || '', pathImage);
-                        movieData.thumb_url = resolveKKPhimImageUrl(movieData.thumb_url || '', pathImage);
-                    }
                     const movie = normalizeMovieData(movieData);
                     posterUrl = movie.poster_url || '';
                     thumbUrl = movie.thumb_url || '';
@@ -397,14 +389,13 @@ async function loadPosters() {
                 thumbUrl = item.thumb_url || '';
             }
 
-            const imgSrc = getVerticalImage(posterUrl, thumbUrl) || placeholderImg(300, 450, 'No Poster');
+            const imgSrc = getVerticalImage(posterUrl) || placeholderImg(300, 450, 'No Poster');
 
             posterContainer.innerHTML = `
                 <img src="${imgSrc}" 
                      alt="${item.movieTitle || ''}" 
                      loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src=placeholderImg(300,450,'No Poster')"
-                     onload="applyPosterOrientationClass(this)">
+                     onerror="this.src=placeholderImg(300,450,'No Poster')">
             `;
         } catch (error) {
             console.error('Error loading poster for', item.movieSlug, ':', error);

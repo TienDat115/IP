@@ -395,7 +395,8 @@ document.addEventListener("cinephim:auth-ready", () => {
 	if (currentUser) loadCuratedLinks();
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+	await window.ensureConfigReady();
 	const searchInput = document.getElementById("searchInput");
 	if (searchInput) {
 		searchInput.addEventListener("input", filterCuratedLinks);

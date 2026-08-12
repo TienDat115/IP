@@ -5,7 +5,8 @@ let currentPage = 1;
 let searchQuery = '';
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.ensureConfigReady();
     // Check for page parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
@@ -69,8 +70,7 @@ async function loadNewMovies(page = 1) {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.new}?page=${page}`));
         
         if (data.status === 'success' || data.status === true) {
-            const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
+            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item));
             displayMovies(movies);
             
             const pagination = normalizePagination(data);
@@ -125,8 +125,7 @@ async function searchMovies(keyword, page = 1) {
         const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.search}?keyword=${encodeURIComponent(keyword)}&page=${page}`));
         
         if (data.status === 'success' || data.status === true) {
-            const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item, pathImage));
+            const movies = (data.items || data.data?.items || []).map(item => normalizeMovieData(item));
             displayMovies(movies);
             
             const pagination = normalizePagination(data);
@@ -256,17 +255,6 @@ async function loadRecentWatchedPosters(recentWatched) {
                 const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.movieSlug}`));
                 const movieData = data.movie || data.item || data.data?.item;
                 if ((data.status === 'success' || data.status === true) && movieData) {
-                    if (currentSourceKey === 'ophim') {
-                        const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                        const seoImage = data.data?.seoOnPage?.seoSchema?.image || data.seoOnPage?.seoSchema?.image || '';
-                        movieData.image = seoImage || movieData.image || '';
-                        movieData.poster_url = resolveOPhimImageUrl(movieData.image || movieData.thumb_url || movieData.poster_url || '', pathImage);
-                        movieData.thumb_url = resolveOPhimImageUrl(movieData.thumb_url || '', pathImage);
-                    } else if (currentSourceKey === 'kkphim') {
-                        const pathImage = data.pathImage || data.data?.pathImage || data.data?.APP_DOMAIN_CDN_IMAGE || '';
-                        movieData.poster_url = resolveKKPhimImageUrl(movieData.poster_url || '', pathImage);
-                        movieData.thumb_url = resolveKKPhimImageUrl(movieData.thumb_url || '', pathImage);
-                    }
                     const movie = normalizeMovieData(movieData);
                     posterUrl = movie.poster_url || '';
                     thumbUrl = movie.thumb_url || '';
@@ -280,14 +268,13 @@ async function loadRecentWatchedPosters(recentWatched) {
                 thumbUrl = item.thumb_url || '';
             }
 
-            const imgSrc = getVerticalImage(posterUrl, thumbUrl) || placeholderImg(300, 450, 'No Poster');
+            const imgSrc = getVerticalImage(posterUrl) || placeholderImg(300, 450, 'No Poster');
 
             posterContainer.innerHTML = `
                 <img src="${imgSrc}" 
                      alt="${item.movieTitle || ''}" 
                      loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src=placeholderImg(300,450,'No Poster')"
-                     onload="applyPosterOrientationClass(this)">
+                     onerror="this.src=placeholderImg(300,450,'No Poster')">
             `;
         } catch (error) {
             console.error('Error loading poster for recent watched', item.movieSlug, ':', error);
@@ -326,12 +313,13 @@ async function loadPinnedMovies() {
             html += `
                 <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative group" onclick="showMovieDetail('${item.slug}')">
                     <div class="relative">
-                        <img src="${getVerticalImage(item.poster_url, item.thumb_url)}" 
-                             alt="${item.title || item.name}" 
-                             loading="lazy" decoding="async" class="film-poster w-full"
-                             onerror="this.src=placeholderImg(300,450,'No Poster')"
-                             onload="applyPosterOrientationClass(this)">
-                        <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
+                        <div id="pin-poster-${item.slug}">
+                                <img src="${getVerticalImage(item.poster_url)}" 
+                                     alt="${item.title || item.name}" 
+                                     loading="lazy" decoding="async" class="film-poster w-full"
+                                     onerror="this.src=placeholderImg(300,450,'No Poster')">
+                            </div>
+                            <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                             HD
                         </div>
                         <div class="absolute top-2 left-2 bg-yellow-600 px-2 py-1 rounded text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
@@ -347,8 +335,8 @@ async function loadPinnedMovies() {
         
         grid.innerHTML = html;
         
-        // No need to load additional info since we have it saved
-        // loadPinnedMoviesPosters(displayPinned);
+        // Refresh posters from API for pinned movies (fallback to saved value)
+        loadPinnedMoviesPosters(displayPinned);
         
     } catch (error) {
         console.error('Error loading pinned movies:', error);
@@ -357,6 +345,44 @@ async function loadPinnedMovies() {
         if (grid && emptyState) {
             grid.innerHTML = '';
             emptyState.classList.remove('hidden');
+        }
+    }
+}
+
+// Load posters for pinned movies
+async function loadPinnedMoviesPosters(pinnedMovies) {
+    for (const item of pinnedMovies) {
+        try {
+            const posterContainer = document.getElementById('pin-poster-' + item.slug);
+            if (!posterContainer) continue;
+
+            let posterUrl = '';
+
+            try {
+                const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.slug}`));
+                const movieData = data.movie || data.item || data.data?.item;
+                if ((data.status === 'success' || data.status === true) && movieData) {
+                    const movie = normalizeMovieData(movieData);
+                    posterUrl = movie.poster_url || '';
+                }
+            } catch (apiError) {
+                console.warn('API fallback for pinned', item.slug, ':', apiError);
+            }
+
+            if (!posterUrl) {
+                posterUrl = item.poster_url || '';
+            }
+
+            if (!posterUrl) continue;
+
+            posterContainer.innerHTML = `
+                <img src="${getVerticalImage(posterUrl)}" 
+                     alt="${item.title || item.name || ''}" 
+                     loading="lazy" decoding="async" class="film-poster w-full"
+                     onerror="this.src=placeholderImg(300,450,'No Poster')">
+            `;
+        } catch (error) {
+            console.error('Error loading poster for pinned movie', item.slug, ':', error);
         }
     }
 }
