@@ -388,15 +388,24 @@ function insertText(before, after, textareaId = "messageText") {
 	const end = textarea.selectionEnd;
 	const text = textarea.value;
 	const selectedText = text.substring(start, end);
+	const isCodeBlock = before === "```" && after === "```";
 
-	textarea.value = text.substring(0, start) + before + selectedText + after + text.substring(end);
+	textarea.value = text.substring(0, start) + before + (isCodeBlock ? "\n" : "") + selectedText + (isCodeBlock ? "\n" : "") + after + text.substring(end);
 
 	// Đặt lại vị trí con trỏ
-	const newCursorPos = start + before.length;
+	const newCursorPos = start + before.length + (isCodeBlock ? 1 : 0);
 	textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
 	textarea.focus();
 
 	updateCharCount(textarea);
+	autoResize(textarea);
+}
+
+// Tự động mở rộng textarea theo nội dung
+function autoResize(textarea) {
+	if (!textarea) return;
+	textarea.style.height = "auto";
+	textarea.style.height = textarea.scrollHeight + "px";
 }
 
 function updateCharCount(textarea) {
@@ -919,6 +928,7 @@ function applyTemplate(templateId, textareaId = "messageText") {
 
 	// Áp dụng nội dung mẫu
 	messageText.value = template.content;
+	autoResize(messageText);
 	currentTemplate = templateId;
 }
 
@@ -962,6 +972,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 					// Cập nhật giá trị textarea
 					textarea.value = newText;
+					autoResize(textarea);
 
 					// Cập nhật vị trí chọn
 					setTimeout(() => {
@@ -975,6 +986,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					const newText = text.substring(0, lineEnd === -1 ? text.length : lineEnd) + "\n" + currentLine + (lineEnd === -1 ? "" : text.substring(lineEnd));
 
 					textarea.value = newText;
+					autoResize(textarea);
 				}
 			} catch (err) {
 				console.error("Lỗi khi xử lý nhân đôi dòng:", err);
@@ -1416,6 +1428,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Tạo các nút định dạng cho tab tin nhắn
 	document.getElementById("formattingButtons").innerHTML = createFormattingButtons("messageText");
 	updateCharCount(document.getElementById('messageText'));
+	// Tự động mở rộng textarea khi nhập nội dung
+	document.getElementById("messageText").addEventListener("input", function () {
+		autoResize(this);
+	});
+	autoResize(document.getElementById("messageText"));
 });
 
 // Hàm lưu bản nháp lên Firebase (hỗ trợ nhiều bản nháp)
@@ -1658,6 +1675,7 @@ async function selectDraft(draftId, textareaId = "messageText") {
 		Swal.close();
 		document.getElementById(textareaId).value = doc.data().content;
 		updateCharCount(document.getElementById(textareaId));
+		autoResize(document.getElementById(textareaId));
 		showSuccessMessage("Đã tải bản nháp thành công");
 	} catch (error) {
 		console.error("Lỗi khi chọn bản nháp:", error);
