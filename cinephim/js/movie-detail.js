@@ -102,9 +102,6 @@ async function initializePage() {
         // Wait for watch history to load from Firebase
         await waitForWatchHistory();
         
-        // Initialize video player
-        initializeVideoPlayer();
-        
         // Auto-play latest watched episode from history
         autoPlayLatestEpisode();
         
@@ -210,24 +207,15 @@ async function loadMovieDetail(slug) {
     } catch (error) {
         console.error('Error loading movie details:', error);
         
-        const prevSource = localStorage.getItem('previousMovieSource');
-        localStorage.removeItem('previousMovieSource');
-        
-        if (prevSource && prevSource !== currentSourceKey && SOURCES[prevSource]) {
-            localStorage.setItem('movieSource', prevSource);
-            
-            Swal.fire({
-                icon: 'warning',
-                title: 'Không thể chuyển nguồn',
-                text: `Nguồn ${SOURCES[currentSourceKey]?.name || 'hiện tại'} không có phim này. Đã chuyển về nguồn ${SOURCES[prevSource]?.name || 'cũ'}.`,
-                confirmButtonText: 'OK',
-                allowOutsideClick: false,
-            }).then(() => {
-                window.location.reload();
-            });
-            return;
-        }
-        showError('Không thể tải thông tin phim. Vui lòng thử lại.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Phim không có sẵn',
+            text: 'Phim không có ở nguồn hiện tại. Quay về trang chủ.',
+            confirmButtonText: 'OK',
+            allowOutsideClick: false,
+        }).then(() => {
+            window.location.href = 'index.html';
+        });
         hideLoading();
     }
 }
@@ -791,16 +779,6 @@ function goToEpisodePage(page) {
     }
 }
 
-// Initialize video player
-function initializeVideoPlayer() {
-    const iframeElement = document.getElementById('videoPlayer');
-    if (!iframeElement) {
-        console.error('Video iframe not found');
-        return;
-    }
-    
-}
-
 // Play episode
 function playEpisode(episodeSlug, videoUrl) {
     const iframeElement = document.getElementById('videoPlayer');
@@ -816,18 +794,18 @@ function playEpisode(episodeSlug, videoUrl) {
     }
 
     try {
-        // Find episode index
-        currentEpisodeIndex = findEpisodeIndex(episodeSlug);
-        
-        // Calculate which page the episode belongs to
+        // Find episode index in the current server
         const srvIdx = getCurrentServerIndex();
         const srv = currentMovie.episodes[srvIdx];
         if (srv) {
             const items = srv.items || srv.server_data || [];
-            if (items.length > 0) {
-                const reversedIndex = items.length - 1 - currentEpisodeIndex;
-                currentEpisodePage = Math.floor(reversedIndex / episodesPerPage) + 1;
+            const idx = items.findIndex(ep => ep.slug === episodeSlug);
+            if (idx !== -1) {
+                currentEpisodeIndex = idx;
+                currentEpisodePage = Math.floor((items.length - 1 - idx) / episodesPerPage) + 1;
             }
+            const totalPages = Math.max(1, Math.ceil(items.length / episodesPerPage));
+            currentEpisodePage = Math.min(Math.max(currentEpisodePage, 1), totalPages);
         }
         
         // Log video URL for debugging
@@ -1181,16 +1159,15 @@ function updateNavigationButtons() {
     }
 }
 
-// Find episode index by slug
+// Find episode index by slug in current server only
 function findEpisodeIndex(episodeSlug) {
     if (!currentMovie || !currentMovie.episodes) return 0;
     
-    for (let server of currentMovie.episodes) {
-        const items = server.items || server.server_data || [];
-        const index = items.findIndex(ep => ep.slug === episodeSlug);
-        if (index !== -1) return index;
-    }
-    return 0;
+    const server = currentMovie.episodes[getCurrentServerIndex()];
+    if (!server) return 0;
+    const items = server.items || server.server_data || [];
+    const index = items.findIndex(ep => ep.slug === episodeSlug);
+    return index === -1 ? 0 : index;
 }
 
 // Load related movies

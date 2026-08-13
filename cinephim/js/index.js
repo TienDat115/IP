@@ -313,13 +313,11 @@ async function loadPinnedMovies() {
             html += `
                 <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative group" onclick="showMovieDetail('${item.slug}')">
                     <div class="relative">
-                        <div id="pin-poster-${item.slug}">
-                                <img src="${getVerticalImage(item.poster_url)}" 
-                                     alt="${item.title || item.name}" 
-                                     loading="lazy" decoding="async" class="film-poster w-full"
-                                     onerror="this.src=placeholderImg(300,450,'No Poster')">
-                            </div>
-                            <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
+                        <img src="${getVerticalImage(item.thumb_url || item.poster_url)}" 
+                             alt="${item.title || item.name}" 
+                             loading="lazy" decoding="async" class="film-poster w-full"
+                             onerror="this.src=placeholderImg(300,450,'No Poster')">
+                        <div class="absolute top-2 right-2 bg-purple-600 px-2 py-1 rounded text-xs font-semibold">
                             HD
                         </div>
                         <div class="absolute top-2 left-2 bg-yellow-600 px-2 py-1 rounded text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
@@ -335,9 +333,6 @@ async function loadPinnedMovies() {
         
         grid.innerHTML = html;
         
-        // Refresh posters from API for pinned movies (fallback to saved value)
-        loadPinnedMoviesPosters(displayPinned);
-        
     } catch (error) {
         console.error('Error loading pinned movies:', error);
         const grid = document.getElementById('pinnedMoviesGrid');
@@ -345,44 +340,6 @@ async function loadPinnedMovies() {
         if (grid && emptyState) {
             grid.innerHTML = '';
             emptyState.classList.remove('hidden');
-        }
-    }
-}
-
-// Load posters for pinned movies
-async function loadPinnedMoviesPosters(pinnedMovies) {
-    for (const item of pinnedMovies) {
-        try {
-            const posterContainer = document.getElementById('pin-poster-' + item.slug);
-            if (!posterContainer) continue;
-
-            let posterUrl = '';
-
-            try {
-                const data = await fetchJSONCached(getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${item.slug}`));
-                const movieData = data.movie || data.item || data.data?.item;
-                if ((data.status === 'success' || data.status === true) && movieData) {
-                    const movie = normalizeMovieData(movieData);
-                    posterUrl = movie.poster_url || '';
-                }
-            } catch (apiError) {
-                console.warn('API fallback for pinned', item.slug, ':', apiError);
-            }
-
-            if (!posterUrl) {
-                posterUrl = item.poster_url || '';
-            }
-
-            if (!posterUrl) continue;
-
-            posterContainer.innerHTML = `
-                <img src="${getVerticalImage(posterUrl)}" 
-                     alt="${item.title || item.name || ''}" 
-                     loading="lazy" decoding="async" class="film-poster w-full"
-                     onerror="this.src=placeholderImg(300,450,'No Poster')">
-            `;
-        } catch (error) {
-            console.error('Error loading poster for pinned movie', item.slug, ':', error);
         }
     }
 }

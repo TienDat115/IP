@@ -23,7 +23,6 @@ window.ensureConfigReady = async function() {
 // Function to switch source
 function setSource(sourceKey) {
     if (SOURCES[sourceKey]) {
-        localStorage.setItem('previousMovieSource', currentSourceKey);
         localStorage.setItem('movieSource', sourceKey);
         
         if (window.location.pathname.includes('movie-detail.html')) {
