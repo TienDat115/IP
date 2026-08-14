@@ -544,29 +544,29 @@ function updateBreadcrumb(catNames, ctryNames, yearNames) {
     if (!breadcrumbContainer) return;
 
     let html = `
-        <a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
+        <a href="index.html">Trang chủ</a>
         <i class="fas fa-chevron-right text-xs"></i>
-        <span class="text-white">Tìm phim nâng cao</span>
+        <span>Tìm phim nâng cao</span>
     `;
 
     if (catNames.length > 0) {
         html += `
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-white">${catNames.join(', ')}</span>
+            <span>${catNames.join(', ')}</span>
         `;
     }
 
     if (ctryNames.length > 0) {
         html += `
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-white">${ctryNames.join(', ')}</span>
+            <span>${ctryNames.join(', ')}</span>
         `;
     }
 
     if (yearNames.length > 0) {
         html += `
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-white">Năm ${yearNames.join(', ')}</span>
+            <span>Năm ${yearNames.join(', ')}</span>
         `;
     }
 

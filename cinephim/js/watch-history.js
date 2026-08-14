@@ -16,28 +16,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     currentPage = pageNumber;
     
     loadWatchHistory();
-    setupEventListeners();
+    setupSearchListeners();
     document.addEventListener('cinephim:auth-ready', () => {
         loadWatchHistory();
     });
 });
-
-function setupEventListeners() {
-    const searchInput = document.getElementById('searchInput');
-    let searchTimeout;
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const query = e.target.value.trim();
-                if (query) {
-                    window.location.href = `index.html?search=${encodeURIComponent(query)}`;
-                }
-            }, 500);
-        });
-    }
-}
 
 async function loadWatchHistory() {
     try {

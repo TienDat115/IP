@@ -216,4 +216,6 @@ document.addEventListener("cinephim:auth-ready", () => {
 	loadSources();
 });
 
-initPageSync();
+document.addEventListener("DOMContentLoaded", () => {
+	setupSearchListeners();
+});

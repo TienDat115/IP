@@ -3,28 +3,11 @@
 document.addEventListener('DOMContentLoaded', async function() {
     await window.ensureConfigReady();
     loadFavorites();
-    setupEventListeners();
+    setupSearchListeners();
     document.addEventListener('cinephim:auth-ready', () => {
         loadFavorites();
     });
 });
-
-function setupEventListeners() {
-    const searchInput = document.getElementById('searchInput');
-    let searchTimeout;
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const query = e.target.value.trim();
-                if (query) {
-                    window.location.href = `index.html?search=${encodeURIComponent(query)}`;
-                }
-            }, 500);
-        });
-    }
-}
 
 async function loadFavorites() {
     try {

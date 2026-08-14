@@ -4,6 +4,7 @@ let currentEpisodeIndex = 0;
 let currentServerIndex = 0;
 let currentEpisodePage = 1;
 let episodesPerPage = 50;
+let currentEpisodeSlug = null;
 
 function copyMovieAPI() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -549,15 +550,15 @@ function setupEpisodes() {
     const servers = currentMovie.episodes || [];
     servers.forEach((server, index) => {
         const button = document.createElement('button');
-        button.className = 'bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition flex items-center';
+        button.className = 'bg-transparent border border-black text-gray-300 hover:bg-gray-800 px-4 py-2 rounded-lg text-sm transition flex items-center';
         button.textContent = server.server_name || `Server ${index + 1}`;
         button.onclick = () => selectServer(index);
         button.dataset.serverIndex = index;
         
         // Add active class for first server
         if (index === 0) {
-            button.classList.add('bg-purple-600', 'hover:bg-purple-700');
-            button.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+            button.classList.add('bg-[#ffd875]', 'hover:bg-[#e2c15e]', 'text-gray-900');
+            button.classList.remove('bg-transparent', 'border', 'border-black', 'text-gray-300', 'hover:bg-gray-800');
         }
         
         serverSelect.appendChild(button);
@@ -570,7 +571,7 @@ function setupEpisodes() {
 // Get current server index
 function getCurrentServerIndex() {
     const serverSelect = document.getElementById('serverSelect');
-    const activeButton = serverSelect.querySelector('.bg-purple-600');
+    const activeButton = serverSelect.querySelector('.bg-\\[\\#ffd875\\]');
     return activeButton ? parseInt(activeButton.dataset.serverIndex) : 0;
 }
 
@@ -581,15 +582,15 @@ function selectServer(serverIndex) {
     
     // Remove active class from all buttons
     buttons.forEach(button => {
-        button.classList.remove('bg-purple-600', 'hover:bg-purple-700');
-        button.classList.add('bg-gray-700', 'hover:bg-gray-600');
+        button.classList.remove('bg-[#ffd875]', 'hover:bg-[#e2c15e]', 'text-gray-900');
+        button.classList.add('bg-transparent', 'border', 'border-black', 'text-gray-300', 'hover:bg-gray-800');
     });
     
     // Add active class to selected button
     const selectedButton = serverSelect.querySelector(`[data-server-index="${serverIndex}"]`);
     if (selectedButton) {
-        selectedButton.classList.add('bg-purple-600', 'hover:bg-purple-700');
-        selectedButton.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+        selectedButton.classList.add('bg-[#ffd875]', 'hover:bg-[#e2c15e]', 'text-gray-900');
+        selectedButton.classList.remove('bg-transparent', 'border', 'border-black', 'text-gray-300', 'hover:bg-gray-800');
     }
     
     // Reset to page 1 on server change
@@ -655,10 +656,14 @@ function updateEpisodesListForServer(serverIndex) {
             const embed = episode.embed || episode.link_embed;
             const m3u8 = episode.m3u8 || episode.link_m3u8;
             const name = episode.name || `Tập ${totalEpisodes - (startIndex + index)}`;
+            const isCurrent = slug === currentEpisodeSlug;
+            const selectedClass = isCurrent
+                ? 'bg-[#ffd875] hover:bg-[#e2c15e] text-gray-900'
+                : 'bg-transparent border border-black text-gray-300 hover:bg-gray-800';
             
             return `
                 <button onclick="playEpisode('${slug}', '${embed || m3u8}')" 
-                        class="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm transition ${isEpisodeWatched(slug, currentMovie.slug) ? 'ring-2 ring-blue-500' : ''}">
+                        class="${selectedClass} px-3 py-2 rounded text-sm transition font-medium ${isEpisodeWatched(slug, currentMovie.slug) ? 'ring-2 ring-blue-500' : ''}">
                     ${name}
                     ${isEpisodeWatched(slug, currentMovie.slug) ? '<i class="fas fa-check-circle text-xs ml-1"></i>' : ''}
                 </button>
@@ -724,7 +729,7 @@ function updateEpisodesPagination(totalEpisodes) {
             <button onclick="goToEpisodePage(${i})" 
                     class="px-3 py-2 rounded-lg text-sm font-medium transition ${
                         i === currentEpisodePage 
-                        ? 'bg-purple-600 text-white' 
+                        ? 'bg-[#ffd875] text-gray-900' 
                         : 'bg-gray-700 text-white hover:bg-gray-600'
                     }">
                 ${i}
@@ -792,6 +797,8 @@ function playEpisode(episodeSlug, videoUrl) {
         showError('Không tìm thấy link video. Vui lòng chọn tập khác.');
         return;
     }
+
+    currentEpisodeSlug = episodeSlug;
 
     try {
         // Find episode index in the current server
@@ -1231,18 +1238,25 @@ function displayRelatedMovies(movies) {
         return;
     }
 
-    relatedMoviesContainer.innerHTML = relatedMovies.map(movie => `
-        <div class="bg-gray-700 rounded-lg overflow-hidden hover:transform hover:scale-105 transition cursor-pointer" onclick="showMovieDetail('${movie.slug}')">
-            <img src="${getVerticalImage(movie.poster_url)}" 
-             alt="${movie.name || movie.title}" 
-             loading="lazy" decoding="async" class="w-full h-48 object-cover"
-             onerror="this.src=placeholderImg(300,450,'No Poster')">
-            <div class="p-3">
-                <h4 class="font-medium text-sm truncate">${movie.name || movie.title}</h4>
-                <p class="text-xs text-gray-400 mt-1">${movie.year || ''}</p>
+    relatedMoviesContainer.innerHTML = relatedMovies.map(movie => {
+        const name = movie.name || movie.title || 'Không rõ';
+        const alias = movie.origin_name || (movie.year ? String(movie.year) : '');
+        const quality = movie.quality || 'HD';
+        const epLabel = movie.current_episode || (movie.year ? String(movie.year) : '');
+        return `
+            <div class="sw-item" onclick="showMovieDetail('${movie.slug}')">
+                <span class="v-thumbnail">
+                    <span class="thumb"><img src="${getVerticalImage(movie.poster_url)}" alt="${name}" loading="lazy" decoding="async" onerror="this.src=placeholderImg(300,450,'No Poster')"></span>
+                    <span class="badge-quality">${quality}</span>
+                    ${epLabel ? `<span class="pin-new"><span class="line-center">${epLabel}</span></span>` : ''}
+                </span>
+                <div class="info">
+                    <h4 class="item-title lim-1">${name}</h4>
+                    <h4 class="alias-title lim-1">${alias}</h4>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Toggle favorite
@@ -1442,7 +1456,7 @@ function displayWatchHistory(history) {
                     <i class="fas fa-server mr-1"></i>${item.serverName || 'Server 1'}
                 </p>
             </div>
-            <button onclick="playEpisodeFromHistory('${item.episodeSlug}', ${item.serverIndex || 0})" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
+            <button onclick="playEpisodeFromHistory('${item.episodeSlug}', ${item.serverIndex || 0})" class="bg-[#ffd875] hover:bg-[#e2c15e] text-gray-900 px-3 py-1 rounded text-sm font-medium">
                 <i class="fas fa-play"></i>
             </button>
         </div>

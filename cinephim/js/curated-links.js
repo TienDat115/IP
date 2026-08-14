@@ -24,7 +24,7 @@ let currentPage = 1;
 const PAGE_SIZE = 10;
 
 function filterCuratedLinks() {
-	searchTerm = document.getElementById("searchInput").value.toLowerCase().trim();
+	searchTerm = document.getElementById("linkSearchInput").value.toLowerCase().trim();
 	currentPage = 1;
 	renderLinks();
 }
@@ -397,10 +397,9 @@ document.addEventListener("cinephim:auth-ready", () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
 	await window.ensureConfigReady();
-	const searchInput = document.getElementById("searchInput");
+	const searchInput = document.getElementById("linkSearchInput");
 	if (searchInput) {
 		searchInput.addEventListener("input", filterCuratedLinks);
 	}
+	setupSearchListeners();
 });
-
-initPageSync();

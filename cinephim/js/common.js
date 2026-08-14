@@ -760,7 +760,14 @@ function normalizeMovieData(item) {
             total_episodes: item.episode_total || '',
             year: item.year || '',
             category: item.category || [],
-            country: item.country || []
+            country: item.country || [],
+            origin_name: item.origin_name || '',
+            content: item.content || item.description || '',
+            episode_time: item.episode_time || item.time || '',
+            season: item.season || item.season_number || '',
+            rating: item.rating || item.rating_number || '',
+            imdb_rating: item.imdb_rating || item.imdb_score || '',
+            type: item.type || ''
         };
     }
     
@@ -778,7 +785,14 @@ function normalizeMovieData(item) {
             total_episodes: item.episode_total || item.total_episodes || '',
             year: item.year || '',
             category: item.category || [],
-            country: item.country || []
+            country: item.country || [],
+            origin_name: item.origin_name || '',
+            content: item.content || item.description || '',
+            episode_time: item.episode_time || item.time || '',
+            season: item.season || item.season_number || '',
+            rating: item.rating || item.rating_number || '',
+            imdb_rating: item.imdb_rating || item.imdb_score || '',
+            type: item.type || ''
         };
     }
     
@@ -793,7 +807,14 @@ function normalizeMovieData(item) {
             total_episodes: item.episode_total || item.total_episodes || '',
             year: item.year || '',
             category: item.category || [],
-            country: item.country || []
+            country: item.country || [],
+            origin_name: item.origin_name || '',
+            content: item.content || item.description || '',
+            episode_time: item.episode_time || item.time || '',
+            season: item.season || item.season_number || '',
+            rating: item.rating || item.rating_number || '',
+            imdb_rating: item.imdb_rating || item.imdb_score || '',
+            type: item.type || ''
         };
     }
     
@@ -808,7 +829,14 @@ function normalizeMovieData(item) {
         total_episodes: item.total_episodes || '',
         year: item.year || item.time || '',
         category: item.category || [],
-        country: item.country || []
+        country: item.country || [],
+        origin_name: item.origin_name || '',
+        content: item.content || item.description || '',
+        episode_time: item.episode_time || item.time || '',
+        season: item.season || item.season_number || '',
+        rating: item.rating || item.rating_number || '',
+        imdb_rating: item.imdb_rating || item.imdb_score || '',
+        type: item.type || ''
     };
 }
 

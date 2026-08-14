@@ -37,7 +37,6 @@
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
 
-
 		<!-- Structured Data for SEO -->
 		<script type="application/ld+json" id="structuredData">
 			{
@@ -63,89 +62,55 @@
 		<!-- Video.js CSS -->
 		<link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
 	</head>
-	<body class="bg-gray-900 text-white">
+
+	<body class="home-body dark">
 		<!-- Header -->
-		<header class="bg-gray-800 shadow-lg sticky top-0 z-50">
-			<nav class="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
-				<!-- Mobile Layout: Single Row -->
-				<div class="sm:hidden flex items-center justify-between w-full">
-					<a href="index.html" class="text-lg font-bold text-purple-400 hover:text-purple-300 transition"><i class="fas fa-film mr-1"></i>CinePhim</a>
-
-					<!-- Right Side Buttons -->
-					<div class="flex items-center space-x-2">
-						<!-- Mobile User Profile Menu (shown when logged in) -->
-						<div id="mobileUserProfileMenu" class="relative hidden">
-							<button onclick="toggleMobileUserDropdown()" class="text-white hover:text-purple-400 transition">
-								<img id="mobileUserAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect width='28' height='28' fill='%234B5563'/%3E%3Ctext x='14' y='14' font-family='sans-serif' font-size='8' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3EUser%3C/text%3E%3C/svg%3E" alt="User Avatar" class="w-7 h-7 rounded-full" />
-							</button>
-
-							<!-- Mobile Dropdown Menu -->
-							<div id="mobileUserDropdown" class="absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50">
-								<div class="p-4 border-b border-gray-700">
-									<p class="text-sm text-gray-300">Chào,</p>
-									<p id="mobileUserEmail" class="text-sm font-medium text-white truncate">user@example.com</p>
-								</div>
-
-								<div class="py-2">
-									<a href="favorites.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-heart w-5 mr-3 text-red-400"></i>
-										Yêu thích
-									</a>
-									<a href="watch-history.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-history w-5 mr-3 text-blue-400"></i>
-										Xem tiếp
-									</a>
-									<a
-										href="#"
-										onclick="
-											showAccountModal();
-											return false;
-										"
-										class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition"
-									>
-										<i class="fas fa-user w-5 mr-3 text-green-400"></i>
-										Tài khoản
-									</a>
-								</div>
-
-								<div class="border-t border-gray-700 py-2">
-									<button onclick="handleLogout()" class="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-sign-out-alt w-5 mr-3 text-orange-400"></i>
-										Thoát
-									</button>
-								</div>
-							</div>
-						</div>
-
-						<!-- Theme Toggle Mobile -->
-						<button onclick="toggleTheme()" class="text-white hover:text-purple-400 transition">
-							<i id="mobileThemeIcon" class="fas fa-moon"></i>
-						</button>
-
-						<!-- Source Switcher Mobile -->
-						<div id="sourceSwitcherMobile" class="mr-2"></div>
-
-						<!-- Mobile Login Button (shown when not logged in) -->
-						<button id="mobileLoginButton" onclick="toggleLogin()" class="text-white hover:text-purple-400 transition">
-							<i id="mobileLoginIcon" class="fas fa-sign-in-alt"></i>
-						</button>
-					</div>
-				</div>
-
-				<!-- Desktop Navigation -->
-				<div class="hidden sm:flex items-center justify-between">
-					<div class="flex items-center space-x-4">
-						<a href="index.html" class="text-2xl font-bold text-purple-400 hover:text-purple-300 transition"> <i class="fas fa-film mr-2"></i>CinePhim </a>
-					</div>
+		<header id="siteHeader" class="home-header">
+			<nav class="container mx-auto px-3 sm:px-6">
+				<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3">
+					<!-- Logo -->
+					<a href="index.html" class="home-logo"><i class="fas fa-film mr-2"></i>CinePhim</a>
 
 					<!-- Desktop Navigation -->
-					<div class="flex items-center space-x-6">
-						<a href="index.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Trang chủ"><i class="fas fa-home mr-1"></i><span class="nav-text">Trang chủ</span></a>
-						<a href="single-movies.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Phim Lẻ"><i class="fas fa-film mr-1"></i><span class="nav-text">Phim Lẻ</span></a>
-						<a href="sources.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Nguồn phim"><i class="fas fa-link mr-1"></i><span class="nav-text">Nguồn phim</span></a>
-						<!-- User Profile Menu (shown when logged in) -->
-						<div id="userProfileMenu" class="relative hidden">
-							<button onclick="toggleUserDropdown()" class="flex items-center space-x-2 hover:text-purple-400 transition">
+					<div class="hidden lg:flex items-center gap-1 main-menu">
+						<a href="index.html" class="menu-item">Trang chủ</a>
+						<a href="browse.html" class="menu-item">Tìm nâng cao</a>
+						<a href="single-movies.html" class="menu-item">Phim Lẻ</a>
+						<a href="sources.html" class="menu-item">Nguồn phim</a>
+					</div>
+
+					<!-- Search -->
+					<div id="search" class="order-last w-full lg:order-none lg:w-auto lg:flex-1 lg:max-w-xl">
+						<div class="search-elements">
+							<i class="fas fa-search search-icon"></i>
+							<input id="searchInput" type="text" class="search-input" placeholder="Tìm kiếm phim, diễn viên..." autocomplete="off" />
+						</div>
+					</div>
+
+					<!-- Right Side Buttons -->
+					<div class="flex items-center gap-2 sm:gap-3">
+						<!-- Source Switcher Desktop -->
+						<div id="sourceSwitcherDesktop" class="hidden sm:block"></div>
+						<!-- Source Switcher Mobile -->
+						<div id="sourceSwitcherMobile" class="sm:hidden"></div>
+
+						<!-- Theme Toggle Desktop -->
+						<div class="hidden sm:block">
+							<button onclick="toggleTheme()" class="home-icon-btn" title="Chế độ sáng/tối">
+								<i id="themeIcon" class="fas fa-moon"></i>
+							</button>
+						</div>
+						<!-- Theme Toggle Mobile -->
+						<div class="sm:hidden">
+							<button onclick="toggleTheme()" class="home-icon-btn" title="Chế độ sáng/tối">
+								<i id="mobileThemeIcon" class="fas fa-moon"></i>
+							</button>
+						</div>
+
+						<!-- Desktop User Profile Menu (shown when logged in) -->
+						<div class="hidden sm:block">
+							<div id="userProfileMenu" class="relative hidden">
+							<button onclick="toggleUserDropdown()" class="home-icon-btn">
 								<img id="userAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect width='32' height='32' fill='%234B5563'/%3E%3Ctext x='16' y='16' font-family='sans-serif' font-size='9' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3EUser%3C/text%3E%3C/svg%3E" alt="User Avatar" class="w-8 h-8 rounded-full" />
 							</button>
 
@@ -167,10 +132,7 @@
 									</a>
 									<a
 										href="#"
-										onclick="
-											showAccountModal();
-											return false;
-										"
+										onclick="showAccountModal(); return false;"
 										class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition"
 									>
 										<i class="fas fa-user w-5 mr-3 text-green-400"></i>
@@ -186,40 +148,82 @@
 								</div>
 							</div>
 						</div>
+						</div>
 
-						<!-- Theme Toggle -->
-						<button onclick="toggleTheme()" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Chế độ sáng/tối">
-							<i id="themeIcon" class="fas fa-moon"></i>
-						</button>
+						<!-- Mobile User Profile Menu (shown when logged in) -->
+						<div class="sm:hidden">
+							<div id="mobileUserProfileMenu" class="relative hidden">
+							<button onclick="toggleMobileUserDropdown()" class="home-icon-btn">
+								<img id="mobileUserAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect width='28' height='28' fill='%234B5563'/%3E%3Ctext x='14' y='14' font-family='sans-serif' font-size='8' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3EUser%3C/text%3E%3C/svg%3E" alt="User Avatar" class="w-7 h-7 rounded-full" />
+							</button>
 
-						<!-- Source Switcher Desktop -->
-						<div id="sourceSwitcherDesktop" class="mr-4"></div>
+							<!-- Mobile Dropdown Menu -->
+							<div id="mobileUserDropdown" class="absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50">
+								<div class="p-4 border-b border-gray-700">
+									<p class="text-sm text-gray-300">Chào,</p>
+									<p id="mobileUserEmail" class="text-sm font-medium text-white truncate">user@example.com</p>
+								</div>
 
-						<!-- Login Button (shown when not logged in) -->
-						<button id="loginButton" onclick="toggleLogin()" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Đăng nhập">
-							<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
-							<span id="loginText">Đăng nhập</span>
-						</button>
+								<div class="py-2">
+									<a href="favorites.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-heart w-5 mr-3 text-red-400"></i>
+										Yêu thích
+									</a>
+									<a href="watch-history.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-history w-5 mr-3 text-blue-400"></i>
+										Xem tiếp
+									</a>
+									<a
+										href="#"
+										onclick="showAccountModal(); return false;"
+										class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition"
+									>
+										<i class="fas fa-user w-5 mr-3 text-green-400"></i>
+										Tài khoản
+									</a>
+								</div>
+
+								<div class="border-t border-gray-700 py-2">
+									<button onclick="handleLogout()" class="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+										<i class="fas fa-sign-out-alt w-5 mr-3 text-orange-400"></i>
+										Thoát
+									</button>
+								</div>
+							</div>
+						</div>
+						</div>
+
+						<!-- Desktop Login Button (shown when not logged in) -->
+						<div class="hidden sm:block">
+							<button id="loginButton" onclick="toggleLogin()" class="home-login-btn hidden">
+								<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
+								<span id="loginText">Đăng nhập</span>
+							</button>
+						</div>
+						<!-- Mobile Login Button (shown when not logged in) -->
+						<div class="sm:hidden">
+							<button id="mobileLoginButton" onclick="toggleLogin()" class="home-icon-btn hidden">
+								<i id="mobileLoginIcon" class="fas fa-sign-in-alt"></i>
+							</button>
+						</div>
 					</div>
 				</div>
-
-	
 			</nav>
 		</header>
 
 		<!-- Breadcrumb -->
-		<div id="breadcrumbSection" class="container mx-auto px-3 sm:px-4 py-2 sm:py-4">
-			<nav class="flex items-center space-x-2 text-sm text-gray-400">
-				<a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
+		<div id="breadcrumbSection" class="container mx-auto px-4 pt-4">
+			<nav class="home-breadcrumb">
+				<a href="index.html">Trang chủ</a>
 				<i class="fas fa-chevron-right text-xs"></i>
-				<span id="breadcrumbCategory" class="text-white">Đang tải...</span>
+				<span id="breadcrumbCategory">Đang tải...</span>
 				<i class="fas fa-chevron-right text-xs"></i>
-				<span id="breadcrumbMovie" class="text-white">Đang tải...</span>
+				<span id="breadcrumbMovie">Đang tải...</span>
 			</nav>
 		</div>
 
 		<!-- Main Content -->
-		<main class="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+		<main class="container mx-auto px-4 py-4 sm:py-8">
 			<!-- Loading -->
 			<div id="loading" class="text-center py-12">
 				<div class="loading-spinner mx-auto"></div>
@@ -230,42 +234,42 @@
 			<div id="movieContent" class="hidden">
 				<div class="space-y-4 sm:space-y-6">
 					<!-- Movie Hero: Poster + Info -->
-					<div id="movieHeroSection" class="bg-gray-800 rounded-lg overflow-hidden flex flex-col sm:flex-row">
+					<div id="movieHeroSection" class="bg-[#22242f] border border-[rgba(255,255,255,0.06)] rounded-xl overflow-hidden flex flex-col sm:flex-row">
 						<!-- Poster Column -->
 						<div class="sm:w-1/4 sm:relative w-full">
-							<img id="moviePoster" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Crect width='400' height='600' fill='%23374151'/%3E%3Ctext x='200' y='300' font-family='sans-serif' font-size='16' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3ELoading...%3C/text%3E%3C/svg%3E" alt="Movie Poster" loading="eager" decoding="async" fetchpriority="high" class="w-full sm:absolute sm:inset-0 sm:h-full sm:object-contain max-sm:max-h-[35vh] max-sm:object-contain max-sm:bg-gray-900" />
+							<img id="moviePoster" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Crect width='400' height='600' fill='%23374151'/%3E%3Ctext x='200' y='300' font-family='sans-serif' font-size='16' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3ELoading...%3C/text%3E%3C/svg%3E" alt="Movie Poster" loading="eager" decoding="async" fetchpriority="high" class="w-full sm:absolute sm:inset-0 sm:h-full sm:object-contain max-sm:max-h-[35vh] max-sm:object-contain max-sm:bg-[#0f111a]" />
 						</div>
 
 						<!-- Info Column -->
 						<div class="sm:flex-1 p-4 sm:p-6">
-							<h1 id="movieTitle" class="text-lg sm:text-2xl font-bold mb-3 sm:mb-4">Đang tải...</h1>
+							<h1 id="movieTitle" class="text-xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Đang tải...</h1>
 
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
 								<div class="flex items-center">
-									<i class="fas fa-calendar-alt w-5 text-purple-400"></i>
+									<i class="fas fa-calendar-alt w-5 text-[#ffd875]"></i>
 									<span class="ml-3" id="movieYear">Năm</span>
 								</div>
 								<div class="flex items-center">
-									<i class="fas fa-clock w-5 text-purple-400"></i>
+									<i class="fas fa-clock w-5 text-[#ffd875]"></i>
 									<span class="ml-3" id="movieDuration">Thời lượng</span>
 								</div>
 								<div class="flex items-center">
-									<i class="fas fa-film w-5 text-purple-400"></i>
+									<i class="fas fa-film w-5 text-[#ffd875]"></i>
 									<span class="ml-3" id="episodeProgress">--/--</span>
 								</div>
 								<div class="flex items-center">
-									<i class="fas fa-edit w-5 text-purple-400"></i>
+									<i class="fas fa-edit w-5 text-[#ffd875]"></i>
 									<span class="ml-3" id="movieModified">Đang tải...</span>
 								</div>
 							</div>
 
 							<div class="space-y-2 mb-4 sm:mb-6">
 								<div class="flex items-start">
-									<i class="fas fa-user w-5 text-purple-400 mt-0.5"></i>
+									<i class="fas fa-user w-5 text-[#ffd875] mt-0.5"></i>
 									<span class="ml-3" id="movieCasts">Đang tải...</span>
 								</div>
 								<div class="flex items-start">
-									<i class="fas fa-tags w-5 text-purple-400 mt-0.5"></i>
+									<i class="fas fa-tags w-5 text-[#ffd875] mt-0.5"></i>
 									<span class="ml-3" id="movieCategories">Đang tải...</span>
 								</div>
 							</div>
@@ -278,14 +282,14 @@
 							</div>
 
 							<!-- Watch Time Note -->
-							<div class="bg-gray-700/50 rounded-lg p-4">
+							<div class="bg-[#282b3a] rounded-lg p-4">
 								<div class="flex items-center justify-between mb-2">
 									<div class="flex items-center">
-										<i class="fas fa-sticky-note w-5 text-purple-400"></i>
+										<i class="fas fa-sticky-note w-5 text-[#ffd875]"></i>
 										<label class="ml-3 text-sm font-medium">Ghi chú thời gian xem:</label>
 									</div>
 									<div class="flex items-center space-x-2">
-										<button onclick="toggleVirtualKeyboard()" class="text-purple-400 hover:text-purple-300 transition" title="Mở bàn phím ảo">
+										<button onclick="toggleVirtualKeyboard()" class="text-[#ffd875] hover:text-white transition" title="Mở bàn phím ảo">
 											<i class="fas fa-keyboard"></i>
 										</button>
 										<button onclick="clearAndSaveNote()" class="text-orange-400 hover:text-orange-300 transition" title="Xóa và lưu">
@@ -298,7 +302,7 @@
 									type="text"
 									id="watchTimeNote"
 									placeholder="Ví dụ: 15:30 - Đã xem đến 1h23p"
-									class="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-400 placeholder-gray-400"
+									class="w-full px-3 py-2 bg-[#191b24] border border-[rgba(255,255,255,0.1)] rounded text-white text-sm focus:outline-none focus:border-[#ffd875] placeholder-gray-400"
 									onkeypress="
 										if (event.key === 'Enter') {
 											saveWatchTimeNote();
@@ -307,7 +311,7 @@
 								/>
 
 								<!-- Virtual Keyboard -->
-								<div id="virtualKeyboard" class="hidden mt-3 bg-gray-800 rounded-lg p-3">
+								<div id="virtualKeyboard" class="hidden mt-3 bg-[#22242f] rounded-lg p-3">
 									<div class="grid grid-cols-10 gap-1 mb-2">
 										<button onclick="insertToNote('1')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">1</button>
 										<button onclick="insertToNote('2')" class="bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs">2</button>
@@ -338,7 +342,7 @@
 					</div>
 
 					<!-- Video Player -->
-					<div id="cinemaModeContainer" class="bg-gray-800 rounded-lg overflow-hidden relative group">
+					<div id="cinemaModeContainer" class="bg-[#22242f] border border-[rgba(255,255,255,0.06)] rounded-xl overflow-hidden relative group">
 						<!-- Cinema Mode Toggle Button -->
 						<button id="cinemaModeToggle" onclick="toggleCinemaMode()" class="absolute top-2 right-2 z-10 bg-black/60 hover:bg-black/80 text-white px-2.5 py-1.5 rounded-lg text-sm transition opacity-0 group-hover:opacity-100 flex items-center gap-1.5" title="Chế độ rạp phim (Phím tắt: F)">
 							<i class="fas fa-expand"></i>
@@ -350,9 +354,9 @@
 					</div>
 
 					<!-- Episodes Section -->
-					<div id="episodesSection" class="bg-gray-800 rounded-lg p-4 sm:p-6">
+					<div id="episodesSection" class="bg-[#22242f] border border-[rgba(255,255,255,0.06)] rounded-xl p-4 sm:p-6">
 						<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-							<h3 class="text-lg sm:text-xl font-semibold">Danh sách tập</h3>
+							<h3 class="md-section-title mb-0"><i class="fas fa-list-ul"></i>Danh sách tập</h3>
 							<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition whitespace-nowrap"><i class="fas fa-history mr-1 sm:mr-2"></i>Lịch sử xem</button>
 						</div>
 
@@ -387,11 +391,17 @@
 					</div>
 
 					<!-- Movie Description -->
-					<div id="movieDescriptionSection" class="bg-gray-800 rounded-lg p-4 sm:p-6">
-						<h3 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Nội dung phim</h3>
+					<div id="movieDescriptionSection" class="bg-[#22242f] border border-[rgba(255,255,255,0.06)] rounded-xl p-4 sm:p-6">
+						<h3 class="md-section-title"><i class="fas fa-align-left"></i>Nội dung phim</h3>
 						<div id="movieDescriptionContainer">
 							<p id="movieDescription" class="text-gray-300 leading-relaxed">Đang tải...</p>
 						</div>
+					</div>
+
+					<!-- Related Movies -->
+					<div id="relatedMoviesSection" class="bg-[#22242f] border border-[rgba(255,255,255,0.06)] rounded-xl p-4 sm:p-6">
+						<h3 class="md-section-title"><i class="fas fa-film"></i>Phim liên quan</h3>
+						<div id="relatedMovies" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
 					</div>
 				</div>
 			</div>
@@ -404,9 +414,27 @@
 		</button>
 
 		<!-- Footer -->
-		<footer class="bg-gray-800 py-6 sm:py-8 mt-8 sm:mt-16">
-			<div class="container mx-auto px-4 text-center">
-				<p class="text-gray-400">2026 CinePhim. Xem phim online miễn phí với chất lượng HD.</p>
+		<footer class="home-footer">
+			<div class="container mx-auto px-4 py-10">
+				<div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
+					<a href="index.html" class="home-footer-logo"><i class="fas fa-film mr-2"></i>CinePhim</a>
+					<div class="flex items-center gap-3">
+						<a class="home-social" href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+						<a class="home-social" href="#" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+						<a class="home-social" href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+					</div>
+				</div>
+				<div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6 home-footer-menu">
+					<a href="index.html">Trang chủ</a>
+					<a href="browse.html">Tìm nâng cao</a>
+					<a href="single-movies.html">Phim Lẻ</a>
+					<a href="watch-history.html">Lịch sử xem</a>
+					<a href="favorites.html">Yêu thích</a>
+					<a href="sources.html">Nguồn phim</a>
+				</div>
+				<p class="text-center text-sm home-footer-notice">
+					2026 CinePhim. Xem phim online miễn phí với chất lượng HD - Full HD. Nội dung chỉ dùng để giải trí cá nhân.
+				</p>
 			</div>
 		</footer>
 
