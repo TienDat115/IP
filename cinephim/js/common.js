@@ -1104,13 +1104,7 @@ async function togglePin(slug, movieData = null) {
         pinnedMovies.splice(index, 1);
         
         // Show notification
-        Swal.fire({
-            icon: 'success',
-            title: 'Đã bỏ ghim',
-            text: 'Phim đã được bỏ khỏi danh sách ghim',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        showToast('Đã bỏ ghim', 'success');
         
         // Update pin button if it exists
         updatePinButton(slug, false);
@@ -1137,13 +1131,7 @@ async function togglePin(slug, movieData = null) {
         pinnedMovies.unshift(newMovieData);
         
         // Show notification
-        Swal.fire({
-            icon: 'success',
-            title: 'Đã ghim phim',
-            text: 'Phim đã được thêm vào danh sách ghim',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        showToast('Đã ghim phim', 'success');
         
         // Update pin button if it exists
         updatePinButton(slug, true);
@@ -1198,6 +1186,24 @@ function showInfo(message) {
         confirmButtonColor: '#8b5cf6',
         timer: 2000,
         showConfirmButton: false
+    });
+}
+
+function showToast(message, type = 'success') {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        background: '#1f2937',
+        color: '#fff',
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
     });
 }
 

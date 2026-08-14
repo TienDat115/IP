@@ -11,7 +11,7 @@ function copyMovieAPI() {
     if (!slug) return;
     const url = getApiUrl(`${API_BASE}${currentSource.endpoints.detail}/${slug}`);
     navigator.clipboard.writeText(url).then(() => {
-        Swal.fire({ icon: 'success', title: 'Đã copy API!', text: url, timer: 2000, showConfirmButton: false, background: '#1f2937', color: '#fff' });
+        showToast('Đã copy API!', 'success');
     }).catch(() => {
         const ta = document.createElement('textarea');
         ta.value = url;
@@ -19,7 +19,7 @@ function copyMovieAPI() {
         ta.select();
         document.execCommand('copy');
         document.body.removeChild(ta);
-        Swal.fire({ icon: 'success', title: 'Đã copy API!', text: url, timer: 2000, showConfirmButton: false, background: '#1f2937', color: '#fff' });
+        showToast('Đã copy API!', 'success');
     });
 }
 
@@ -1275,11 +1275,11 @@ function toggleFavorite() {
 			};
             
             favoritesRef.add(movieData).then(() => {
-                showSuccess('Đã thêm vào danh sách yêu thích');
+                showToast('Đã thêm vào danh sách yêu thích', 'success');
                 updateFavoriteButton();
             }).catch((error) => {
                 console.error('Error adding to favorites:', error);
-                showError('Không thể thêm vào yêu thích: ' + error.message);
+                showToast('Không thể thêm vào yêu thích: ' + error.message, 'error');
             });
         } else {
             // Remove from favorites
@@ -1288,16 +1288,16 @@ function toggleFavorite() {
                 batch.delete(doc.ref);
             });
             batch.commit().then(() => {
-                showSuccess('Đã xóa khỏi danh sách yêu thích');
+                showToast('Đã xóa khỏi danh sách yêu thích', 'success');
                 updateFavoriteButton();
             }).catch((error) => {
                 console.error('Error removing from favorites:', error);
-                showError('Không thể xóa khỏi yêu thích: ' + error.message);
+                showToast('Không thể xóa khỏi yêu thích: ' + error.message, 'error');
             });
         }
     }).catch((error) => {
         console.error('Error querying favorites:', error);
-        showError('Lỗi khi kiểm tra danh sách yêu thích: ' + error.message);
+        showToast('Lỗi khi kiểm tra danh sách yêu thích: ' + error.message, 'error');
     });
 }
 
@@ -1389,7 +1389,7 @@ async function togglePinMovie() {
     }
     
     if (!isUserLoggedIn()) {
-        showError('Vui lòng đăng nhập để ghim phim');
+        showToast('Vui lòng đăng nhập để ghim phim', 'error');
         return;
     }
     
@@ -1562,9 +1562,9 @@ function saveWatchTimeNote() {
     // If user is logged in, save to Firebase
     if (auth.currentUser) {
         saveWatchTimeNoteToFirebase(episodeNumber, note);
-        showSuccess('Đã lưu ghi chú thời gian xem');
+        showToast('Đã lưu ghi chú thời gian xem', 'success');
     } else {
-        showInfo('Vui lòng đăng nhập để lưu ghi chú');
+        showToast('Vui lòng đăng nhập để lưu ghi chú', 'info');
     }
 }
 
@@ -1727,10 +1727,10 @@ async function clearAndSaveNote() {
                 delete watchTimeNotes[currentMovie.slug];
                 localStorage.setItem('watchTimeNotes', JSON.stringify(watchTimeNotes));
                 
-                showInfo('Ghi chú đã được xóa');
+                showToast('Ghi chú đã được xóa', 'info');
             } catch (error) {
                 console.error('Error clearing watch time note:', error);
-                showError('Không thể xóa ghi chú. Vui lòng thử lại.');
+                showToast('Không thể xóa ghi chú. Vui lòng thử lại.', 'error');
             }
         } else {
             // Clear from localStorage only if not logged in
@@ -1738,7 +1738,7 @@ async function clearAndSaveNote() {
             delete watchTimeNotes[currentMovie.slug];
             localStorage.setItem('watchTimeNotes', JSON.stringify(watchTimeNotes));
             
-            showInfo('Ghi chú đã được xóa');
+            showToast('Ghi chú đã được xóa', 'info');
         }
     }
 }
