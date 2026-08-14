@@ -3,7 +3,6 @@
 // Global variables
 let favorites = [];
 let pinnedMovies = [];
-let isDarkMode = localStorage.getItem('darkMode') !== 'false';
 let watchHistory = [];
 let currentUser = null;
 let authListener = null;
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
         }
         updateLoginButton();
-        applyTheme();
 
         if (!hasResolvedInitialAuth) {
             hasResolvedInitialAuth = true;
@@ -158,30 +156,6 @@ async function saveSingleWatchHistoryItem(historyItem) {
     }
 }
 
-// Apply theme
-function applyTheme() {
-    if (isDarkMode) {
-        document.body.classList.add('dark');
-        const themeIcon = document.getElementById('themeIcon');
-        if (themeIcon) {
-            themeIcon.className = 'fas fa-sun mr-1';
-        }
-    } else {
-        document.body.classList.remove('dark');
-        const themeIcon = document.getElementById('themeIcon');
-        if (themeIcon) {
-            themeIcon.className = 'fas fa-moon mr-1';
-        }
-    }
-}
-
-// Toggle theme
-function toggleTheme() {
-    isDarkMode = !isDarkMode;
-    localStorage.setItem('darkMode', isDarkMode);
-    applyTheme();
-}
-
 // Toggle login/logout
 async function toggleLogin() {
     const loginIcon = document.getElementById('loginIcon');
@@ -206,17 +180,6 @@ async function toggleLogin() {
     }
 }
 
-// Sync theme icons between desktop and mobile
-function syncThemeIcons() {
-    const desktopIcon = document.getElementById("themeIcon");
-    const mobileIcon = document.getElementById("mobileThemeIcon");
-    if (desktopIcon && mobileIcon) {
-        mobileIcon.className = desktopIcon.classList.contains("fa-moon")
-            ? "fas fa-moon"
-            : "fas fa-sun";
-    }
-}
-
 // Sync login icons between desktop and mobile
 function syncLoginIcons() {
     const desktopIcon = document.getElementById("loginIcon");
@@ -228,15 +191,6 @@ function syncLoginIcons() {
             ? "fas fa-sign-out-alt"
             : "fas fa-sign-in-alt";
     }
-}
-
-// Override toggleTheme to sync icons
-if (window.toggleTheme) {
-    const originalToggleTheme = window.toggleTheme;
-    window.toggleTheme = function () {
-        originalToggleTheme();
-        syncThemeIcons();
-    };
 }
 
 // Override toggleLogin to sync icons
@@ -266,7 +220,6 @@ function initPageSync() {
     highlightBottomNav();
 
     setTimeout(function () {
-        syncThemeIcons();
         syncLoginIcons();
     }, 100);
 }

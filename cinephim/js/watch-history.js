@@ -435,25 +435,11 @@ async function removeFromWatchHistory(movieSlug) {
         // Reload and display
         await loadWatchHistory();
         
-        Swal.fire({
-            icon: 'success',
-            title: 'Đã xóa',
-            text: 'Đã xóa khỏi lịch sử xem',
-            confirmButtonColor: '#8b5cf6',
-            timer: 1500,
-            showConfirmButton: false
-        });
+        showToast('Đã xóa khỏi lịch sử xem', 'success');
     } catch (error) {
         console.error('Error removing from watch history:', error);
         
-        Swal.fire({
-            icon: 'success',
-            title: 'Đã xóa',
-            text: 'Đã xóa khỏi lịch sử xem',
-            confirmButtonColor: '#8b5cf6',
-            timer: 1500,
-            showConfirmButton: false
-        });
+        showToast('Không thể xóa khỏi lịch sử xem', 'error');
     }
 }
 
