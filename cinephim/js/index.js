@@ -16,9 +16,9 @@ let historyRowRendered = false;
 let pinnedRowRendered = false;
 
 const HOME_CATEGORY_ROWS = [
-    { key: 'phim-bo', type: 'type', slug: 'phim-bo', name: 'Phim Bộ', moreHref: 'single-movies.html' },
     { key: 'phim-le', type: 'type', slug: 'phim-le', name: 'Phim Lẻ', moreHref: 'single-movies.html' },
-    { key: 'hoat-hinh', type: 'category', slug: 'hoat-hinh', name: 'Phim Hoạt Hình', moreHref: 'categories.html?category=hoat-hinh' }
+    { key: 'trung-quoc', type: 'country', slug: 'trung-quoc', name: 'Phim Trung Quốc', moreHref: 'browse.html?country=trung-quoc' },
+    { key: 'hoat-hinh', type: 'category', slug: 'hoat-hinh', name: 'Phim Hoạt Hình', moreHref: 'browse.html?category=hoat-hinh' }
 ];
 
 function escapeHtml(str) {
@@ -82,9 +82,15 @@ function buildHomeEndpoint(row) {
         return `/danh-sach/${row.slug}`;
     }
     // category
-    if (currentSourceKey === 'nguonc') return `/films/the-loai/${row.slug}`;
-    if (currentSourceKey === 'kkphim') return `/v1/api/the-loai/${row.slug}`;
-    return `/the-loai/${row.slug}`;
+    if (row.type === 'category') {
+        if (currentSourceKey === 'nguonc') return `/films/the-loai/${row.slug}`;
+        if (currentSourceKey === 'kkphim') return `/v1/api/the-loai/${row.slug}`;
+        return `/the-loai/${row.slug}`;
+    }
+    // country
+    if (currentSourceKey === 'nguonc') return `/films/quoc-gia/${row.slug}`;
+    if (currentSourceKey === 'kkphim') return `/v1/api/quoc-gia/${row.slug}`;
+    return `${currentSource.endpoints.country}/${row.slug}`;
 }
 
 // New movies row + hero slider
@@ -105,7 +111,7 @@ async function loadNewMoviesRow() {
         }
 
         renderHero(await enhanceHeroMovies(movies.slice(0, 5)));
-        swipers['new'] = renderRowSection({ key: 'new', name: 'Phim mới cập nhật', moreHref: 'browse.html' }, movies, { loop: false });
+        swipers['new'] = renderRowSection({ key: 'new', name: 'Phim mới cập nhật', moreHref: 'new-movies.html' }, movies, { loop: false });
     } catch (error) {
         console.error('Error loading new movies:', error);
     }
@@ -357,7 +363,7 @@ async function loadRecentWatched() {
     historyRowRendered = true;
     if (document.getElementById('home-history')) return;
     try {
-        const snapshot = await db.collection('users').doc(currentUser.uid).collection('watchHistory').orderBy('watchedAt', 'desc').limit(10).get();
+        const snapshot = await db.collection('users').doc(currentUser.uid).collection('watchHistory').orderBy('watchedAt', 'desc').get();
         const items = [];
         snapshot.forEach(doc => items.push(doc.data()));
         if (items.length === 0) return;
@@ -389,7 +395,7 @@ async function loadPinnedMovies() {
     }
     if (pinnedMovies.length === 0) return;
 
-    const movies = pinnedMovies.slice(0, 10).map(pin => ({
+    const movies = pinnedMovies.map(pin => ({
         slug: pin.slug || '',
         name: pin.title || pin.name || 'Không rõ',
         title: pin.title || pin.name || '',
@@ -400,7 +406,7 @@ async function loadPinnedMovies() {
     })).filter(m => m.slug);
 
     if (movies.length === 0) return;
-    renderRowSection({ key: 'pinned', name: 'Phim đã ghim', moreHref: 'favorites.html' }, movies, { loop: false });
+    renderRowSection({ key: 'pinned', name: 'Phim đã ghim' }, movies, { loop: false });
 }
 
 /* ============================== SEARCH ============================== */
@@ -454,6 +460,16 @@ async function searchMovies(keyword, page = 1) {
                 const paginationEl = document.getElementById('pagination');
                 if (paginationEl) paginationEl.innerHTML = '';
             }
+
+            setTimeout(() => {
+                const moviesContainer = document.getElementById('moviesContainer');
+                if (moviesContainer) {
+                    const header = document.querySelector('header');
+                    const headerHeight = header ? header.offsetHeight : 0;
+                    const top = moviesContainer.getBoundingClientRect().top + window.pageYOffset - headerHeight - 10;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
+            }, 100);
         } else {
             showError('Không tìm thấy kết quả');
             showNoResultsMessage();

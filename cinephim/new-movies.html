@@ -3,17 +3,28 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Phim yêu thích - CinePhim</title>
+		<title>Phim Mới Cập Nhật - CinePhim</title>
+		<meta name="description" content="Xem phim mới cập nhật online HD miễn phí tại CinePhim" />
+		<meta name="keywords" content="xem phim, phim online, phim hd, phim moi cap nhat, phim mới cập nhật" />
+
 		<!-- Favicon -->
 		<link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
 		<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+
+		<!-- Firebase SDK -->
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 		<script src="../js/firebase-config.js"></script>
+
+		<!-- Tailwind CSS -->
 		<script src="https://cdn.tailwindcss.com"></script>
+
+		<!-- SweetAlert2 -->
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+		<!-- Custom CSS -->
 		<link rel="stylesheet" href="css/styles.css" />
 	</head>
 
@@ -47,8 +58,6 @@
 						<div id="sourceSwitcherDesktop" class="hidden sm:block"></div>
 						<!-- Source Switcher Mobile -->
 						<div id="sourceSwitcherMobile" class="sm:hidden"></div>
-
-						
 
 						<!-- Desktop User Profile Menu (shown when logged in) -->
 						<div class="hidden sm:block">
@@ -159,42 +168,54 @@
 			<nav class="home-breadcrumb">
 				<a href="index.html">Trang chủ</a>
 				<i class="fas fa-chevron-right text-xs"></i>
-				<span>Phim yêu thích</span>
+				<span>Phim Mới Cập Nhật</span>
 			</nav>
 		</div>
 
 		<!-- Main Content -->
 		<main class="container mx-auto px-4 py-8">
+			<!-- Page Title -->
 			<div class="text-center mb-8">
-				<h1 class="browse-title mb-4"><i class="fas fa-heart mr-3"></i>Phim yêu thích</h1>
-				<p class="browse-subtitle max-w-2xl mx-auto">Danh sách phim bạn đã đánh dấu yêu thích</p>
+				<h1 class="browse-title mb-4"><i class="fas fa-rotate mr-3"></i>Phim Mới Cập Nhật</h1>
+				<p class="browse-subtitle max-w-2xl mx-auto">Cập nhật những bộ phim mới nhất mỗi ngày</p>
 			</div>
 
+			<!-- Loading -->
 			<div id="loading" class="text-center py-12 hidden">
 				<div class="loading-spinner mx-auto"></div>
-				<p class="mt-4">Đang tải...</p>
+				<p class="mt-4">Đang tải danh sách phim...</p>
 			</div>
 
-			<div id="favoritesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-				<!-- Favorite movies will be loaded here -->
+			<!-- Movies Grid -->
+			<div id="moviesContainer">
+				<div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+					<!-- Movies will be loaded here -->
+				</div>
+
+				<!-- Pagination -->
+				<div id="pagination" class="flex justify-center items-center space-x-2 mt-8">
+					<!-- Pagination will be loaded here -->
+				</div>
+			</div>
+
+			<!-- No Results Message -->
+			<div id="noResults" class="text-center py-12 hidden">
+				<i class="fas fa-film text-6xl text-gray-600 mb-4"></i>
+				<h3 class="text-xl font-semibold mb-2">Không có phim nào</h3>
+				<p class="text-gray-400">Chưa có phim mới cập nhật. Vui lòng thử lại sau.</p>
 			</div>
 		</main>
 
-		<div id="movieModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
-			<div class="flex items-center justify-center min-h-screen p-2 sm:p-4">
-				<div class="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal">
-					<div class="relative">
-						<button onclick="closeMovieModal()" class="absolute top-2 right-2 sm:top-4 sm:right-4 text-white text-xl sm:text-2xl hover:text-red-400 z-10 bg-black bg-opacity-50 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
-							<i class="fas fa-times"></i>
-						</button>
-						<div id="movieDetailContent" class="modal-content">
-							<!-- Movie details will be loaded here -->
-						</div>
-					</div>
-				</div>
+		<!-- Footer -->
+		<footer class="home-footer">
+			<div class="container mx-auto px-4 py-10">
+				<p class="text-center text-sm home-footer-notice">
+					2026 CinePhim. Xem phim online miễn phí với chất lượng HD - Full HD. Nội dung chỉ dùng để giải trí cá nhân.
+				</p>
 			</div>
-		</div>
+		</footer>
 
+		<!-- Login Modal -->
 		<div id="loginModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
 			<div class="flex items-center justify-center min-h-screen p-4">
 				<div class="bg-gray-800 rounded-lg max-w-md w-full p-4 sm:p-6 modal">
@@ -225,6 +246,7 @@
 			</div>
 		</div>
 
+		<!-- Register Modal -->
 		<div id="registerModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
 			<div class="flex items-center justify-center min-h-screen p-4">
 				<div class="bg-gray-800 rounded-lg max-w-md w-full p-6">
@@ -259,18 +281,11 @@
 			</div>
 		</div>
 
-		<!-- Footer -->
-		<footer class="home-footer">
-			<div class="container mx-auto px-4 py-10">
-				<p class="text-center text-sm home-footer-notice">
-					2026 CinePhim. Xem phim online miễn phí với chất lượng HD - Full HD. Nội dung chỉ dùng để giải trí cá nhân.
-				</p>
-			</div>
-		</footer>
-
+		<!-- Scripts -->
 		<script src="js/config.js"></script>
 		<script src="js/common.js"></script>
-		<script src="js/favorites.js"></script>
+		<script src="js/new-movies.js"></script>
+
 		<script>initPageSync();</script>
 
 		<!-- Mobile Bottom Navigation -->
