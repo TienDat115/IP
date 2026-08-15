@@ -508,24 +508,6 @@ async function sendMessage() {
 					text: `Bạn đã gửi tin nhắn với ${sentFilesCount} file thành công.`,
 					showConfirmButton: true,
 				});
-
-				// Hỏi người dùng có muốn xóa file sau khi gửi không
-				Swal.fire({
-					title: 'Xóa file sau khi gửi?',
-					text: 'Bạn có muốn xóa các file đã gửi khỏi danh sách không?',
-					icon: 'question',
-					showCancelButton: true,
-					confirmButtonText: 'Xóa file',
-					cancelButtonText: 'Giữ lại file',
-					confirmButtonColor: '#d33',
-					cancelButtonColor: '#3085d6'
-				}).then((result) => {
-					if (result.isConfirmed) {
-						// Xóa file đã chọn
-						fileInput.value = "";
-						updateFileList(fileInput);
-					}
-				});
 			} else {
 				const error = await response.json();
 				throw new Error(error.message || "Không thể gửi file");
