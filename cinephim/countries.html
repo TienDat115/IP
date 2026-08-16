@@ -80,147 +80,16 @@
 		</style>
 
 	</head>
-	<body class="bg-gray-900 text-white">
+	<body class="home-body dark">
 		<!-- Header -->
-		<header class="bg-gray-800 shadow-lg sticky top-0 z-50">
-			<nav class="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
-				<!-- Mobile Layout: Single Row -->
-				<div class="sm:hidden flex items-center justify-between w-full">
-					<a href="index.html" class="text-lg font-bold text-purple-400 hover:text-purple-300 transition"><i class="fas fa-film mr-1"></i>CinePhim</a>
-
-					<!-- Right Side Buttons -->
-					<div class="flex items-center space-x-2">
-						<!-- Mobile User Profile Menu (shown when logged in) -->
-						<div id="mobileUserProfileMenu" class="relative hidden">
-							<button onclick="toggleMobileUserDropdown()" class="text-white hover:text-purple-400 transition">
-								<img id="mobileUserAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect width='28' height='28' fill='%234B5563'/%3E%3Ctext x='14' y='14' font-family='sans-serif' font-size='8' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3EUser%3C/text%3E%3C/svg%3E" alt="User Avatar" class="w-7 h-7 rounded-full" />
-							</button>
-
-							<!-- Mobile Dropdown Menu -->
-							<div id="mobileUserDropdown" class="absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50">
-								<div class="p-4 border-b border-gray-700">
-									<p class="text-sm text-gray-300">Chào,</p>
-									<p id="mobileUserEmail" class="text-sm font-medium text-white truncate">user@example.com</p>
-								</div>
-
-								<div class="py-2">
-									<a href="favorites.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-heart w-5 mr-3 text-red-400"></i>
-										Yêu thích
-									</a>
-									<a href="watch-history.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-history w-5 mr-3 text-blue-400"></i>
-										Xem tiếp
-									</a>
-									<a
-										href="#"
-										onclick="
-											showAccountModal();
-											return false;
-										"
-										class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition"
-									>
-										<i class="fas fa-user w-5 mr-3 text-green-400"></i>
-										Tài khoản
-									</a>
-								</div>
-
-								<div class="border-t border-gray-700 py-2">
-									<button onclick="handleLogout()" class="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-sign-out-alt w-5 mr-3 text-orange-400"></i>
-										Thoát
-									</button>
-								</div>
-							</div>
-						</div>
-
-						<!-- Source Switcher Mobile -->
-						<div id="sourceSwitcherMobile" class="mr-2"></div>
-
-						<!-- Mobile Login Button (shown when not logged in) -->
-						<button id="mobileLoginButton" onclick="toggleLogin()" class="text-white hover:text-purple-400 transition">
-							<i id="mobileLoginIcon" class="fas fa-sign-in-alt"></i>
-						</button>
-					</div>
-				</div>
-
-				<!-- Desktop Navigation -->
-				<div class="hidden sm:flex items-center justify-between">
-					<div class="flex items-center space-x-4">
-						<a href="index.html" class="text-2xl font-bold text-purple-400 hover:text-purple-300 transition"><i class="fas fa-film mr-2"></i>CinePhim</a>
-					</div>
-
-					<!-- Desktop Navigation -->
-					<div class="flex items-center space-x-6">
-						<a href="index.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Trang chủ"><i class="fas fa-home mr-1"></i><span class="nav-text">Trang chủ</span></a>
-						<a href="browse.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Tìm nâng cao"><i class="fas fa-search mr-1"></i><span class="nav-text">Tìm nâng cao</span></a>
-						<a href="single-movies.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Phim Lẻ"><i class="fas fa-film mr-1"></i><span class="nav-text">Phim Lẻ</span></a>
-						<a href="sources.html" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Nguồn phim"><i class="fas fa-link mr-1"></i><span class="nav-text">Nguồn phim</span></a>
-						<!-- User Profile Menu (shown when logged in) -->
-						<div id="userProfileMenu" class="relative hidden">
-							<button onclick="toggleUserDropdown()" class="flex items-center space-x-2 hover:text-purple-400 transition">
-								<img id="userAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect width='32' height='32' fill='%234B5563'/%3E%3Ctext x='16' y='16' font-family='sans-serif' font-size='9' fill='%23ffffff' text-anchor='middle' dominant-baseline='central'%3EUser%3C/text%3E%3C/svg%3E" alt="User Avatar" class="w-8 h-8 rounded-full" />
-							</button>
-
-							<!-- Dropdown Menu -->
-							<div id="userDropdown" class="absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50">
-								<div class="p-4 border-b border-gray-700">
-									<p class="text-sm text-gray-300">Chào,</p>
-									<p id="userEmail" class="text-sm font-medium text-white truncate">user@example.com</p>
-								</div>
-
-								<div class="py-2">
-									<a href="favorites.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-heart w-5 mr-3 text-red-400"></i>
-										Yêu thích
-									</a>
-									<a href="watch-history.html" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-history w-5 mr-3 text-blue-400"></i>
-										Xem tiếp
-									</a>
-									<a
-										href="#"
-										onclick="
-											showAccountModal();
-											return false;
-										"
-										class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition"
-									>
-										<i class="fas fa-user w-5 mr-3 text-green-400"></i>
-										Tài khoản
-									</a>
-								</div>
-
-								<div class="border-t border-gray-700 py-2">
-									<button onclick="handleLogout()" class="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
-										<i class="fas fa-sign-out-alt w-5 mr-3 text-orange-400"></i>
-										Thoát
-									</button>
-								</div>
-							</div>
-						</div>
-
-						<!-- Source Switcher Desktop -->
-						<div id="sourceSwitcherDesktop" class="mr-4"></div>
-
-						<!-- Login Button (shown when not logged in) -->
-						<button id="loginButton" onclick="toggleLogin()" class="hover:text-purple-400 transition hover-text-tooltip" data-tooltip="Đăng nhập">
-							<i id="loginIcon" class="fas fa-sign-in-alt mr-1"></i>
-							<span id="loginText">Đăng nhập</span>
-						</button>
-					</div>
-				</div>
-
-	
-			</nav>
-		</header>
+		<div id="siteHeader"></div>
 
 		<!-- Breadcrumb -->
-		<div class="container mx-auto px-4 py-4">
-			<nav id="breadcrumb" class="flex items-center space-x-2 text-sm text-gray-400">
-				<a href="index.html" class="hover:text-purple-400 transition">Trang chủ</a>
+		<div class="container mx-auto px-4 pt-4">
+			<nav id="breadcrumb" class="home-breadcrumb">
+				<a href="index.html">Trang chủ</a>
 				<i class="fas fa-chevron-right text-xs"></i>
-				<span class="text-white">Phim theo quốc gia</span>
+				<span>Phim theo quốc gia</span>
 			</nav>
 		</div>
 
@@ -271,93 +140,15 @@
 		</main>
 
 		<!-- Footer -->
-		<footer class="bg-gray-800 py-8 mt-16">
-			<div class="container mx-auto px-4 text-center">
-				<p class="text-gray-400">2026 CinePhim. Xem phim online miễn phí với chất lượng HD.</p>
-			</div>
-		</footer>
-
-		<!-- Login Modal -->
-		<div id="loginModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
-			<div class="flex items-center justify-center min-h-screen p-4">
-				<div class="bg-gray-800 rounded-lg max-w-md w-full p-4 sm:p-6 modal">
-					<div class="flex justify-between items-center mb-4">
-						<h3 class="text-lg sm:text-xl font-semibold text-white">Đăng nhập</h3>
-						<button onclick="closeLoginModal()" class="text-gray-400 hover:text-white text-xl">
-							<i class="fas fa-times"></i>
-						</button>
-					</div>
-					<form onsubmit="handleLogin(event)">
-						<div class="mb-4">
-							<label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
-							<input type="email" id="loginEmail" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400 text-sm" placeholder="nhập email của bạn" />
-						</div>
-						<div class="mb-6">
-							<label class="block text-sm font-medium text-gray-300 mb-2">Mật khẩu</label>
-							<input type="password" id="loginPassword" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400 text-sm" placeholder="nhập mật khẩu" />
-						</div>
-						<button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition">Đăng nhập</button>
-					</form>
-					<div class="mt-4 text-center">
-						<p class="text-sm text-gray-400">
-							Chưa có tài khoản?
-							<button onclick="showRegisterModal()" class="text-purple-400 hover:text-purple-300">Đăng ký</button>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Register Modal -->
-		<div id="registerModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
-			<div class="flex items-center justify-center min-h-screen p-4">
-				<div class="bg-gray-800 rounded-lg max-w-md w-full p-6">
-					<div class="flex justify-between items-center mb-4">
-						<h3 class="text-xl font-semibold text-white">Đăng ký</h3>
-						<button onclick="closeRegisterModal()" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
-						</button>
-					</div>
-					<form onsubmit="handleRegister(event)">
-						<div class="mb-4">
-							<label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
-							<input type="email" id="registerEmail" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400" placeholder="nhập email của bạn" />
-						</div>
-						<div class="mb-4">
-							<label class="block text-sm font-medium text-gray-300 mb-2">Mật khẩu</label>
-							<input type="password" id="registerPassword" required minlength="6" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400" placeholder="tối thiểu 6 ký tự" />
-						</div>
-						<div class="mb-6">
-							<label class="block text-sm font-medium text-gray-300 mb-2">Xác nhận mật khẩu</label>
-							<input type="password" id="registerConfirmPassword" required minlength="6" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400" placeholder="nhập lại mật khẩu" />
-						</div>
-						<button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition">Đăng ký</button>
-					</form>
-					<div class="mt-4 text-center">
-						<p class="text-sm text-gray-400">
-							Đã có tài khoản?
-							<button onclick="showLoginModal()" class="text-purple-400 hover:text-purple-300">Đăng nhập</button>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
+		<div id="siteFooter"></div>
 
 		<!-- Scripts -->
 		<script src="js/config.js"></script>
+		<script src="js/layout.js"></script>
 		<script src="js/common.js"></script>
 		<script src="js/countries.js"></script>
 
 		<script>initPageSync();</script>
 
-		<!-- Mobile Bottom Navigation -->
-		<nav id="bottomNav" class="sm:hidden fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur border-t border-gray-700 z-50 px-2">
-			<div class="flex items-center justify-around py-1 max-w-lg mx-auto">
-				<a href="index.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Trang chủ</span></a>
-				<a href="browse.html" class="bottom-nav-item"><i class="fas fa-search"></i><span>Tìm nâng cao</span></a>
-				<a href="single-movies.html" class="bottom-nav-item"><i class="fas fa-film"></i><span>Phim Lẻ</span></a>
-				<a href="sources.html" class="bottom-nav-item"><i class="fas fa-link"></i><span>Nguồn phim</span></a>
-			</div>
-		</nav>
 	</body>
 </html>
