@@ -2,13 +2,9 @@ let curatedLinks = [];
 
 async function loadCuratedLinks() {
 	const container = document.getElementById("linksContainer");
-	if (!currentUser) {
-		container.innerHTML = '<p class="text-gray-400 text-center">Vui lòng đăng nhập để xem link phim.</p>';
-		return;
-	}
 	container.innerHTML = '<p class="text-gray-400 text-center"><i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...</p>';
 	try {
-		const snapshot = await db.collection("users").doc(currentUser.uid).collection("curatedLinks").orderBy("addedAt", "desc").get();
+		const snapshot = await db.collection("curatedLinks").orderBy("addedAt", "desc").get();
 		curatedLinks = [];
 		snapshot.forEach((doc) => {
 			curatedLinks.push({ id: doc.id, ...doc.data() });
@@ -220,7 +216,7 @@ async function addCuratedLink() {
 	});
 	if (!form) return;
 	try {
-		await db.collection("users").doc(currentUser.uid).collection("curatedLinks").add({
+		await db.collection("curatedLinks").add({
 			title: form.title,
 			url: form.url,
 			source: form.source,
@@ -248,7 +244,7 @@ async function deleteCuratedLink(docId) {
 	});
 	if (!result.isConfirmed) return;
 	try {
-		await db.collection("users").doc(currentUser.uid).collection("curatedLinks").doc(docId).delete();
+		await db.collection("curatedLinks").doc(docId).delete();
 		Swal.fire({ icon: "success", title: "Đã xóa!", timer: 1500, showConfirmButton: false, background: "#1f2937", color: "#fff" });
 		loadCuratedLinks();
 	} catch (err) {
@@ -287,7 +283,7 @@ async function editCuratedLink(docId) {
 	});
 	if (!form) return;
 	try {
-		await db.collection("users").doc(currentUser.uid).collection("curatedLinks").doc(docId).update({
+		await db.collection("curatedLinks").doc(docId).update({
 			title: form.title,
 			url: form.url,
 			source: form.source,
@@ -392,7 +388,7 @@ function updateAuthUI() {
 
 document.addEventListener("cinephim:auth-ready", () => {
 	updateAuthUI();
-	if (currentUser) loadCuratedLinks();
+	loadCuratedLinks();
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
