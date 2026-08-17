@@ -51,8 +51,14 @@
 
 			<!-- Filter Panel -->
 			<div class="filter-panel mb-8">
-				<h3 class="filter-title"><i class="fas fa-filter"></i> Bộ lọc</h3>
+				<div class="filter-header">
+					<h3 class="filter-title"><i class="fas fa-filter"></i> Bộ lọc</h3>
+					<button type="button" id="toggleFilterBtn" class="filter-toggle" aria-label="Thu nhỏ bộ lọc" aria-expanded="true">
+						<i class="fas fa-chevron-up"></i>
+					</button>
+				</div>
 
+				<div id="filterBody">
 				<div class="filter-row">
 					<span class="filter-label"><i class="fas fa-list mr-1"></i> Thể loại:</span>
 					<div id="categoriesContainer" class="flex flex-wrap gap-2">
@@ -74,13 +80,14 @@
 					</div>
 				</div>
 
-				<div class="flex justify-center gap-3 sm:gap-4 mt-5 pt-4 border-t" style="border-color:var(--home-border)">
+				<div class="flex justify-center gap-3 sm:gap-4 mt-3 pt-3 border-t" style="border-color:var(--home-border)">
 					<button id="applyFilterBtn" class="btn-apply">
 						<i class="fas fa-search"></i> Lọc kết quả
 					</button>
 					<button id="clearFilterBtn" class="btn-clear">
 						<i class="fas fa-times"></i> Đóng
 					</button>
+				</div>
 				</div>
 			</div>
 

@@ -18,6 +18,7 @@ let pinnedRowRendered = false;
 const HOME_CATEGORY_ROWS = [
     { key: 'phim-le', type: 'type', slug: 'phim-le', name: 'Phim Lẻ', moreHref: 'single-movies.html' },
     { key: 'trung-quoc', type: 'country', slug: 'trung-quoc', name: 'Phim Trung Quốc', moreHref: 'browse.html?country=trung-quoc' },
+    { key: 'viet-nam', type: 'country', slug: 'viet-nam', name: 'Phim Việt Nam', moreHref: 'browse.html?country=viet-nam' },
     { key: 'hoat-hinh', type: 'category', slug: 'hoat-hinh', name: 'Phim Hoạt Hình', moreHref: 'browse.html?category=hoat-hinh' }
 ];
 

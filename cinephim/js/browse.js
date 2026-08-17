@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (selectedCategories.length > 0 || selectedCountries.length > 0 || selectedYears.length > 0) {
         const p = page ? parseInt(page) : 1;
         applyFilters(p);
+        collapseFilterPanel();
     }
 });
 
@@ -222,8 +223,51 @@ function setupEventListeners() {
         }
     });
 
-    document.getElementById('applyFilterBtn')?.addEventListener('click', () => applyFilters());
-    document.getElementById('clearFilterBtn')?.addEventListener('click', clearFilters);
+    document.getElementById('toggleFilterBtn')?.addEventListener('click', toggleFilterPanel);
+    document.getElementById('applyFilterBtn')?.addEventListener('click', () => {
+        applyFilters();
+        collapseFilterPanel();
+    });
+    document.getElementById('clearFilterBtn')?.addEventListener('click', () => {
+        clearFilters();
+        expandFilterPanel();
+    });
+}
+
+
+function toggleFilterPanel() {
+    const panel = document.querySelector('.filter-panel');
+    if (panel && panel.classList.contains('collapsed')) {
+        expandFilterPanel();
+    } else {
+        collapseFilterPanel();
+    }
+}
+
+function collapseFilterPanel() {
+    const panel = document.querySelector('.filter-panel');
+    const btn = document.getElementById('toggleFilterBtn');
+    if (!panel || panel.classList.contains('collapsed')) return;
+    panel.classList.add('collapsed');
+    if (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Mở rộng bộ lọc');
+        const icon = btn.querySelector('i');
+        if (icon) icon.className = 'fas fa-chevron-down';
+    }
+}
+
+function expandFilterPanel() {
+    const panel = document.querySelector('.filter-panel');
+    const btn = document.getElementById('toggleFilterBtn');
+    if (!panel || !panel.classList.contains('collapsed')) return;
+    panel.classList.remove('collapsed');
+    if (btn) {
+        btn.setAttribute('aria-expanded', 'true');
+        btn.setAttribute('aria-label', 'Thu nhỏ bộ lọc');
+        const icon = btn.querySelector('i');
+        if (icon) icon.className = 'fas fa-chevron-up';
+    }
 }
 
 
