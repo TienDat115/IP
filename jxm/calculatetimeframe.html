@@ -154,6 +154,10 @@
 				height: 2rem;
 			}
 		</style>
+		<!-- Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+		<script src="../js/firebase-config.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -230,28 +234,7 @@
 							<!-- Thêm khung timeframe mẫu -->
 							<div class="mt-4">
 								<h6 class="fw-bold mb-3"><i class="bi bi-collection-play"></i> Timeline Mở Cấp Khởi Tạo</h6>
-								<div class="list-group">
-									<!-- <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="79" data-day-type="1" data-game-index="0">
-										Võ Lâm Xích Hỏa
-										<span class="badge bg-primary rounded-pill">79 ngày thứ 1</span>
-									</a> -->
-									<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="69" data-day-type="2" data-game-index="1">
-										Võ Lâm Tây Vực
-										<span class="badge bg-primary rounded-pill">69 ngày thứ 2</span>
-									</a>
-									<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="79" data-day-type="1" data-game-index="3">
-										Võ Lâm Ngạo Thế
-										<span class="badge bg-primary rounded-pill">79 ngày thứ 1</span>
-									</a>
-									<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="69" data-day-type="1" data-game-index="2">
-										Võ Lâm Hồng Kông
-										<span class="badge bg-primary rounded-pill">69 ngày thứ 1</span>
-									</a>
-									<!-- <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-days="59" data-day-type="1" data-game-index="4">
-										Võ Lâm Ba Miền
-										<span class="badge bg-primary rounded-pill">59 ngày thứ 1</span>
-									</a> -->
-								</div>
+								<div class="list-group" id="timeframeSampleList"></div>
 							</div>
 						</div>
 					</div>
@@ -301,10 +284,49 @@
 			// Biến toàn cục lưu trữ dữ liệu game
 			let gameData = {};
 			let currentGameData = null;
+			const db = firebase.firestore();
 
 			// Hàm hiển thị thông báo lỗi
 			function showError(message) {
 				document.getElementById("result").innerHTML = `<div class="alert alert-danger">${message}</div>`;
+			}
+
+			// Hàm escape HTML
+			function escapeHtml(str) {
+				if (str === null || str === undefined) return "";
+				const div = document.createElement("div");
+				div.textContent = String(str);
+				return div.innerHTML;
+			}
+
+			// Tải danh sách timeframe mẫu từ Firebase
+			async function loadTimeframeSamples() {
+				const container = document.getElementById("timeframeSampleList");
+				container.innerHTML = '<div class="text-center text-muted py-3"><div class="spinner-border spinner-border-sm" role="status"></div> Đang tải...</div>';
+				try {
+					const snapshot = await db.collection("jxmTimeframes").orderBy("order", "asc").get();
+					const samples = [];
+					snapshot.forEach((doc) => samples.push(doc.data()));
+					const activeSamples = samples.filter((s) => s.active !== false);
+					container.innerHTML = "";
+					if (activeSamples.length === 0) {
+						container.innerHTML = '<div class="list-group-item text-muted">Chưa có timeframe mẫu</div>';
+						return;
+					}
+					activeSamples.forEach((s) => {
+						const a = document.createElement("a");
+						a.href = "#";
+						a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
+						a.dataset.days = s.days;
+						a.dataset.dayType = s.dayType;
+						a.dataset.gameIndex = s.gameIndex;
+						a.innerHTML = `${escapeHtml(s.name)} <span class="badge bg-primary rounded-pill">${s.days} ngày thứ ${s.dayType}</span>`;
+						container.appendChild(a);
+					});
+				} catch (error) {
+					console.error("Lỗi khi tải timeframe mẫu:", error);
+					container.innerHTML = '<div class="list-group-item text-muted">Không thể tải timeframe mẫu</div>';
+				}
 			}
 
 			// Tải dữ liệu từ file JSON
@@ -650,34 +672,34 @@
 			});
 
 			// Xử lý sự kiện click vào timeline mẫu
-			document.querySelectorAll("[data-days]").forEach((item) => {
-				item.addEventListener("click", function (e) {
-					e.preventDefault();
-					const days = this.getAttribute("data-days");
-					const dayType = this.getAttribute("data-day-type");
-					const gameIndex = this.getAttribute("data-game-index");
+			document.getElementById("timeframeSampleList").addEventListener("click", function (e) {
+				const item = e.target.closest("[data-days]");
+				if (!item) return;
+				e.preventDefault();
+				const days = item.getAttribute("data-days");
+				const dayType = item.getAttribute("data-day-type");
+				const gameIndex = item.getAttribute("data-game-index");
 
-					// Cập nhật giá trị các trường
-					document.getElementById("timeframeDays").value = days;
-					document.getElementById("openDays").value = dayType;
+				// Cập nhật giá trị các trường
+				document.getElementById("timeframeDays").value = days;
+				document.getElementById("openDays").value = dayType;
 
-					// Chọn game tương ứng nếu có chỉ định gameIndex
-					if (gameIndex !== null) {
-						const gameSelect = document.getElementById("gameSelect");
-						if (gameSelect && gameSelect.options[gameIndex]) {
-							gameSelect.selectedIndex = gameIndex;
-							// Kích hoạt sự kiện change để cập nhật dữ liệu game
-							const event = new Event("change");
-							gameSelect.dispatchEvent(event);
-						}
+				// Chọn game tương ứng nếu có chỉ định gameIndex
+				if (gameIndex !== null) {
+					const gameSelect = document.getElementById("gameSelect");
+					if (gameSelect && gameSelect.options[gameIndex]) {
+						gameSelect.selectedIndex = gameIndex;
+						// Kích hoạt sự kiện change để cập nhật dữ liệu game
+						const event = new Event("change");
+						gameSelect.dispatchEvent(event);
 					}
+				}
 
-					// Kích hoạt sự kiện input để cập nhật giao diện
-					document.getElementById("timeframeDays").dispatchEvent(new Event("input"));
-					document.getElementById("openDays").dispatchEvent(new Event("change"));
+				// Kích hoạt sự kiện input để cập nhật giao diện
+				document.getElementById("timeframeDays").dispatchEvent(new Event("input"));
+				document.getElementById("openDays").dispatchEvent(new Event("change"));
 
-					calculateTimestamp();
-				});
+				calculateTimestamp();
 			});
 
 			// Hàm đặt ngày về thứ 7 của tuần hiện tại
@@ -710,6 +732,7 @@
 				const todayStr = vietnamTime.toISOString().split("T")[0];
 				document.getElementById("inputDate").value = todayStr;
 				updateSuggestedSaturday();
+				loadTimeframeSamples();
 
 				try {
 					// Tải và cập nhật dữ liệu

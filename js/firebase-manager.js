@@ -54,7 +54,10 @@ const COLLECTIONS = [
 
 const GLOBAL_COLLECTIONS = [
 	{ key: 'sources', label: 'Nguồn phim', icon: 'fa-link', iconColor: 'text-purple-400', orderField: 'order', orderDir: 'asc', allowAdd: true },
+	{ key: 'jxmTimeframes', label: 'Timeframe mở cấp (JXM)', icon: 'fa-calendar-day', iconColor: 'text-orange-400', orderField: 'order', orderDir: 'asc', allowAdd: true },
 ];
+
+const GLOBAL_ADD_FNS = { sources: 'addSource', jxmTimeframes: 'addJxmTimeframe' };
 
 function getCollectionRef(colKey) {
 	const isGlobal = GLOBAL_COLLECTIONS.some(c => c.key === colKey);
@@ -78,7 +81,7 @@ async function renderAdmin() {
 					<summary>
 						<i class="fas ${c.icon} ${c.iconColor}"></i>
 						${c.label}
-						${c.allowAdd ? `<button onclick="event.stopPropagation(); addSource(); return false;" class="btn-add" title="Thêm mới"><i class="fas fa-plus mr-1"></i>Thêm</button>` : ''}
+						${c.allowAdd ? `<button onclick="event.stopPropagation(); ${GLOBAL_ADD_FNS[c.key] || 'addSource'}(); return false;" class="btn-add" title="Thêm mới"><i class="fas fa-plus mr-1"></i>Thêm</button>` : ''}
 						<span class="count-badge" id="count-${c.key}">...</span>
 					</summary>
 					<div id="content-${c.key}" class="min-h-[40px]">
@@ -345,6 +348,57 @@ async function addSource() {
 		await db.collection('sources').add({ ...form, order: maxOrder + 1 });
 		showStatus('Đã thêm nguồn!', 'success');
 		loadCollection('sources');
+	} catch (err) {
+		showStatus('Lỗi thêm: ' + err.message, 'error');
+	}
+}
+
+async function addJxmTimeframe() {
+	const html =
+		'<input id="swal-name" placeholder="Tên game (VD: Võ Lâm Tây Vực)" class="swal2-input swal-input-custom">' +
+		'<input id="swal-days" placeholder="Số ngày timeframe (VD: 69)" type="number" min="0" class="swal2-input swal-input-custom">' +
+		'<input id="swal-dayType" placeholder="Thứ mở cấp (1 hoặc 2)" type="number" min="1" class="swal2-input swal-input-custom">' +
+		'<input id="swal-gameIndex" placeholder="Vị trí game trong dropdown (VD: 1)" type="number" min="0" class="swal2-input swal-input-custom">' +
+		'<input id="swal-order" placeholder="Thứ tự hiển thị (VD: 2)" type="number" min="0" class="swal2-input swal-input-custom">' +
+		'<label style="display:flex;align-items:center;gap:8px;color:#9ca3af;font-size:13px;margin:4px 0"><input id="swal-active" type="checkbox" checked> Hoạt động</label>';
+
+	const { value: form } = await Swal.fire({
+		title: 'Thêm timeframe mẫu',
+		width: 'min(90vw, 500px)',
+		padding: '1.25rem',
+		html,
+		focusConfirm: false,
+		showCancelButton: true,
+		confirmButtonText: 'Lưu',
+		cancelButtonText: 'Hủy',
+		preConfirm: () => {
+			const name = document.getElementById('swal-name').value.trim();
+			const days = parseInt(document.getElementById('swal-days').value);
+			const dayType = parseInt(document.getElementById('swal-dayType').value);
+			const gameIndex = parseInt(document.getElementById('swal-gameIndex').value);
+			const order = parseInt(document.getElementById('swal-order').value);
+			if (!name) { Swal.showValidationMessage('Vui lòng nhập tên game'); return; }
+			if (isNaN(days) || days <= 0) { Swal.showValidationMessage('Số ngày timeframe phải là số lớn hơn 0'); return; }
+			if (isNaN(dayType) || dayType <= 0) { Swal.showValidationMessage('Thứ mở cấp phải là số lớn hơn 0'); return; }
+			if (isNaN(gameIndex) || gameIndex < 0) { Swal.showValidationMessage('Vị trí game phải là số không âm'); return; }
+			if (isNaN(order)) { Swal.showValidationMessage('Vui lòng nhập thứ tự hiển thị'); return; }
+			return {
+				name,
+				days,
+				dayType,
+				gameIndex,
+				order,
+				active: document.getElementById('swal-active').checked
+			};
+		},
+		background: '#1f2937', color: '#fff', confirmButtonColor: '#7c3aed',
+		customClass: { confirmButton: 'swal-btn-custom', cancelButton: 'swal-btn-custom' }
+	});
+	if (!form) return;
+	try {
+		await db.collection('jxmTimeframes').add(form);
+		showStatus('Đã thêm timeframe mẫu!', 'success');
+		loadCollection('jxmTimeframes');
 	} catch (err) {
 		showStatus('Lỗi thêm: ' + err.message, 'error');
 	}

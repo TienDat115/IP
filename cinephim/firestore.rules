@@ -18,6 +18,12 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Timeframe mở cấp (JXM): đọc công khai, ghi cần đăng nhập
+    match /jxmTimeframes/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
     // Link phim cố định: đọc công khai, ghi cần đăng nhập
     match /curatedLinks/{document=**} {
       allow read: if true;
