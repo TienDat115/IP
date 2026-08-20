@@ -233,17 +233,26 @@ function getHeroThumbHTML(movie, index) {
     return `<div class="hero-thumb" onclick="heroSlideTo(${index})"><img src="${src}" alt="" loading="lazy" onerror="this.src=placeholderImg(100,68,'')"></div>`;
 }
 
+function getSourceName(sourceKey) {
+    if (!sourceKey) return '';
+    if (typeof SOURCES !== 'undefined' && SOURCES[sourceKey]) {
+        return SOURCES[sourceKey].name || sourceKey;
+    }
+    return sourceKey;
+}
+
 function getHomeCardHTML(movie) {
     const name = movie.name || movie.title || 'Không rõ';
     const alias = movie.origin_name || (movie.year ? String(movie.year) : '');
     const quality = movie.quality || 'HD';
+    const badge = movie.source ? getSourceName(movie.source) : quality;
     const epLabel = movie.current_episode || (movie.year ? String(movie.year) : '');
     return `
         <div class="swiper-slide">
             <div class="sw-item" onclick="showMovieDetail('${movie.slug}')">
                 <span class="v-thumbnail">
                     <span class="thumb"><img src="${getVerticalImage(movie.poster_url)}" alt="${escapeHtml(name)}" loading="lazy" decoding="async" onerror="this.src=placeholderImg(300,450,'No Poster')"></span>
-                    <span class="badge-quality">${escapeHtml(quality)}</span>
+                    <span class="badge-quality">${escapeHtml(badge)}</span>
                     ${epLabel ? `<span class="pin-new"><span class="line-center">${escapeHtml(epLabel)}</span></span>` : ''}
                 </span>
                 <div class="info">
@@ -375,6 +384,7 @@ async function loadRecentWatched() {
             title: item.movieTitle || item.movieSlug || '',
             poster_url: item.poster_url || item.thumb_url || '',
             origin_name: item.episodeName || '',
+            source: item.source || '',
             quality: 'HD',
             current_episode: item.episodeName || ''
         })).filter(m => m.slug);
@@ -402,6 +412,7 @@ async function loadPinnedMovies() {
         title: pin.title || pin.name || '',
         poster_url: pin.thumb_url || pin.poster_url || '',
         origin_name: pin.year ? String(pin.year) : '',
+        source: pin.source || '',
         quality: 'HD',
         current_episode: ''
     })).filter(m => m.slug);
@@ -420,16 +431,6 @@ function showSearchMode() {
     if (hero) hero.classList.add('hidden');
     if (home) home.classList.add('hidden');
     if (results) results.classList.remove('hidden');
-}
-
-function showHomeMode() {
-    searchMode = false;
-    const hero = document.getElementById('heroSection');
-    const home = document.getElementById('homeContent');
-    const results = document.getElementById('searchResultsSection');
-    if (results) results.classList.add('hidden');
-    if (home) home.classList.remove('hidden');
-    if (hero) hero.classList.remove('hidden');
 }
 
 async function searchMovies(keyword, page = 1) {

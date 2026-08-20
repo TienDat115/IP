@@ -1,7 +1,6 @@
 // CinePhim - Browse (Advanced Search) Page JavaScript
 
 let currentPage = 1;
-let totalPages = 1;
 let categoryNameMap = {};
 let countryNameMap = {};
 let selectedCategories = [];
@@ -10,7 +9,6 @@ let selectedYears = [];
 let yearNameMap = {};
 let combinedMovies = [];
 let combinedTotalPages = 1;
-let isCombinedMode = false;
 const COMBINED_PER_PAGE = 24;
 
 
@@ -302,7 +300,6 @@ function clearFilters() {
     selectedCountries = [];
     selectedYears = [];
     combinedMovies = [];
-    isCombinedMode = false;
     combinedTotalPages = 1;
     document.querySelectorAll('.chip-btn.selected').forEach(el => el.classList.remove('selected'));
 
@@ -379,7 +376,6 @@ async function loadFilteredMovies(page = 1) {
             }
 
         } else {
-            isCombinedMode = true;
             combinedMovies = [];
             let endpoints = [];
 
@@ -515,9 +511,8 @@ function extractMovies(data) {
 function updatePagination(data) {
     const paginate = normalizePagination(data);
     if (!paginate) { document.getElementById('pagination').innerHTML = ''; return; }
-    const { current_page: current, total_page: total } = paginate;
+    const { current_page: current } = paginate;
     currentPage = current;
-    totalPages = total;
     _renderPagination(paginate, 'loadFilteredMovies({page})');
     const url = new URL(window.location);
     url.searchParams.set('page', current);

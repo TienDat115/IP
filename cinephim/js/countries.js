@@ -1,7 +1,6 @@
 // Countries Page JavaScript
 let currentPage = 1;
 let currentCountry = '';
-let totalPages = 1;
 let countryNameMap = {};
 
 
@@ -177,9 +176,8 @@ async function loadCountryMovies(page = 1) {
 // Update pagination
 function updatePagination(paginate) {
     if (!paginate) { document.getElementById('pagination').innerHTML = ''; return; }
-    const { current_page: current, total_page: total } = paginate;
+    const { current_page: current } = paginate;
     currentPage = current;
-    totalPages = total;
     _renderPagination(paginate, 'loadCountryMovies({page})');
     const url = new URL(window.location);
     url.searchParams.set('page', current);

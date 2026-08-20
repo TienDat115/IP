@@ -17,13 +17,6 @@
 	background-color: #111827;
 }
 
-/* Commented out to maintain consistent 2/3 portrait aspect ratio for all movie cards in grids */
-/*
-.film-poster.film-poster-landscape {
-	aspect-ratio: 16/9;
-}
-*/
-
 /* Pagination styles */
 #pagination,
 #episodesPagination {
@@ -48,8 +41,7 @@
 }
 
 #pagination button,
-#episodesPagination button,
-.pagination-btn {
+#episodesPagination button {
 	flex: 0 0 auto;
 	white-space: nowrap;
 	min-width: 2.25rem;
@@ -62,13 +54,11 @@
 	transition: all 0.3s ease;
 }
 
-.pagination-btn:hover:not(:disabled),
 #pagination button:hover:not(:disabled),
 #episodesPagination button:hover:not(:disabled) {
 	transform: translateY(-1px);
 }
 
-.pagination-btn:disabled,
 #pagination button:disabled,
 #episodesPagination button:disabled {
 	opacity: 0.5;
@@ -93,17 +83,6 @@
 	100% {
 		transform: rotate(360deg);
 	}
-}
-
-/* Gradient backgrounds */
-.gradient-bg {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.hero-section {
-	background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><rect fill="%23667eea" width="1920" height="1080"/><polygon fill="%23764ba2" points="0,1080 1920,0 1920,1080"/></svg>');
-	background-size: cover;
-	background-position: center;
 }
 
 /* Light mode styles */
@@ -256,27 +235,6 @@ body:not(.dark) .film-card .text-gray-400 {
 /* Mobile responsive improvements */
 @media (max-width: 640px) {
 
-	/* Hero section */
-	.hero-section h2 {
-		font-size: 1.5rem;
-		line-height: 1.2;
-	}
-
-	.hero-section p {
-		font-size: 0.875rem;
-	}
-
-	.hero-section .flex {
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-
-	.hero-section button {
-		width: 100%;
-		padding: 0.75rem 1rem;
-		font-size: 0.875rem;
-	}
-
 	/* Header - Ensure single row layout */
 	header .sm\\:hidden {
 		display: flex !important;
@@ -322,33 +280,6 @@ body:not(.dark) .film-card .text-gray-400 {
 
 	header button span {
 		display: none;
-	}
-
-	/* Next episode button mobile */
-	#videoModalInModal .absolute.bottom-4 .left-4 button,
-	#videoModalInModal .absolute.bottom-4 .right-4 button {
-		flex-direction: column !important;
-		padding: 0.5rem !important;
-		font-size: 0.75rem !important;
-		min-width: auto !important;
-	}
-
-	#videoModalInModal .absolute.bottom-4 .left-4 button .space-x-2,
-	#videoModalInModal .absolute.bottom-4 .right-4 button .space-x-2 {
-		display: flex !important;
-		flex-direction: column !important;
-		gap: 0.25rem !important;
-	}
-
-	#videoModalInModal .absolute.bottom-4 .left-4 button .text-xs,
-	#videoModalInModal .absolute.bottom-4 .right-4 button .text-xs {
-		font-size: 0.625rem !important;
-	}
-
-	#videoModalInModal .absolute.bottom-4 .flex {
-		flex-direction: column !important;
-		gap: 0.5rem !important;
-		align-items: center !important;
 	}
 
 	/* Movies grid */
@@ -413,88 +344,16 @@ body:not(.dark) .film-card .text-gray-400 {
 		font-size: 0.55rem;
 	}
 
-	/* Categories and countries grid */
-	.categories-grid,
-	.countries-grid,
-	.years-grid {
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0.5rem;
-	}
-
-	.categories-grid>div,
-	.countries-grid>div,
-	.years-grid>div {
-		padding: 0.75rem;
-		font-size: 0.875rem;
-	}
-
 	/* Modals */
 	.modal {
 		padding: 1rem;
-	}
-
-	.modal-content {
-		max-height: 90vh;
-		overflow-y: auto;
 	}
 }
 
 @media (max-width: 1024px) {
 
-	/* Medium desktop/tablet - show only icons */
-	.nav-text {
-		display: none;
-	}
-
 	header .items-center {
 		gap: 0.5rem;
-	}
-
-	/* Tooltip styles for icon-only navigation */
-	.hover-text-tooltip {
-		position: relative;
-	}
-
-	.hover-text-tooltip:hover::after {
-		content: attr(data-tooltip);
-		position: absolute;
-		bottom: -35px;
-		left: 50%;
-		transform: translateX(-50%);
-		background-color: #1f2937;
-		color: white;
-		padding: 6px 12px;
-		border-radius: 6px;
-		font-size: 14px;
-		white-space: nowrap;
-		z-index: 1000;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-		border: 1px solid #374151;
-		opacity: 0;
-		animation: tooltipFadeIn 0.3s ease-in-out forwards;
-	}
-
-	.hover-text-tooltip:hover::before {
-		content: '';
-		position: absolute;
-		bottom: -8px;
-		left: 50%;
-		transform: translateX(-50%);
-		border: 6px solid transparent;
-		border-top-color: #1f2937;
-		z-index: 1001;
-	}
-
-	@keyframes tooltipFadeIn {
-		from {
-			opacity: 0;
-			transform: translateX(-50%) translateY(-5px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateX(-50%) translateY(0);
-		}
 	}
 }
 
@@ -511,25 +370,6 @@ body:not(.dark) .film-card .text-gray-400 {
 
 	.grid-cols-5 {
 		grid-template-columns: repeat(3, 1fr);
-	}
-
-	/* Movie modal */
-	#movieModal .max-w-4xl {
-		max-width: 95vw;
-		margin: 1rem;
-	}
-
-	#movieModal .p-6 {
-		padding: 1rem;
-	}
-
-	#movieModal h2 {
-		font-size: 1.5rem;
-	}
-
-	#movieModal .grid-cols-2 {
-		grid-template-columns: 1fr;
-		gap: 0.5rem;
 	}
 
 	/* Episodes grid */
@@ -657,8 +497,8 @@ body:not(.dark) #mobileUserDropdown .hover\:bg-gray-600:hover {
 		max-width: 320px !important;
 		right: 16px !important;
 		left: auto !important;
-		top: 100% !important;
-		margin-top: 0.5rem !important;
+		bottom: 100% !important;
+		margin-bottom: 0.5rem !important;
 		animation: dropdownFadeIn 0.2s ease-in-out;
 		z-index: 9999 !important;
 	}
@@ -734,6 +574,10 @@ body.cinema-mode #exitCinemaBtn {
 }
 .bottom-nav-item.active {
 	color: #a78bfa;
+}
+
+.bottom-nav-item.hidden {
+	display: none !important;
 }
 
 @media (max-width: 640px) {
@@ -1330,41 +1174,6 @@ body:not(.dark) #bottomNav {
 	background: var(--home-footer-bg);
 	margin-top: 40px;
 	border-top: 1px solid var(--home-border);
-}
-
-.home-footer-logo {
-	color: var(--home-primary);
-	font-size: 24px;
-	font-weight: 700;
-	text-decoration: none;
-}
-
-.home-social {
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	background: var(--home-bg-2);
-	color: #fff;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	text-decoration: none;
-	transition: all 0.2s ease;
-}
-
-.home-social:hover {
-	background: var(--home-bg-3);
-	color: var(--home-primary);
-}
-
-.home-footer-menu a {
-	color: var(--home-text);
-	text-decoration: none;
-	transition: color 0.2s ease;
-}
-
-.home-footer-menu a:hover {
-	color: #fff;
 }
 
 .home-footer-notice {

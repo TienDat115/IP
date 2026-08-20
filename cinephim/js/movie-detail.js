@@ -187,12 +187,6 @@ async function loadMovieDetail(slug) {
             updateFavoriteButton();
             updatePinButton();
             
-            // Store episodes data for server switching
-            window.currentMovieEpisodes = currentMovie.episodes;
-            window.currentMovieSlug = slug;
-            window.currentMoviePosterUrl = currentMovie.poster_url || '';
-            window.currentMovieThumbUrl = currentMovie.thumb_url || '';
-            
             hideLoading();
             document.getElementById('movieContent').classList.remove('hidden');
             
@@ -1166,15 +1160,46 @@ function updateNavigationButtons() {
     }
 }
 
-// Find episode index by slug in current server only
-function findEpisodeIndex(episodeSlug) {
-    if (!currentMovie || !currentMovie.episodes) return 0;
-    
-    const server = currentMovie.episodes[getCurrentServerIndex()];
-    if (!server) return 0;
-    const items = server.items || server.server_data || [];
-    const index = items.findIndex(ep => ep.slug === episodeSlug);
-    return index === -1 ? 0 : index;
+// Resolve a category slug from a single category item.
+// NguonC detail API returns categories without slug (only name), so map name -> slug via NGONC_CATEGORIES.
+function getCategorySlug(cat) {
+    if (!cat) return null;
+    if (cat.slug) return cat.slug;
+    if (cat.name && typeof NGONC_CATEGORIES !== 'undefined') {
+        const match = NGONC_CATEGORIES.find(c => c.name.toLowerCase() === cat.name.toLowerCase());
+        if (match) return match.slug;
+    }
+    return null;
+}
+
+// Extract a category slug from various category structures
+function extractCategorySlug(category) {
+    if (!category) return null;
+
+    let firstCat = null;
+
+    if (Array.isArray(category)) {
+        const hasNesting = category.some(item => item.group || item.list);
+        if (hasNesting) {
+            const cat = category.find(item => item.group && item.group.name === 'Thể loại');
+            if (cat && cat.list && cat.list.length > 0) {
+                firstCat = cat.list[0];
+            }
+        } else if (category.length > 0) {
+            firstCat = category[0];
+        }
+    } else if (category.list) {
+        if (category.list.length > 0) {
+            firstCat = category.list[0];
+        }
+    } else if (typeof category === 'object') {
+        const theLoaiEntry = Object.values(category).find(item =>
+            item && item.group && item.group.name === 'Thể loại' && item.list && item.list.length > 0
+        );
+        firstCat = theLoaiEntry ? theLoaiEntry.list[0] : null;
+    }
+
+    return getCategorySlug(firstCat);
 }
 
 // Load related movies
@@ -1182,29 +1207,11 @@ async function loadRelatedMovies() {
     try {
         if (!currentMovie || !currentMovie.category) return;
 
-        let categorySlug = null;
-
-        if (Array.isArray(currentMovie.category)) {
-            const hasNesting = currentMovie.category.some(item => item.group || item.list);
-            if (hasNesting) {
-                const cat = currentMovie.category.find(item => item.group && item.group.name === 'Thể loại');
-                if (cat && cat.list && cat.list.length > 0) {
-                    categorySlug = cat.list[0].slug;
-                }
-            } else {
-                if (currentMovie.category.length > 0) {
-                    categorySlug = currentMovie.category[0].slug;
-                }
-            }
-        } else if (currentMovie.category.list) {
-            if (currentMovie.category.list.length > 0) {
-                categorySlug = currentMovie.category.list[0].slug;
-            }
-        }
+        const categorySlug = extractCategorySlug(currentMovie.category);
 
         if (!categorySlug) return;
 
-        let endpoint = `/films/category/${categorySlug}`;
+        let endpoint = `/films/the-loai/${categorySlug}`;
         if (currentSourceKey === 'kkphim') {
             endpoint = `/v1/api/the-loai/${categorySlug}`;
         } else if (currentSourceKey === 'ophim' || currentSourceKey === 'vsmov') {
@@ -1228,10 +1235,10 @@ function displayRelatedMovies(movies) {
     const relatedMoviesContainer = document.getElementById('relatedMovies');
     if (!relatedMoviesContainer) return;
 
-    // Filter out current movie and limit to 8 movies
+    // Filter out current movie and limit to 10 movies
     const relatedMovies = movies
         .filter(movie => movie.slug !== currentMovie.slug)
-        .slice(0, 8);
+        .slice(0, 10);
 
     if (relatedMovies.length === 0) {
         relatedMoviesContainer.innerHTML = '<p class="text-gray-400">Không có phim liên quan.</p>';
@@ -1346,7 +1353,7 @@ function updateFavoriteButton() {
 }
 
 // Update pin button text and state
-function updatePinButton() {
+function updatePinButton(slug, isPinned) {
     const pinBtn = document.querySelector('button[onclick="togglePinMovie()"]');
     if (!pinBtn) return;
     
@@ -1354,6 +1361,20 @@ function updatePinButton() {
         pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Ghim phim';
         pinBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
         pinBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        return;
+    }
+    
+    // Use provided state directly when available (avoids stale Firebase query after toggling)
+    if (typeof isPinned === 'boolean') {
+        if (isPinned) {
+            pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Bỏ ghim';
+            pinBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+            pinBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+        } else {
+            pinBtn.innerHTML = '<i class="fas fa-thumbtack mr-2"></i>Ghim phim';
+            pinBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            pinBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        }
         return;
     }
     

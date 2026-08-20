@@ -3,7 +3,6 @@
 // Global variables for this page
 let currentPage = 1;
 let currentCategory = '';
-let totalPages = 1;
 let categoryNameMap = {};
 let categoriesLoaded = false;
 

@@ -79,42 +79,6 @@ async function loadFavoritesFromFirebase() {
     }
 }
 
-// Save favorites to Firebase
-async function saveFavoritesToFirebase() {
-    if (!currentUser) return;
-    
-    try {
-        const userRef = db.collection('users').doc(currentUser.uid);
-        const favoritesRef = userRef.collection('favorites');
-        
-        // Clear existing favorites
-        const existingDocs = await favoritesRef.get();
-        const batch = db.batch();
-        
-        existingDocs.forEach(doc => {
-            batch.delete(doc.ref);
-        });
-        
-        // Add new favorites
-        favorites.forEach(item => {
-            const docRef = favoritesRef.doc();
-            // Clean data before saving
-            const cleanItem = {
-                slug: item.slug || '',
-                title: item.title || item.name || item.slug || '',
-                name: item.name || item.title || item.slug || '',
-                source: item.source || currentSourceKey || '',
-                addedAt: item.addedAt || new Date().toISOString()
-            };
-            batch.set(docRef, cleanItem);
-        });
-        
-        await batch.commit();
-    } catch (error) {
-        console.error('Error saving favorites:', error);
-    }
-}
-
 // Load watch history from Firebase
 async function loadWatchHistoryFromFirebase() {
     if (!currentUser) return;
@@ -624,14 +588,6 @@ function showMovieDetail(slug) {
     window.location.href = `movie-detail.html?slug=${slug}`;
 }
 
-// Close movie modal
-function closeMovieModal() {
-    const modal = document.getElementById('movieModal');
-    if (modal) {
-        modal.classList.add('hidden');
-    }
-}
-
 // Resolve OPhim relative image paths robustly
 function resolveOPhimImageUrl(url, pathImageFromApi = '') {
     if (!url) return '';
@@ -991,19 +947,6 @@ function getCountryFromCategory(category) {
     return '';
 }
 
-// Close modal when clicking outside
-document.addEventListener('DOMContentLoaded', async function() {
-    await window.ensureConfigReady();
-    const movieModal = document.getElementById('movieModal');
-    if (movieModal) {
-        movieModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeMovieModal();
-            }
-        });
-    }
-});
-
 function showLoading() {
     const loading = document.getElementById('loading');
     if (loading) {
@@ -1065,6 +1008,7 @@ async function savePinnedMoviesToFirebase() {
                 name: item.name || '',
                 poster_url: item.poster_url || '',
                 thumb_url: item.thumb_url || '',
+                source: item.source || '',
                 pinnedAt: item.pinnedAt || new Date().toISOString()
             };
             batch.set(docRef, cleanItem);
@@ -1107,6 +1051,7 @@ async function togglePin(slug, movieData = null) {
             poster_url: movieInfo.poster_url || '',
             thumb_url: movieInfo.thumb_url || '',
             year: movieInfo.year || '',
+            source: currentSourceKey || movieInfo.source || '',
             pinnedAt: new Date().toISOString()
         };
         pinnedMovies.unshift(newMovieData);
@@ -1137,16 +1082,6 @@ function showError(message) {
         title: 'Lỗi',
         text: message,
         confirmButtonColor: '#8b5cf6'
-    });
-}
-
-function showSuccess(message) {
-    Swal.fire({
-        icon: 'success',
-        title: 'Thành công',
-        text: message,
-        timer: 2000,
-        showConfirmButton: false
     });
 }
 

@@ -1,6 +1,5 @@
 // New Movies Page JavaScript
 let currentPage = 1;
-let totalPages = 1;
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', async function() {
@@ -67,9 +66,8 @@ async function loadNewMovies(page = 1) {
 // Update pagination
 function updatePagination(paginate) {
     if (!paginate) { document.getElementById('pagination').innerHTML = ''; return; }
-    const { current_page: current, total_page: total } = paginate;
+    const { current_page: current } = paginate;
     currentPage = current;
-    totalPages = total;
     _renderPagination(paginate, 'loadNewMovies({page})');
     const url = new URL(window.location);
     url.searchParams.set('page', current);
