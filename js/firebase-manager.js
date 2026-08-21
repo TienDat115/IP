@@ -69,7 +69,8 @@ async function renderAdmin() {
 	container.innerHTML = `
 		<div class="flex items-center justify-between mb-6">
 			<h2 class="text-xl font-semibold"><i class="fas fa-folder-open mr-2 text-purple-400"></i>Quản lý dữ liệu Firebase</h2>
-			<div class="flex gap-2">
+			<div class="flex gap-2 flex-wrap justify-end">
+				<button onclick="backupAllData()" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg text-sm transition"><i class="fas fa-download mr-1"></i>Tải backup</button>
 				<button onclick="renderAdmin()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm transition"><i class="fas fa-sync-alt mr-1"></i>Làm mới</button>
 				<button onclick="showUserDocEditor()" class="bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded-lg text-sm transition"><i class="fas fa-user-cog mr-1"></i>User fields</button>
 			</div>
@@ -478,5 +479,74 @@ async function showUserDocEditor() {
 		showStatus('Đã cập nhật user fields!', 'success');
 	} catch (err) {
 		showStatus('Lỗi: ' + err.message, 'error');
+	}
+}
+
+async function backupAllData() {
+	if (!currentUser) {
+		Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Vui lòng đăng nhập để tải backup.', background: '#1f2937', color: '#fff', confirmButtonColor: '#7c3aed' });
+		return;
+	}
+
+	Swal.fire({
+		title: 'Đang tải backup...',
+		html: '<i class="fas fa-spinner fa-spin mr-2"></i>Đang đọc dữ liệu từ Firebase, vui lòng đợi...',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false,
+		background: '#1f2937',
+		color: '#fff'
+	});
+
+	try {
+		const backup = { backupDate: new Date().toISOString() };
+
+		for (const col of GLOBAL_COLLECTIONS) {
+			const snapshot = await db.collection(col.key).get();
+			backup[col.key] = [];
+			snapshot.forEach(doc => backup[col.key].push({ id: doc.id, ...doc.data() }));
+		}
+
+		for (const col of COLLECTIONS) {
+			if (!currentUser) break;
+			const snapshot = await db.collection('users').doc(currentUser.uid).collection(col.key).get();
+			backup[col.key] = [];
+			snapshot.forEach(doc => backup[col.key].push({ id: doc.id, ...doc.data() }));
+		}
+
+		try {
+			const webhooksSnap = await db.collection('webhooks').get();
+			backup.webhooks = [];
+			webhooksSnap.forEach(doc => backup.webhooks.push({ id: doc.id, ...doc.data() }));
+		} catch (e) { backup.webhooks = []; }
+
+		try {
+			const logsSnap = await db.collection('logs').get();
+			backup.logs = [];
+			logsSnap.forEach(doc => backup.logs.push({ id: doc.id, ...doc.data() }));
+		} catch (e) { backup.logs = []; }
+
+		const json = JSON.stringify(backup, null, 2);
+		const blob = new Blob([json], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'cinephim-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+
+		Swal.fire({
+			icon: 'success',
+			title: 'Backup thành công!',
+			text: 'File đã được tải xuống.',
+			timer: 2000,
+			showConfirmButton: false,
+			background: '#1f2937',
+			color: '#fff'
+		});
+	} catch (err) {
+		Swal.fire({ icon: 'error', title: 'Lỗi backup', text: err.message, background: '#1f2937', color: '#fff', confirmButtonColor: '#7c3aed' });
 	}
 }

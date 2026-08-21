@@ -312,12 +312,15 @@ function displayWatchHistory() {
         let html = '';
         currentItems.forEach((item, index) => {
             const actualIndex = startIndex + index;
-            html += '<div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail(\'' + item.movieSlug + '\')">';
+            const sourceKey = item.source || currentSourceKey;
+            const sourceLabel = SOURCES[sourceKey]?.name || sourceKey;
+            html += '<div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail(\'' + item.movieSlug + '\', \'' + (item.source || '') + '\')">';
             html += '<div class="absolute top-2 right-2 z-10">';
             html += '<button onclick="event.stopPropagation(); removeFromWatchHistory(\'' + item.movieSlug + '\')" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">';
             html += '<i class="fas fa-trash text-white text-xs"></i>';
             html += '</button></div>';
-            html += '<div class="absolute top-2 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">';
+            html += '<div class="badge-quality" style="left:8px;right:auto">' + sourceLabel + '</div>';
+            html += '<div class="absolute top-10 left-2 bg-black bg-opacity-75 px-2 py-1 rounded text-xs">';
             html += '<i class="fas fa-history text-gray-300 mr-1"></i>' + formatWatchTime(item.watchedAt);
             html += '</div>';
             html += '<div class="relative">';

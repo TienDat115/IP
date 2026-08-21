@@ -249,7 +249,7 @@ function getHomeCardHTML(movie) {
     const epLabel = movie.current_episode || (movie.year ? String(movie.year) : '');
     return `
         <div class="swiper-slide">
-            <div class="sw-item" onclick="showMovieDetail('${movie.slug}')">
+            <div class="sw-item" onclick="showMovieDetail('${movie.slug}', '${movie.source || ''}')">
                 <span class="v-thumbnail">
                     <span class="thumb"><img src="${getVerticalImage(movie.poster_url)}" alt="${escapeHtml(name)}" loading="lazy" decoding="async" onerror="this.src=placeholderImg(300,450,'No Poster')"></span>
                     <span class="badge-quality">${escapeHtml(badge)}</span>

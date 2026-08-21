@@ -584,7 +584,26 @@ function updateLoginButton() {
 }
 
 // Show movie detail - redirect to detail page
-function showMovieDetail(slug) {
+function showMovieDetail(slug, savedSource) {
+    if (savedSource && savedSource !== currentSourceKey && SOURCES[savedSource]) {
+        const savedName = SOURCES[savedSource]?.name || savedSource;
+        Swal.fire({
+            title: 'Cần chuyển nguồn',
+            html: `Phim này thuộc nguồn <strong>${savedName}</strong>.<br>Bạn cần chuyển sang nguồn này để xem phim.`,
+            icon: 'warning',
+            confirmButtonText: 'Chuyển nguồn',
+            showCancelButton: true,
+            cancelButtonText: 'Hủy',
+            confirmButtonColor: '#8b5cf6',
+            cancelButtonColor: '#6b7280'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.setItem('movieSource', savedSource);
+                window.location.href = `movie-detail.html?slug=${slug}`;
+            }
+        });
+        return;
+    }
     window.location.href = `movie-detail.html?slug=${slug}`;
 }
 
