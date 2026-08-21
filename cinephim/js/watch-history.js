@@ -30,7 +30,7 @@ async function loadWatchHistory() {
             
             watchHistory = [];
             snapshot.forEach(doc => {
-                watchHistory.push(doc.data());
+                watchHistory.push({ ...doc.data(), _docId: doc.id });
             });
             
         } else {
@@ -305,6 +305,7 @@ function displayWatchHistory() {
         
         // Calculate pagination
         totalPages = Math.ceil(watchHistory.length / itemsPerPage);
+        if (currentPage > totalPages) currentPage = totalPages || 1;
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const currentItems = watchHistory.slice(startIndex, endIndex);
@@ -316,7 +317,7 @@ function displayWatchHistory() {
             const sourceLabel = SOURCES[sourceKey]?.name || sourceKey;
             html += '<a href="movie-detail.html?slug=' + encodeURIComponent(item.movieSlug) + '" class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="handleMovieCardClick(event, \'' + item.movieSlug + '\', \'' + (item.source || '') + '\')">';
             html += '<div class="absolute top-2 right-2 z-10">';
-            html += '<button onclick="event.stopPropagation(); removeFromWatchHistory(\'' + item.movieSlug + '\')" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">';
+            html += '<button onclick="event.preventDefault(); event.stopPropagation(); removeFromWatchHistory(' + actualIndex + ')" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">';
             html += '<i class="fas fa-trash text-white text-xs"></i>';
             html += '</button></div>';
             html += '<div class="badge-quality" style="left:8px;right:auto">' + sourceLabel + '</div>';
@@ -419,29 +420,41 @@ function goToPage(page) {
     document.getElementById('watchHistoryGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-async function removeFromWatchHistory(movieSlug) {
+async function removeFromWatchHistory(index) {
+    const item = watchHistory[index];
+    if (!item) return;
+
     try {
         if (currentUser) {
             // Remove from Firebase
-            const userRef = db.collection('users').doc(currentUser.uid);
-            const historyRef = userRef.collection('watchHistory');
-            const snapshot = await historyRef.where('movieSlug', '==', movieSlug).get();
-            
-            const batch = db.batch();
-            snapshot.forEach(doc => {
-                batch.delete(doc.ref);
-            });
-            
-            await batch.commit();
+            const historyRef = db.collection('users').doc(currentUser.uid).collection('watchHistory');
+
+            if (item._docId) {
+                await historyRef.doc(item._docId).delete();
+            } else {
+                // Fallback for legacy entries without _docId:
+                // match by movieSlug, then filter to the exact same episode client-side
+                const snapshot = await historyRef.where('movieSlug', '==', item.movieSlug).get();
+
+                const batch = db.batch();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if ((data.episodeName || '') === (item.episodeName || '')) {
+                        batch.delete(doc.ref);
+                    }
+                });
+
+                await batch.commit();
+            }
         }
-        
+
         // Reload and display
         await loadWatchHistory();
-        
+
         showToast('Đã xóa khỏi lịch sử xem', 'success');
     } catch (error) {
         console.error('Error removing from watch history:', error);
-        
+
         showToast('Không thể xóa khỏi lịch sử xem', 'error');
     }
 }
