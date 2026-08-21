@@ -5,6 +5,26 @@
 	transition: all 0.3s ease;
 }
 
+/* Movie cards rendered as links: keep block layout & inherit theme colors */
+a.film-card {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+}
+
+a.sw-item {
+	color: inherit;
+	text-decoration: none;
+}
+
+/* Ignore direct pointer events on card images so right-click targets the
+   movie link instead of offering "Open image in new tab" */
+.film-card img,
+.sw-item img,
+.v-thumbnail img {
+	pointer-events: none;
+}
+
 .film-card:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);

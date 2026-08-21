@@ -1251,7 +1251,7 @@ function displayRelatedMovies(movies) {
         const quality = movie.quality || 'HD';
         const epLabel = movie.current_episode || (movie.year ? String(movie.year) : '');
         return `
-            <div class="sw-item" onclick="showMovieDetail('${movie.slug}')">
+            <a href="movie-detail.html?slug=${encodeURIComponent(movie.slug)}" class="sw-item" onclick="handleMovieCardClick(event, '${movie.slug}')">
                 <span class="v-thumbnail">
                     <span class="thumb"><img src="${getVerticalImage(movie.poster_url)}" alt="${name}" loading="lazy" decoding="async" onerror="this.src=placeholderImg(300,450,'No Poster')"></span>
                     <span class="badge-quality">${quality}</span>
@@ -1261,7 +1261,7 @@ function displayRelatedMovies(movies) {
                     <h4 class="item-title lim-1">${name}</h4>
                     <h4 class="alias-title lim-1">${alias}</h4>
                 </div>
-            </div>
+            </a>
         `;
     }).join('');
 }

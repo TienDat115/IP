@@ -314,7 +314,7 @@ function displayWatchHistory() {
             const actualIndex = startIndex + index;
             const sourceKey = item.source || currentSourceKey;
             const sourceLabel = SOURCES[sourceKey]?.name || sourceKey;
-            html += '<div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail(\'' + item.movieSlug + '\', \'' + (item.source || '') + '\')">';
+            html += '<a href="movie-detail.html?slug=' + encodeURIComponent(item.movieSlug) + '" class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="handleMovieCardClick(event, \'' + item.movieSlug + '\', \'' + (item.source || '') + '\')">';
             html += '<div class="absolute top-2 right-2 z-10">';
             html += '<button onclick="event.stopPropagation(); removeFromWatchHistory(\'' + item.movieSlug + '\')" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">';
             html += '<i class="fas fa-trash text-white text-xs"></i>';
@@ -335,7 +335,7 @@ function displayWatchHistory() {
             html += '<h4 class="font-semibold text-sm mb-2 line-clamp-2">' + (item.movieTitle || 'Phim không xác định') + '</h4>';
             html += '<p class="text-gray-400 text-xs mb-2">' + (item.episodeName || 'Không có thông tin tập') + '</p>';
             html += '</div>';
-            html += '</div>';
+            html += '</a>';
         });
         
         // Clean up any zero-width spaces

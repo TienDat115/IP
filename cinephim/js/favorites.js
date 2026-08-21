@@ -111,8 +111,8 @@ function displayFavoriteMovies(movies = []) {
             : `<div class="w-full bg-gray-700 flex items-center justify-center" style="aspect-ratio: 2/3"><i class="fas fa-film text-5xl text-gray-500"></i></div>`;
         
         return `
-            <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="showMovieDetail('${movie.slug}', '${sourceKey}')">
-                <button onclick="event.stopPropagation(); removeFromFavorites('${movie.slug}')" 
+            <a href="movie-detail.html?slug=${encodeURIComponent(movie.slug)}" class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer relative" onclick="handleMovieCardClick(event, '${movie.slug}', '${sourceKey}')">
+                <button onclick="event.stopPropagation(); removeFromFavorites('${movie.slug}')"
                         class="absolute top-2 right-2 z-10 bg-red-600 hover:bg-red-700 p-2 rounded-full transition">
                     <i class="fas fa-heart text-white"></i>
                 </button>
@@ -132,7 +132,7 @@ function displayFavoriteMovies(movies = []) {
                         <span class="text-xs text-gray-500">${getCountryFromCategory(movie.category) || ''}</span>
                     </div>
                 </div>
-            </div>
+            </a>
         `;
     }).join('');
     

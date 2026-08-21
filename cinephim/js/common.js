@@ -1184,9 +1184,17 @@ function hidePageNoResults() {
     if (moviesContainer) moviesContainer.classList.remove('hidden');
 }
 
+// Handle clicks on movie card links: let the browser open href in a new tab
+// (middle-click / Ctrl+click / right-click), keep showMovieDetail flow on normal left click.
+function handleMovieCardClick(event, slug, savedSource) {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return;
+    event.preventDefault();
+    showMovieDetail(slug, savedSource);
+}
+
 function getMovieCardHTML(movie) {
     return `
-        <div class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer" onclick="showMovieDetail('${movie.slug}')">
+        <a href="movie-detail.html?slug=${encodeURIComponent(movie.slug)}" class="film-card bg-gray-800 rounded-lg overflow-hidden cursor-pointer" onclick="handleMovieCardClick(event, '${movie.slug}')">
             <div class="relative">
                 <img src="${getVerticalImage(movie.poster_url)}" 
                      alt="${movie.name || movie.title}" 
@@ -1209,7 +1217,7 @@ function getMovieCardHTML(movie) {
 
                 </div>
             </div>
-        </div>
+        </a>
     `;
 }
 
