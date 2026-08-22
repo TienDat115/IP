@@ -156,6 +156,7 @@
 		</style>
 		<!-- Firebase SDK -->
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 		<script src="../js/firebase-config.js"></script>
 	</head>
@@ -233,7 +234,17 @@
 
 							<!-- Thêm khung timeframe mẫu -->
 							<div class="mt-4">
-								<h6 class="fw-bold mb-3"><i class="bi bi-collection-play"></i> Timeline Mở Cấp Khởi Tạo</h6>
+								<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+									<h6 class="fw-bold mb-0"><i class="bi bi-collection-play"></i> Timeline Mở Cấp Khởi Tạo</h6>
+									<div class="d-flex align-items-center gap-2">
+										<button type="button" class="btn btn-sm btn-outline-secondary" id="authBtn" title="Đăng nhập để chỉnh sửa">
+											<i class="bi bi-box-arrow-in-right me-1"></i><span>Đăng nhập</span>
+										</button>
+										<button type="button" class="btn btn-sm btn-primary d-none" id="addTimeframeBtn" title="Thêm timeline mẫu mới">
+											<i class="bi bi-plus-lg"></i> Thêm
+										</button>
+									</div>
+								</div>
 								<div class="list-group" id="timeframeSampleList"></div>
 							</div>
 						</div>
@@ -280,11 +291,91 @@
 			</div>
 		</div>
 
+		<!-- Modal đăng nhập -->
+		<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="loginModalLabel"><i class="bi bi-shield-lock me-2"></i>Đăng nhập</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<form id="loginForm">
+						<div class="modal-body">
+							<p class="text-muted small mb-3">Đăng nhập để điều chỉnh Timeline Mở Cấp Khởi Tạo và đẩy dữ liệu lên Firebase.</p>
+							<div class="mb-3">
+								<label for="loginEmail" class="form-label">Email</label>
+								<input type="email" class="form-control" id="loginEmail" autocomplete="username" required />
+							</div>
+							<div class="mb-3">
+								<label for="loginPassword" class="form-label">Mật khẩu</label>
+								<input type="password" class="form-control" id="loginPassword" autocomplete="current-password" required />
+							</div>
+							<div id="loginError" class="alert alert-danger py-2 mb-0 d-none"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+							<button type="submit" class="btn btn-primary" id="loginSubmitBtn"><i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal thêm/sửa timeline mẫu -->
+		<div class="modal fade" id="timeframeEditorModal" tabindex="-1" aria-labelledby="timeframeEditorModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="timeframeEditorModalLabel">Thêm timeline mẫu</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<form id="timeframeEditorForm" novalidate>
+						<div class="modal-body">
+							<input type="hidden" id="tfDocId" />
+							<div class="mb-3">
+								<label for="tfName" class="form-label">Tên game / timeline</label>
+								<input type="text" class="form-control" id="tfName" placeholder="VD: Võ Lâm Tây Vực" required />
+							</div>
+							<div class="row g-3">
+								<div class="col-6">
+									<label for="tfDays" class="form-label">Số ngày timeframe (days)</label>
+									<input type="number" class="form-control" id="tfDays" min="1" placeholder="VD: 69" required />
+								</div>
+								<div class="col-6">
+									<label for="tfDayType" class="form-label">Thứ mở cấp (dayType)</label>
+									<input type="number" class="form-control" id="tfDayType" min="1" max="2" placeholder="1 hoặc 2" required />
+								</div>
+								<div class="col-6">
+									<label for="tfGameIndex" class="form-label">Vị trí game (gameIndex)</label>
+									<input type="number" class="form-control" id="tfGameIndex" min="0" placeholder="VD: 1" required />
+								</div>
+								<div class="col-6">
+									<label for="tfOrder" class="form-label">Thứ tự hiển thị (order)</label>
+									<input type="number" class="form-control" id="tfOrder" min="0" placeholder="VD: 2" required />
+								</div>
+							</div>
+							<div class="form-check form-switch mt-3">
+								<input class="form-check-input" type="checkbox" id="tfActive" checked />
+								<label class="form-check-label" for="tfActive">Hoạt động</label>
+							</div>
+							<div id="tfEditorError" class="alert alert-danger py-2 mt-3 mb-0 d-none"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+							<button type="submit" class="btn btn-primary" id="tfSaveBtn"><i class="bi bi-cloud-arrow-up me-1"></i>Lưu lên Firebase</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
 		<script>
 			// Biến toàn cục lưu trữ dữ liệu game
 			let gameData = {};
 			let currentGameData = null;
 			const db = firebase.firestore();
+			const auth = firebase.auth();
+			let authUser = null;
 
 			// Hàm hiển thị thông báo lỗi
 			function showError(message) {
@@ -306,7 +397,7 @@
 				try {
 					const snapshot = await db.collection("jxmTimeframes").orderBy("order", "asc").get();
 					const samples = [];
-					snapshot.forEach((doc) => samples.push(doc.data()));
+					snapshot.forEach((doc) => samples.push({ id: doc.id, ...doc.data() }));
 					const activeSamples = samples.filter((s) => s.active !== false);
 					container.innerHTML = "";
 					if (activeSamples.length === 0) {
@@ -314,20 +405,237 @@
 						return;
 					}
 					activeSamples.forEach((s) => {
-						const a = document.createElement("a");
-						a.href = "#";
-						a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
-						a.dataset.days = s.days;
-						a.dataset.dayType = s.dayType;
-						a.dataset.gameIndex = s.gameIndex;
-						a.innerHTML = `${escapeHtml(s.name)} <span class="badge bg-primary rounded-pill">${s.days} ngày thứ ${s.dayType}</span>`;
-						container.appendChild(a);
+						const item = document.createElement("div");
+						item.className = "list-group-item d-flex justify-content-between align-items-center gap-2";
+						item.dataset.days = s.days;
+						item.dataset.dayType = s.dayType;
+						item.dataset.gameIndex = s.gameIndex;
+
+						const selectLink = document.createElement("a");
+						selectLink.href = "#";
+						selectLink.className = "flex-grow-1 text-decoration-none d-flex justify-content-between align-items-center tf-select";
+						selectLink.style.color = "#212529";
+						selectLink.innerHTML = `<span>${escapeHtml(s.name)}</span> <span class="badge bg-primary rounded-pill">${s.days} ngày thứ ${s.dayType}</span>`;
+						item.appendChild(selectLink);
+
+						if (authUser) {
+							const actions = document.createElement("div");
+							actions.className = "d-flex gap-1 flex-shrink-0";
+							actions.innerHTML = `
+								<button type="button" class="btn btn-sm btn-outline-primary border-0 py-0 px-2 tf-edit" title="Sửa"><i class="bi bi-pencil"></i></button>
+								<button type="button" class="btn btn-sm btn-outline-danger border-0 py-0 px-2 tf-delete" title="Xóa"><i class="bi bi-trash"></i></button>
+							`;
+							actions.querySelector(".tf-edit").addEventListener("click", () => openTimeframeEditor(s));
+							actions.querySelector(".tf-delete").addEventListener("click", () => deleteTimeframe(s));
+							item.appendChild(actions);
+						}
+
+						container.appendChild(item);
 					});
 				} catch (error) {
 					console.error("Lỗi khi tải timeframe mẫu:", error);
 					container.innerHTML = '<div class="list-group-item text-muted">Không thể tải timeframe mẫu</div>';
 				}
 			}
+
+			// ==================== Xác thực ====================
+
+			// Theo dõi trạng thái đăng nhập
+			auth.onAuthStateChanged(function (user) {
+				authUser = user;
+				updateAuthUI();
+				loadTimeframeSamples();
+			});
+
+			// Cập nhật giao diện theo trạng thái đăng nhập
+			function updateAuthUI() {
+				const authBtn = document.getElementById("authBtn");
+				const addBtn = document.getElementById("addTimeframeBtn");
+				if (authUser) {
+					authBtn.title = `Đăng xuất (${authUser.email})`;
+					authBtn.innerHTML = '<i class="bi bi-box-arrow-right me-1"></i><span>Đăng xuất</span>';
+					addBtn.classList.remove("d-none");
+				} else {
+					authBtn.title = "Đăng nhập để chỉnh sửa";
+					authBtn.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i><span>Đăng nhập</span>';
+					addBtn.classList.add("d-none");
+				}
+			}
+
+			// Xử lý nút Đăng nhập / Đăng xuất
+			function handleAuthClick() {
+				if (authUser) {
+					if (confirm(`Đăng xuất khỏi tài khoản ${authUser.email}?`)) {
+						auth.signOut();
+					}
+				} else {
+					showLoginModal();
+				}
+			}
+
+			function showLoginModal() {
+				document.getElementById("loginError").classList.add("d-none");
+				document.getElementById("loginForm").reset();
+				new bootstrap.Modal(document.getElementById("loginModal")).show();
+			}
+
+			// Dịch thông báo lỗi đăng nhập sang tiếng Việt
+			function translateAuthError(error) {
+				const map = {
+					"auth/invalid-email": "Email không hợp lệ.",
+					"auth/user-not-found": "Tài khoản không tồn tại.",
+					"auth/wrong-password": "Mật khẩu không đúng.",
+					"auth/invalid-credential": "Email hoặc mật khẩu không đúng.",
+					"auth/too-many-requests": "Quá nhiều lần thử. Vui lòng thử lại sau.",
+					"auth/network-request-failed": "Lỗi kết nối mạng. Vui lòng thử lại.",
+				};
+				return map[error.code] || `Đăng nhập thất bại: ${error.message}`;
+			}
+
+			// Xử lý submit form đăng nhập
+			document.getElementById("loginForm").addEventListener("submit", async function (e) {
+				e.preventDefault();
+				const errEl = document.getElementById("loginError");
+				const submitBtn = document.getElementById("loginSubmitBtn");
+				errEl.classList.add("d-none");
+				submitBtn.disabled = true;
+				submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang đăng nhập...';
+				try {
+					await auth.signInWithEmailAndPassword(
+						document.getElementById("loginEmail").value.trim(),
+						document.getElementById("loginPassword").value
+					);
+					bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
+				} catch (error) {
+					console.error("Lỗi đăng nhập:", error);
+					errEl.textContent = translateAuthError(error);
+					errEl.classList.remove("d-none");
+				} finally {
+					submitBtn.disabled = false;
+					submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập';
+				}
+			});
+
+			// ==================== CRUD timeline mẫu ====================
+
+			let timeframeEditorModalInstance = null;
+			function getEditorModal() {
+				if (!timeframeEditorModalInstance) {
+					timeframeEditorModalInstance = new bootstrap.Modal(document.getElementById("timeframeEditorModal"));
+				}
+				return timeframeEditorModalInstance;
+			}
+
+			// Mở modal thêm/sửa timeline mẫu
+			async function openTimeframeEditor(sample = null) {
+				const form = document.getElementById("timeframeEditorForm");
+				const errEl = document.getElementById("tfEditorError");
+				form.reset();
+				errEl.classList.add("d-none");
+
+				const title = document.getElementById("timeframeEditorModalLabel");
+				if (sample) {
+					title.textContent = "Sửa timeline mẫu";
+					document.getElementById("tfDocId").value = sample.id;
+					document.getElementById("tfName").value = sample.name ?? "";
+					document.getElementById("tfDays").value = sample.days ?? "";
+					document.getElementById("tfDayType").value = sample.dayType ?? "";
+					document.getElementById("tfGameIndex").value = sample.gameIndex ?? "";
+					document.getElementById("tfOrder").value = sample.order ?? "";
+					document.getElementById("tfActive").checked = sample.active !== false;
+				} else {
+					title.textContent = "Thêm timeline mẫu";
+					document.getElementById("tfDocId").value = "";
+					// Gợi ý thứ tự hiển thị = max(order) + 1
+					try {
+						const snapshot = await db.collection("jxmTimeframes").get();
+						let maxOrder = -1;
+						snapshot.forEach((doc) => {
+							const o = doc.data().order;
+							if (typeof o === "number" && o > maxOrder) maxOrder = o;
+						});
+						document.getElementById("tfOrder").value = maxOrder + 1;
+					} catch (e) {
+						console.error("Lỗi khi tính thứ tự hiển thị:", e);
+					}
+				}
+
+				getEditorModal().show();
+			}
+
+			// Lưu timeline mẫu lên Firebase (thêm mới hoặc cập nhật)
+			document.getElementById("timeframeEditorForm").addEventListener("submit", async function (e) {
+				e.preventDefault();
+				const errEl = document.getElementById("tfEditorError");
+				errEl.classList.add("d-none");
+
+				if (!authUser) {
+					showLoginModal();
+					return;
+				}
+
+				// Validate giống trang admin
+				const name = document.getElementById("tfName").value.trim();
+				const days = parseInt(document.getElementById("tfDays").value);
+				const dayType = parseInt(document.getElementById("tfDayType").value);
+				const gameIndex = parseInt(document.getElementById("tfGameIndex").value);
+				const order = parseInt(document.getElementById("tfOrder").value);
+
+				let msg = null;
+				if (!name) msg = "Vui lòng nhập tên game";
+				else if (isNaN(days) || days <= 0) msg = "Số ngày timeframe phải là số lớn hơn 0";
+				else if (isNaN(dayType) || dayType <= 0) msg = "Thứ mở cấp phải là số lớn hơn 0";
+				else if (isNaN(gameIndex) || gameIndex < 0) msg = "Vị trí game phải là số không âm";
+				else if (isNaN(order) || order < 0) msg = "Vui lòng nhập thứ tự hiển thị";
+				if (msg) {
+					errEl.textContent = msg;
+					errEl.classList.remove("d-none");
+					return;
+				}
+
+				const docId = document.getElementById("tfDocId").value;
+				const data = { name, days, dayType, gameIndex, order, active: document.getElementById("tfActive").checked };
+
+				const saveBtn = document.getElementById("tfSaveBtn");
+				saveBtn.disabled = true;
+				saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu...';
+				try {
+					if (docId) {
+						await db.collection("jxmTimeframes").doc(docId).update(data);
+					} else {
+						await db.collection("jxmTimeframes").add(data);
+					}
+					getEditorModal().hide();
+					await loadTimeframeSamples();
+				} catch (error) {
+					console.error("Lỗi khi lưu timeframe:", error);
+					errEl.textContent = `Không thể lưu dữ liệu: ${error.message}`;
+					errEl.classList.remove("d-none");
+				} finally {
+					saveBtn.disabled = false;
+					saveBtn.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i>Lưu lên Firebase';
+				}
+			});
+
+			// Xóa timeline mẫu khỏi Firebase
+			async function deleteTimeframe(sample) {
+				if (!authUser) {
+					showLoginModal();
+					return;
+				}
+				if (!confirm(`Xóa timeline "${sample.name}" khỏi Firebase?\nHành động này không thể hoàn tác.`)) return;
+				try {
+					await db.collection("jxmTimeframes").doc(sample.id).delete();
+					await loadTimeframeSamples();
+				} catch (error) {
+					console.error("Lỗi khi xóa timeframe:", error);
+					showError(`Không thể xóa timeline: ${error.message}`);
+				}
+			}
+
+			// Gắn sự kiện cho các nút điều khiển timeline
+			document.getElementById("authBtn").addEventListener("click", handleAuthClick);
+			document.getElementById("addTimeframeBtn").addEventListener("click", () => openTimeframeEditor());
 
 			// Tải dữ liệu từ file JSON
 			async function loadGameData() {
@@ -673,6 +981,7 @@
 
 			// Xử lý sự kiện click vào timeline mẫu
 			document.getElementById("timeframeSampleList").addEventListener("click", function (e) {
+				if (e.target.closest(".tf-edit") || e.target.closest(".tf-delete")) return;
 				const item = e.target.closest("[data-days]");
 				if (!item) return;
 				e.preventDefault();
@@ -732,7 +1041,7 @@
 				const todayStr = vietnamTime.toISOString().split("T")[0];
 				document.getElementById("inputDate").value = todayStr;
 				updateSuggestedSaturday();
-				loadTimeframeSamples();
+				// Danh sách timeframe mẫu được tải bởi auth.onAuthStateChanged
 
 				try {
 					// Tải và cập nhật dữ liệu
