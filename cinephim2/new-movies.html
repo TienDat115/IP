@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Phim Mới Cập Nhật - CinePhim</title>
+		<meta name="description" content="Xem phim mới cập nhật online HD miễn phí tại CinePhim" />
+		<meta name="keywords" content="xem phim, phim online, phim hd, phim moi cap nhat, phim mới cập nhật" />
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+		<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+
+		<!-- Polyfills for Tizen 2014 -->
+		<script src="js/polyfills.js"></script>
+		<!-- Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+		<script src="js/firebase-config.js"></script>
+
+		<!-- SweetAlert2 -->
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+		<!-- Compat CSS for Tizen 2014 -->
+		<link rel="stylesheet" href="css/compat.css" />
+		<!-- Custom CSS -->
+		<link rel="stylesheet" href="css/styles.css" />
+	</head>
+
+	<body class="home-body dark">
+		<!-- Header -->
+		<div id="siteHeader"></div>
+
+		<!-- Breadcrumb -->
+		<div class="container mx-auto px-4 pt-4">
+			<nav class="home-breadcrumb">
+				<a href="index.html">Trang chủ</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span>Phim Mới Cập Nhật</span>
+			</nav>
+		</div>
+
+		<!-- Main Content -->
+		<main class="container mx-auto px-4 py-8">
+			<!-- Page Title -->
+			<div class="text-center mb-8">
+				<h1 class="browse-title mb-4"><i class="fas fa-rotate mr-3"></i>Phim Mới Cập Nhật</h1>
+				<p class="browse-subtitle max-w-2xl mx-auto">Cập nhật những bộ phim mới nhất mỗi ngày</p>
+			</div>
+
+			<!-- Loading -->
+			<div id="loading" class="text-center py-12 hidden">
+				<div class="loading-spinner mx-auto"></div>
+				<p class="mt-4">Đang tải danh sách phim...</p>
+			</div>
+
+			<!-- Movies Grid -->
+			<div id="moviesContainer">
+				<div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+					<!-- Movies will be loaded here -->
+				</div>
+
+				<!-- Pagination -->
+				<div id="pagination" class="flex justify-center items-center space-x-2 mt-8">
+					<!-- Pagination will be loaded here -->
+				</div>
+			</div>
+
+			<!-- No Results Message -->
+			<div id="noResults" class="text-center py-12 hidden">
+				<i class="fas fa-film text-6xl text-gray-600 mb-4"></i>
+				<h3 class="text-xl font-semibold mb-2">Không có phim nào</h3>
+				<p class="text-gray-400">Chưa có phim mới cập nhật. Vui lòng thử lại sau.</p>
+			</div>
+		</main>
+
+		<!-- Footer -->
+		<div id="siteFooter"></div>
+
+		<!-- Scripts -->
+		<script src="js/config.js"></script>
+		<script src="js/layout.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/new-movies.js"></script>
+
+		<script>initPageSync();</script>
+
+	</body>
+</html>

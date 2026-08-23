@@ -1,0 +1,56 @@
+{
+  "SOURCES": {
+    "nguonc": {
+      "name": "NguonC",
+      "base": "https://phim.nguonc.com/api",
+      "image_cdn": "",
+      "image_field": "thumb_url",
+      "endpoints": {
+        "new": "/films/phim-moi-cap-nhat",
+        "search": "/films/search",
+        "detail": "/film",
+        "category": "/categories",
+        "country": "/countries"
+      }
+    },
+    "ophim": {
+      "name": "OPhim",
+      "base": "https://ophim1.com/v1/api",
+      "image_cdn": "https://img.ophim.live",
+      "image_field": "thumb_url",
+      "endpoints": {
+        "new": "/danh-sach/phim-moi-cap-nhat",
+        "search": "/tim-kiem",
+        "detail": "/phim",
+        "category": "/the-loai",
+        "country": "/quoc-gia"
+      }
+    },
+    "kkphim": {
+      "name": "KKPhim",
+      "base": "https://phimapi.com",
+      "image_cdn": "https://phimimg.com",
+      "image_field": "poster_url",
+      "endpoints": {
+        "new": "/danh-sach/phim-moi-cap-nhat",
+        "search": "/v1/api/tim-kiem",
+        "detail": "/phim",
+        "category": "/the-loai",
+        "country": "/quoc-gia"
+      }
+    },
+    "vsmov": {
+      "name": "VSMOV",
+      "base": "https://vsmov.com/api",
+      "image_cdn": "",
+      "image_field": "thumb_url",
+      "endpoints": {
+        "new": "/danh-sach/phim-moi-cap-nhat",
+        "search": "/tim-kiem",
+        "detail": "/phim",
+        "category": "/the-loai",
+        "country": "/quoc-gia"
+      }
+    }
+  }
+}

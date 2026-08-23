@@ -1,0 +1,1259 @@
+/* ==========================================================================
+   CinePhim - Tailwind CSS Compatibility Layer for Tizen 2014 Browser
+   Replaces the Tailwind CSS CDN runtime with static utility classes.
+   Target: Old WebKit (Samsung TV 2014) - partial flexbox/grid, no clamp,
+   no backdrop-filter, no aspect-ratio, no scrollbar-width, etc.
+   ========================================================================== */
+
+/* ---------- Box-sizing reset ---------- */
+*, *::before, *::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* ---------- Root reset ---------- */
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+/* ==========================================================================
+   1. DISPLAY
+   ========================================================================== */
+.hidden         { display: none !important; }
+.block          { display: block; }
+.inline-block   { display: inline-block; }
+.inline         { display: inline; }
+.flex           { display: -webkit-box; display: -webkit-flex; display: flex; }
+.inline-flex    { display: -webkit-inline-box; display: -webkit-inline-flex; display: inline-flex; }
+.grid           { display: -ms-grid; display: grid; }
+.inline-grid    { display: -ms-inline-grid; display: inline-grid; }
+.table          { display: table; }
+
+/* ==========================================================================
+   2. FLEXBOX
+   ========================================================================== */
+/* Direction */
+.flex-row       { -webkit-box-orient: horizontal; -webkit-box-direction: normal; -webkit-flex-direction: row; flex-direction: row; }
+.flex-col       { -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; flex-direction: column; }
+.flex-row-reverse  { -webkit-box-orient: horizontal; -webkit-box-direction: reverse; -webkit-flex-direction: row-reverse; flex-direction: row-reverse; }
+.flex-col-reverse  { -webkit-box-orient: vertical; -webkit-box-direction: reverse; -webkit-flex-direction: column-reverse; flex-direction: column-reverse; }
+
+/* Wrap */
+.flex-wrap      { -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+.flex-wrap-reverse { -webkit-flex-wrap: wrap-reverse; flex-wrap: wrap-reverse; }
+.flex-nowrap    { -webkit-flex-wrap: nowrap; flex-wrap: nowrap; }
+
+/* Alignment - main axis */
+.justify-start     { -webkit-box-pack: start; -webkit-justify-content: flex-start; justify-content: flex-start; }
+.justify-end       { -webkit-box-pack: end; -webkit-justify-content: flex-end; justify-content: flex-end; }
+.justify-center    { -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center; }
+.justify-between   { -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+.justify-around    { -webkit-justify-content: space-around; justify-content: space-around; }
+.justify-evenly    { -webkit-justify-content: space-evenly; justify-content: space-evenly; }
+
+/* Alignment - cross axis */
+.items-start    { -webkit-box-align: start; -webkit-align-items: flex-start; align-items: flex-start; }
+.items-end      { -webkit-box-align: end; -webkit-align-items: flex-end; align-items: flex-end; }
+.items-center   { -webkit-box-align: center; -webkit-align-items: center; align-items: center; }
+.items-baseline { -webkit-align-items: baseline; align-items: baseline; }
+.items-stretch  { -webkit-align-items: stretch; align-items: stretch; }
+
+/* Individual item alignment */
+.self-auto      { -webkit-align-self: auto; align-self: auto; }
+.self-start     { -webkit-align-self: flex-start; align-self: flex-start; }
+.self-end       { -webkit-align-self: flex-end; align-self: flex-end; }
+.self-center    { -webkit-align-self: center; align-self: center; }
+.self-stretch   { -webkit-align-self: stretch; align-self: stretch; }
+
+/* Flex grow / shrink */
+.flex-1         { -webkit-box-flex: 1; -webkit-flex: 1 1 0%; flex: 1 1 0%; }
+.flex-auto      { -webkit-box-flex: 1; -webkit-flex: 1 1 auto; flex: 1 1 auto; }
+.flex-initial   { -webkit-box-flex: 0; -webkit-flex: 0 1 auto; flex: 0 1 auto; }
+.flex-none      { -webkit-box-flex: 0; -webkit-flex: none; flex: none; }
+.flex-shrink-0  { -webkit-flex-shrink: 0; flex-shrink: 0; }
+.flex-shrink    { -webkit-flex-shrink: 1; flex-shrink: 1; }
+.flex-grow-0    { -webkit-flex-grow: 0; flex-grow: 0; }
+.flex-grow      { -webkit-flex-grow: 1; flex-grow: 1; }
+
+/* Order */
+.order-first  { -webkit-box-ordinal-group: 0; -webkit-order: -9999; order: -9999; }
+.order-last   { -webkit-box-ordinal-group: 2; -webkit-order: 9999; order: 9999; }
+.order-none   { -webkit-box-ordinal-group: 1; -webkit-order: 0; order: 0; }
+.order-1      { -webkit-box-ordinal-group: 2; -webkit-order: 1; order: 1; }
+.order-2      { -webkit-box-ordinal-group: 3; -webkit-order: 2; order: 2; }
+.order-3      { -webkit-box-ordinal-group: 4; -webkit-order: 3; order: 3; }
+
+/* ==========================================================================
+   3. GAP (flex gap - not supported in old webkit, using margin fallback)
+   ========================================================================== */
+.gap-0   { gap: 0; }
+.gap-0\.5 { gap: 0.125rem; }
+.gap-1   { gap: 0.25rem; }
+.gap-1\.5 { gap: 0.375rem; }
+.gap-2   { gap: 0.5rem; }
+.gap-3   { gap: 0.75rem; }
+.gap-4   { gap: 1rem; }
+.gap-6   { gap: 1.5rem; }
+.gap-8   { gap: 2rem; }
+.gap-x-1 { column-gap: 0.25rem; }
+.gap-x-2 { column-gap: 0.5rem; }
+.gap-x-3 { column-gap: 0.75rem; }
+.gap-x-4 { column-gap: 1rem; }
+.gap-y-1 { row-gap: 0.25rem; }
+.gap-y-2 { row-gap: 0.5rem; }
+.gap-y-3 { row-gap: 0.75rem; }
+.gap-y-4 { row-gap: 1rem; }
+
+/* Space between children (margin-based fallback for old browsers) */
+.space-x-1 > * + * { margin-left: 0.25rem; }
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.space-y-1 > * + * { margin-top: 0.25rem; }
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+
+/* ==========================================================================
+   4. GRID
+   ========================================================================== */
+.grid-cols-1  { -ms-grid-columns: 1fr; grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2  { -ms-grid-columns: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3  { -ms-grid-columns: repeat(3, 1fr); grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4  { -ms-grid-columns: repeat(4, 1fr); grid-template-columns: repeat(4, 1fr); }
+.grid-cols-5  { -ms-grid-columns: repeat(5, 1fr); grid-template-columns: repeat(5, 1fr); }
+.grid-cols-6  { -ms-grid-columns: repeat(6, 1fr); grid-template-columns: repeat(6, 1fr); }
+.grid-cols-8  { -ms-grid-columns: repeat(8, 1fr); grid-template-columns: repeat(8, 1fr); }
+.grid-cols-9  { -ms-grid-columns: repeat(9, 1fr); grid-template-columns: repeat(9, 1fr); }
+.grid-cols-10 { -ms-grid-columns: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr); }
+
+.col-span-full { -ms-grid-column: 1 / -1; grid-column: 1 / -1; }
+.col-span-1    { -ms-grid-column: span 1; grid-column: span 1; }
+.col-span-2    { -ms-grid-column: span 2; grid-column: span 2; }
+.col-span-3    { -ms-grid-column: span 3; grid-column: span 3; }
+.col-span-4    { -ms-grid-column: span 4; grid-column: span 4; }
+
+.grid-rows-1 { grid-template-rows: repeat(1, 1fr); }
+
+/* ==========================================================================
+   5. SPACING - PADDING
+   ========================================================================== */
+.p-0   { padding: 0; }
+.p-1   { padding: 0.25rem; }
+.p-1\.5 { padding: 0.375rem; }
+.p-2   { padding: 0.5rem; }
+.p-2\.5 { padding: 0.625rem; }
+.p-3   { padding: 0.75rem; }
+.p-4   { padding: 1rem; }
+.p-5   { padding: 1.25rem; }
+.p-6   { padding: 1.5rem; }
+.p-8   { padding: 2rem; }
+
+.px-0   { padding-left: 0; padding-right: 0; }
+.px-1   { padding-left: 0.25rem; padding-right: 0.25rem; }
+.px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+.px-2   { padding-left: 0.5rem; padding-right: 0.5rem; }
+.px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+.px-3   { padding-left: 0.75rem; padding-right: 0.75rem; }
+.px-4   { padding-left: 1rem; padding-right: 1rem; }
+.px-10  { padding-left: 2.5rem; padding-right: 2.5rem; }
+
+.py-0   { padding-top: 0; padding-bottom: 0; }
+.py-1   { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+.py-2   { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+.py-3   { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.py-8   { padding-top: 2rem; padding-bottom: 2rem; }
+.py-10  { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+.py-12  { padding-top: 3rem; padding-bottom: 3rem; }
+
+.pt-0  { padding-top: 0; }
+.pt-1  { padding-top: 0.25rem; }
+.pt-2  { padding-top: 0.5rem; }
+.pt-3  { padding-top: 0.75rem; }
+.pt-4  { padding-top: 1rem; }
+.pt-8  { padding-top: 2rem; }
+
+.pb-0  { padding-bottom: 0; }
+.pb-1  { padding-bottom: 0.25rem; }
+.pb-2  { padding-bottom: 0.5rem; }
+.pb-3  { padding-bottom: 0.75rem; }
+.pb-4  { padding-bottom: 1rem; }
+
+.pl-0  { padding-left: 0; }
+.pl-1  { padding-left: 0.25rem; }
+.pl-2  { padding-left: 0.5rem; }
+.pl-3  { padding-left: 0.75rem; }
+.pl-10 { padding-left: 2.5rem; }
+
+.pr-0  { padding-right: 0; }
+.pr-1  { padding-right: 0.25rem; }
+.pr-2  { padding-right: 0.5rem; }
+.pr-3  { padding-right: 0.75rem; }
+.pr-4  { padding-right: 1rem; }
+
+/* ==========================================================================
+   6. SPACING - MARGIN
+   ========================================================================== */
+.m-0   { margin: 0; }
+.m-1   { margin: 0.25rem; }
+.m-2   { margin: 0.5rem; }
+.m-3   { margin: 0.75rem; }
+.m-4   { margin: 1rem; }
+.m-8   { margin: 2rem; }
+.mx-0  { margin-left: 0; margin-right: 0; }
+.mx-1  { margin-left: 0.25rem; margin-right: 0.25rem; }
+.mx-2  { margin-left: 0.5rem; margin-right: 0.5rem; }
+.mx-3  { margin-left: 0.75rem; margin-right: 0.75rem; }
+.mx-4  { margin-left: 1rem; margin-right: 1rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-0  { margin-top: 0; margin-bottom: 0; }
+.my-1  { margin-top: 0.25rem; margin-bottom: 0.25rem; }
+.my-2  { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+.my-3  { margin-top: 0.75rem; margin-bottom: 0.75rem; }
+.my-4  { margin-top: 1rem; margin-bottom: 1rem; }
+.my-8  { margin-top: 2rem; margin-bottom: 2rem; }
+
+.mt-0  { margin-top: 0; }
+.mt-1  { margin-top: 0.25rem; }
+.mt-2  { margin-top: 0.5rem; }
+.mt-3  { margin-top: 0.75rem; }
+.mt-4  { margin-top: 1rem; }
+.mt-6  { margin-top: 1.5rem; }
+.mt-8  { margin-top: 2rem; }
+.mt-12 { margin-top: 3rem; }
+
+.mb-0  { margin-bottom: 0; }
+.mb-1  { margin-bottom: 0.25rem; }
+.mb-2  { margin-bottom: 0.5rem; }
+.mb-3  { margin-bottom: 0.75rem; }
+.mb-4  { margin-bottom: 1rem; }
+.mb-6  { margin-bottom: 1.5rem; }
+.mb-8  { margin-bottom: 2rem; }
+
+.ml-0  { margin-left: 0; }
+.ml-1  { margin-left: 0.25rem; }
+.ml-2  { margin-left: 0.5rem; }
+.ml-3  { margin-left: 0.75rem; }
+
+.mr-0  { margin-right: 0; }
+.mr-1  { margin-right: 0.25rem; }
+.mr-1\.5 { margin-right: 0.375rem; }
+.mr-2  { margin-right: 0.5rem; }
+.mr-3  { margin-right: 0.75rem; }
+.mr-4  { margin-right: 1rem; }
+
+.-mt-1  { margin-top: -0.25rem; }
+.-mt-2  { margin-top: -0.5rem; }
+.-mt-4  { margin-top: -1rem; }
+.-mb-4  { margin-bottom: -1rem; }
+.-ml-2  { margin-left: -0.5rem; }
+.-mr-1  { margin-right: -0.25rem; }
+.-translate-y-1\/2 { -webkit-transform: translateY(-50%); transform: translateY(-50%); }
+.-translate-y-1\/4 { -webkit-transform: translateY(-25%); transform: translateY(-25%); }
+
+/* ==========================================================================
+   7. SIZING - WIDTH
+   ========================================================================== */
+.w-0     { width: 0; }
+.w-1     { width: 0.25rem; }
+.w-2     { width: 0.5rem; }
+.w-5     { width: 1.25rem; }
+.w-7     { width: 1.75rem; }
+.w-8     { width: 2rem; }
+.w-10    { width: 2.5rem; }
+.w-12    { width: 3rem; }
+.w-16    { width: 4rem; }
+.w-20    { width: 5rem; }
+.w-40    { width: 10rem; }
+.w-44    { width: 11rem; }
+.w-64    { width: 16rem; }
+.w-full  { width: 100%; }
+.w-screen { width: 100vw; }
+.w-auto  { width: auto; }
+.w-1\/2   { width: 50%; }
+.w-1\/4   { width: 25%; }
+.w-3\/4   { width: 75%; }
+.w-11\/12 { width: 91.666667%; }
+.w-16\/12 { width: 133.333333%; }
+
+.min-w-0    { min-width: 0; }
+.min-w-full { min-width: 100%; }
+
+.max-w-none  { max-width: none; }
+.max-w-xs    { max-width: 20rem; }
+.max-w-sm    { max-width: 24rem; }
+.max-w-md    { max-width: 28rem; }
+.max-w-lg    { max-width: 32rem; }
+.max-w-xl    { max-width: 36rem; }
+.max-w-2xl   { max-width: 42rem; }
+.max-w-4xl   { max-width: 56rem; }
+.max-w-6xl   { max-width: 72rem; }
+.max-w-full  { max-width: 100%; }
+.max-w-\[220px\] { max-width: 220px; }
+
+/* ==========================================================================
+   8. SIZING - HEIGHT
+   ========================================================================== */
+.h-0     { height: 0; }
+.h-1     { height: 0.25rem; }
+.h-2     { height: 0.5rem; }
+.h-5     { height: 1.25rem; }
+.h-7     { height: 1.75rem; }
+.h-8     { height: 2rem; }
+.h-9     { height: 2.25rem; }
+.h-10    { height: 2.5rem; }
+.h-12    { height: 3rem; }
+.h-16    { height: 4rem; }
+.h-20    { height: 5rem; }
+.h-full  { height: 100%; }
+.h-screen { height: 100vh; }
+.h-auto  { height: auto; }
+.h-560   { height: 560px; }
+
+.min-h-0     { min-height: 0; }
+.min-h-full  { min-height: 100%; }
+.min-h-screen { min-height: 100vh; }
+
+.max-h-60 { max-height: 15rem; }
+.max-h-96 { max-height: 24rem; }
+.max-h-full { max-height: 100%; }
+.max-h-screen { max-height: 100vh; }
+.max-h-\[35vh\] { max-height: 35vh; }
+
+/* ==========================================================================
+   9. SIZING - MIN / MAX (percentage-based max-width variants)
+   ========================================================================== */
+.max-w-prose { max-width: 65ch; }
+
+/* ==========================================================================
+   10. POSITION
+   ========================================================================== */
+.static    { position: static; }
+.fixed     { position: fixed; }
+.absolute  { position: absolute; }
+.relative  { position: relative; }
+.sticky    { position: sticky; top: 0; }
+
+.inset-0   { top: 0; right: 0; bottom: 0; left: 0; }
+.top-0     { top: 0; }
+.top-1     { top: 0.25rem; }
+.top-2     { top: 0.5rem; }
+.top-4     { top: 1rem; }
+.top-10    { top: 2.5rem; }
+.bottom-0  { bottom: 0; }
+.bottom-2  { bottom: 0.5rem; }
+.bottom-16 { bottom: 4rem; }
+.left-0    { left: 0; }
+.left-2    { left: 0.5rem; }
+.left-3    { left: 0.75rem; }
+.right-0   { right: 0; }
+.right-2   { right: 0.5rem; }
+.right-4   { right: 1rem; }
+.right-16  { right: 4rem; }
+.right-auto { right: auto; }
+
+.inset-auto { top: auto; right: auto; bottom: auto; left: auto; }
+
+/* ==========================================================================
+   11. Z-INDEX
+   ========================================================================== */
+.z-0     { z-index: 0; }
+.z-10    { z-index: 10; }
+.z-20    { z-index: 20; }
+.z-30    { z-index: 30; }
+.z-40    { z-index: 40; }
+.z-50    { z-index: 50; }
+.z-\[10000\] { z-index: 10000; }
+.z-\[-1\]     { z-index: -1; }
+
+/* ==========================================================================
+   12. TYPOGRAPHY - FONT SIZE
+   ========================================================================== */
+.text-xs   { font-size: 0.75rem; line-height: 1rem; }
+.text-sm   { font-size: 0.875rem; line-height: 1.25rem; }
+.text-base { font-size: 1rem; line-height: 1.5rem; }
+.text-lg   { font-size: 1.125rem; line-height: 1.75rem; }
+.text-xl   { font-size: 1.25rem; line-height: 1.75rem; }
+.text-2xl  { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl  { font-size: 1.875rem; line-height: 2.25rem; }
+.text-4xl  { font-size: 2.25rem; line-height: 2.5rem; }
+.text-5xl  { font-size: 3rem; line-height: 1; }
+.text-6xl  { font-size: 3.75rem; line-height: 1; }
+
+/* ==========================================================================
+   13. TYPOGRAPHY - FONT WEIGHT
+   ========================================================================== */
+.font-normal  { font-weight: 400; }
+.font-medium  { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold    { font-weight: 700; }
+
+/* ==========================================================================
+   14. TYPOGRAPHY - TEXT ALIGN
+   ========================================================================== */
+.text-left    { text-align: left; }
+.text-center  { text-align: center; }
+.text-right   { text-align: right; }
+
+/* ==========================================================================
+   15. TYPOGRAPHY - TEXT COLOR (Tailwind gray palette + project colors)
+   ========================================================================== */
+.text-white   { color: #fff; }
+.text-black   { color: #000; }
+.text-current { color: currentColor; }
+
+/* Gray */
+.text-gray-300  { color: #d1d5db; }
+.text-gray-400  { color: #9ca3af; }
+.text-gray-500  { color: #6b7280; }
+.text-gray-600  { color: #4b5563; }
+.text-gray-700  { color: #374151; }
+.text-gray-900  { color: #111827; }
+.text-gray-50   { color: #f9fafb; }
+
+/* Purple */
+.text-purple-200  { color: #e9d5ff; }
+.text-purple-300  { color: #d8b4fe; }
+.text-purple-400  { color: #a78bfa; }
+.text-purple-500  { color: #8b5cf6; }
+.text-purple-600  { color: #7c3aed; }
+.text-purple-900  { color: #4c1d95; }
+
+/* Red */
+.text-red-300  { color: #fca5a5; }
+.text-red-400  { color: #f87171; }
+.text-red-600  { color: #dc2626; }
+
+/* Green */
+.text-green-300  { color: #86efac; }
+.text-green-400  { color: #4ade80; }
+.text-green-600  { color: #16a34a; }
+
+/* Blue */
+.text-blue-300  { color: #93c5fd; }
+.text-blue-400  { color: #60a5fa; }
+.text-blue-600  { color: #2563eb; }
+
+/* Yellow */
+.text-yellow-400  { color: #facc15; }
+
+/* Orange */
+.text-orange-300  { color: #fdba74; }
+.text-orange-400  { color: #fb923c; }
+.text-orange-600  { color: #ea580c; }
+
+/* Teal */
+.text-teal-400  { color: #2dd4bf; }
+
+/* Pink */
+.text-pink-400  { color: #f472b6; }
+
+/* Indigo */
+.text-indigo-400  { color: #818cf8; }
+
+/* Custom: #ffd875 */
+.text-\[\#ffd875\] { color: #ffd875; }
+
+/* ==========================================================================
+   16. TYPOGRAPHY - LINE HEIGHT
+   ========================================================================== */
+.leading-none    { line-height: 1; }
+.leading-tight   { line-height: 1.25; }
+.leading-snug    { line-height: 1.375; }
+.leading-normal  { line-height: 1.5; }
+.leading-relaxed { line-height: 1.625; }
+.leading-loose   { line-height: 2; }
+
+/* ==========================================================================
+   17. TYPOGRAPHY - LETTER SPACING
+   ========================================================================== */
+.tracking-tight  { letter-spacing: -0.05em; }
+.tracking-normal { letter-spacing: 0; }
+.tracking-wide   { letter-spacing: 0.05em; }
+
+/* ==========================================================================
+   18. TYPOGRAPHY - TEXT DECORATION / TRANSFORM / OVERFLOW
+   ========================================================================== */
+.underline     { text-decoration: underline; }
+.no-underline  { text-decoration: none; }
+.uppercase     { text-transform: uppercase; }
+.lowercase     { text-transform: lowercase; }
+.capitalize    { text-transform: capitalize; }
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.whitespace-normal { white-space: normal; }
+.whitespace-nowrap { white-space: nowrap; }
+
+/* -webkit-line-clamp (supported on old webkit) */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   19. BACKGROUND COLOR (Tailwind palette)
+   ========================================================================== */
+/* Gray */
+.bg-transparent  { background-color: transparent; }
+.bg-white        { background-color: #fff; }
+.bg-black        { background-color: #000; }
+.bg-gray-50      { background-color: #f9fafb; }
+.bg-gray-100     { background-color: #f3f4f6; }
+.bg-gray-200     { background-color: #e5e7eb; }
+.bg-gray-300     { background-color: #d1d5db; }
+.bg-gray-400     { background-color: #9ca3af; }
+.bg-gray-500     { background-color: #6b7280; }
+.bg-gray-600     { background-color: #4b5563; }
+.bg-gray-700     { background-color: #374151; }
+.bg-gray-750     { background-color: #2d3748; }
+.bg-gray-800     { background-color: #1f2937; }
+.bg-gray-900     { background-color: #111827; }
+
+/* Purple */
+.bg-purple-600   { background-color: #7c3aed; }
+.bg-purple-700   { background-color: #6d28d9; }
+.bg-purple-500   { background-color: #8b5cf6; }
+
+/* Red */
+.bg-red-500      { background-color: #ef4444; }
+.bg-red-600      { background-color: #dc2626; }
+.bg-red-700      { background-color: #b91c1c; }
+
+/* Green */
+.bg-green-600    { background-color: #16a34a; }
+.bg-green-700    { background-color: #15803d; }
+
+/* Blue */
+.bg-blue-500     { background-color: #3b82f6; }
+.bg-blue-600     { background-color: #2563eb; }
+.bg-blue-700     { background-color: #1d4ed8; }
+
+/* Yellow */
+.bg-yellow-500   { background-color: #eab308; }
+.bg-yellow-600   { background-color: #ca8a04; }
+.bg-yellow-700   { background-color: #a16207; }
+
+/* Orange */
+.bg-orange-600   { background-color: #ea580c; }
+.bg-orange-700   { background-color: #c2410c; }
+
+/* Teal */
+.bg-teal-600     { background-color: #0d9488; }
+
+/* Indigo */
+.bg-indigo-600   { background-color: #4f46e5; }
+
+/* Pink */
+.bg-pink-600     { background-color: #db2777; }
+
+/* Black with opacity (Tailwind /6 opacity → rgba) */
+.bg-black\/50    { background-color: rgba(0,0,0,0.5); }
+.bg-black\/60    { background-color: rgba(0,0,0,0.6); }
+.bg-black\/80    { background-color: rgba(0,0,0,0.8); }
+
+/* Gray with opacity */
+.bg-gray-800\/50  { background-color: rgba(31,41,55,0.5); }
+.bg-gray-800\/95 { background-color: rgba(31,41,55,0.95); }
+.bg-gray-700\/50 { background-color: rgba(55,65,81,0.5); }
+
+/* bg-opacity */
+.bg-opacity-75 { background-color: rgba(17,24,39,0.75); }
+
+/* Arbitrary bg */
+.bg-\[\#22242f\]  { background-color: #22242f; }
+.bg-\[\#282b3a\]  { background-color: #282b3a; }
+.bg-\[\#191b24\]  { background-color: #191b24; }
+.bg-\[\#0f111a\]  { background-color: #0f111a; }
+.bg-\[\#ffd875\]  { background-color: #ffd875; }
+.bg-\[\#374151\]  { background-color: #374151; }
+
+/* Background gradient (commonly used) */
+.bg-gradient-to-r  { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+.bg-gradient-to-b  { background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); }
+.from-purple-600   { --tw-gradient-from: #7c3aed; }
+.to-indigo-600     { --tw-gradient-to: #4f46e5; }
+
+/* ==========================================================================
+   20. BORDER COLOR
+   ========================================================================== */
+.border           { border-width: 1px; border-style: solid; }
+.border-0         { border-width: 0; }
+.border-2         { border-width: 2px; }
+.border-t         { border-top-width: 1px; border-top-style: solid; }
+.border-t-0       { border-top-width: 0; }
+.border-b         { border-bottom-width: 1px; border-bottom-style: solid; }
+.border-l-4       { border-left-width: 4px; border-left-style: solid; }
+.border-r         { border-right-width: 1px; border-right-style: solid; }
+
+.border-black     { border-color: #000; }
+.border-white     { border-color: #fff; }
+.border-gray-500  { border-color: #6b7280; }
+.border-gray-600  { border-color: #4b5563; }
+.border-gray-700  { border-color: #374151; }
+.border-purple-400 { border-color: #a78bfa; }
+.border-purple-500 { border-color: #8b5cf6; }
+.border-blue-500  { border-color: #3b82f6; }
+.border-red-500   { border-color: #ef4444; }
+.border-teal-500  { border-color: #14b8a6; }
+
+.border-transparent { border-color: transparent; }
+.border-current   { border-color: currentColor; }
+
+/* Border with opacity */
+.border-blue-500\/30  { border-color: rgba(59,130,246,0.3); }
+.border-red-500\/30   { border-color: rgba(239,68,68,0.3); }
+
+/* Arbitrary border color */
+.border-\[rgba\(255\,255\,255\,0\.06\)\] { border-color: rgba(255,255,255,0.06); }
+.border-\[rgba\(255\,255\,255\,0\.1\)\]  { border-color: rgba(255,255,255,0.1); }
+.border-\[rgba\(255\,255\,255\,0\.35\)\] { border-color: rgba(255,255,255,0.35); }
+
+/* ==========================================================================
+   21. BORDER RADIUS
+   ========================================================================== */
+.rounded-none    { border-radius: 0; }
+.rounded-sm      { border-radius: 0.125rem; }
+.rounded         { border-radius: 0.25rem; }
+.rounded-md      { border-radius: 0.375rem; }
+.rounded-lg      { border-radius: 0.5rem; }
+.rounded-xl      { border-radius: 0.75rem; }
+.rounded-2xl     { border-radius: 1rem; }
+.rounded-full    { border-radius: 9999px; }
+
+/* ==========================================================================
+   22. BOX SHADOW
+   ========================================================================== */
+.shadow          { box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); }
+.shadow-md       { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+.shadow-lg       { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+.shadow-xl       { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+.shadow-2xl      { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+.shadow-none     { box-shadow: none; }
+
+/* ==========================================================================
+   23. OPACITY
+   ========================================================================== */
+.opacity-0    { opacity: 0; }
+.opacity-25   { opacity: 0.25; }
+.opacity-50   { opacity: 0.5; }
+.opacity-75   { opacity: 0.75; }
+.opacity-100  { opacity: 1; }
+
+/* ==========================================================================
+   24. CURSOR
+   ========================================================================== */
+.cursor-pointer    { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+.cursor-auto       { cursor: auto; }
+.cursor-default    { cursor: default; }
+
+/* ==========================================================================
+   25. OVERFLOW
+   ========================================================================== */
+.overflow-auto     { overflow: auto; }
+.overflow-hidden   { overflow: hidden; }
+.overflow-visible  { overflow: visible; }
+.overflow-scroll   { overflow: scroll; }
+.overflow-x-auto   { overflow-x: auto; }
+.overflow-x-hidden { overflow-x: hidden; }
+.overflow-y-auto   { overflow-y: auto; }
+.overflow-y-hidden { overflow-y: hidden; }
+.overflow-y-scroll { overflow-y: scroll; }
+
+/* Scrollbar hiding for Tizen/old WebKit + IE/Edge */
+.scrollbar-hide,
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ==========================================================================
+   26. OBJECT FIT
+   ========================================================================== */
+.object-contain  { -o-object-fit: contain; object-fit: contain; }
+.object-cover    { -o-object-fit: cover; object-fit: cover; }
+.object-fill     { -o-object-fit: fill; object-fit: fill; }
+.object-center   { -o-object-position: center; object-position: center; }
+
+/* ==========================================================================
+   27. POINTER EVENTS
+   ========================================================================== */
+.pointer-events-none { pointer-events: none; }
+.pointer-events-auto { pointer-events: auto; }
+
+/* ==========================================================================
+   28. USER SELECT
+   ========================================================================== */
+.select-none   { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.select-all    { -webkit-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all; }
+.select-text   { -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text; }
+
+/* ==========================================================================
+   29. TRANSITIONS
+   ========================================================================== */
+.transition         { -webkit-transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, -webkit-transform; transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform; -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); -webkit-transition-duration: 150ms; transition-duration: 150ms; }
+.transition-all     { -webkit-transition-property: all; transition-property: all; -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); -webkit-transition-duration: 150ms; transition-duration: 150ms; }
+.transition-colors  { -webkit-transition-property: color, background-color, border-color; transition-property: color, background-color, border-color; -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); -webkit-transition-duration: 150ms; transition-duration: 150ms; }
+.transition-opacity { -webkit-transition-property: opacity; transition-property: opacity; -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); -webkit-transition-duration: 150ms; transition-duration: 150ms; }
+.transition-transform { -webkit-transition-property: -webkit-transform; transition-property: transform; -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); -webkit-transition-duration: 150ms; transition-duration: 150ms; }
+
+.duration-200 { -webkit-transition-duration: 200ms; transition-duration: 200ms; }
+.duration-300 { -webkit-transition-duration: 300ms; transition-duration: 300ms; }
+.duration-500 { -webkit-transition-duration: 500ms; transition-duration: 500ms; }
+.duration-700 { -webkit-transition-duration: 700ms; transition-duration: 700ms; }
+
+/* ==========================================================================
+   30. TRANSFORM
+   ========================================================================== */
+.transform       { -webkit-transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)); transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)); }
+.scale-100  { -webkit-transform: scale(1); transform: scale(1); }
+.scale-105  { -webkit-transform: scale(1.05); transform: scale(1.05); }
+.scale-110  { -webkit-transform: scale(1.1); transform: scale(1.1); }
+.scale-115  { -webkit-transform: scale(1.15); transform: scale(1.15); }
+.scale-90   { -webkit-transform: scale(0.9); transform: scale(0.9); }
+.scale-95   { -webkit-transform: scale(0.95); transform: scale(0.95); }
+.rotate-0   { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+.rotate-180 { -webkit-transform: rotate(180deg); transform: rotate(180deg); }
+
+/* ==========================================================================
+   31. HOVER STATES
+   ========================================================================== */
+.hover\:bg-gray-600:hover  { background-color: #4b5563; }
+.hover\:bg-gray-700:hover  { background-color: #374151; }
+.hover\:bg-gray-750:hover  { background-color: #2d3748; }
+.hover\:bg-gray-800:hover  { background-color: #1f2937; }
+.hover\:bg-purple-600:hover { background-color: #7c3aed; }
+.hover\:bg-purple-700:hover { background-color: #6d28d9; }
+.hover\:bg-red-300:hover   { background-color: #fca5a5; }
+.hover\:bg-red-700:hover   { background-color: #b91c1c; }
+.hover\:bg-green-700:hover { background-color: #15803d; }
+.hover\:bg-blue-300:hover  { background-color: #93c5fd; }
+.hover\:bg-yellow-700:hover { background-color: #a16207; }
+.hover\:bg-orange-700:hover { background-color: #c2410c; }
+.hover\:bg-white\/20:hover  { background-color: rgba(255,255,255,0.2); }
+.hover\:bg-black\/80:hover  { background-color: rgba(0,0,0,0.8); }
+
+.hover\:text-white:hover      { color: #fff; }
+.hover\:text-purple-300:hover { color: #d8b4fe; }
+.hover\:text-red-300:hover    { color: #fca5a5; }
+.hover\:text-blue-300:hover   { color: #93c5fd; }
+.hover\:text-blue-400:hover   { color: #60a5fa; }
+.hover\:text-orange-300:hover { color: #fdba74; }
+
+.hover\:border-purple-400:hover { border-color: #a78bfa; }
+.hover\:border-purple-500:hover { border-color: #8b5cf6; }
+.hover\:border-blue-400:hover   { border-color: #60a5fa; }
+.hover\:border-red-400:hover    { border-color: #f87171; }
+
+/* ==========================================================================
+   32. FOCUS STATES
+   ========================================================================== */
+.focus\:outline-none:focus     { outline: 2px solid transparent; outline-offset: 2px; }
+.focus\:border-purple-400:focus { border-color: #a78bfa; }
+.focus\:border-purple-500:focus { border-color: #8b5cf6; }
+.focus\:border-\[\#ffd875\]:focus { border-color: #ffd875; }
+
+/* ==========================================================================
+   33. BACKDROP-FILTER (with solid fallback for old browsers)
+   ========================================================================== */
+/* Old webkit doesn't support backdrop-filter, use solid background as fallback */
+.backdrop-blur {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  /* Fallback: solid semi-transparent background */
+  background-color: rgba(31, 41, 55, 0.95);
+}
+
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  background-color: rgba(31, 41, 55, 0.95);
+}
+
+.backdrop-blur-lg {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  background-color: rgba(31, 41, 55, 0.95);
+}
+
+/* bg-opacity + backdrop-filter fallback (used in bottom nav) */
+.bg-gray-800\/95.backdrop-blur {
+  background-color: rgba(31, 41, 55, 0.95);
+}
+
+/* ==========================================================================
+   34. CLAMP() REPLACEMENT (provide fixed fallback values)
+   ========================================================================== */
+/* The project uses clamp() in .home-rows padding:
+   padding: 36px clamp(16px, 4vw, 50px) 24px;
+   Old browsers ignore clamp(), so we provide a fixed fallback.
+   The actual clamp is handled by the fallback value in styles.css. */
+
+/* ==========================================================================
+   35. ASPECT RATIO (padding-bottom hack for old browsers)
+   ========================================================================== */
+/* Old browsers don't support aspect-ratio, use padding-bottom trick */
+.aspect-\[2\/3\],
+.film-poster {
+  position: relative;
+  width: 100%;
+  /* Fallback for aspect-ratio: 2/3 = 150% */
+  padding-bottom: 150%;
+  height: 0;
+}
+
+/* If aspect-ratio is supported, override with the real property */
+@supports (aspect-ratio: 1/1) {
+  .aspect-\[2\/3\],
+  .film-poster {
+    aspect-ratio: 2/3;
+    padding-bottom: 0;
+    height: auto;
+  }
+}
+
+/* ==========================================================================
+   36. SCROLLBAR HIDING (global for pagination & episode lists)
+   ========================================================================== */
+/* Already handled in styles.css, but provide utility here too */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ==========================================================================
+   37. VISUALLY HIDDEN (sr-only)
+   ========================================================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ==========================================================================
+   38. CONTAINER
+   ========================================================================== */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container { max-width: 640px; }
+}
+@media (min-width: 768px) {
+  .container { max-width: 768px; }
+}
+@media (min-width: 1024px) {
+  .container { max-width: 1024px; }
+}
+@media (min-width: 1280px) {
+  .container { max-width: 1280px; }
+}
+@media (min-width: 1536px) {
+  .container { max-width: 1536px; }
+}
+
+/* ==========================================================================
+   39. RESPONSIVE UTILITIES (sm:, md:, lg:, xl:)
+   ========================================================================== */
+
+/* ---- SM (>=640px) ---- */
+@media (min-width: 640px) {
+  .sm\:hidden    { display: none !important; }
+  .sm\:block     { display: block; }
+  .sm\:flex      { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .sm\:inline-flex { display: -webkit-inline-box; display: -webkit-inline-flex; display: inline-flex; }
+  .sm\:inline    { display: inline; }
+  .sm\:grid      { display: -ms-grid; display: grid; }
+
+  .sm\:flex-row  { -webkit-box-orient: horizontal; -webkit-box-direction: normal; -webkit-flex-direction: row; flex-direction: row; }
+  .sm\:flex-col  { -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; flex-direction: column; }
+
+  .sm\:items-center  { -webkit-box-align: center; -webkit-align-items: center; align-items: center; }
+  .sm\:items-start   { -webkit-box-align: start; -webkit-align-items: flex-start; align-items: flex-start; }
+
+  .sm\:justify-center  { -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center; }
+  .sm\:justify-between { -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+
+  .sm\:inline  { display: inline; }
+  .sm\:w-auto  { width: auto; }
+  .sm\:w-1\/4  { width: 25%; }
+  .sm\:w-40    { width: 10rem; }
+  .sm\:w-20    { width: 5rem; }
+
+  .sm\:p-4     { padding: 1rem; }
+  .sm\:p-6     { padding: 1.5rem; }
+  .sm\:px-2    { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .sm\:px-3    { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .sm\:px-4    { padding-left: 1rem; padding-right: 1rem; }
+  .sm\:px-6    { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .sm\:py-2    { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  .sm\:py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+  .sm\:py-8    { padding-top: 2rem; padding-bottom: 2rem; }
+  .sm\:pt-4    { padding-top: 1rem; }
+
+  .sm\:ml-2    { margin-left: 0.5rem; }
+  .sm\:mr-2    { margin-right: 0.5rem; }
+  .sm\:mt-8    { margin-top: 2rem; }
+
+  .sm\:gap-4   { gap: 1rem; }
+  .sm\:gap-6   { gap: 1.5rem; }
+  .sm\:gap-1   { gap: 0.25rem; }
+
+  .sm\:grid-cols-3  { -ms-grid-columns: repeat(3, 1fr); grid-template-columns: repeat(3, 1fr); }
+  .sm\:grid-cols-4  { -ms-grid-columns: repeat(4, 1fr); grid-template-columns: repeat(4, 1fr); }
+  .sm\:grid-cols-5  { -ms-grid-columns: repeat(5, 1fr); grid-template-columns: repeat(5, 1fr); }
+  .sm\:grid-cols-6  { -ms-grid-columns: repeat(6, 1fr); grid-template-columns: repeat(6, 1fr); }
+
+  .sm\:text-base  { font-size: 1rem; line-height: 1.5rem; }
+  .sm\:text-sm    { font-size: 0.875rem; line-height: 1.25rem; }
+  .sm\:text-lg    { font-size: 1.125rem; line-height: 1.75rem; }
+  .sm\:text-xl    { font-size: 1.25rem; line-height: 1.75rem; }
+  .sm\:text-4xl   { font-size: 2.25rem; line-height: 2.5rem; }
+  .sm\:font-medium { font-weight: 500; }
+
+  .sm\:relative   { position: relative; }
+  .sm\:absolute   { position: absolute; }
+  .sm\:inset-0    { top: 0; right: 0; bottom: 0; left: 0; }
+  .sm\:left-auto  { left: auto; }
+  .sm\:right-auto { right: auto; }
+
+  .sm\:rounded-full { border-radius: 9999px; }
+}
+
+/* ---- MD (>=768px) ---- */
+@media (min-width: 768px) {
+  .md\:hidden    { display: none !important; }
+  .md\:block     { display: block; }
+  .md\:flex      { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .md\:inline-flex { display: -webkit-inline-box; display: -webkit-inline-flex; display: inline-flex; }
+  .md\:grid      { display: -ms-grid; display: grid; }
+
+  .md\:flex-row  { -webkit-box-orient: horizontal; -webkit-box-direction: normal; -webkit-flex-direction: row; flex-direction: row; }
+  .md\:items-center  { -webkit-box-align: center; -webkit-align-items: center; align-items: center; }
+  .md\:justify-between { -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+
+  .md\:gap-6     { gap: 1.5rem; }
+  .md\:gap-3     { gap: 0.75rem; }
+  .md\:gap-2     { gap: 0.5rem; }
+
+  .md\:grid-cols-2  { -ms-grid-columns: repeat(2, 1fr); grid-template-columns: repeat(2, 1fr); }
+  .md\:grid-cols-3  { -ms-grid-columns: repeat(3, 1fr); grid-template-columns: repeat(3, 1fr); }
+  .md\:grid-cols-4  { -ms-grid-columns: repeat(4, 1fr); grid-template-columns: repeat(4, 1fr); }
+  .md\:grid-cols-5  { -ms-grid-columns: repeat(5, 1fr); grid-template-columns: repeat(5, 1fr); }
+  .md\:grid-cols-6  { -ms-grid-columns: repeat(6, 1fr); grid-template-columns: repeat(6, 1fr); }
+  .md\:grid-cols-8  { -ms-grid-columns: repeat(8, 1fr); grid-template-columns: repeat(8, 1fr); }
+
+  .md\:px-4    { padding-left: 1rem; padding-right: 1rem; }
+  .md\:px-6    { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .md\:py-8    { padding-top: 2rem; padding-bottom: 2rem; }
+  .md\:mt-8    { margin-top: 2rem; }
+  .md\:mb-0    { margin-bottom: 0; }
+  .md\:space-x-2 > * + * { margin-left: 0.5rem; }
+  .md\:space-x-3 > * + * { margin-left: 0.75rem; }
+
+  .md\:text-sm    { font-size: 0.875rem; line-height: 1.25rem; }
+  .md\:text-base  { font-size: 1rem; line-height: 1.5rem; }
+  .md\:text-lg    { font-size: 1.125rem; line-height: 1.75rem; }
+}
+
+/* ---- LG (>=1024px) ---- */
+@media (min-width: 1024px) {
+  .lg\:hidden    { display: none !important; }
+  .lg\:block     { display: block; }
+  .lg\:flex      { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .lg\:inline-flex { display: -webkit-inline-box; display: -webkit-inline-flex; display: inline-flex; }
+  .lg\:grid      { display: -ms-grid; display: grid; }
+
+  .lg\:flex-row  { -webkit-box-orient: horizontal; -webkit-box-direction: normal; -webkit-flex-direction: row; flex-direction: row; }
+
+  .lg\:grid-cols-3  { -ms-grid-columns: repeat(3, 1fr); grid-template-columns: repeat(3, 1fr); }
+  .lg\:grid-cols-4  { -ms-grid-columns: repeat(4, 1fr); grid-template-columns: repeat(4, 1fr); }
+  .lg\:grid-cols-5  { -ms-grid-columns: repeat(5, 1fr); grid-template-columns: repeat(5, 1fr); }
+  .lg\:grid-cols-8  { -ms-grid-columns: repeat(8, 1fr); grid-template-columns: repeat(8, 1fr); }
+  .lg\:grid-cols-9  { -ms-grid-columns: repeat(9, 1fr); grid-template-columns: repeat(9, 1fr); }
+
+  .lg\:max-w-xl   { max-width: 36rem; }
+  .lg\:order-none { -webkit-box-ordinal-group: 1; -webkit-order: 0; order: 0; }
+}
+
+/* ---- XL (>=1280px) ---- */
+@media (min-width: 1280px) {
+  .xl\:hidden    { display: none !important; }
+  .xl\:block     { display: block; }
+  .xl\:flex      { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .xl\:inline-flex { display: -webkit-inline-box; display: -webkit-inline-flex; display: inline-flex; }
+  .xl\:grid      { display: -ms-grid; display: grid; }
+
+  .xl\:grid-cols-5  { -ms-grid-columns: repeat(5, 1fr); grid-template-columns: repeat(5, 1fr); }
+  .xl\:grid-cols-6  { -ms-grid-columns: repeat(6, 1fr); grid-template-columns: repeat(6, 1fr); }
+}
+
+/* ---- 2XL (>=1536px) ---- */
+@media (min-width: 1536px) {
+  .\32xl\:grid-cols-8  { -ms-grid-columns: repeat(8, 1fr); grid-template-columns: repeat(8, 1fr); }
+}
+
+/* ---- MAX-WIDTH RESPONSIVE (max-sm:, max-md:, max-lg:, max-xl:) ---- */
+@media (max-width: 639px) {
+  .max-sm\:hidden  { display: none !important; }
+  .max-sm\:object-contain { -o-object-fit: contain; object-fit: contain; }
+  .max-sm\:max-h-\[35vh\] { max-height: 35vh; }
+}
+
+@media (max-width: 767px) {
+  .max-md\:hidden { display: none !important; }
+}
+
+@media (max-width: 1023px) {
+  .max-lg\:hidden { display: none !important; }
+}
+
+@media (max-width: 1279px) {
+  .max-xl\:hidden { display: none !important; }
+}
+
+/* ==========================================================================
+   40. CSS CUSTOM PROPERTIES - FALLBACKS
+   ========================================================================== */
+/* When var() is used without a fallback, old browsers fail silently.
+   We define sensible defaults for all custom properties used in the project. */
+:root {
+  --home-bg: #191b24;
+  --home-bg-2: #282b3a;
+  --home-bg-3: #2f3346;
+  --home-text: #aaa;
+  --home-primary: #ffd875;
+  --home-footer-bg: #0f111a;
+  --home-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Provide fallback for var() usage in inline styles */
+[style*="var(--home-border)"] {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   41. WEBKIT PREFIXES FOR OLD TIZEN BROWSER
+   ========================================================================== */
+
+/* Flexbox webkit prefixes are already included above in flex rules */
+
+/* -webkit-box for old webkit flex container */
+.-webkit-box {
+  display: -webkit-box;
+}
+
+/* -webkit-line-clamp (already handled in typography section) */
+
+/* -webkit-tap-highlight-color (mobile/touch) */
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* -webkit-appearance reset */
+input, textarea, select, button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* -webkit-overflow-scrolling for momentum scroll */
+.overflow-auto,
+.overflow-scroll,
+.overflow-x-auto,
+.overflow-y-auto,
+.overflow-y-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   42. MEDIA QUERIES FOR RESPONSIVE GRID FALLBACKS
+   ========================================================================== */
+/* Old browsers that don't understand CSS custom media queries or complex
+   selectors need explicit grid definitions via media queries.
+   These are also in styles.css but we duplicate for completeness. */
+
+@media (max-width: 640px) {
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4,
+  .grid-cols-5,
+  .grid-cols-6 {
+    -ms-grid-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .sm\:grid-cols-3 {
+    -ms-grid-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4,
+  .grid-cols-5,
+  .grid-cols-6 {
+    -ms-grid-columns: 1fr;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   43. PLACEHOLDER TEXT COLOR
+   ========================================================================== */
+.placeholder-gray-400::-webkit-input-placeholder { color: #9ca3af; }
+.placeholder-gray-400::-moz-placeholder { color: #9ca3af; opacity: 1; }
+.placeholder-gray-400:-ms-input-placeholder { color: #9ca3af; }
+.placeholder-gray-400::placeholder { color: #9ca3af; }
+
+.placeholder-gray-500::-webkit-input-placeholder { color: #6b7280; }
+.placeholder-gray-500::-moz-placeholder { color: #6b7280; opacity: 1; }
+.placeholder-gray-500:-ms-input-placeholder { color: #6b7280; }
+.placeholder-gray-500::placeholder { color: #6b7280; }
+
+/* ==========================================================================
+   44. BORDER-LEFT-4 with color (for curated-links cards)
+   ========================================================================== */
+.border-l-4 {
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+
+/* ==========================================================================
+   45. INLINE BLOCK with specific Tailwind utility
+   ========================================================================== */
+.inline-block {
+  display: inline-block;
+}
+
+/* ==========================================================================
+   46. SHADOW FROM COMMON USAGE
+   ========================================================================== */
+.shadow-xl {
+  -webkit-box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+}
+
+/* ==========================================================================
+   47. ARBITRARY VALUES (used in project HTML/JS)
+   ========================================================================== */
+.bg-\[rgba\(255\,255\,255\,0\.06\)\] { background-color: rgba(255,255,255,0.06); }
+.bg-\[rgba\(255\,255\,255\,0\.08\)\] { background-color: rgba(255,255,255,0.08); }
+.bg-\[rgba\(255\,255\,255\,0\.12\)\] { background-color: rgba(255,255,255,0.12); }
+
+.border-\[rgba\(255\,255\,255\,0\.1\)\] { border-color: rgba(255,255,255,0.1); }
+.border-\[rgba\(255\,255\,255\,0\.06\)\] { border-color: rgba(255,255,255,0.06); }
+
+/* ==========================================================================
+   48. GROUP HOVER (used in cinema mode toggle)
+   ========================================================================== */
+.group:hover .group-hover\:opacity-100 { opacity: 1; }
+
+/* ==========================================================================
+   49. TEXT SHADOW (not in Tailwind but used in project)
+   ========================================================================== */
+.text-shadow-sm { text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.text-shadow    { text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+.text-shadow-lg { text-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+
+/* ==========================================================================
+   50. CLEARFIX / UTILITY
+   ========================================================================== */
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* ==========================================================================
+   SUMMARY OF WHAT IS INCLUDED
+   ==========================================================================
+   1.  Display utilities: hidden, block, inline-block, inline, flex, inline-flex, grid, table
+   2.  Flexbox: direction, wrap, justify-*, items-*, self-*, grow, shrink, order
+   3.  Gap: gap-*, gap-x-*, gap-y-* (with space-x/y fallback)
+   4.  Grid: grid-cols-1 through 10, col-span-*, grid-rows-1
+   5.  Padding: p-*, px-*, py-*, pt-*, pb-*, pl-*, pr-*
+   6.  Margin: m-*, mx-*, my-*, mt-*, mb-*, ml-*, mr-*, mx-auto, negative margins
+   7.  Width: w-*, min-w-*, max-w-* (including arbitrary values)
+   8.  Height: h-*, min-h-*, max-h-* (including arbitrary values)
+   9.  Position: static, fixed, absolute, relative, sticky, inset-*, top/bottom/left/right
+   10. Z-index: z-0 through z-50, arbitrary z-index values
+   11. Typography: text-xs through text-6xl, font-normal/medium/semibold/bold
+   12. Text alignment: text-left, text-center, text-right
+   13. Text colors: full Tailwind gray, purple, red, green, blue, yellow, orange, teal, pink, indigo palettes + arbitrary
+   14. Line height: leading-none/tight/snug/normal/relaxed/loose
+   15. Letter spacing: tracking-tight/normal/wide
+   16. Text overflow: truncate, whitespace-*, line-clamp-1/2/3, text-decoration, text-transform
+   17. Background colors: full Tailwind palette + opacity variants + arbitrary values
+   18. Borders: border, border-0/2, border-t/b/l/r, border-colors (gray, purple, red, green, blue, yellow, etc.)
+   19. Border radius: rounded-none through rounded-full
+   20. Box shadows: shadow, shadow-md/lg/xl/2xl, shadow-none
+   21. Opacity: opacity-0/25/50/75/100
+   22. Cursors: pointer, not-allowed, auto, default
+   23. Overflow: auto, hidden, visible, scroll, overflow-x/y-*
+   24. Object fit: contain, cover, fill, center
+   25. Pointer events: none, auto
+   26. User select: none, all, text
+   27. Transitions: transition, transition-all/colors/opacity/transform, duration-200/300/500/700
+   28. Transforms: scale-90/95/100/105/110/115, rotate-0/180
+   29. Hover states: bg-*, text-*, border-* on hover
+   30. Focus states: outline-none, border-purple-400/500
+   31. Backdrop blur: with solid background fallback for old WebKit
+   32. Clamp() replacement: fixed fallback values provided
+   33. Aspect ratio: padding-bottom hack (150% for 2/3 ratio) with @supports override
+   34. Scrollbar hiding: -ms-overflow-style + webkit scrollbar display:none
+   35. SR-only: screen reader only utility
+   36. Container: max-width responsive container
+   37. Responsive: sm:, md:, lg:, xl:, 2xl: breakpoints for all major utilities
+   38. CSS custom properties: :root fallbacks for --home-* variables
+   39. Webkit prefixes: flexbox, overflow-scrolling, tap-highlight, appearance
+   40. Placeholder colors: gray-400/500
+   41. Group hover: for cinema mode toggle
+   42. Text shadow: sm, default, lg
+   ========================================================================== */

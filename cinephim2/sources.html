@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Nguồn Phim - CinePhim</title>
+		<meta name="description" content="Danh sách các website nguồn phim chất lượng cao" />
+		<meta name="keywords" content="nguồn phim, website phim, phim online, phim hd" />
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+		<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+
+		<!-- Polyfills for Tizen 2014 -->
+		<script src="js/polyfills.js"></script>
+		<!-- Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+		<script src="js/firebase-config.js"></script>
+
+		<!-- SweetAlert2 -->
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+		<!-- Compat CSS for Tizen 2014 -->
+		<link rel="stylesheet" href="css/compat.css" />
+		<!-- Custom CSS -->
+		<link rel="stylesheet" href="css/styles.css" />
+		<style>
+			.swal-input-custom { font-size: 14px !important; padding: 10px 12px !important; margin: 6px 0 !important; border-radius: 8px !important; background: #374151 !important; color: #fff !important; border: 1px solid #4b5563 !important; box-shadow: none !important; width: 100% !important; box-sizing: border-box !important; }
+			.swal-input-custom:focus { border-color: #7c3aed !important; outline: none !important; }
+			.swal-input-custom::placeholder { color: #9ca3af !important; }
+			.swal2-textarea { min-height: 70px !important; resize: vertical !important; }
+			.swal-btn-custom { font-size: 14px !important; padding: 10px 28px !important; border-radius: 8px !important; }
+			.swal-msg-custom { font-size: 12px !important; margin: 4px 0 !important; }
+			@media (max-width: 640px) {
+				.swal2-popup { margin: 8px !important; padding: 16px !important; }
+				.swal2-title { font-size: 18px !important; }
+				.swal-input-custom { font-size: 16px !important; padding: 12px !important; }
+				.swal-btn-custom { font-size: 16px !important; padding: 12px 32px !important; width: 100% !important; }
+			}
+		</style>
+	</head>
+
+	<body class="home-body dark">
+		<!-- Header -->
+		<div id="siteHeader"></div>
+
+		<!-- Breadcrumb -->
+		<div class="container mx-auto px-4 pt-4">
+			<nav class="home-breadcrumb">
+				<a href="index.html">Trang chủ</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span>Nguồn phim</span>
+			</nav>
+		</div>
+
+		<!-- Main Content -->
+		<main class="container mx-auto px-4 py-8">
+			<!-- Page Title -->
+			<div class="text-center mb-8">
+				<h1 class="browse-title mb-4"><i class="fas fa-link mr-3"></i>Nguồn Phim</h1>
+				<p class="browse-subtitle max-w-2xl mx-auto mb-4">Danh sách các website nguồn phim chất lượng cao mà bạn có thể tham khảo</p>
+				<button id="addSourceBtn" onclick="addSource()" class="hidden btn-apply">
+					<i class="fas fa-plus mr-1"></i>Thêm nguồn
+				</button>
+			</div>
+
+			<!-- Sources Grid -->
+			<div id="sourcesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+			<!-- Link to Curated Links page -->
+			<div class="text-center mt-12">
+				<a href="curated-links.html" class="btn-apply text-base">
+					<i class="fas fa-bookmark mr-2"></i>Xem danh sách Link Phim Cố Định
+				</a>
+			</div>
+		</main>
+
+		<!-- Footer -->
+		<div id="siteFooter"></div>
+
+		<!-- Scripts -->
+		<script src="js/config.js"></script>
+		<script src="js/layout.js"></script>
+		<script src="js/common.js"></script>
+
+		<script src="js/sources.js"></script>
+
+		<script>initPageSync();</script>
+
+	</body>
+</html>
