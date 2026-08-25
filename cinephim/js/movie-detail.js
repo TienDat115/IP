@@ -1732,6 +1732,23 @@ function deleteCharFromNote() {
     }
 }
 
+function insertCurrentEpisodeToNote() {
+    const noteInput = document.getElementById('watchTimeNote');
+    if (!noteInput || !currentEpisodeSlug) {
+        showToast('Chưa chọn tập nào', 'info');
+        return;
+    }
+    const episodeName = getEpisodeName(currentEpisodeSlug) + ' ';
+    const start = noteInput.selectionStart;
+    const end = noteInput.selectionEnd;
+    const currentValue = noteInput.value;
+    const newValue = currentValue.substring(0, start) + episodeName + currentValue.substring(end);
+    noteInput.value = newValue;
+    const newPosition = start + episodeName.length;
+    noteInput.setSelectionRange(newPosition, newPosition);
+    noteInput.focus();
+}
+
 // Clear and save watch time note
 async function clearAndSaveNote() {
     const noteInput = document.getElementById('watchTimeNote');
