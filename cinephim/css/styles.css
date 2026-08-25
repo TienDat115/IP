@@ -404,7 +404,7 @@ body:not(.dark) .film-card .text-gray-400 {
 	}
 }
 
-@media (max-width: 480px) {
+@media (max-width: 380px) {
 
 	/* Small mobile */
 	.grid-cols-2,
@@ -419,7 +419,7 @@ body:not(.dark) .film-card .text-gray-400 {
 	}
 
 	#episodesList {
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(3, 1fr);
 	}
 
 	/* Touch-friendly buttons */
@@ -1296,12 +1296,22 @@ body:not(.dark) #bottomNav {
 
 .md-section-title {
 	color: var(--home-primary);
-	font-size: 18px;
+	font-size: 16px;
 	font-weight: 600;
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	margin-bottom: 16px;
+}
+
+@media (min-width: 640px) {
+	.md-section-title {
+		font-size: 18px;
+	}
+
+	#virtualKeyboard {
+		display: block !important;
+	}
 }
 
 .filter-panel {
