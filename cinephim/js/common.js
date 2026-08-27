@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             watchHistory = [];
             favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-            pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
+            pinnedMovies = dedupeBySlug(JSON.parse(localStorage.getItem('pinnedMovies') || '[]'));
         }
         updateLoginButton();
 
@@ -980,6 +980,20 @@ function hideLoading() {
     }
 }
 
+// Remove duplicate entries (same slug) from a movie list
+function dedupeBySlug(list) {
+    if (!Array.isArray(list)) return [];
+    const seen = new Set();
+    const result = [];
+    for (const item of list) {
+        const slug = item && (item.slug || '');
+        if (!slug || seen.has(slug)) continue;
+        seen.add(slug);
+        result.push(item);
+    }
+    return result;
+}
+
 // Load pinned movies from Firebase
 async function loadPinnedMoviesFromFirebase() {
     if (!currentUser) {
@@ -994,10 +1008,12 @@ async function loadPinnedMoviesFromFirebase() {
         snapshot.forEach(doc => {
             pinnedMovies.push(doc.data());
         });
+        // Deduplicate by slug (defensive: clean up any legacy duplicate docs)
+        pinnedMovies = dedupeBySlug(pinnedMovies);
     } catch (error) {
         console.error('Error loading pinned movies:', error);
         // Fallback to localStorage
-        pinnedMovies = JSON.parse(localStorage.getItem('pinnedMovies') || '[]');
+        pinnedMovies = dedupeBySlug(JSON.parse(localStorage.getItem('pinnedMovies') || '[]'));
     }
 }
 
@@ -1017,9 +1033,10 @@ async function savePinnedMoviesToFirebase() {
             batch.delete(doc.ref);
         });
         
-        // Add new pinned movies
+        // Add new pinned movies (use slug as doc id to prevent duplicate docs)
         pinnedMovies.forEach(item => {
-            const docRef = pinnedRef.doc();
+            const safeSlug = (item.slug || '').toString() || new Date().toISOString();
+            const docRef = pinnedRef.doc(safeSlug);
             // Clean data before saving
             const cleanItem = {
                 slug: item.slug || '',

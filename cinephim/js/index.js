@@ -406,7 +406,8 @@ async function loadPinnedMovies() {
     }
     if (pinnedMovies.length === 0) return;
 
-    const movies = pinnedMovies.map(pin => ({
+    const uniquePins = (window.dedupeBySlug ? window.dedupeBySlug(pinnedMovies) : pinnedMovies);
+    const movies = uniquePins.map(pin => ({
         slug: pin.slug || '',
         name: pin.title || pin.name || 'Không rõ',
         title: pin.title || pin.name || '',
