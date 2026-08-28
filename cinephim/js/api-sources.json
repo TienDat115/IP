@@ -15,6 +15,7 @@
     },
     "ophim": {
       "name": "OPhim",
+      "disabled": true,
       "base": "https://ophim1.com/v1/api",
       "image_cdn": "https://img.ophim.live",
       "image_field": "thumb_url",

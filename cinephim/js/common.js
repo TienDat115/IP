@@ -811,13 +811,21 @@ function renderSourceSwitcher() {
     const mobileContainer = document.getElementById('sourceSwitcherMobile');
 
     const currentName = currentSource?.name || 'NguonC';
-    const optionsHtml = Object.keys(SOURCES).map(key => `
+    const optionsHtml = Object.keys(SOURCES)
+        .filter(key => !SOURCES[key].disabled)
+        .map(key => {
+            const source = SOURCES[key];
+            const isCurrent = currentSourceKey === key;
+            const className = `flex items-center w-full px-4 py-2 text-sm transition ${isCurrent ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`;
+            const check = isCurrent ? '<i class="fas fa-check text-purple-200"></i>' : '';
+            return `
         <button onclick="setSource('${key}')"
-                class="flex items-center w-full px-4 py-2 text-sm transition ${currentSourceKey === key ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}">
-            <span class="flex-1 text-left" style="display:inline">${SOURCES[key].name}</span>
-            ${currentSourceKey === key ? '<i class="fas fa-check text-purple-200"></i>' : ''}
+                class="${className}">
+            <span class="flex-1 text-left" style="display:inline">${source.name}</span>
+            ${check}
         </button>
-    `).join('');
+    `;
+        }).join('');
 
     const desktopHtml = `
         <div class="relative source-switcher">
