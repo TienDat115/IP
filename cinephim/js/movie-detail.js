@@ -455,14 +455,25 @@ function autoPlayLatestEpisode() {
         let targetEpisodeSlug = null;
         let targetServerIndex = 0;
         let hasSourceHistory = false;
-        
-        if (typeof currentSourceKey !== 'undefined') {
+
+        // Prefer synced episode number across all sources
+        if (latestEpisode.episodeNumber != null) {
+            const found = findEpisodeByNumber(latestEpisode.episodeNumber);
+            if (found) {
+                targetEpisodeSlug = found.slug;
+                targetServerIndex = found.serverIndex;
+                hasSourceHistory = true;
+            }
+        }
+
+        // Legacy per-source fallback (for old history entries without episodeNumber)
+        if (!hasSourceHistory && typeof currentSourceKey !== 'undefined') {
             if (currentSourceKey === 'nguonc') {
                 if (latestEpisode.episodeSlug_nguonc) {
                     targetEpisodeSlug = latestEpisode.episodeSlug_nguonc;
                     targetServerIndex = latestEpisode.serverIndex_nguonc !== undefined ? latestEpisode.serverIndex_nguonc : 0;
                     hasSourceHistory = true;
-                } else if (latestEpisode.episodeSlug && !latestEpisode.videoUrl_ophim) {
+                } else if (latestEpisode.episodeSlug) {
                     // Fallback to old history entry
                     targetEpisodeSlug = latestEpisode.episodeSlug;
                     targetServerIndex = latestEpisode.serverIndex || 0;
@@ -486,6 +497,12 @@ function autoPlayLatestEpisode() {
                     targetServerIndex = latestEpisode.serverIndex_vsmov !== undefined ? latestEpisode.serverIndex_vsmov : 0;
                     hasSourceHistory = true;
                 }
+            }
+            // Generic fallback for old history without per-source fields
+            if (!hasSourceHistory && latestEpisode.episodeSlug) {
+                targetEpisodeSlug = latestEpisode.episodeSlug;
+                targetServerIndex = latestEpisode.serverIndex || 0;
+                hasSourceHistory = true;
             }
         }
         
@@ -889,6 +906,7 @@ function saveToWatchHistory(movieSlug, episodeSlug) {
     // Always update these base fields to the latest watched
     historyItem.episodeSlug = episodeSlug;
     historyItem.episodeName = episodeName;
+    historyItem.episodeNumber = extractEpisodeNumber(episodeName);
     historyItem.serverIndex = serverIndex;
     historyItem.serverName = serverName;
     historyItem.watchedAt = watchedAt;
@@ -962,6 +980,33 @@ function getEpisodeName(episodeSlug) {
         }
     }
     return episodeSlug;
+}
+
+// Extract a normalized episode number from an episode name
+// Returns an integer, or null for non-numbered entries (Trailer / Full / Hoàn tất)
+function extractEpisodeNumber(episodeName) {
+    if (!episodeName) return null;
+    const lower = String(episodeName).toLowerCase();
+    if (lower.includes('trailer') || lower.includes('full') || lower.includes('hoàn tất') || lower.includes('completed')) {
+        return null;
+    }
+    const match = String(episodeName).match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+}
+
+// Find an episode in the current source by its episode number
+// Returns { slug, serverIndex } or null
+function findEpisodeByNumber(episodeNumber) {
+    if (episodeNumber == null || !currentMovie || !currentMovie.episodes) return null;
+    for (let serverIndex = 0; serverIndex < currentMovie.episodes.length; serverIndex++) {
+        const server = currentMovie.episodes[serverIndex];
+        const items = server.items || server.server_data || [];
+        const episode = items.find(ep => extractEpisodeNumber(ep.name) === episodeNumber);
+        if (episode) {
+            return { slug: episode.slug, serverIndex };
+        }
+    }
+    return null;
 }
 
 // Get current video URL
@@ -1477,11 +1522,23 @@ function displayWatchHistory(history) {
                     <i class="fas fa-server mr-1"></i>${item.serverName || 'Server 1'}
                 </p>
             </div>
-            <button onclick="playEpisodeFromHistory('${item.episodeSlug}', ${item.serverIndex || 0})" class="bg-[#ffd875] hover:bg-[#e2c15e] text-gray-900 px-3 py-1 rounded text-sm font-medium">
+            <button onclick="resumeHistoryEpisode(${item.episodeNumber != null ? item.episodeNumber : 'null'})" class="bg-[#ffd875] hover:bg-[#e2c15e] text-gray-900 px-3 py-1 rounded text-sm font-medium">
                 <i class="fas fa-play"></i>
             </button>
         </div>
     `).join('');
+}
+
+// Resume a watched episode by its synced episode number in the current source
+function resumeHistoryEpisode(episodeNumber) {
+    if (episodeNumber != null) {
+        const found = findEpisodeByNumber(episodeNumber);
+        if (found) {
+            playEpisodeFromHistory(found.slug, found.serverIndex, true);
+            return;
+        }
+    }
+    playDefaultFirstEpisode();
 }
 
 // Play episode from history with server selection
@@ -1523,20 +1580,19 @@ function playEpisodeFromHistory(episodeSlug, serverIndex, fromHistory = false) {
             
             if (typeof currentSourceKey !== 'undefined') {
                 if (currentSourceKey === 'nguonc') {
-                    // Ưu tiên thứ tự load cho nguonC: videoUrl lưu -> link riêng tập -> link chung
-                    videoUrlToPlay = savedVideoUrl || episodeUrl || currentMovie.link_m3u8 || currentMovie.link_embed;
+                    // Ưu tiên link riêng của tập (đúng số tập đã đồng bộ), fallback videoUrl lưu/link chung
+                    videoUrlToPlay = episodeUrl || savedVideoUrl || currentMovie.link_m3u8 || currentMovie.link_embed;
                 } else if (currentSourceKey === 'ophim') {
-                    // Load đúng videoUrl đã lưu của OPhim
-                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                    videoUrlToPlay = episodeUrl || savedVideoUrl;
                 } else if (currentSourceKey === 'kkphim') {
-                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                    videoUrlToPlay = episodeUrl || savedVideoUrl;
                 } else if (currentSourceKey === 'vsmov') {
-                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                    videoUrlToPlay = episodeUrl || savedVideoUrl;
                 } else {
-                    videoUrlToPlay = savedVideoUrl || episodeUrl;
+                    videoUrlToPlay = episodeUrl || savedVideoUrl;
                 }
             } else {
-                videoUrlToPlay = savedVideoUrl || episodeUrl;
+                videoUrlToPlay = episodeUrl || savedVideoUrl;
             }
             
             if (videoUrlToPlay) {
