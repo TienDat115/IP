@@ -54,14 +54,18 @@ async function loadSingleMovies(page = 1) {
         
         showPageLoading(false);
         
-        setTimeout(() => {
-            const target = document.getElementById('moviesContainer');
-            if (target) {
-                const headerHeight = document.querySelector('header')?.offsetHeight || 60;
-                const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
-                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-            }
-        }, 100);
+        if (isMobileViewport()) {
+            setTimeout(() => {
+                const target = document.getElementById('moviesContainer');
+                if (target) {
+                    const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            }, 100);
+        } else {
+            window.scrollTo(0, 0);
+        }
         
     } catch (error) {
         console.error('Error loading single movies:', error);

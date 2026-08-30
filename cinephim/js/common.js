@@ -12,6 +12,11 @@ let hasResolvedInitialAuth = false;
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// Mobile viewport check
+function isMobileViewport() {
+    return window.innerWidth <= 768;
+}
+
 // Image Helper Functions
 function placeholderImg(w, h, text, bg = '#374151', fg = '#ffffff') {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="${w}" height="${h}" fill="${bg}"/><text x="${w/2}" y="${h/2}" font-family="sans-serif" font-size="${Math.min(w,h)/12}" fill="${fg}" text-anchor="middle" dominant-baseline="central">${text.replace(/"/g, '&quot;')}</text></svg>`;

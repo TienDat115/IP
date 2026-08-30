@@ -464,15 +464,19 @@ async function searchMovies(keyword, page = 1) {
                 if (paginationEl) paginationEl.innerHTML = '';
             }
 
-            setTimeout(() => {
-                const moviesContainer = document.getElementById('moviesContainer');
-                if (moviesContainer) {
-                    const header = document.querySelector('header');
-                    const headerHeight = header ? header.offsetHeight : 0;
-                    const top = moviesContainer.getBoundingClientRect().top + window.pageYOffset - headerHeight - 10;
-                    window.scrollTo({ top, behavior: 'smooth' });
-                }
-            }, 100);
+            if (isMobileViewport()) {
+                setTimeout(() => {
+                    const moviesContainer = document.getElementById('moviesContainer');
+                    if (moviesContainer) {
+                        const header = document.querySelector('header');
+                        const headerHeight = header ? header.offsetHeight : 0;
+                        const top = moviesContainer.getBoundingClientRect().top + window.pageYOffset - headerHeight - 10;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                }, 100);
+            } else {
+                window.scrollTo(0, 0);
+            }
         } else {
             showError('Không tìm thấy kết quả');
             showNoResultsMessage();
