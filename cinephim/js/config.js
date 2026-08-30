@@ -10,7 +10,12 @@ const appConfigPromise = fetch('js/api-sources.json?t=' + Date.now())
     .then(res => res.json())
     .then(data => {
         SOURCES = data.SOURCES || data; // handle both structures just in case
-        if (!SOURCES[currentSourceKey]) currentSourceKey = 'nguonc';
+        const isEnabled = (key) => SOURCES[key] && !SOURCES[key].disabled;
+        if (!isEnabled(currentSourceKey)) {
+            const firstEnabled = Object.keys(SOURCES).find(isEnabled);
+            currentSourceKey = firstEnabled || 'nguonc';
+            localStorage.setItem('movieSource', currentSourceKey);
+        }
         currentSource = SOURCES[currentSourceKey];
         API_BASE = currentSource.base;
     })
@@ -22,7 +27,7 @@ window.ensureConfigReady = async function() {
 
 // Function to switch source
 function setSource(sourceKey) {
-    if (SOURCES[sourceKey]) {
+    if (SOURCES[sourceKey] && !SOURCES[sourceKey].disabled) {
         localStorage.setItem('movieSource', sourceKey);
         
         if (window.location.pathname.includes('movie-detail.html')) {
