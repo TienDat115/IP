@@ -1794,14 +1794,7 @@ function insertCurrentEpisodeToNote() {
         showToast('Chưa chọn tập nào', 'info');
         return;
     }
-    const episodeName = getEpisodeName(currentEpisodeSlug) + ' ';
-    const start = noteInput.selectionStart;
-    const end = noteInput.selectionEnd;
-    const currentValue = noteInput.value;
-    const newValue = currentValue.substring(0, start) + episodeName + currentValue.substring(end);
-    noteInput.value = newValue;
-    const newPosition = start + episodeName.length;
-    noteInput.setSelectionRange(newPosition, newPosition);
+    noteInput.value = getEpisodeName(currentEpisodeSlug) + ' ';
     noteInput.focus();
 }
 
