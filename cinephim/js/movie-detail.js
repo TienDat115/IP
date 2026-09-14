@@ -1477,58 +1477,6 @@ async function togglePinMovie() {
     await window.togglePin(currentMovie.slug, currentMovie);
 }
 
-// Toggle watch history section
-function toggleWatchHistory() {
-    const watchHistorySection = document.getElementById('watchHistorySection');
-    if (watchHistorySection) {
-        watchHistorySection.classList.toggle('hidden');
-        
-        if (!watchHistorySection.classList.contains('hidden')) {
-            loadWatchHistory();
-        }
-    }
-}
-
-// Load watch history for current movie
-function loadWatchHistory() {
-    if (!isUserLoggedIn() || !currentMovie) return;
-
-    // Use global watchHistory variable like the old system
-    const movieHistory = watchHistory.filter(item => item.movieSlug === currentMovie.slug);
-    
-    if (movieHistory.length === 0) {
-        displayWatchHistory([]);
-    } else {
-        displayWatchHistory(movieHistory);
-    }
-}
-
-// Display watch history
-function displayWatchHistory(history) {
-    const watchHistoryGrid = document.getElementById('watchHistoryGrid');
-    if (!watchHistoryGrid) return;
-
-    if (history.length === 0) {
-        watchHistoryGrid.innerHTML = '<p class="text-gray-400">Chưa có lịch sử xem phim này.</p>';
-        return;
-    }
-
-    // Since we only have latest entry per movie, no need to sort
-    watchHistoryGrid.innerHTML = history.map(item => `
-        <div class="bg-gray-700 rounded-lg p-3 flex justify-between items-center">
-            <div class="flex-1">
-                <p class="font-medium">${item.episodeName || 'Tập không xác định'}</p>
-                <p class="text-xs text-gray-400 mt-1">
-                    <i class="fas fa-server mr-1"></i>${item.serverName || 'Server 1'}
-                </p>
-            </div>
-            <button onclick="resumeHistoryEpisode(${item.episodeNumber != null ? item.episodeNumber : 'null'})" class="bg-[#ffd875] hover:bg-[#e2c15e] text-gray-900 px-3 py-1 rounded text-sm font-medium">
-                <i class="fas fa-play"></i>
-            </button>
-        </div>
-    `).join('');
-}
-
 // Resume a watched episode by its synced episode number in the current source
 function resumeHistoryEpisode(episodeNumber) {
     if (episodeNumber != null) {

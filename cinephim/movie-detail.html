@@ -214,7 +214,6 @@
 					<div id="episodesSection" class="bg-[#22242f] border border-[rgba(255,255,255,0.06)] rounded-xl p-4 sm:p-6">
 						<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
 							<h3 class="md-section-title mb-0"><i class="fas fa-list-ul"></i>Danh sách tập</h3>
-							<button onclick="toggleWatchHistory()" class="bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition whitespace-nowrap"><i class="fas fa-history mr-1 sm:mr-2"></i>Lịch sử xem</button>
 						</div>
 
 						<!-- Episode Navigation Buttons -->
@@ -222,14 +221,6 @@
 							<button onclick="playPreviousEpisode()" class="bg-gray-700 hover:bg-gray-600 px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center"><i class="fas fa-chevron-left mr-1 sm:mr-2"></i><span class="hidden sm:inline">Tập trước</span><span class="sm:hidden">Trước</span></button>
 							<span id="currentEpisodeDisplay" class="text-sm sm:text-base text-white font-medium">Chưa chọn tập</span>
 							<button onclick="playNextEpisode()" class="bg-gray-700 hover:bg-gray-600 px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center"><span class="hidden sm:inline">Tập sau</span><span class="sm:hidden">Sau</span><i class="fas fa-chevron-right ml-1 sm:ml-2"></i></button>
-						</div>
-
-						<!-- Watch History Section - Hidden by default -->
-						<div id="watchHistorySection" class="hidden mb-6">
-							<h4 class="text-lg font-medium mb-3">Lịch sử xem phim này</h4>
-							<div id="watchHistoryGrid" class="grid grid-cols-1 gap-4 max-h-60 overflow-y-auto">
-								<!-- Watch history will be loaded here -->
-							</div>
 						</div>
 
 						<div class="mb-4">
