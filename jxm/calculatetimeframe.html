@@ -237,12 +237,8 @@
 								<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 									<h6 class="fw-bold mb-0"><i class="bi bi-collection-play"></i> Timeline Mở Cấp Khởi Tạo</h6>
 									<div class="d-flex align-items-center gap-2">
-										<button type="button" class="btn btn-sm btn-outline-secondary" id="authBtn" title="Đăng nhập để chỉnh sửa">
-											<i class="bi bi-box-arrow-in-right me-1"></i><span>Đăng nhập</span>
-										</button>
-										<button type="button" class="btn btn-sm btn-primary d-none" id="addTimeframeBtn" title="Thêm timeline mẫu mới">
-											<i class="bi bi-plus-lg"></i> Thêm
-										</button>
+										<button type="button" class="btn btn-sm btn-outline-secondary" id="authBtn" title="Đăng nhập để chỉnh sửa"><i class="bi bi-box-arrow-in-right me-1"></i><span>Đăng nhập</span></button>
+										<button type="button" class="btn btn-sm btn-primary d-none" id="addTimeframeBtn" title="Thêm timeline mẫu mới"><i class="bi bi-plus-lg"></i> Thêm</button>
 									</div>
 								</div>
 								<div class="list-group" id="timeframeSampleList"></div>
@@ -333,16 +329,16 @@
 						<div class="modal-body">
 							<input type="hidden" id="tfDocId" />
 							<div class="mb-3">
-								<label for="tfName" class="form-label">Tên game / timeline</label>
+								<label for="tfName" class="form-label">Game</label>
 								<input type="text" class="form-control" id="tfName" placeholder="VD: Võ Lâm Tây Vực" required />
 							</div>
 							<div class="row g-3">
 								<div class="col-6">
-									<label for="tfDays" class="form-label">Số ngày timeframe (days)</label>
+									<label for="tfDays" class="form-label">Cấp Tối Đa (days)</label>
 									<input type="number" class="form-control" id="tfDays" min="1" placeholder="VD: 69" required />
 								</div>
 								<div class="col-6">
-									<label for="tfDayType" class="form-label">Thứ mở cấp (dayType)</label>
+									<label for="tfDayType" class="form-label">Ngày Đã Mở Cấp (dayType)</label>
 									<input type="number" class="form-control" id="tfDayType" min="1" max="2" placeholder="1 hoặc 2" required />
 								</div>
 								<div class="col-6">
@@ -501,10 +497,7 @@
 				submitBtn.disabled = true;
 				submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang đăng nhập...';
 				try {
-					await auth.signInWithEmailAndPassword(
-						document.getElementById("loginEmail").value.trim(),
-						document.getElementById("loginPassword").value
-					);
+					await auth.signInWithEmailAndPassword(document.getElementById("loginEmail").value.trim(), document.getElementById("loginPassword").value);
 					bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
 				} catch (error) {
 					console.error("Lỗi đăng nhập:", error);
